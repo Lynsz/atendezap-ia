@@ -16,7 +16,7 @@ O produto permite criar conta, cadastrar o negocio, gerar respostas com IA para 
 - Vitest
 - Deploy compativel com Vercel
 
-## Supabase
+## Configuracao do Supabase
 
 Project URL:
 
@@ -33,6 +33,16 @@ supabase/schema.sql
 Ele cria as tabelas `profiles`, `businesses`, `generated_responses`, `customers`, `subscriptions`, `plans`, alem das tabelas server-side do fluxo Kiwify/kit: `purchasers`, `orders`, `kits`, `support_requests` e `events`.
 
 As tabelas usadas pelo app logado tem RLS ativa por `auth.uid()`. As tabelas do fluxo Kiwify/kit ficam sem acesso para `anon` e `authenticated`, sendo usadas apenas por rotas backend com service role.
+
+Para configurar:
+
+1. Preencha `.env.local` com `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` e demais variaveis server-side quando necessario.
+2. Aplique `supabase/schema.sql` no SQL Editor do Supabase.
+3. Configure Authentication -> URL Configuration com `http://localhost:3000` e `http://localhost:3000/**`.
+4. Reinicie `npm run dev` depois de alterar `.env.local`.
+5. Abra `/debug/supabase` para verificar se o Next.js leu as variaveis e se `getSession` funciona.
+
+Guia detalhado: `docs/supabase-setup.md`.
 
 ## Variaveis De Ambiente
 
