@@ -12,52 +12,40 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanId, CheckoutPlan> = {
   basic: {
     id: "basic",
     name: "Plano Básico",
-    price: "R$29,00",
-    checkoutUrl: "https://pay.kiwify.com.br/TzuyT33",
-    active: true
+    price: "R$29,00/mês",
+    checkoutUrl: "https://pay.kiwify.com.br/SoDyO2k",
+    active: true,
   },
   starter: {
     id: "starter",
     name: "Plano Starter",
-    price: "R$49,00",
-    checkoutUrl: "https://pay.kiwify.com.br/YKQD0lL",
-    active: true
+    price: "R$49,00/mês",
+    checkoutUrl: "https://pay.kiwify.com.br/KfYbZzC",
+    active: true,
   },
   premium: {
     id: "premium",
     name: "Plano Premium",
-    price: "R$79,00",
-    checkoutUrl: "https://pay.kiwify.com.br/kpokbPx",
-    active: true
-  }
+    price: "R$79,00/mês",
+    checkoutUrl: "https://pay.kiwify.com.br/n6jZUdh",
+    active: true,
+  },
 };
 
-const CHECKOUT_UTM_BASE = {
-  utm_source: "site",
-  utm_medium: "landing_page",
-  utm_campaign: "atendezap_ia",
-  src: "atendezap_ia"
-} as const;
-
-export function getCheckoutPlan(planId: CheckoutPlanId) {
+export function getCheckoutPlan(planId: CheckoutPlanId): CheckoutPlan {
   return CHECKOUT_PLANS[planId];
 }
 
-export function getCheckoutUrl(planId: CheckoutPlanId) {
+export function getCheckoutUrl(planId: CheckoutPlanId): string {
   const plan = getCheckoutPlan(planId);
   const url = new URL(plan.checkoutUrl);
 
-  Object.entries(CHECKOUT_UTM_BASE).forEach(([key, value]) => {
-    url.searchParams.set(key, value);
-  });
-
-  const utmContent: Record<CheckoutPlanId, string> = {
-    basic: "plano_basico",
-    starter: "plano_starter",
-    premium: "plano_premium"
-  };
-
-  url.searchParams.set("utm_content", utmContent[planId]);
+  url.searchParams.set("utm_source", "site");
+  url.searchParams.set("utm_medium", "landing_page");
+  url.searchParams.set("utm_campaign", "atendezap_ia");
+  url.searchParams.set("utm_content", `plano_${planId}`);
+  url.searchParams.set("src", "atendezap_ia");
+  url.searchParams.set("billing", "monthly");
 
   return url.toString();
 }
