@@ -1,22 +1,26 @@
 # Integração Kiwify
 
-Guia para operar o checkout da Kiwify com o AtendeZap IA em produção.
+Guia para operar os checkouts da Kiwify com o AtendeZap IA em produção.
 
-## 1. Criar produto
+## 1. Criar produtos
 
-1. Acesse a Kiwify.
-2. Crie um produto digital chamado `AtendeZap IA - Plano Profissional`.
-3. Defina o preço inicial recomendado: `R$49`.
-4. Configure entrega como produto digital automatizado.
+Crie três produtos digitais na Kiwify:
 
-## 2. Configurar checkout
+- Plano Básico: `R$29,00`
+- Plano Starter: `R$49,00`
+- Plano Premium: `R$79,00`
 
-1. Configure o checkout do produto.
-2. Defina a página de obrigado como:
+Configure todos como produtos digitais automatizados.
+
+## 2. Configurar checkouts
+
+Defina a página de obrigado de cada produto como:
 
 ```text
 [APP_URL]/obrigado
 ```
+
+Configure a URL de obrigado na Kiwify como `/obrigado` quando publicar o projeto.
 
 Exemplo:
 
@@ -24,20 +28,13 @@ Exemplo:
 https://atendezap-ia.com/obrigado
 ```
 
-3. Copie o link do checkout e configure na Vercel:
+Os links oficiais ficam centralizados em `src/config/checkout.ts`:
 
 ```text
-NEXT_PUBLIC_KIWIFY_CHECKOUT_PRO=https://pay.kiwify.com.br/...
+Plano Básico: https://pay.kiwify.com.br/TzuyT33
+Plano Starter: https://pay.kiwify.com.br/YKQD0lL
+Plano Premium: https://pay.kiwify.com.br/kpokbPx
 ```
-
-Os planos Básico e Premium usam:
-
-```text
-NEXT_PUBLIC_KIWIFY_CHECKOUT_BASIC=
-NEXT_PUBLIC_KIWIFY_CHECKOUT_PREMIUM=
-```
-
-Se uma variável não estiver preenchida, o botão do plano fica desabilitado.
 
 ## 3. Configurar webhook
 

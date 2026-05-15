@@ -24,3 +24,9 @@ a {
 ::selection {
   background: #d4f9eb;
 }
+
+@layer components {
+  .field-input {
+    @apply min-h-11 w-full rounded-md border border-white/10 bg-[#0b1118] px-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-emerald-400;
+  }
+}

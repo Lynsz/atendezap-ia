@@ -1,14 +1,16 @@
 # Troubleshooting
 
-## O checkout aparece desabilitado
+## O checkout abre o link errado
 
-Preencha pelo menos a variável do plano Profissional:
+Confira o arquivo `src/config/checkout.ts`. Os checkouts oficiais atuais são:
 
 ```text
-NEXT_PUBLIC_KIWIFY_CHECKOUT_PRO=
+Plano Básico: https://pay.kiwify.com.br/TzuyT33
+Plano Starter: https://pay.kiwify.com.br/YKQD0lL
+Plano Premium: https://pay.kiwify.com.br/kpokbPx
 ```
 
-Depois reinicie o servidor local ou faça redeploy.
+Depois de alterar qualquer configuração, rode o build novamente.
 
 ## Webhook retorna 401
 

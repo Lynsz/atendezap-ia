@@ -2,8 +2,8 @@
 
 ## O que foi preparado nesta rodada
 
-- Checkout configurável por plano via `NEXT_PUBLIC_KIWIFY_CHECKOUT_*`.
-- Botões de compra desabilitados quando o checkout não está configurado.
+- Checkouts oficiais Kiwify centralizados em `src/config/checkout.ts`.
+- Botões de compra apontando para os planos Básico, Starter e Premium.
 - Webhook Kiwify com parse seguro, segredo opcional, idempotência e eventos padronizados.
 - Criação ou atualização de customer por e-mail.
 - Geração de kit com eventos de sucesso/falha e preservação do token quando a IA falha.
@@ -15,9 +15,10 @@
 
 1. Rodar `supabase/schema.sql` no Supabase.
 2. Configurar variáveis na Vercel.
-3. Configurar checkout e webhook na Kiwify.
-4. Verificar domínio do Resend.
-5. Definir `NEXT_PUBLIC_APP_URL` com o domínio final.
+3. Conferir os checkouts em `src/config/checkout.ts`.
+4. Configurar webhook na Kiwify.
+5. Verificar domínio do Resend.
+6. Definir `NEXT_PUBLIC_APP_URL` com o domínio final.
 
 ## Como testar
 

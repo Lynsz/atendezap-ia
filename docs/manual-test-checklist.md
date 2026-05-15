@@ -4,7 +4,7 @@ Use este roteiro antes de publicar ou após mudanças relevantes.
 
 1. Testar landing page `/`.
 2. Testar página de preços `/precos`.
-3. Confirmar que botões de checkout usam `NEXT_PUBLIC_KIWIFY_CHECKOUT_*`.
+3. Confirmar que os botões abrem os checkouts corretos: Básico em `https://pay.kiwify.com.br/TzuyT33`, Starter em `https://pay.kiwify.com.br/YKQD0lL` e Premium em `https://pay.kiwify.com.br/kpokbPx`.
 4. Testar webhook mock local.
 5. Verificar `customer` no Supabase.
 6. Verificar `order` no Supabase.

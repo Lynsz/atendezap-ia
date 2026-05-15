@@ -7,14 +7,14 @@ describe("normalizeKiwifyPayload", () => {
       event: "order.approved",
       order_id: "test_order_123",
       status: "approved",
-      product: { name: "AtendeZap IA - Plano Profissional" },
+      product: { name: "AtendeZap IA - Plano Starter" },
       customer: { name: "Maria Silva", email: "maria@example.com", phone: "11999999999" },
       amount: 49
     });
 
     expect(result.orderId).toBe("test_order_123");
     expect(result.customerEmail).toBe("maria@example.com");
-    expect(result.productName).toBe("AtendeZap IA - Plano Profissional");
+    expect(result.productName).toBe("AtendeZap IA - Plano Starter");
     expect(result.isApproved).toBe(true);
   });
 

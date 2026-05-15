@@ -29,9 +29,6 @@ Copie `.env.example` para `.env.local` e preencha:
 
 ```bash
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_KIWIFY_CHECKOUT_BASIC=
-NEXT_PUBLIC_KIWIFY_CHECKOUT_PRO=
-NEXT_PUBLIC_KIWIFY_CHECKOUT_PREMIUM=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
@@ -46,7 +43,7 @@ SUPPORT_EMAIL=suporte@seudominio.com
 Observações:
 
 - `NEXT_PUBLIC_APP_URL`: URL pública do app. Usada para gerar links absolutos em e-mails.
-- `NEXT_PUBLIC_KIWIFY_CHECKOUT_*`: links públicos dos checkouts Kiwify. Se não forem preenchidos, os botões ficam desabilitados.
+- Checkout Kiwify: os links oficiais dos planos Básico (`R$29,00`), Starter (`R$49,00`) e Premium (`R$79,00`) ficam centralizados em `src/config/checkout.ts`.
 - `SUPABASE_SERVICE_ROLE_KEY`: segredo de backend. Nunca usar no client.
 - `OPENAI_API_KEY`: segredo de backend. Toda geração de IA fica nas APIs.
 - `RESEND_API_KEY`: se não estiver configurada, o fluxo não quebra, mas o e-mail não é enviado.
@@ -88,6 +85,8 @@ Leia os guias operacionais:
 - [Checklist de teste manual](docs/manual-test-checklist.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Release notes do MVP](docs/release-notes-mvp.md)
+
+Configure a URL de obrigado na Kiwify como `/obrigado` quando publicar o projeto.
 
 ## Testar webhook localmente
 

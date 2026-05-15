@@ -14,14 +14,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
+        <header className="border-b border-slate-200 bg-white">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
             <Link href="/" className="text-lg font-extrabold tracking-tight text-brand-700">
               AtendeZap IA
             </Link>
             <nav className="flex items-center gap-4 text-sm font-medium text-slate-700">
+              <Link href="/app" className="hover:text-brand-700">
+                Painel
+              </Link>
               <Link href="/precos" className="hover:text-brand-700">
                 Planos
+              </Link>
+              <Link href="/atendezap" className="hover:text-brand-700">
+                AtendeZap IA
+              </Link>
+              <Link href="/leads" className="hover:text-brand-700">
+                Clientes & Leads
+              </Link>
+              <Link href="/automacoes" className="hover:text-brand-700">
+                Automações IA
               </Link>
               <Link href="/suporte" className="hover:text-brand-700">
                 Suporte

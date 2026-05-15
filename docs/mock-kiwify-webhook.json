@@ -3,7 +3,7 @@
   "order_id": "test_order_123",
   "status": "approved",
   "product": {
-    "name": "AtendeZap IA - Plano Profissional"
+    "name": "AtendeZap IA - Plano Starter"
   },
   "customer": {
     "name": "Maria Silva",
