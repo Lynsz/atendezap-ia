@@ -11,6 +11,12 @@ import { getBusinessProfile } from "@/utils/onboardingStorage";
 
 const dashboardLinks = [
   {
+    href: "/dashboard",
+    title: "Dashboard",
+    description: "Resumo executivo de atendimento, leads e receita.",
+    icon: LayoutDashboard
+  },
+  {
     href: "/atendezap",
     title: "Painel de atendimento",
     description: "Acompanhe conversas, status e sugestões de resposta.",
@@ -93,7 +99,7 @@ function DashboardContent() {
           </div>
         </header>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {dashboardLinks.map((item) => {
             const Icon = item.icon;
 

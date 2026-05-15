@@ -140,7 +140,7 @@ export default function OnboardingPage() {
       updatedAt: new Date().toISOString(),
       createdAt: profile.createdAt || new Date().toISOString()
     });
-    router.push("/app");
+    router.push("/dashboard");
   }
 
   return (

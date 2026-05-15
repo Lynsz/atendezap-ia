@@ -54,7 +54,7 @@ export default function AccessPage() {
     });
     createDefaultSubscription(plan);
 
-    router.push(hasCompletedOnboarding() ? "/app" : "/onboarding");
+    router.push(hasCompletedOnboarding() ? "/dashboard" : "/onboarding");
   }
 
   return (

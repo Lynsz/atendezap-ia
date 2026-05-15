@@ -10,7 +10,7 @@ export default function ThankYouPage() {
 
   function handleDemoAccess() {
     createDemoAccess("starter");
-    router.push(hasCompletedOnboarding() ? "/app" : "/onboarding");
+    router.push(hasCompletedOnboarding() ? "/dashboard" : "/onboarding");
   }
 
   return (
