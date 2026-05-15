@@ -27,7 +27,7 @@ export default function Home() {
       <section className="bg-white">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-20">
           <div>
-            <Badge>Produto digital para WhatsApp Business</Badge>
+            <Badge>Produto digital mensal para WhatsApp Business</Badge>
             <h1 className="mt-5 max-w-3xl text-4xl font-black tracking-tight text-ink md:text-6xl">
               Crie um atendimento profissional para WhatsApp Business em minutos
             </h1>
@@ -42,8 +42,8 @@ export default function Home() {
               </Button>
             </div>
             <p className="mt-5 text-sm text-slate-500">
-              O AtendeZap IA não promete aumento de vendas ou resultado financeiro. O objetivo é ajudar a organizar e
-              padronizar o atendimento.
+              Planos a partir de R$29,00/mês. O AtendeZap IA não promete aumento de vendas ou resultado financeiro. O
+              objetivo é ajudar a organizar e padronizar o atendimento.
             </p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-brand-50 p-5 shadow-soft">
@@ -54,7 +54,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="font-extrabold">Plano Starter</p>
-                  <p className="text-sm text-slate-500">R$49,00 para começar</p>
+                  <p className="text-sm text-slate-500">R$49,00/mês para começar</p>
                 </div>
               </div>
               <div className="space-y-3 text-sm">
@@ -88,7 +88,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4">
           <SectionTitle title="Como funciona" />
           <div className="mt-10 grid gap-5 md:grid-cols-4">
-            {["Compre pela Kiwify", "Receba o link de acesso", "Use o painel", "Baixe seu kit em PDF"].map((step, index) => (
+            {["Assine pela Kiwify", "Receba o link de acesso", "Use o painel", "Baixe seu kit em PDF"].map((step, index) => (
               <Card key={step}>
                 <p className="mb-4 flex h-9 w-9 items-center justify-center rounded-md bg-brand-100 font-black text-brand-700">
                   {index + 1}
@@ -136,7 +136,7 @@ export default function Home() {
           <div>
             <MailCheck className="mb-3 h-6 w-6 text-brand-100" />
             <h2 className="text-2xl font-black">Pronto para padronizar seu atendimento?</h2>
-            <p className="mt-2 text-slate-200">O link de acesso chega por e-mail após a confirmação da compra.</p>
+            <p className="mt-2 text-slate-200">O link de acesso chega por e-mail após a confirmação da assinatura.</p>
           </div>
           <KiwifyCheckoutButton className="bg-white text-ink hover:bg-slate-100" planId="starter" />
         </Card>

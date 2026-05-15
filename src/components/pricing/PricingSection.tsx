@@ -16,22 +16,22 @@ const plans: Array<{
   {
     id: "basic",
     badge: "Mais acessível",
-    cta: "Começar por R$29",
+    cta: "Começar por R$29/mês",
     description: "Para começar com o essencial do AtendeZap IA.",
     features: [
       "Painel de atendimento",
       "Clientes e leads",
       "Histórico local no navegador",
-      "Interface moderna estilo SaaS",
-      "Organização básica dos atendimentos"
+      "Organização básica dos atendimentos",
+      "Interface moderna estilo SaaS"
     ]
   },
   {
     id: "starter",
     badge: "Mais indicado",
-    cta: "Começar por R$49",
+    cta: "Começar por R$49/mês",
     recommended: true,
-    description: "Para quem quer organizar atendimentos e usar automações com IA.",
+    description: "Para quem quer organizar atendimentos, leads e automações com IA.",
     features: [
       "Tudo do Plano Básico",
       "Automações básicas com IA",
@@ -61,10 +61,10 @@ export function PricingSection() {
     <section className="bg-[#090d12] py-16 text-white">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="mb-2 text-sm font-bold uppercase tracking-wide text-emerald-300">Planos</p>
+          <p className="mb-2 text-sm font-bold uppercase tracking-wide text-emerald-300">Planos mensais</p>
           <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">Escolha como começar</h2>
           <p className="mt-4 text-base leading-7 text-slate-300">
-            Três opções para organizar atendimento, leads e automações com IA.
+            Três opções recorrentes para organizar atendimento, leads e automações com IA.
           </p>
         </div>
 
@@ -100,7 +100,12 @@ export function PricingSection() {
                 <ul className="mt-6 flex flex-1 flex-col gap-3 text-sm text-slate-200">
                   {planConfig.features.map((feature) => (
                     <li className="flex gap-2" key={feature}>
-                      <CheckCircle2 className={cn("mt-0.5 h-4 w-4 shrink-0", planConfig.recommended ? "text-emerald-300" : "text-slate-300")} />
+                      <CheckCircle2
+                        className={cn(
+                          "mt-0.5 h-4 w-4 shrink-0",
+                          planConfig.recommended ? "text-emerald-300" : "text-slate-300"
+                        )}
+                      />
                       <span>{feature}</span>
                     </li>
                   ))}

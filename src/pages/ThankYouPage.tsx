@@ -22,8 +22,8 @@ export default function ThankYouPage() {
         <p className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-emerald-300">Kiwify</p>
         <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Compra quase finalizada</h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300">
-          Seu pagamento está sendo processado pela Kiwify. Assim que a confirmação acontecer, você poderá acessar o
-          painel do AtendeZap IA e começar a organizar seus atendimentos.
+          Seu pagamento mensal está sendo processado pela Kiwify. Assim que a confirmação acontecer, você poderá acessar
+          o painel do AtendeZap IA e começar a organizar seus atendimentos.
         </p>
 
         <div className="mt-8 rounded-lg border border-white/10 bg-white/[0.04] p-5 text-left">
@@ -32,7 +32,7 @@ export default function ThankYouPage() {
             Próximos passos
           </h2>
           <ol className="grid gap-3 text-sm leading-6 text-slate-300">
-            <li className="rounded-md bg-white/[0.04] p-3">1. Confirme o pagamento na Kiwify.</li>
+            <li className="rounded-md bg-white/[0.04] p-3">1. Confirme a assinatura mensal na Kiwify.</li>
             <li className="rounded-md bg-white/[0.04] p-3">2. Aguarde a confirmação.</li>
             <li className="rounded-md bg-white/[0.04] p-3">3. Acesse o painel do AtendeZap IA.</li>
           </ol>
@@ -58,7 +58,8 @@ export default function ThankYouPage() {
         </div>
 
         <p className="mt-6 text-xs leading-5 text-slate-500">
-          Configure a URL de obrigado na Kiwify como `/obrigado` quando publicar o projeto.
+          Os planos do AtendeZap IA são cobrados mensalmente pela Kiwify, conforme o plano escolhido. Configure a URL de
+          obrigado na Kiwify como `/obrigado` quando publicar o projeto.
         </p>
       </section>
     </main>

@@ -2,15 +2,27 @@
 
 ## O checkout abre o link errado
 
-Confira o arquivo `src/config/checkout.ts`. Os checkouts oficiais atuais são:
+Confira o arquivo `src/config/checkout.ts`. Os checkouts oficiais atuais são mensais:
 
 ```text
-Plano Básico: https://pay.kiwify.com.br/TzuyT33
-Plano Starter: https://pay.kiwify.com.br/YKQD0lL
-Plano Premium: https://pay.kiwify.com.br/kpokbPx
+Plano Básico: https://pay.kiwify.com.br/SoDyO2k
+Plano Starter: https://pay.kiwify.com.br/KfYbZzC
+Plano Premium: https://pay.kiwify.com.br/n6jZUdh
 ```
 
 Depois de alterar qualquer configuração, rode o build novamente.
+
+## O preço aparece sem mensalidade
+
+Todos os preços públicos devem aparecer como:
+
+```text
+R$29,00/mês
+R$49,00/mês
+R$79,00/mês
+```
+
+Se aparecer qualquer preço sem `/mês`, atualize o texto para deixar a cobrança mensal clara.
 
 ## Webhook retorna 401
 

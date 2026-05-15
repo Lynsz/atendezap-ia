@@ -2,7 +2,7 @@
 
 Micro-SaaS para gerar kits de atendimento para WhatsApp Business com IA.
 
-O cliente compra pela Kiwify, recebe um link mágico por e-mail, preenche um formulário sobre o negócio e baixa um PDF com mensagens prontas, respostas rápidas, follow-ups, etiquetas e fluxo de atendimento.
+O cliente assina pela Kiwify, recebe um link mágico por e-mail, preenche um formulário sobre o negócio e baixa um PDF com mensagens prontas, respostas rápidas, follow-ups, etiquetas e fluxo de atendimento.
 
 ## Stack
 
@@ -43,7 +43,7 @@ SUPPORT_EMAIL=suporte@seudominio.com
 Observações:
 
 - `NEXT_PUBLIC_APP_URL`: URL pública do app. Usada para gerar links absolutos em e-mails.
-- Checkout Kiwify: os links oficiais dos planos Básico (`R$29,00`), Starter (`R$49,00`) e Premium (`R$79,00`) ficam centralizados em `src/config/checkout.ts`.
+- Checkout Kiwify: os links oficiais dos planos mensais Básico (`R$29,00/mês`), Starter (`R$49,00/mês`) e Premium (`R$79,00/mês`) ficam centralizados em `src/config/checkout.ts`.
 - `SUPABASE_SERVICE_ROLE_KEY`: segredo de backend. Nunca usar no client.
 - `OPENAI_API_KEY`: segredo de backend. Toda geração de IA fica nas APIs.
 - `RESEND_API_KEY`: se não estiver configurada, o fluxo não quebra, mas o e-mail não é enviado.
@@ -116,7 +116,7 @@ Depois confira `customers`, `orders` e `events` no Supabase.
 3. Abra `http://localhost:3000/gerar/SEU_ACCESS_TOKEN`.
 4. Preencha o formulário.
 5. O backend chama a OpenAI, salva em `kits`, marca `access_token_used = true` e redireciona para `/kit/[kitId]`.
-6. Clique em “Baixar PDF”.
+6. Clique em "Baixar PDF".
 
 Se a OpenAI falhar, o token não é marcado como usado e o cliente pode tentar novamente.
 
@@ -162,7 +162,7 @@ Se a OpenAI falhar, o token não é marcado como usado e o cliente pode tentar n
 
 - Não há chatbot conectado ao WhatsApp.
 - Não há integração com WhatsApp API.
-- Não há assinatura recorrente.
+- Os planos atuais são mensais e processados pela Kiwify.
 - Não há dashboard administrativo.
 - Não há área de membros avançada.
 - O PDF é gerado sob demanda, sem Supabase Storage.
@@ -171,7 +171,7 @@ Se a OpenAI falhar, o token não é marcado como usado e o cliente pode tentar n
 
 ## Próximos passos
 
-- Configurar checkouts reais na Kiwify.
+- Validar os checkouts mensais reais na Kiwify.
 - Adicionar assinatura HMAC do webhook se disponível.
 - Salvar PDFs em Supabase Storage se necessário.
 - Criar painel mínimo de pedidos e kits.

@@ -1,16 +1,16 @@
 # Integração Kiwify
 
-Guia para operar os checkouts da Kiwify com o AtendeZap IA em produção.
+Guia para operar os checkouts recorrentes da Kiwify com o AtendeZap IA em produção.
 
 ## 1. Criar produtos
 
-Crie três produtos digitais na Kiwify:
+Crie três produtos digitais mensais na Kiwify:
 
-- Plano Básico: `R$29,00`
-- Plano Starter: `R$49,00`
-- Plano Premium: `R$79,00`
+- Plano Básico: `R$29,00/mês`
+- Plano Starter: `R$49,00/mês`
+- Plano Premium: `R$79,00/mês`
 
-Configure todos como produtos digitais automatizados.
+Configure todos como produtos digitais automatizados com cobrança mensal.
 
 ## 2. Configurar checkouts
 
@@ -31,10 +31,12 @@ https://atendezap-ia.com/obrigado
 Os links oficiais ficam centralizados em `src/config/checkout.ts`:
 
 ```text
-Plano Básico: https://pay.kiwify.com.br/TzuyT33
-Plano Starter: https://pay.kiwify.com.br/YKQD0lL
-Plano Premium: https://pay.kiwify.com.br/kpokbPx
+Plano Básico: https://pay.kiwify.com.br/SoDyO2k
+Plano Starter: https://pay.kiwify.com.br/KfYbZzC
+Plano Premium: https://pay.kiwify.com.br/n6jZUdh
 ```
+
+Os botões do site adicionam UTMs automaticamente, incluindo `billing=monthly`.
 
 ## 3. Configurar webhook
 

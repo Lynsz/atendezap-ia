@@ -14,22 +14,22 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanId, CheckoutPlan> = {
     name: "Plano Básico",
     price: "R$29,00/mês",
     checkoutUrl: "https://pay.kiwify.com.br/SoDyO2k",
-    active: true,
+    active: true
   },
   starter: {
     id: "starter",
     name: "Plano Starter",
     price: "R$49,00/mês",
     checkoutUrl: "https://pay.kiwify.com.br/KfYbZzC",
-    active: true,
+    active: true
   },
   premium: {
     id: "premium",
     name: "Plano Premium",
     price: "R$79,00/mês",
     checkoutUrl: "https://pay.kiwify.com.br/n6jZUdh",
-    active: true,
-  },
+    active: true
+  }
 };
 
 export function getCheckoutPlan(planId: CheckoutPlanId): CheckoutPlan {

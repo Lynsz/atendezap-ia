@@ -10,6 +10,6 @@ export function appUrl() {
 }
 
 export function formatCurrency(value?: number | null) {
-  if (value === undefined || value === null || Number.isNaN(value)) return "R$49";
+  if (value === undefined || value === null || Number.isNaN(value)) return "R$49,00/mês";
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 }
