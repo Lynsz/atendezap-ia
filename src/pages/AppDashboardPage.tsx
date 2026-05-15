@@ -41,9 +41,9 @@ const dashboardLinks = [
     icon: CreditCard
   },
   {
-    href: "/onboarding",
-    title: "Empresa",
-    description: "Atualize dados da empresa, tom da IA e mensagem inicial.",
+    href: "/configuracoes",
+    title: "Configurações",
+    description: "Atualize empresa, IA, notificações e suporte.",
     icon: Settings
   }
 ];

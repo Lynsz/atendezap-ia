@@ -99,7 +99,7 @@ const quickLinks = [
     icon: CreditCard
   },
   {
-    href: "/onboarding",
+    href: "/configuracoes",
     title: "Configurações",
     description: "Editar empresa e tom da IA.",
     icon: Settings
