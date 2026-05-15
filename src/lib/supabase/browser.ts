@@ -5,10 +5,11 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 const hasUsableAnonKey = Boolean(supabaseAnonKey && supabaseAnonKey.length >= 40);
 
 if (typeof window !== "undefined") {
-  console.info("[Supabase env]", {
-    hasUrl: Boolean(supabaseUrl),
-    hasAnonKey: Boolean(supabaseAnonKey),
-    anonKeyLength: supabaseAnonKey?.length ?? 0
+  console.info("[Supabase diagnostic]", {
+    hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+    anonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length ?? 0
   });
 }
 
@@ -30,8 +31,4 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 export function isSupabaseBrowserConfigured() {
   return Boolean(supabaseUrl && hasUsableAnonKey);
-}
-
-export function getSupabaseBrowserClient() {
-  return supabase;
 }

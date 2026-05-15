@@ -29,8 +29,34 @@ function getAuthErrorMessage(error: unknown, fallback: string) {
 
 async function assertSupabaseConnection() {
   try {
-    await supabase.auth.getSession();
+    const { data, error } = await supabase.auth.getSession();
+
+    console.info("[Supabase getSession diagnostic]", {
+      ok: !error,
+      hasSession: Boolean(data.session),
+      env: {
+        hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+        hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+        anonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length ?? 0
+      },
+      errorMessage: error?.message ?? null
+    });
+
+    if (error) {
+      throw error;
+    }
   } catch (error) {
+    console.info("[Supabase getSession diagnostic]", {
+      ok: false,
+      env: {
+        hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+        hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+        anonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length ?? 0
+      },
+      errorKind: error instanceof TypeError ? "connection" : "env_or_auth",
+      errorMessage: error instanceof Error ? error.message : String(error)
+    });
+
     throw new Error(getAuthErrorMessage(error, SUPABASE_CONNECTION_ERROR));
   }
 }
