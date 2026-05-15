@@ -1,36 +1,37 @@
 import { createClient } from "@supabase/supabase-js";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
-let browserClient: SupabaseClient | null = null;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+const hasUsableAnonKey = Boolean(supabaseAnonKey && supabaseAnonKey.length >= 40);
 
-function getSupabaseBrowserEnv() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  return { url: supabaseUrl, anonKey: supabaseAnonKey };
+if (typeof window !== "undefined") {
+  console.info("[Supabase env]", {
+    hasUrl: Boolean(supabaseUrl),
+    hasAnonKey: Boolean(supabaseAnonKey),
+    anonKeyLength: supabaseAnonKey?.length ?? 0
+  });
 }
 
+if (!supabaseUrl) {
+  throw new Error("NEXT_PUBLIC_SUPABASE_URL não configurada.");
+}
+
+if (!supabaseAnonKey) {
+  throw new Error("NEXT_PUBLIC_SUPABASE_ANON_KEY não configurada.");
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
+});
+
 export function isSupabaseBrowserConfigured() {
-  const { url, anonKey } = getSupabaseBrowserEnv();
-  return Boolean(url && anonKey);
+  return Boolean(supabaseUrl && hasUsableAnonKey);
 }
 
 export function getSupabaseBrowserClient() {
-  const { url, anonKey } = getSupabaseBrowserEnv();
-
-  if (!url || !anonKey) {
-    throw new Error("Supabase nao configurado. Defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.");
-  }
-
-  if (browserClient) return browserClient;
-
-  browserClient = createClient(url, anonKey, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  });
-
-  return browserClient;
+  return supabase;
 }

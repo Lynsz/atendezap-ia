@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from "@/lib/supabase/browser";
+import { isSupabaseBrowserConfigured, supabase } from "@/lib/supabase/browser";
 
 type SignUpInput = {
   name: string;
@@ -11,18 +11,28 @@ type SignUpInput = {
 };
 
 export const SUPABASE_CONNECTION_ERROR =
-  "Não foi possível conectar ao Supabase. Verifique sua internet e as variáveis NEXT_PUBLIC_SUPABASE_URL/NEXT_PUBLIC_SUPABASE_ANON_KEY.";
+  "Não foi possível conectar ao Supabase. Confira NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, internet, navegador e se o projeto Supabase está ativo.";
 
 function getAuthErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof TypeError && error.message.toLowerCase().includes("fetch")) {
+  const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+  if (error instanceof TypeError && message.includes("fetch")) {
     return SUPABASE_CONNECTION_ERROR;
   }
 
-  if (error instanceof Error && error.message.toLowerCase().includes("failed to fetch")) {
+  if (message.includes("failed to fetch") || message.includes("network") || message.includes("fetch failed")) {
     return SUPABASE_CONNECTION_ERROR;
   }
 
   return fallback;
+}
+
+async function assertSupabaseConnection() {
+  try {
+    await supabase.auth.getSession();
+  } catch (error) {
+    throw new Error(getAuthErrorMessage(error, SUPABASE_CONNECTION_ERROR));
+  }
 }
 
 export function useAuth() {
@@ -35,8 +45,6 @@ export function useAuth() {
     if (!isConfigured) {
       return;
     }
-
-    const supabase = getSupabaseBrowserClient();
 
     supabase.auth
       .getSession()
@@ -63,7 +71,7 @@ export function useAuth() {
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
-      const supabase = getSupabaseBrowserClient();
+      await assertSupabaseConnection();
       return await supabase.auth.signInWithPassword({ email, password });
     } catch (error) {
       throw new Error(getAuthErrorMessage(error, "Nao foi possivel entrar. Confira seus dados."));
@@ -72,7 +80,7 @@ export function useAuth() {
 
   const signUp = useCallback(async ({ name, email, password }: SignUpInput) => {
     try {
-      const supabase = getSupabaseBrowserClient();
+      await assertSupabaseConnection();
       return await supabase.auth.signUp({
         email,
         password,
@@ -86,7 +94,6 @@ export function useAuth() {
   }, []);
 
   const signOut = useCallback(async () => {
-    const supabase = getSupabaseBrowserClient();
     return supabase.auth.signOut();
   }, []);
 

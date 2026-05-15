@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserPlus, MessageCircle } from "lucide-react";
-import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from "@/lib/supabase/browser";
-import { useAuth } from "@/hooks/useAuth";
+import { SUPABASE_CONNECTION_ERROR, useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase/browser";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -27,13 +27,12 @@ export default function SignupPage() {
       return;
     }
 
-    if (!auth.isConfigured || !isSupabaseBrowserConfigured()) {
-      setError("Supabase nao configurado. Confira as variaveis de ambiente.");
+    if (!auth.isConfigured) {
+      setError(SUPABASE_CONNECTION_ERROR);
       return;
     }
 
     setLoading(true);
-    const supabase = getSupabaseBrowserClient();
     const { data, error: signUpError } = await auth.signUp({ name, email, password }).catch((authError: unknown) => ({
       data: { user: null, session: null },
       error: authError instanceof Error ? authError : new Error("Nao foi possivel criar sua conta. Tente outro e-mail.")

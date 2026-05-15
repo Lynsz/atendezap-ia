@@ -60,6 +60,8 @@ SUPPORT_EMAIL=
 
 Este projeto usa Next.js. Variaveis que precisam chegar ao navegador devem usar o prefixo `NEXT_PUBLIC_`.
 
+Depois de alterar `.env.local`, pare e reinicie `npm run dev`. O Next.js injeta variaveis publicas no bundle durante a inicializacao do servidor de desenvolvimento.
+
 ## Aplicar Schema
 
 1. Abra o Supabase Dashboard do projeto.
@@ -90,6 +92,14 @@ https://www.atendezapia.com.br/**
 ```
 
 Para Vercel e dominio proprio, mantenha tambem as URLs de producao listadas abaixo.
+
+Teste rapido de conectividade do projeto Supabase:
+
+```bash
+https://cnxwomllglzifnewqslu.supabase.co/auth/v1/health
+```
+
+Uma resposta HTTP do Supabase confirma que o host esta acessivel; se o navegador bloquear essa URL, o cadastro/login tambem podem falhar com erro de rede.
 
 ## Rodar Localmente
 

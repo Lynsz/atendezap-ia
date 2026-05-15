@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogIn, MessageCircle } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { SUPABASE_CONNECTION_ERROR, useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function LoginPage() {
     }
 
     if (!auth.isConfigured) {
-      setError("Supabase nao configurado. Confira as variaveis de ambiente.");
+      setError(SUPABASE_CONNECTION_ERROR);
       return;
     }
 

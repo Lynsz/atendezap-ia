@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
-import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from "@/lib/supabase/browser";
+import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
 import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, ResponseType } from "@/types/mvp";
 
 type DashboardTab = "assistant" | "business" | "history" | "customers";
@@ -133,7 +133,7 @@ function SaasDashboardContent() {
   const [customers, setCustomers] = useState<CustomerLead[]>([]);
   const [customerDraft, setCustomerDraft] = useState<CustomerDraft>(emptyCustomer);
 
-  const supabase = useMemo(() => (isSupabaseBrowserConfigured() ? getSupabaseBrowserClient() : null), []);
+  const supabase = useMemo(() => (isSupabaseBrowserConfigured() ? supabaseBrowserClient : null), []);
 
   function showFeedback(message: string) {
     setFeedback(message);
