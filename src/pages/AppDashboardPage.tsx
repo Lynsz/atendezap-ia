@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bot, Building2, LayoutDashboard, LogOut, MessageCircle, Settings, Users } from "lucide-react";
+import { Bot, Building2, CreditCard, LayoutDashboard, LogOut, MessageCircle, Settings, Users } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UserPlanBadge } from "@/components/auth/UserPlanBadge";
 import { clearSession, getCurrentSession } from "@/utils/authStorage";
+import { getCurrentSubscription } from "@/utils/billingStorage";
 import { getBusinessProfile } from "@/utils/onboardingStorage";
 
 const dashboardLinks = [
@@ -28,6 +29,12 @@ const dashboardLinks = [
     icon: Bot
   },
   {
+    href: "/assinatura",
+    title: "Minha Assinatura",
+    description: "Veja plano atual, cobrança mensal e upgrades.",
+    icon: CreditCard
+  },
+  {
     href: "/onboarding",
     title: "Empresa",
     description: "Atualize dados da empresa, tom da IA e mensagem inicial.",
@@ -38,6 +45,7 @@ const dashboardLinks = [
 function DashboardContent() {
   const router = useRouter();
   const session = getCurrentSession();
+  const subscription = getCurrentSubscription();
   const businessProfile = getBusinessProfile();
 
   function handleLogout() {
@@ -72,7 +80,7 @@ function DashboardContent() {
               ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              {session ? <UserPlanBadge plan={session.user.plan} /> : null}
+              {subscription ? <UserPlanBadge plan={subscription.planId} /> : session ? <UserPlanBadge plan={session.user.plan} /> : null}
               <button
                 type="button"
                 onClick={handleLogout}
@@ -85,7 +93,7 @@ function DashboardContent() {
           </div>
         </header>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           {dashboardLinks.map((item) => {
             const Icon = item.icon;
 

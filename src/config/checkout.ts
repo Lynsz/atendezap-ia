@@ -39,11 +39,16 @@ export function getCheckoutPlan(planId: CheckoutPlanId): CheckoutPlan {
 export function getCheckoutUrl(planId: CheckoutPlanId): string {
   const plan = getCheckoutPlan(planId);
   const url = new URL(plan.checkoutUrl);
+  const utmContent: Record<CheckoutPlanId, string> = {
+    basic: "plano_basico",
+    starter: "plano_starter",
+    premium: "plano_premium"
+  };
 
   url.searchParams.set("utm_source", "site");
   url.searchParams.set("utm_medium", "landing_page");
   url.searchParams.set("utm_campaign", "atendezap_ia");
-  url.searchParams.set("utm_content", `plano_${planId}`);
+  url.searchParams.set("utm_content", utmContent[planId]);
   url.searchParams.set("src", "atendezap_ia");
   url.searchParams.set("billing", "monthly");
 

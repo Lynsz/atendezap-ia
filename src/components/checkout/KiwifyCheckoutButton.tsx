@@ -11,6 +11,7 @@ type KiwifyCheckoutButtonProps = {
   className?: string;
   fullWidth?: boolean;
   disabled?: boolean;
+  onBeforeRedirect?: () => void;
 };
 
 export function KiwifyCheckoutButton({
@@ -18,7 +19,8 @@ export function KiwifyCheckoutButton({
   label,
   className,
   fullWidth,
-  disabled
+  disabled,
+  onBeforeRedirect
 }: KiwifyCheckoutButtonProps) {
   const defaultLabels: Record<CheckoutPlanId, string> = {
     basic: "Começar por R$29/mês",
@@ -28,6 +30,7 @@ export function KiwifyCheckoutButton({
 
   function handleCheckout() {
     if (disabled) return;
+    onBeforeRedirect?.();
     window.location.href = getCheckoutUrl(planId);
   }
 

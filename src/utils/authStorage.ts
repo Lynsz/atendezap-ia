@@ -1,4 +1,5 @@
 import type { AccessSession, AccessUser, UserPlan } from "@/types/auth";
+import { createDefaultSubscription } from "@/utils/billingStorage";
 
 const AUTH_STORAGE_KEY = "atendezap_ia_access_session_v1";
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 30;
@@ -66,6 +67,7 @@ export function createDemoAccess(plan: UserPlan = "starter") {
   };
 
   saveSession(session);
+  createDefaultSubscription(plan);
   return session;
 }
 

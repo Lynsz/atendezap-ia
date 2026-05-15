@@ -5,6 +5,7 @@ import { LogIn, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { UserPlan } from "@/types/auth";
 import { saveSession } from "@/utils/authStorage";
+import { createDefaultSubscription } from "@/utils/billingStorage";
 import { hasCompletedOnboarding } from "@/utils/onboardingStorage";
 
 const planOptions: Array<{ value: UserPlan; label: string }> = [
@@ -51,6 +52,7 @@ export default function AccessPage() {
       isAuthenticated: true,
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString()
     });
+    createDefaultSubscription(plan);
 
     router.push(hasCompletedOnboarding() ? "/app" : "/onboarding");
   }
@@ -62,8 +64,8 @@ export default function AccessPage() {
           <p className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-emerald-300">Acesso local</p>
           <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Entrar no painel AtendeZap IA</h1>
           <p className="mt-5 max-w-xl text-base leading-8 text-slate-300">
-            Este acesso simula o pós-compra usando localStorage. O backend real de autenticação pode ser conectado em uma
-            próxima etapa sem mudar a experiência principal.
+            Este acesso simula o pós-compra usando localStorage e cria uma assinatura local do plano escolhido. O backend
+            real de autenticação pode ser conectado em uma próxima etapa sem mudar a experiência principal.
           </p>
         </div>
 
@@ -75,12 +77,7 @@ export default function AccessPage() {
             {error ? <p className="rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm font-bold text-red-200">{error}</p> : null}
             <label className="grid gap-2 text-sm font-bold text-slate-200">
               Nome
-              <input
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                className="field-input"
-                placeholder="Seu nome"
-              />
+              <input value={name} onChange={(event) => setName(event.target.value)} className="field-input" placeholder="Seu nome" />
             </label>
             <label className="grid gap-2 text-sm font-bold text-slate-200">
               E-mail
