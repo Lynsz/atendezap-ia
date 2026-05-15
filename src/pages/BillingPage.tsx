@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
@@ -8,6 +9,7 @@ import {
   CheckCircle2,
   CreditCard,
   History,
+  Plug,
   RotateCcw,
   ShieldCheck,
   Wallet,
@@ -228,6 +230,18 @@ function BillingContent() {
                 Para cancelar, alterar cartão ou gerenciar cobranças reais, use o link enviado pela Kiwify no e-mail da
                 compra.
               </p>
+            </div>
+            <div className="rounded-lg border border-sky-400/20 bg-sky-400/10 p-5">
+              <Plug className="mb-3 h-5 w-5 text-sky-200" />
+              <p className="text-sm leading-6 text-sky-100">
+                A assinatura real é processada pela Kiwify. A sincronização automática depende da integração via webhook/backend.
+              </p>
+              <Link
+                href="/integracoes/kiwify"
+                className="mt-4 inline-flex min-h-10 items-center justify-center rounded-md bg-sky-300 px-4 text-sm font-black text-slate-950 transition hover:bg-sky-200"
+              >
+                Ver integração Kiwify
+              </Link>
             </div>
           </aside>
         </div>

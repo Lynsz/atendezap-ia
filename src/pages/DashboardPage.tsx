@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Lightbulb,
   MessageCircle,
+  Plug,
   Settings,
   Target,
   TrendingUp,
@@ -97,6 +98,12 @@ const quickLinks = [
     title: "Minha Assinatura",
     description: "Ver plano e upgrade.",
     icon: CreditCard
+  },
+  {
+    href: "/integracoes/kiwify",
+    title: "Kiwify",
+    description: "Status e simulação de webhook.",
+    icon: Plug
   },
   {
     href: "/configuracoes",
@@ -401,7 +408,7 @@ function DashboardContent() {
 
         <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-2xl shadow-black/25">
           <h2 className="text-xl font-black text-white">Atalhos rápidos</h2>
-          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-6">
             {quickLinks.map((item) => {
               const Icon = item.icon;
 

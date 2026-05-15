@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bot, Building2, CreditCard, LayoutDashboard, LogOut, MessageCircle, Settings, Users } from "lucide-react";
+import { Bot, Building2, CreditCard, LayoutDashboard, LogOut, MessageCircle, Plug, Settings, Users } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UserPlanBadge } from "@/components/auth/UserPlanBadge";
 import { clearSession, getCurrentSession } from "@/utils/authStorage";
@@ -39,6 +39,12 @@ const dashboardLinks = [
     title: "Minha Assinatura",
     description: "Veja plano atual, cobrança mensal e upgrades.",
     icon: CreditCard
+  },
+  {
+    href: "/integracoes/kiwify",
+    title: "Integração Kiwify",
+    description: "Simule eventos futuros de assinatura e webhook.",
+    icon: Plug
   },
   {
     href: "/configuracoes",
