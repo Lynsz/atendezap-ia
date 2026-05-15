@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bot, Building2, CreditCard, Database, LayoutDashboard, LogOut, MessageCircle, Plug, Settings, Smartphone, Users } from "lucide-react";
+import { BookOpen, Bot, Building2, CreditCard, Database, LayoutDashboard, LogOut, MessageCircle, Plug, Settings, Smartphone, Users } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UserPlanBadge } from "@/components/auth/UserPlanBadge";
 import { clearSession, getCurrentSession } from "@/utils/authStorage";
@@ -33,6 +33,12 @@ const dashboardLinks = [
     title: "Automações IA",
     description: "Simule follow-ups, respostas e ações inteligentes.",
     icon: Bot
+  },
+  {
+    href: "/base-conhecimento",
+    title: "Base da IA",
+    description: "Cadastre FAQs, politicas, produtos e objecoes.",
+    icon: BookOpen
   },
   {
     href: "/assinatura",

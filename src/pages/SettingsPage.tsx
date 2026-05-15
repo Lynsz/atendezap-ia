@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   Bell,
+  BookOpen,
   Bot,
   Building2,
   CheckCircle2,
@@ -367,6 +369,26 @@ function SettingsContent() {
                     onChange={(checked) => updateAI({ autoClassifyLeads: checked })}
                     label="Classificar leads automaticamente"
                   />
+                </div>
+
+                <div className="mt-5 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-start gap-3">
+                      <BookOpen className="mt-1 h-5 w-5 text-emerald-300" />
+                      <div>
+                        <p className="font-black text-white">Gerenciar Base de Conhecimento</p>
+                        <p className="mt-1 text-sm leading-6 text-emerald-100">
+                          Cadastre FAQs, produtos, politicas e objecoes para melhorar as respostas sugeridas pela IA.
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      href="/base-conhecimento"
+                      className="inline-flex min-h-10 items-center justify-center rounded-md bg-emerald-300 px-4 text-sm font-black text-slate-950 transition hover:bg-emerald-200"
+                    >
+                      Abrir Base da IA
+                    </Link>
+                  </div>
                 </div>
 
                 <div className="mt-5 flex flex-col gap-3 sm:flex-row">

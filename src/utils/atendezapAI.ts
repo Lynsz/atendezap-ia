@@ -1,4 +1,5 @@
 import type { Conversation, Message, Priority } from "@/types/atendezap";
+import { generateAnswerFromKnowledge } from "@/utils/knowledgeAI";
 import { getAISettings, getCompanySettings } from "@/utils/settingsStorage";
 
 function getLastCustomerMessage(conversation: Conversation) {
@@ -84,6 +85,11 @@ export function generateSuggestedReply(conversation: Conversation) {
 
   if (!aiSettings.autoSuggestReplies) {
     return applySettingsContext(aiSettings.fallbackMessage);
+  }
+
+  const knowledgeAnswer = generateAnswerFromKnowledge(lastCustomerMessage?.content || conversation.intent);
+  if (knowledgeAnswer.usedKnowledge) {
+    return applySettingsContext(`${knowledgeAnswer.answer}\n\nBase de conhecimento usada para apoiar esta sugestao.`);
   }
 
   if (content.includes("horario") || content.includes("agenda")) {

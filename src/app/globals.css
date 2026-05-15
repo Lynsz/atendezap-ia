@@ -29,4 +29,8 @@ a {
   .field-input {
     @apply min-h-11 w-full rounded-md border border-white/10 bg-[#0b1118] px-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-emerald-400;
   }
+
+  .primary-action {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300;
+  }
 }

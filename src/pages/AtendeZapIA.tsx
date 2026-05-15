@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
+  BookOpen,
   Bot,
   CheckCircle2,
   Clock3,
@@ -18,6 +19,7 @@ import {
 import { atendezapMockConversations } from "@/data/atendezapMock";
 import type { Conversation, ConversationStatus, Message, Priority } from "@/types/atendezap";
 import { calculateConversationUrgency, createAgentMessage, generateConversationSummary, generateSuggestedReply } from "@/utils/atendezapAI";
+import { getKnowledgeBaseStats } from "@/utils/knowledgeStorage";
 import { getBusinessProfile } from "@/utils/onboardingStorage";
 import { getWhatsAppConnection } from "@/utils/whatsappStorage";
 
@@ -92,6 +94,7 @@ export default function AtendeZapIA() {
   const [selectedId, setSelectedId] = useState(() => loadStoredConversations()[0]?.id || "");
   const [businessProfile] = useState(() => getBusinessProfile());
   const [whatsAppConnection] = useState(() => getWhatsAppConnection());
+  const [knowledgeStats] = useState(() => getKnowledgeBaseStats());
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | ConversationStatus>("all");
   const [draft, setDraft] = useState("");
@@ -254,6 +257,28 @@ export default function AtendeZapIA() {
           </div>
         </div>
 
+        <div className="mb-5 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-emerald-400/15 text-emerald-200">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-white">Base de conhecimento ativa</p>
+                <p className="mt-1 text-sm leading-6 text-emerald-100">
+                  {knowledgeStats.total} itens cadastrados para apoiar sugestoes da IA, incluindo {knowledgeStats.activeFaqs} FAQs ativas.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/base-conhecimento"
+              className="inline-flex min-h-10 items-center justify-center rounded-md bg-emerald-300 px-4 text-sm font-black text-slate-950 transition hover:bg-emerald-200"
+            >
+              Gerenciar Base da IA
+            </Link>
+          </div>
+        </div>
+
         <section className="grid min-h-[calc(100vh-150px)] gap-4 lg:grid-cols-[340px_minmax(0,1fr)_320px]">
           <aside className="flex min-h-[520px] flex-col rounded-lg border border-white/10 bg-[#101821]">
             <div className="border-b border-white/10 p-4">
@@ -410,6 +435,11 @@ export default function AtendeZapIA() {
                           <Sparkles className="h-4 w-4" />
                           Sugestão IA
                         </p>
+                        {suggestedReply.includes("Base de conhecimento usada") ? (
+                          <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-2.5 py-1 text-[11px] font-black text-emerald-100">
+                            Usou Base da IA
+                          </span>
+                        ) : null}
                         <button
                           type="button"
                           onClick={handleUseSuggestedReply}

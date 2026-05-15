@@ -5,6 +5,7 @@ import { useMemo, useSyncExternalStore } from "react";
 import {
   AlertTriangle,
   Bot,
+  BookOpen,
   CheckCircle2,
   CreditCard,
   Database,
@@ -94,6 +95,12 @@ const quickLinks = [
     title: "Automações IA",
     description: "Simular ações inteligentes.",
     icon: Bot
+  },
+  {
+    href: "/base-conhecimento",
+    title: "Base da IA",
+    description: "Conteudos para respostas.",
+    icon: BookOpen
   },
   {
     href: "/assinatura",
