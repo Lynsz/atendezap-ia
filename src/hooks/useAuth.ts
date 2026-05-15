@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { isSupabaseBrowserConfigured, supabase } from "@/lib/supabase/browser";
+import { getSupabasePublicDiagnostic, isSupabaseBrowserConfigured, supabase } from "@/lib/supabase/browser";
 
 type SignUpInput = {
   name: string;
@@ -13,15 +13,20 @@ type SignUpInput = {
 export const SUPABASE_CONNECTION_ERROR =
   "Não foi possível conectar ao Supabase. Confira NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, internet, navegador e se o projeto Supabase está ativo.";
 
+function withDiagnostic(message: string) {
+  const diagnostic = getSupabasePublicDiagnostic();
+  return `${message} hasUrl=${diagnostic.hasUrl}; hasAnonKey=${diagnostic.hasAnonKey}; anonKeyLength=${diagnostic.anonKeyLength}.`;
+}
+
 function getAuthErrorMessage(error: unknown, fallback: string) {
   const message = error instanceof Error ? error.message.toLowerCase() : "";
 
   if (error instanceof TypeError && message.includes("fetch")) {
-    return SUPABASE_CONNECTION_ERROR;
+    return withDiagnostic(SUPABASE_CONNECTION_ERROR);
   }
 
   if (message.includes("failed to fetch") || message.includes("network") || message.includes("fetch failed")) {
-    return SUPABASE_CONNECTION_ERROR;
+    return withDiagnostic(SUPABASE_CONNECTION_ERROR);
   }
 
   return fallback;
@@ -34,11 +39,7 @@ async function assertSupabaseConnection() {
     console.info("[Supabase getSession diagnostic]", {
       ok: !error,
       hasSession: Boolean(data.session),
-      env: {
-        hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
-        hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-        anonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length ?? 0
-      },
+      env: getSupabasePublicDiagnostic(),
       errorMessage: error?.message ?? null
     });
 
@@ -48,11 +49,7 @@ async function assertSupabaseConnection() {
   } catch (error) {
     console.info("[Supabase getSession diagnostic]", {
       ok: false,
-      env: {
-        hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
-        hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-        anonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length ?? 0
-      },
+      env: getSupabasePublicDiagnostic(),
       errorKind: error instanceof TypeError ? "connection" : "env_or_auth",
       errorMessage: error instanceof Error ? error.message : String(error)
     });

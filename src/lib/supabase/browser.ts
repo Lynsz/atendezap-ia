@@ -4,13 +4,17 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 const hasUsableAnonKey = Boolean(supabaseAnonKey && supabaseAnonKey.length >= 40);
 
+export function getSupabasePublicDiagnostic() {
+  return {
+    hasUrl: Boolean(supabaseUrl),
+    url: supabaseUrl ?? "",
+    hasAnonKey: Boolean(supabaseAnonKey),
+    anonKeyLength: supabaseAnonKey?.length ?? 0
+  };
+}
+
 if (typeof window !== "undefined") {
-  console.info("[Supabase diagnostic]", {
-    hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-    anonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length ?? 0
-  });
+  console.info("[Supabase diagnostic]", getSupabasePublicDiagnostic());
 }
 
 if (!supabaseUrl) {
