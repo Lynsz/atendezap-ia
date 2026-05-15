@@ -12,7 +12,7 @@ export default async function GeneratePage({ params }: { params: Promise<{ token
   const supabase = getSupabaseAdmin();
   const { data: order, error } = await supabase
     .from("orders")
-    .select("id, customer_id, access_token_used, customers(name, email)")
+    .select("id, customer_id, access_token_used, purchasers(name, email)")
     .eq("access_token", token)
     .maybeSingle();
 

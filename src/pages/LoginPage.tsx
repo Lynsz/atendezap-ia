@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogIn, MessageCircle } from "lucide-react";
-import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from "@/lib/supabase/browser";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const auth = useAuth();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -22,14 +23,13 @@ export default function LoginPage() {
       return;
     }
 
-    if (!isSupabaseBrowserConfigured()) {
+    if (!auth.isConfigured) {
       setError("Supabase nao configurado. Confira as variaveis de ambiente.");
       return;
     }
 
     setLoading(true);
-    const supabase = getSupabaseBrowserClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    const { error: signInError } = await auth.signIn(email, password);
     setLoading(false);
 
     if (signInError) {

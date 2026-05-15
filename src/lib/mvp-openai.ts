@@ -46,7 +46,7 @@ Regras:
 
 export async function generateWhatsAppResponse(input: GenerateResponseInput) {
   if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OpenAI nao configurada. Defina OPENAI_API_KEY no ambiente do servidor.");
+    return `Ola! Obrigado pelo contato com ${input.businessData.business_name}. ${input.businessData.products_services ? `Trabalhamos com ${input.businessData.products_services}. ` : ""}${input.businessData.opening_hours ? `Nosso horario de atendimento e ${input.businessData.opening_hours}. ` : ""}Para te orientar melhor, pode me confirmar mais detalhes do que voce precisa?`;
   }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

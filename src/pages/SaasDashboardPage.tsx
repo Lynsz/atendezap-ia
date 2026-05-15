@@ -286,6 +286,13 @@ function SaasDashboardContent() {
     setHistory((current) => current.filter((item) => item.id !== itemId));
   }
 
+  async function handleDeleteCustomer(itemId: string) {
+    if (!supabase) return;
+    await supabase.from("customers").delete().eq("id", itemId);
+    setCustomers((current) => current.filter((item) => item.id !== itemId));
+    showFeedback("Cliente excluido.");
+  }
+
   async function handleCreateCustomer(event: FormEvent) {
     event.preventDefault();
     setError("");
@@ -553,6 +560,10 @@ function SaasDashboardContent() {
                     </select>
                     <textarea value={customer.notes || ""} onChange={(event) => updateCustomer(customer, { notes: event.target.value })} className="field-input min-h-20 resize-none py-3" placeholder="Observacoes do atendimento" />
                   </div>
+                  <button type="button" onClick={() => handleDeleteCustomer(customer.id)} className="mt-3 inline-flex items-center gap-2 rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-200">
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Excluir
+                  </button>
                 </article>
               )) : (
                 <p className="rounded-lg border border-white/10 bg-[#101821] p-5 text-sm text-slate-400">Nenhum cliente cadastrado ainda.</p>

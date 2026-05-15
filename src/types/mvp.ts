@@ -7,6 +7,7 @@ export type Profile = {
   name: string | null;
   email: string | null;
   created_at: string;
+  updated_at: string;
 };
 
 export type Business = {
@@ -45,4 +46,22 @@ export type CustomerLead = {
   notes: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type Subscription = {
+  id: string;
+  user_id: string;
+  plan_name: string | null;
+  status: string | null;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Plan = {
+  id: string;
+  name: string;
+  price: number | null;
+  response_limit: number | null;
+  created_at: string;
 };

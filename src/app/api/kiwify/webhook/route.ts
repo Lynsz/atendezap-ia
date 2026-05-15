@@ -42,14 +42,14 @@ async function findOrCreateCustomer({
   const supabase = getSupabaseAdmin();
   const normalizedEmail = email.trim().toLowerCase();
   const { data: existingCustomer } = await supabase
-    .from("customers")
+    .from("purchasers")
     .select("id, email, name")
     .eq("email", normalizedEmail)
     .maybeSingle();
 
   if (existingCustomer) {
     const { data: updatedCustomer, error } = await supabase
-      .from("customers")
+      .from("purchasers")
       .update({
         name: name || existingCustomer.name,
         phone
@@ -66,7 +66,7 @@ async function findOrCreateCustomer({
   }
 
   const { data: customer, error } = await supabase
-    .from("customers")
+    .from("purchasers")
     .insert({
       email: normalizedEmail,
       name,

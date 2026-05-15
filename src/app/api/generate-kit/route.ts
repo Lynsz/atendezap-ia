@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabaseAdmin();
     const { data: order, error: orderError } = await supabase
       .from("orders")
-      .select("id, customer_id, access_token_used, customers(email)")
+      .select("id, customer_id, access_token_used, purchasers(email)")
       .eq("access_token", body.token)
       .maybeSingle();
 
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       throw new AppError("O kit foi criado, mas houve falha ao finalizar o acesso. Fale com o suporte.", 500);
     }
 
-    const customerRelation = order.customers as { email?: string } | { email?: string }[] | null;
+    const customerRelation = order.purchasers as { email?: string } | { email?: string }[] | null;
     const customerEmail = Array.isArray(customerRelation) ? customerRelation[0]?.email : customerRelation?.email;
     if (customerEmail) {
       try {

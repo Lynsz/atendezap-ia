@@ -1,34 +1,95 @@
 # AtendeZap IA
 
-MVP SaaS para pequenos negócios que atendem pelo WhatsApp.
+MVP SaaS para pequenos negocios que atendem pelo WhatsApp Business.
 
-Promessa do MVP: **crie respostas profissionais com IA para atender melhor seus clientes no WhatsApp e vender mais.**
-
-Nesta versão, o AtendeZap IA não conecta automaticamente ao WhatsApp. O usuário cadastra o negócio, cola a pergunta de um cliente, gera uma resposta com IA, copia e envia manualmente pelo WhatsApp.
-
-## Funcionalidades Atuais
-
-- Landing page focada em venda.
-- Cadastro e login com Supabase Auth.
-- Dashboard protegido.
-- Cadastro e edição dos dados do negócio.
-- Gerador de respostas com IA por rota serverless segura.
-- Histórico de respostas salvo no Supabase.
-- Cadastro simples de clientes/leads.
-- Alteração de status e observações de clientes.
-- Biblioteca de scripts prontos para WhatsApp.
-- Página de planos com links configuráveis da Kiwify.
-- Módulos demo/localStorage ainda preservados para exploração futura: automações, WhatsApp demo, Kiwify demo, backend status e base de conhecimento.
+O produto permite criar conta, cadastrar o negocio, gerar respostas com IA para perguntas de clientes, salvar historico no Supabase, organizar clientes/leads e vender planos mensais via checkout Kiwify.
 
 ## Stack
 
 - Next.js com App Router
-- React
-- TypeScript
+- React e TypeScript
 - Tailwind CSS
 - Supabase Auth e Database
-- OpenAI SDK em rota serverless
-- Deploy compatível com Vercel
+- OpenAI SDK em rota serverless segura
+- Resend para emails do fluxo de compra
+- `@react-pdf/renderer` para PDF do kit
+- Vitest
+- Deploy compativel com Vercel
+
+## Supabase
+
+Project URL:
+
+```bash
+https://cnxwomllglzifnewqslu.supabase.co
+```
+
+O schema principal esta em:
+
+```bash
+supabase/schema.sql
+```
+
+Ele cria as tabelas `profiles`, `businesses`, `generated_responses`, `customers`, `subscriptions`, `plans`, alem das tabelas server-side do fluxo Kiwify/kit: `purchasers`, `orders`, `kits`, `support_requests` e `events`.
+
+As tabelas usadas pelo app logado tem RLS ativa por `auth.uid()`. As tabelas do fluxo Kiwify/kit ficam sem acesso para `anon` e `authenticated`, sendo usadas apenas por rotas backend com service role.
+
+## Variaveis De Ambiente
+
+Copie `.env.example` para `.env.local`:
+
+```bash
+VITE_SUPABASE_URL=https://cnxwomllglzifnewqslu.supabase.co
+VITE_SUPABASE_ANON_KEY=
+VITE_KIWI_INITIAL_CHECKOUT_URL=
+VITE_KIWI_PRO_CHECKOUT_URL=
+
+OPENAI_API_KEY=
+
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_MODEL=gpt-4o-mini
+RESEND_API_KEY=
+EMAIL_FROM=
+KIWIFY_WEBHOOK_SECRET=
+SUPPORT_EMAIL=
+```
+
+`VITE_SUPABASE_ANON_KEY` deve ser a anon public key do Supabase, encontrada em Project Settings -> API Keys. Ela pode ser usada no navegador junto com RLS.
+
+`OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` e `KIWIFY_WEBHOOK_SECRET` nunca devem ficar no front-end. A service role nunca deve ser usada no React.
+
+Este projeto usa Next.js, mas as variaveis publicas foram mantidas como `VITE_*` conforme a configuracao atual solicitada. `next.config.mjs` expoe esses aliases para o bundle do navegador.
+
+## Aplicar Schema
+
+1. Abra o Supabase Dashboard do projeto.
+2. Va em SQL Editor.
+3. Cole o conteudo de `supabase/schema.sql`.
+4. Execute o SQL.
+5. Verifique se RLS esta ativa nas tabelas principais.
+
+Se o projeto ja tiver tabelas antigas de teste, revise antes de executar porque `customers` agora e a tabela de leads do usuario logado, e compradores Kiwify ficam em `purchasers`.
+
+## Auth URLs
+
+No Supabase, configure Authentication -> URL Configuration:
+
+Site URL local:
+
+```bash
+http://localhost:5173
+```
+
+Redirect URLs:
+
+```bash
+http://localhost:5173/**
+https://SEU-PROJETO.vercel.app/**
+https://atendezapia.com.br/**
+https://www.atendezapia.com.br/**
+```
+
+Para desenvolvimento Next.js local, o app roda por padrao em `http://localhost:3000`; adicione tambem `http://localhost:3000/**` se usar esse host nos testes.
 
 ## Rodar Localmente
 
@@ -37,132 +98,49 @@ npm install
 npm run dev
 ```
 
-Acesse `http://localhost:3000`.
-
-## Scripts
+Acesse:
 
 ```bash
-npm run dev
+http://localhost:3000
+```
+
+## Build E Qualidade
+
+```bash
 npm run lint
 npm run typecheck
 npm run build
+```
+
+Quando tocar validacao, webhook, prompt, geracao de kit ou logica critica:
+
+```bash
 npm run test
 ```
 
-Antes de finalizar mudanças:
+## Fluxo Conectado
 
-```bash
-npm run lint
-npm run typecheck
-npm run build
-```
+- `/cadastro`: cria usuario no Supabase Auth e profile.
+- `/login`: autentica com Supabase Auth.
+- `/dashboard`: rota protegida.
+- Aba "Meu negocio": salva/edita `businesses`.
+- Aba "Gerar resposta": chama `/api/generate-response`, nunca OpenAI direto do React.
+- Aba "Historico": lista e exclui `generated_responses`.
+- Aba "Clientes": CRUD basico em `customers`.
+- `/precos`: usa `VITE_KIWI_INITIAL_CHECKOUT_URL` e `VITE_KIWI_PRO_CHECKOUT_URL`.
 
-## Variáveis De Ambiente
+## Placeholders
 
-Copie `.env.example` para `.env.local`.
+- Se `OPENAI_API_KEY` nao estiver configurada, `/api/generate-response` salva uma resposta placeholder segura baseada nos dados do negocio.
+- Plano Premium continua como "Em breve".
+- Modulos antigos de demo ainda podem usar `localStorage` para simulacoes, mas o fluxo SaaS principal usa Supabase.
+- WhatsApp conectado, dashboard administrativo complexo e automacoes reais ficam fora do escopo do MVP atual.
 
-Para o app Next.js em produção, configure principalmente:
+## Proximos Passos
 
-```bash
-NEXT_PUBLIC_APP_URL=
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
-NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
-```
-
-Aliases `VITE_*` também foram adicionados ao `.env.example` porque a especificação original citava Vite. Como este repositório usa Next.js, prefira os aliases `NEXT_PUBLIC_*` para variáveis públicas do navegador.
-
-Nunca exponha `OPENAI_API_KEY` no front-end. Ela deve existir apenas no ambiente serverless da Vercel ou no `.env.local` do servidor.
-
-## Configurar Supabase
-
-1. Crie um projeto no Supabase.
-2. Em Authentication, habilite login por e-mail/senha.
-3. Copie a Project URL para `NEXT_PUBLIC_SUPABASE_URL`.
-4. Copie a anon public key para `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-5. Abra o SQL Editor.
-6. Rode o arquivo:
-
-```bash
-supabase/mvp-saas-schema.sql
-```
-
-Esse schema cria:
-
-- `profiles`
-- `businesses`
-- `generated_responses`
-- `customers`
-- `plans`
-- `subscriptions`
-
-As tabelas principais usam Row Level Security para que cada usuário acesse apenas os próprios dados.
-
-## Fluxo Do MVP
-
-1. Usuário cria conta em `/cadastro`.
-2. Usuário entra em `/login`.
-3. Dashboard protegido abre em `/dashboard`.
-4. Usuário cadastra o negócio.
-5. Usuário cola a pergunta do cliente.
-6. `/api/generate-response` chama a OpenAI no servidor.
-7. A resposta é salva em `generated_responses`.
-8. Usuário copia a resposta e envia manualmente no WhatsApp.
-9. Usuário cadastra e acompanha clientes em `customers`.
-
-## Deploy Na Vercel
-
-1. Conecte o repositório à Vercel.
-2. Configure as variáveis de ambiente listadas acima.
-3. Garanta que `OPENAI_API_KEY` fique apenas como server environment variable.
-4. Rode o deploy.
-5. Teste `/cadastro`, `/login`, `/dashboard`, `/precos` e `/scripts`.
-
-## Planos
-
-A página de planos usa:
-
-- `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL`
-- `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL`
-
-Enquanto esses links não forem configurados, os botões podem aparecer indisponíveis.
-
-## Rotas Principais
-
-- `/` landing page
-- `/precos` planos
-- `/cadastro` criar conta
-- `/login` entrar
-- `/dashboard` MVP protegido
-- `/scripts` biblioteca de scripts
-- `/api/generate-response` geração segura com OpenAI
-
-## Segurança
-
-- OpenAI roda apenas no backend.
-- Supabase anon key pode ir ao navegador; service role não deve ir ao navegador.
-- Dados importantes do MVP ficam no Supabase, não no localStorage.
-- RLS isola dados por usuário.
-- A rota de IA exige JWT do usuário autenticado.
-
-## Placeholders E Limitações
-
-- Links Kiwify Inicial/Pro dependem das variáveis de ambiente.
-- O plano Premium está marcado como “em breve”.
-- WhatsApp automático ainda não existe.
-- Não há QR Code de conexão WhatsApp.
-- Não há disparo em massa.
-- Relatórios avançados ficam para etapa futura.
-- Alguns módulos antigos ainda usam localStorage como demonstração, mas o fluxo principal vendável usa Supabase.
-
-## Próximos Passos
-
-- Conectar Kiwify real ao cadastro/assinatura.
-- Criar limites de uso por plano.
-- Melhorar histórico com busca e filtros.
-- Adicionar templates por nicho no Supabase.
-- Implementar webhook de assinatura.
-- Futuramente conectar WhatsApp Cloud API ou provedor aprovado.
+- Aplicar o schema no Supabase real.
+- Configurar Auth URLs no Supabase.
+- Colocar a anon public key no `.env.local`.
+- Configurar `OPENAI_API_KEY` no ambiente serverless.
+- Adicionar limites de uso por plano.
+- Evoluir Kiwify para atualizar assinaturas reais em `subscriptions`.

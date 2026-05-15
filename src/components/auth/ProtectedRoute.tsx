@@ -1,44 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import type { Session } from "@supabase/supabase-js";
-import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from "@/lib/supabase/browser";
+import { useAuth } from "@/hooks/useAuth";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState<Session | null>(null);
+  const { loading, session, isConfigured } = useAuth();
 
   useEffect(() => {
-    if (!isSupabaseBrowserConfigured()) {
-      queueMicrotask(() => {
-        setLoading(false);
-        setSession(null);
-        router.replace("/login");
-      });
-      return;
+    if (!loading && (!isConfigured || !session)) {
+      router.replace("/login");
     }
-
-    const supabase = getSupabaseBrowserClient();
-
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-      if (!data.session) router.replace("/login");
-    });
-
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession);
-      setLoading(false);
-      if (!nextSession) router.replace("/login");
-    });
-
-    return () => subscription.unsubscribe();
-  }, [router]);
+  }, [isConfigured, loading, router, session]);
 
   if (loading || !session) {
     return (

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserPlus, MessageCircle } from "lucide-react";
 import { getSupabaseBrowserClient, isSupabaseBrowserConfigured } from "@/lib/supabase/browser";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
+  const auth = useAuth();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,20 +27,14 @@ export default function SignupPage() {
       return;
     }
 
-    if (!isSupabaseBrowserConfigured()) {
+    if (!auth.isConfigured || !isSupabaseBrowserConfigured()) {
       setError("Supabase nao configurado. Confira as variaveis de ambiente.");
       return;
     }
 
     setLoading(true);
     const supabase = getSupabaseBrowserClient();
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name }
-      }
-    });
+    const { data, error: signUpError } = await auth.signUp({ name, email, password });
 
     if (signUpError) {
       setLoading(false);
