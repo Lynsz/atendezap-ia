@@ -39,10 +39,10 @@ As tabelas usadas pelo app logado tem RLS ativa por `auth.uid()`. As tabelas do 
 Copie `.env.example` para `.env.local`:
 
 ```bash
-VITE_SUPABASE_URL=https://cnxwomllglzifnewqslu.supabase.co
-VITE_SUPABASE_ANON_KEY=
-VITE_KIWI_INITIAL_CHECKOUT_URL=
-VITE_KIWI_PRO_CHECKOUT_URL=
+NEXT_PUBLIC_SUPABASE_URL=https://cnxwomllglzifnewqslu.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
+NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
 
 OPENAI_API_KEY=
 
@@ -54,11 +54,11 @@ KIWIFY_WEBHOOK_SECRET=
 SUPPORT_EMAIL=
 ```
 
-`VITE_SUPABASE_ANON_KEY` deve ser a anon public key do Supabase, encontrada em Project Settings -> API Keys. Ela pode ser usada no navegador junto com RLS.
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` deve ser a anon public key do Supabase, encontrada em Project Settings -> API Keys. Ela pode ser usada no navegador junto com RLS.
 
 `OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` e `KIWIFY_WEBHOOK_SECRET` nunca devem ficar no front-end. A service role nunca deve ser usada no React.
 
-Este projeto usa Next.js, mas as variaveis publicas foram mantidas como `VITE_*` conforme a configuracao atual solicitada. `next.config.mjs` expoe esses aliases para o bundle do navegador.
+Este projeto usa Next.js. Variaveis que precisam chegar ao navegador devem usar o prefixo `NEXT_PUBLIC_`.
 
 ## Aplicar Schema
 
@@ -77,19 +77,19 @@ No Supabase, configure Authentication -> URL Configuration:
 Site URL local:
 
 ```bash
-http://localhost:5173
+http://localhost:3000
 ```
 
 Redirect URLs:
 
 ```bash
-http://localhost:5173/**
+http://localhost:3000/**
 https://SEU-PROJETO.vercel.app/**
 https://atendezapia.com.br/**
 https://www.atendezapia.com.br/**
 ```
 
-Para desenvolvimento Next.js local, o app roda por padrao em `http://localhost:3000`; adicione tambem `http://localhost:3000/**` se usar esse host nos testes.
+Para Vercel e dominio proprio, mantenha tambem as URLs de producao listadas abaixo.
 
 ## Rodar Localmente
 
@@ -127,7 +127,7 @@ npm run test
 - Aba "Gerar resposta": chama `/api/generate-response`, nunca OpenAI direto do React.
 - Aba "Historico": lista e exclui `generated_responses`.
 - Aba "Clientes": CRUD basico em `customers`.
-- `/precos`: usa `VITE_KIWI_INITIAL_CHECKOUT_URL` e `VITE_KIWI_PRO_CHECKOUT_URL`.
+- `/precos`: usa `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL` e `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL`.
 
 ## Placeholders
 

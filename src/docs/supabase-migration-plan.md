@@ -50,8 +50,8 @@ Migrar o AtendeZap IA do armazenamento local em `localStorage` para uma arquitet
 ## Variáveis de ambiente futuras
 
 ```bash
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 Observação: o projeto atual usa Next.js; quando a conexão real for criada, alinhar os nomes com a stack final e evitar expor service role no client.

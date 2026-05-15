@@ -29,11 +29,13 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    const { error: signInError } = await auth.signIn(email, password);
+    const { error: signInError } = await auth.signIn(email, password).catch((authError: unknown) => ({
+      error: authError instanceof Error ? authError : new Error("Nao foi possivel entrar. Confira seus dados.")
+    }));
     setLoading(false);
 
     if (signInError) {
-      setError("Nao foi possivel entrar. Confira seus dados.");
+      setError(signInError.message || "Nao foi possivel entrar. Confira seus dados.");
       return;
     }
 

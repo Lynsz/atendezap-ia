@@ -34,11 +34,14 @@ export default function SignupPage() {
 
     setLoading(true);
     const supabase = getSupabaseBrowserClient();
-    const { data, error: signUpError } = await auth.signUp({ name, email, password });
+    const { data, error: signUpError } = await auth.signUp({ name, email, password }).catch((authError: unknown) => ({
+      data: { user: null, session: null },
+      error: authError instanceof Error ? authError : new Error("Nao foi possivel criar sua conta. Tente outro e-mail.")
+    }));
 
     if (signUpError) {
       setLoading(false);
-      setError("Nao foi possivel criar sua conta. Tente outro e-mail.");
+      setError(signUpError.message || "Nao foi possivel criar sua conta. Tente outro e-mail.");
       return;
     }
 

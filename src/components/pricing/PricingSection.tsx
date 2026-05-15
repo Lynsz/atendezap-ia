@@ -7,7 +7,7 @@ const plans = [
     name: "Plano Inicial",
     price: "R$ 19,90/mês",
     description: "Para começar a responder clientes com IA de forma profissional.",
-    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || process.env.VITE_KIWI_INITIAL_CHECKOUT_URL || "",
+    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || "",
     cta: "Começar no Inicial",
     badge: "Essencial",
     features: ["Gerador de respostas com IA", "Cadastro do negócio", "Scripts prontos", "Histórico básico", "Organização básica de clientes"]
@@ -16,7 +16,7 @@ const plans = [
     name: "Plano Pro",
     price: "R$ 39,90/mês",
     description: "Para negócios que querem mais modelos e organização comercial.",
-    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || process.env.VITE_KIWI_PRO_CHECKOUT_URL || "",
+    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || "",
     cta: "Assinar Pro",
     badge: "Mais vendido",
     recommended: true,
