@@ -7,6 +7,7 @@ import {
   Bot,
   CheckCircle2,
   CreditCard,
+  Database,
   DollarSign,
   LayoutDashboard,
   Lightbulb,
@@ -110,6 +111,12 @@ const quickLinks = [
     title: "Configurações",
     description: "Editar empresa e tom da IA.",
     icon: Settings
+  },
+  {
+    href: "/sistema/backend",
+    title: "Backend",
+    description: "Preparação Supabase.",
+    icon: Database
   }
 ];
 
@@ -408,7 +415,7 @@ function DashboardContent() {
 
         <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-2xl shadow-black/25">
           <h2 className="text-xl font-black text-white">Atalhos rápidos</h2>
-          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-7">
             {quickLinks.map((item) => {
               const Icon = item.icon;
 

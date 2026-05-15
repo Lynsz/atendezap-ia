@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bot, Building2, CreditCard, LayoutDashboard, LogOut, MessageCircle, Plug, Settings, Users } from "lucide-react";
+import { Bot, Building2, CreditCard, Database, LayoutDashboard, LogOut, MessageCircle, Plug, Settings, Users } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UserPlanBadge } from "@/components/auth/UserPlanBadge";
 import { clearSession, getCurrentSession } from "@/utils/authStorage";
@@ -51,6 +51,12 @@ const dashboardLinks = [
     title: "Configurações",
     description: "Atualize empresa, IA, notificações e suporte.",
     icon: Settings
+  },
+  {
+    href: "/sistema/backend",
+    title: "Backend",
+    description: "Status da preparação para Supabase.",
+    icon: Database
   }
 ];
 

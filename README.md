@@ -158,6 +158,14 @@ Se a OpenAI falhar, o token não é marcado como usado e o cliente pode tentar n
 - RLS fica habilitado no Supabase e sem políticas públicas para tabelas sensíveis.
 - Logs em `events` evitam salvar payloads sensíveis completos.
 
+## Arquitetura futura
+
+- O MVP usa localStorage nos módulos de dashboard, atendimento, leads, automações, assinatura, configurações e integrações simuladas.
+- Supabase está planejado como backend persistente para autenticação, banco multi-tenant, assinaturas e auditoria.
+- O webhook da Kiwify está planejado para sincronizar compras, renovações, atrasos e cancelamentos com o backend.
+- A integração real com WhatsApp está prevista para uma etapa posterior, separada do MVP atual.
+- Veja também: [Plano de migração para Supabase](src/docs/supabase-migration-plan.md).
+
 ## Limitações do MVP
 
 - Não há chatbot conectado ao WhatsApp.
