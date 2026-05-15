@@ -44,6 +44,21 @@ Para configurar:
 
 Guia detalhado: `docs/supabase-setup.md`.
 
+### Debug Supabase
+
+Abra `http://localhost:3000/debug/supabase` durante o desenvolvimento.
+
+A pagina mostra:
+
+- se `NEXT_PUBLIC_SUPABASE_URL` foi lida
+- se `NEXT_PUBLIC_SUPABASE_ANON_KEY` existe, sem revelar a chave
+- tamanho da anon key
+- resultado de `supabase.auth.getSession()`
+- select publico em `plans`
+- selects protegidos em `profiles`, `businesses`, `generated_responses`, `customers` e `subscriptions` quando houver usuario logado
+
+Resultados em verde indicam conexao/RLS funcionando. Resultados em amarelo indicam testes pulados por falta de sessao. Resultados em vermelho mostram a mensagem retornada pelo Supabase.
+
 ## Variaveis De Ambiente
 
 Copie `.env.example` para `.env.local`:
@@ -147,7 +162,16 @@ npm run test
 - Aba "Gerar resposta": chama `/api/generate-response`, nunca OpenAI direto do React.
 - Aba "Historico": lista e exclui `generated_responses`.
 - Aba "Clientes": CRUD basico em `customers`.
-- `/precos`: usa `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL` e `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL`.
+- `/precos`: carrega `plans` do Supabase e usa `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL` e `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL` para checkouts.
+
+Para testar cadastro/login:
+
+1. Confirme a anon public key completa em `.env.local`.
+2. Reinicie `npm run dev`.
+3. Abra `/debug/supabase` e confirme `plans select limit 1` em verde.
+4. Crie conta em `/cadastro`.
+5. Entre em `/login`.
+6. Abra `/dashboard` e salve os dados do negocio.
 
 ## Placeholders
 

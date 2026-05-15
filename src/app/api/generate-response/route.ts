@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { generateResponseSchema } from "@/lib/mvp-validators";
-import { generateWhatsAppResponse } from "@/lib/mvp-openai";
+import { generateCustomerResponse } from "@/services/ai";
 
 export async function POST(request: Request) {
   try {
@@ -43,7 +43,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Sessao invalida. Faca login novamente." }, { status: 401 });
     }
 
-    const generatedAnswer = await generateWhatsAppResponse(payload.data);
+    const generatedAnswer = await generateCustomerResponse({
+      customerQuestion: payload.data.customerQuestion,
+      responseType: payload.data.responseType,
+      business: payload.data.businessData
+    });
 
     const { data: saved, error: insertError } = await supabase
       .from("generated_responses")

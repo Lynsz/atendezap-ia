@@ -1,39 +1,106 @@
+import { createClient } from "@supabase/supabase-js";
 import { CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/badge";
 import { cn } from "@/lib/utils";
 
-const plans = [
+type PricingPlan = {
+  name: string;
+  price: string;
+  description: string;
+  checkoutUrl: string;
+  cta: string;
+  badge: string;
+  recommended?: boolean;
+  features: string[];
+};
+
+type PlanRow = {
+  name: string;
+  price: number | string | null;
+  response_limit: number | null;
+};
+
+const fallbackPlans: PricingPlan[] = [
   {
     name: "Plano Inicial",
-    price: "R$ 19,90/mês",
-    description: "Para começar a responder clientes com IA de forma profissional.",
+    price: "R$ 19,90/mes",
+    description: "Para comecar a responder clientes com IA de forma profissional.",
     checkoutUrl: process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || "",
-    cta: "Começar no Inicial",
+    cta: "Comecar no Inicial",
     badge: "Essencial",
-    features: ["Gerador de respostas com IA", "Cadastro do negócio", "Scripts prontos", "Histórico básico", "Organização básica de clientes"]
+    features: ["Gerador de respostas com IA", "Cadastro do negocio", "Scripts prontos", "Historico basico", "Organizacao basica de clientes"]
   },
   {
     name: "Plano Pro",
-    price: "R$ 39,90/mês",
-    description: "Para negócios que querem mais modelos e organização comercial.",
+    price: "R$ 39,90/mes",
+    description: "Para negocios que querem mais modelos e organizacao comercial.",
     checkoutUrl: process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || "",
     cta: "Assinar Pro",
     badge: "Mais vendido",
     recommended: true,
-    features: ["Tudo do Inicial", "Mais respostas por mês", "Mais modelos de mensagem", "Funil de atendimento", "Personalização por nicho"]
+    features: ["Tudo do Inicial", "Mais respostas por mes", "Mais modelos de mensagem", "Funil de atendimento", "Personalizacao por nicho"]
   },
   {
     name: "Plano Premium",
-    price: "Em breve",
-    description: "Para a próxima fase com WhatsApp conectado e relatórios.",
+    price: "R$ 69,90/mes",
+    description: "Para a proxima fase com WhatsApp conectado e relatorios.",
     checkoutUrl: "",
     cta: "Em breve",
     badge: "Futuro",
-    features: ["WhatsApp conectado", "Atendimento automático", "Relatórios", "IA treinada com dados do negócio"]
+    features: ["WhatsApp conectado", "Atendimento automatico", "Relatorios", "IA treinada com dados do negocio"]
   }
 ];
 
-export function PricingSection() {
+function formatPrice(value: number | string | null) {
+  const numeric = typeof value === "string" ? Number(value) : value;
+  if (typeof numeric !== "number" || Number.isNaN(numeric)) return "Em breve";
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(numeric) + "/mes";
+}
+
+async function loadPlans(): Promise<PricingPlan[]> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+  if (!url || !anonKey) return fallbackPlans;
+
+  const supabase = createClient(url, anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false
+    }
+  });
+
+  const { data, error } = await supabase.from("plans").select("name,price,response_limit").order("price", { ascending: true });
+  if (error || !data?.length) return fallbackPlans;
+
+  return (data as PlanRow[]).map((plan) => {
+    const fallback = fallbackPlans.find((item) => item.name.toLowerCase().includes(plan.name.toLowerCase())) || fallbackPlans[0];
+    const isInitial = plan.name.toLowerCase() === "inicial";
+    const isPro = plan.name.toLowerCase() === "pro";
+    const checkoutUrl = isInitial
+      ? process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || ""
+      : isPro
+        ? process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || ""
+        : "";
+
+    return {
+      ...fallback,
+      name: `Plano ${plan.name}`,
+      price: formatPrice(plan.price),
+      checkoutUrl,
+      cta: checkoutUrl ? fallback.cta : "Checkout em configuracao",
+      features: [
+        ...fallback.features.slice(0, 2),
+        `Limite de ${plan.response_limit ?? "uso"} respostas por mes`,
+        ...fallback.features.slice(3)
+      ]
+    };
+  });
+}
+
+export async function PricingSection() {
+  const plans = await loadPlans();
+
   return (
     <section className="bg-[#090d12] py-16 text-white">
       <div className="mx-auto max-w-6xl px-4">

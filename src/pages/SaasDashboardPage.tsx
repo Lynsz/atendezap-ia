@@ -167,11 +167,15 @@ function SaasDashboardContent() {
       email: user.email
     });
 
-    const [{ data: businessData }, { data: responseData }, { data: customerData }] = await Promise.all([
+    const [{ data: businessData, error: businessError }, { data: responseData, error: responseError }, { data: customerData, error: customerError }] = await Promise.all([
       supabase.from("businesses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("generated_responses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
       supabase.from("customers").select("*").eq("user_id", user.id).order("updated_at", { ascending: false })
     ]);
+
+    if (businessError || responseError || customerError) {
+      setError("Nao conseguimos carregar todos os dados do Supabase. Confira sua sessao e as policies.");
+    }
 
     setBusiness((businessData as Business | null) || null);
     setBusinessDraft(toBusinessDraft((businessData as Business | null) || null));
@@ -209,9 +213,12 @@ function SaasDashboardContent() {
     if (!user) return;
 
     setSavingBusiness(true);
-    const payload = { ...parsed.data, user_id: user.id, updated_at: new Date().toISOString() };
-    const request = business
-      ? supabase.from("businesses").update(payload).eq("id", business.id).eq("user_id", user.id).select("*").single()
+    const payload = { ...parsed.data, user_id: user.id };
+    const existingBusiness = business
+      ? business
+      : (await supabase.from("businesses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle()).data as Business | null;
+    const request = existingBusiness
+      ? supabase.from("businesses").update(payload).eq("id", existingBusiness.id).eq("user_id", user.id).select("*").single()
       : supabase.from("businesses").insert(payload).select("*").single();
     const { data, error: saveError } = await request;
     setSavingBusiness(false);
@@ -282,13 +289,21 @@ function SaasDashboardContent() {
 
   async function handleDeleteHistory(itemId: string) {
     if (!supabase) return;
-    await supabase.from("generated_responses").delete().eq("id", itemId);
+    const { error: deleteError } = await supabase.from("generated_responses").delete().eq("id", itemId);
+    if (deleteError) {
+      setError("Nao conseguimos excluir a resposta.");
+      return;
+    }
     setHistory((current) => current.filter((item) => item.id !== itemId));
   }
 
   async function handleDeleteCustomer(itemId: string) {
     if (!supabase) return;
-    await supabase.from("customers").delete().eq("id", itemId);
+    const { error: deleteError } = await supabase.from("customers").delete().eq("id", itemId);
+    if (deleteError) {
+      setError("Nao conseguimos excluir o cliente.");
+      return;
+    }
     setCustomers((current) => current.filter((item) => item.id !== itemId));
     showFeedback("Cliente excluido.");
   }
@@ -329,7 +344,8 @@ function SaasDashboardContent() {
     if (!supabase) return;
     const next = { ...item, ...updates, updated_at: new Date().toISOString() };
     setCustomers((current) => current.map((customer) => (customer.id === item.id ? next : customer)));
-    await supabase.from("customers").update(updates).eq("id", item.id);
+    const { error: updateError } = await supabase.from("customers").update(updates).eq("id", item.id);
+    if (updateError) setError("Nao conseguimos atualizar o cliente.");
   }
 
   function copyText(value: string) {
