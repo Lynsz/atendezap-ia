@@ -3,13 +3,14 @@
 import { CheckCircle2, Home, LogIn, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createDemoAccess } from "@/utils/authStorage";
+import { hasCompletedOnboarding } from "@/utils/onboardingStorage";
 
 export default function ThankYouPage() {
   const router = useRouter();
 
   function handleDemoAccess() {
     createDemoAccess("starter");
-    router.push("/app");
+    router.push(hasCompletedOnboarding() ? "/app" : "/onboarding");
   }
 
   return (

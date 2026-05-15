@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bot, LayoutDashboard, LogOut, MessageCircle, Users } from "lucide-react";
+import { Bot, Building2, LayoutDashboard, LogOut, MessageCircle, Settings, Users } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UserPlanBadge } from "@/components/auth/UserPlanBadge";
 import { clearSession, getCurrentSession } from "@/utils/authStorage";
+import { getBusinessProfile } from "@/utils/onboardingStorage";
 
 const dashboardLinks = [
   {
@@ -25,12 +26,19 @@ const dashboardLinks = [
     title: "Automações IA",
     description: "Simule follow-ups, respostas e ações inteligentes.",
     icon: Bot
+  },
+  {
+    href: "/onboarding",
+    title: "Empresa",
+    description: "Atualize dados da empresa, tom da IA e mensagem inicial.",
+    icon: Settings
   }
 ];
 
 function DashboardContent() {
   const router = useRouter();
   const session = getCurrentSession();
+  const businessProfile = getBusinessProfile();
 
   function handleLogout() {
     clearSession();
@@ -51,6 +59,17 @@ function DashboardContent() {
               <p className="mt-2 text-sm text-slate-400">
                 Olá, {session?.user.name || "cliente"}. Escolha um módulo para continuar.
               </p>
+              {businessProfile ? (
+                <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-slate-200">
+                    <Building2 className="h-3.5 w-3.5 text-emerald-300" />
+                    {businessProfile.businessName}
+                  </span>
+                  <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-emerald-200">
+                    Tom IA: {businessProfile.aiTone}
+                  </span>
+                </div>
+              ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-3">
               {session ? <UserPlanBadge plan={session.user.plan} /> : null}
@@ -66,7 +85,7 @@ function DashboardContent() {
           </div>
         </header>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {dashboardLinks.map((item) => {
             const Icon = item.icon;
 

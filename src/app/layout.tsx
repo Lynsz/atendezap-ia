@@ -23,6 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/app" className="hover:text-brand-700">
                 Painel
               </Link>
+              <Link href="/onboarding" className="hover:text-brand-700">
+                Empresa
+              </Link>
               <Link href="/precos" className="hover:text-brand-700">
                 Planos
               </Link>

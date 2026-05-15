@@ -16,6 +16,7 @@ import {
 import { atendezapMockConversations } from "@/data/atendezapMock";
 import type { Conversation, ConversationStatus, Message, Priority } from "@/types/atendezap";
 import { calculateConversationUrgency, createAgentMessage, generateConversationSummary, generateSuggestedReply } from "@/utils/atendezapAI";
+import { getBusinessProfile } from "@/utils/onboardingStorage";
 
 const STORAGE_KEY = "atendezap_ia_conversations_v1";
 
@@ -86,6 +87,7 @@ function loadStoredConversations() {
 export default function AtendeZapIA() {
   const [conversations, setConversations] = useState<Conversation[]>(() => loadStoredConversations());
   const [selectedId, setSelectedId] = useState(() => loadStoredConversations()[0]?.id || "");
+  const [businessProfile] = useState(() => getBusinessProfile());
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | ConversationStatus>("all");
   const [draft, setDraft] = useState("");
@@ -130,7 +132,14 @@ export default function AtendeZapIA() {
 
   function handleGenerateReply() {
     if (!selectedConversation) return;
-    setSuggestedReply(generateSuggestedReply(selectedConversation));
+    const baseReply = generateSuggestedReply(selectedConversation);
+
+    if (businessProfile?.welcomeMessage) {
+      setSuggestedReply(`${businessProfile.welcomeMessage}\n\n${baseReply}\n\nTom sugerido: ${businessProfile.aiTone}.`);
+      return;
+    }
+
+    setSuggestedReply(baseReply);
   }
 
   function handleUseSuggestedReply() {
@@ -187,6 +196,11 @@ export default function AtendeZapIA() {
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
               Módulo local para organizar conversas, acompanhar status e simular sugestões de resposta por IA sem backend.
             </p>
+            {businessProfile ? (
+              <p className="mt-2 text-xs font-bold text-emerald-200">
+                Empresa: {businessProfile.businessName} • Tom da IA: {businessProfile.aiTone}
+              </p>
+            ) : null}
           </div>
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="rounded-md border border-white/10 bg-white/5 px-4 py-3">

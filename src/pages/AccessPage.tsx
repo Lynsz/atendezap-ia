@@ -5,6 +5,7 @@ import { LogIn, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { UserPlan } from "@/types/auth";
 import { saveSession } from "@/utils/authStorage";
+import { hasCompletedOnboarding } from "@/utils/onboardingStorage";
 
 const planOptions: Array<{ value: UserPlan; label: string }> = [
   { value: "basic", label: "Plano Básico" },
@@ -51,7 +52,7 @@ export default function AccessPage() {
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString()
     });
 
-    router.push("/app");
+    router.push(hasCompletedOnboarding() ? "/app" : "/onboarding");
   }
 
   return (
