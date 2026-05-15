@@ -1,9 +1,9 @@
-import DashboardPage from "@/pages/DashboardPage";
+import SaasDashboardPage from "@/pages/SaasDashboardPage";
 
 export const metadata = {
   title: "AtendeZap IA - Dashboard"
 };
 
 export default function DashboardRoutePage() {
-  return <DashboardPage />;
+  return <SaasDashboardPage />;
 }

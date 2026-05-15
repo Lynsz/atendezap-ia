@@ -1,58 +1,35 @@
 import { CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/badge";
-import { KiwifyCheckoutButton } from "@/components/checkout/KiwifyCheckoutButton";
-import { getCheckoutPlan } from "@/config/checkout";
-import type { CheckoutPlanId } from "@/config/checkout";
 import { cn } from "@/lib/utils";
 
-const plans: Array<{
-  id: CheckoutPlanId;
-  description: string;
-  features: string[];
-  badge: string;
-  recommended?: boolean;
-  cta: string;
-}> = [
+const plans = [
   {
-    id: "basic",
-    badge: "Mais acessível",
-    cta: "Começar por R$29/mês",
-    description: "Para começar com o essencial do AtendeZap IA.",
-    features: [
-      "Painel de atendimento",
-      "Clientes e leads",
-      "Histórico local no navegador",
-      "Organização básica dos atendimentos",
-      "Interface moderna estilo SaaS"
-    ]
+    name: "Plano Inicial",
+    price: "R$ 19,90/mês",
+    description: "Para começar a responder clientes com IA de forma profissional.",
+    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || process.env.VITE_KIWI_INITIAL_CHECKOUT_URL || "",
+    cta: "Começar no Inicial",
+    badge: "Essencial",
+    features: ["Gerador de respostas com IA", "Cadastro do negócio", "Scripts prontos", "Histórico básico", "Organização básica de clientes"]
   },
   {
-    id: "starter",
-    badge: "Mais indicado",
-    cta: "Começar por R$49/mês",
+    name: "Plano Pro",
+    price: "R$ 39,90/mês",
+    description: "Para negócios que querem mais modelos e organização comercial.",
+    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || process.env.VITE_KIWI_PRO_CHECKOUT_URL || "",
+    cta: "Assinar Pro",
+    badge: "Mais vendido",
     recommended: true,
-    description: "Para quem quer organizar atendimentos, leads e automações com IA.",
-    features: [
-      "Tudo do Plano Básico",
-      "Automações básicas com IA",
-      "Sugestões de resposta",
-      "Funil simples de vendas",
-      "Melhor organização dos leads"
-    ]
+    features: ["Tudo do Inicial", "Mais respostas por mês", "Mais modelos de mensagem", "Funil de atendimento", "Personalização por nicho"]
   },
   {
-    id: "premium",
-    badge: "Mais completo",
-    cta: "Assinar Premium",
-    description: "Para quem quer uma experiência mais completa de atendimento, vendas e automações.",
-    features: [
-      "Tudo do Plano Starter",
-      "Automações IA avançadas",
-      "Dashboard comercial",
-      "Funil de vendas completo",
-      "Sugestões inteligentes de resposta",
-      "Organização avançada de leads"
-    ]
+    name: "Plano Premium",
+    price: "Em breve",
+    description: "Para a próxima fase com WhatsApp conectado e relatórios.",
+    checkoutUrl: "",
+    cta: "Em breve",
+    badge: "Futuro",
+    features: ["WhatsApp conectado", "Atendimento automático", "Relatórios", "IA treinada com dados do negócio"]
   }
 ];
 
@@ -62,59 +39,55 @@ export function PricingSection() {
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
           <p className="mb-2 text-sm font-bold uppercase tracking-wide text-emerald-300">Planos mensais</p>
-          <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">Escolha como começar</h2>
+          <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">Escolha seu plano</h2>
           <p className="mt-4 text-base leading-7 text-slate-300">
-            Três opções recorrentes para organizar atendimento, leads e automações com IA.
+            Comece com um assistente de respostas para WhatsApp e evolua conforme seu atendimento crescer.
           </p>
         </div>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {plans.map((planConfig) => {
-            const plan = getCheckoutPlan(planConfig.id);
+          {plans.map((plan) => (
+            <article
+              className={cn(
+                "relative flex h-full flex-col rounded-lg border bg-[#101821] p-6 shadow-2xl shadow-black/25",
+                plan.recommended ? "border-emerald-300 shadow-emerald-950/30" : "border-white/10"
+              )}
+              key={plan.name}
+            >
+              <div className="mb-5">
+                <Badge className={plan.recommended ? "bg-emerald-300 text-slate-950" : "bg-white text-slate-950"}>{plan.badge}</Badge>
+                <h3 className="mt-4 text-2xl font-black text-white">{plan.name}</h3>
+                <p className="mt-3 text-4xl font-black tracking-tight">{plan.price}</p>
+                <p className="mt-3 text-sm leading-6 text-slate-300">{plan.description}</p>
+              </div>
 
-            return (
-              <article
-                className={cn(
-                  "relative flex h-full flex-col rounded-lg border bg-[#101821] p-6 shadow-2xl shadow-black/25",
-                  planConfig.recommended ? "border-emerald-300 shadow-emerald-950/30" : "border-white/10"
-                )}
-                key={plan.id}
-              >
-                <div className="mb-5 flex items-start justify-between gap-4">
-                  <div>
-                    <Badge className={planConfig.recommended ? "bg-emerald-300 text-slate-950" : "bg-white text-slate-950"}>
-                      {planConfig.badge}
-                    </Badge>
-                    <h3 className="mt-4 text-2xl font-black text-white">{plan.name}</h3>
-                    <p className="mt-3 text-4xl font-black tracking-tight">{plan.price}</p>
-                  </div>
-                  {planConfig.recommended ? (
-                    <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-black text-emerald-200">
-                      Recomendado
-                    </span>
-                  ) : null}
-                </div>
+              <ul className="flex flex-1 flex-col gap-3 text-sm text-slate-200">
+                {plan.features.map((feature) => (
+                  <li className="flex gap-2" key={feature}>
+                    <CheckCircle2 className={cn("mt-0.5 h-4 w-4 shrink-0", plan.recommended ? "text-emerald-300" : "text-slate-300")} />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
 
-                <p className="text-sm leading-6 text-slate-300">{planConfig.description}</p>
-
-                <ul className="mt-6 flex flex-1 flex-col gap-3 text-sm text-slate-200">
-                  {planConfig.features.map((feature) => (
-                    <li className="flex gap-2" key={feature}>
-                      <CheckCircle2
-                        className={cn(
-                          "mt-0.5 h-4 w-4 shrink-0",
-                          planConfig.recommended ? "text-emerald-300" : "text-slate-300"
-                        )}
-                      />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <KiwifyCheckoutButton className="mt-7" fullWidth planId={plan.id} label={planConfig.cta} />
-              </article>
-            );
-          })}
+              {plan.checkoutUrl ? (
+                <a
+                  href={plan.checkoutUrl}
+                  className="mt-7 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300"
+                >
+                  {plan.cta}
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="mt-7 inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-white/5 px-5 text-sm font-black text-slate-500"
+                >
+                  {plan.cta}
+                </button>
+              )}
+            </article>
+          ))}
         </div>
       </div>
     </section>

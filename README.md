@@ -1,57 +1,39 @@
 # AtendeZap IA
 
-Micro-SaaS para gerar kits de atendimento para WhatsApp Business com IA.
+MVP SaaS para pequenos negócios que atendem pelo WhatsApp.
 
-O cliente assina pela Kiwify, recebe um link mágico por e-mail, preenche um formulário sobre o negócio e baixa um PDF com mensagens prontas, respostas rápidas, follow-ups, etiquetas e fluxo de atendimento.
+Promessa do MVP: **crie respostas profissionais com IA para atender melhor seus clientes no WhatsApp e vender mais.**
+
+Nesta versão, o AtendeZap IA não conecta automaticamente ao WhatsApp. O usuário cadastra o negócio, cola a pergunta de um cliente, gera uma resposta com IA, copia e envia manualmente pelo WhatsApp.
+
+## Funcionalidades Atuais
+
+- Landing page focada em venda.
+- Cadastro e login com Supabase Auth.
+- Dashboard protegido.
+- Cadastro e edição dos dados do negócio.
+- Gerador de respostas com IA por rota serverless segura.
+- Histórico de respostas salvo no Supabase.
+- Cadastro simples de clientes/leads.
+- Alteração de status e observações de clientes.
+- Biblioteca de scripts prontos para WhatsApp.
+- Página de planos com links configuráveis da Kiwify.
+- Módulos demo/localStorage ainda preservados para exploração futura: automações, WhatsApp demo, Kiwify demo, backend status e base de conhecimento.
 
 ## Stack
 
 - Next.js com App Router
+- React
 - TypeScript
 - Tailwind CSS
-- Supabase
-- OpenAI SDK
-- Resend
-- PDF com `@react-pdf/renderer`
-- Zod
-- Vitest
+- Supabase Auth e Database
+- OpenAI SDK em rota serverless
 - Deploy compatível com Vercel
 
-## Instalação
+## Rodar Localmente
 
 ```bash
 npm install
-```
-
-## Variáveis de ambiente
-
-Copie `.env.example` para `.env.local` e preencha:
-
-```bash
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
-RESEND_API_KEY=
-EMAIL_FROM="AtendeZap IA <noreply@seudominio.com>"
-KIWIFY_WEBHOOK_SECRET=
-SUPPORT_EMAIL=suporte@seudominio.com
-```
-
-Observações:
-
-- `NEXT_PUBLIC_APP_URL`: URL pública do app. Usada para gerar links absolutos em e-mails.
-- Checkout Kiwify: os links oficiais dos planos mensais Básico (`R$29,00/mês`), Starter (`R$49,00/mês`) e Premium (`R$79,00/mês`) ficam centralizados em `src/config/checkout.ts`.
-- `SUPABASE_SERVICE_ROLE_KEY`: segredo de backend. Nunca usar no client.
-- `OPENAI_API_KEY`: segredo de backend. Toda geração de IA fica nas APIs.
-- `RESEND_API_KEY`: se não estiver configurada, o fluxo não quebra, mas o e-mail não é enviado.
-- `KIWIFY_WEBHOOK_SECRET`: opcional, mas recomendado em produção.
-
-## Rodar localmente
-
-```bash
 npm run dev
 ```
 
@@ -67,7 +49,7 @@ npm run build
 npm run test
 ```
 
-Antes de finalizar qualquer mudança, rode:
+Antes de finalizar mudanças:
 
 ```bash
 npm run lint
@@ -75,112 +57,112 @@ npm run typecheck
 npm run build
 ```
 
-## Setup de produção
+## Variáveis De Ambiente
 
-Leia os guias operacionais:
+Copie `.env.example` para `.env.local`.
 
-- [Configuração do Supabase](docs/supabase-setup.md)
-- [Integração Kiwify](docs/kiwify-setup.md)
-- [Deploy na Vercel](docs/deploy-vercel.md)
-- [Checklist de teste manual](docs/manual-test-checklist.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Release notes do MVP](docs/release-notes-mvp.md)
-
-Configure a URL de obrigado na Kiwify como `/obrigado` quando publicar o projeto.
-
-## Testar webhook localmente
-
-Com o servidor rodando:
+Para o app Next.js em produção, configure principalmente:
 
 ```bash
-curl -X POST http://localhost:3000/api/kiwify/webhook \
-  -H "Content-Type: application/json" \
-  -d @docs/mock-kiwify-webhook.json
+NEXT_PUBLIC_APP_URL=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
+NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
 ```
 
-Com segredo:
+Aliases `VITE_*` também foram adicionados ao `.env.example` porque a especificação original citava Vite. Como este repositório usa Next.js, prefira os aliases `NEXT_PUBLIC_*` para variáveis públicas do navegador.
+
+Nunca exponha `OPENAI_API_KEY` no front-end. Ela deve existir apenas no ambiente serverless da Vercel ou no `.env.local` do servidor.
+
+## Configurar Supabase
+
+1. Crie um projeto no Supabase.
+2. Em Authentication, habilite login por e-mail/senha.
+3. Copie a Project URL para `NEXT_PUBLIC_SUPABASE_URL`.
+4. Copie a anon public key para `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+5. Abra o SQL Editor.
+6. Rode o arquivo:
 
 ```bash
-curl -X POST http://localhost:3000/api/kiwify/webhook \
-  -H "Content-Type: application/json" \
-  -H "x-kiwify-webhook-secret: seu-segredo" \
-  -d @docs/mock-kiwify-webhook.json
+supabase/mvp-saas-schema.sql
 ```
 
-Depois confira `customers`, `orders` e `events` no Supabase.
+Esse schema cria:
 
-## Testar geração de kit
+- `profiles`
+- `businesses`
+- `generated_responses`
+- `customers`
+- `plans`
+- `subscriptions`
 
-1. Crie um pedido via webhook.
-2. Copie `orders.access_token`.
-3. Abra `http://localhost:3000/gerar/SEU_ACCESS_TOKEN`.
-4. Preencha o formulário.
-5. O backend chama a OpenAI, salva em `kits`, marca `access_token_used = true` e redireciona para `/kit/[kitId]`.
-6. Clique em "Baixar PDF".
+As tabelas principais usam Row Level Security para que cada usuário acesse apenas os próprios dados.
 
-Se a OpenAI falhar, o token não é marcado como usado e o cliente pode tentar novamente.
+## Fluxo Do MVP
 
-## Rotas
+1. Usuário cria conta em `/cadastro`.
+2. Usuário entra em `/login`.
+3. Dashboard protegido abre em `/dashboard`.
+4. Usuário cadastra o negócio.
+5. Usuário cola a pergunta do cliente.
+6. `/api/generate-response` chama a OpenAI no servidor.
+7. A resposta é salva em `generated_responses`.
+8. Usuário copia a resposta e envia manualmente no WhatsApp.
+9. Usuário cadastra e acompanha clientes em `customers`.
+
+## Deploy Na Vercel
+
+1. Conecte o repositório à Vercel.
+2. Configure as variáveis de ambiente listadas acima.
+3. Garanta que `OPENAI_API_KEY` fique apenas como server environment variable.
+4. Rode o deploy.
+5. Teste `/cadastro`, `/login`, `/dashboard`, `/precos` e `/scripts`.
+
+## Planos
+
+A página de planos usa:
+
+- `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL`
+- `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL`
+
+Enquanto esses links não forem configurados, os botões podem aparecer indisponíveis.
+
+## Rotas Principais
 
 - `/` landing page
 - `/precos` planos
-- `/obrigado` pós-compra
-- `/gerar/[token]` formulário protegido por token mágico
-- `/kit/[kitId]` preview e download do kit
-- `/suporte` suporte simples
-- `/termos` termos de uso
-- `/privacidade` política de privacidade
-- `/api/kiwify/webhook` webhook de compra aprovada
-- `/api/generate-kit` geração do kit
-- `/api/download/[kitId]` PDF sob demanda
-- `/api/support` suporte
+- `/cadastro` criar conta
+- `/login` entrar
+- `/dashboard` MVP protegido
+- `/scripts` biblioteca de scripts
+- `/api/generate-response` geração segura com OpenAI
 
-## Eventos registrados
-
-- `webhook_received`
-- `order_approved`
-- `access_email_sent`
-- `access_email_failed`
-- `kit_generation_started`
-- `kit_generation_succeeded`
-- `kit_generation_failed`
-- `pdf_downloaded`
-- `support_request_created`
-
-## Segurança do MVP
+## Segurança
 
 - OpenAI roda apenas no backend.
-- Service role do Supabase roda apenas no backend.
-- Token mágico é imprevisível e único.
-- Cada token gera apenas um kit.
-- Webhook valida segredo quando configurado.
-- Entradas são validadas com Zod.
-- RLS fica habilitado no Supabase e sem políticas públicas para tabelas sensíveis.
-- Logs em `events` evitam salvar payloads sensíveis completos.
+- Supabase anon key pode ir ao navegador; service role não deve ir ao navegador.
+- Dados importantes do MVP ficam no Supabase, não no localStorage.
+- RLS isola dados por usuário.
+- A rota de IA exige JWT do usuário autenticado.
 
-## Arquitetura futura
+## Placeholders E Limitações
 
-- O MVP usa localStorage nos módulos de dashboard, atendimento, leads, automações, assinatura, configurações e integrações simuladas.
-- Supabase está planejado como backend persistente para autenticação, banco multi-tenant, assinaturas e auditoria.
-- O webhook da Kiwify está planejado para sincronizar compras, renovações, atrasos e cancelamentos com o backend.
-- A integração real com WhatsApp está prevista para uma etapa posterior, separada do MVP atual.
-- Veja também: [Plano de migração para Supabase](src/docs/supabase-migration-plan.md).
+- Links Kiwify Inicial/Pro dependem das variáveis de ambiente.
+- O plano Premium está marcado como “em breve”.
+- WhatsApp automático ainda não existe.
+- Não há QR Code de conexão WhatsApp.
+- Não há disparo em massa.
+- Relatórios avançados ficam para etapa futura.
+- Alguns módulos antigos ainda usam localStorage como demonstração, mas o fluxo principal vendável usa Supabase.
 
-## Limitações do MVP
+## Próximos Passos
 
-- Não há chatbot conectado ao WhatsApp.
-- Não há integração com WhatsApp API.
-- Os planos atuais são mensais e processados pela Kiwify.
-- Não há dashboard administrativo.
-- Não há área de membros avançada.
-- O PDF é gerado sob demanda, sem Supabase Storage.
-- O rate limit em memória não é compartilhado entre instâncias serverless.
-- O conteúdo gerado por IA deve ser revisado pelo usuário.
-
-## Próximos passos
-
-- Validar os checkouts mensais reais na Kiwify.
-- Adicionar assinatura HMAC do webhook se disponível.
-- Salvar PDFs em Supabase Storage se necessário.
-- Criar painel mínimo de pedidos e kits.
-- Melhorar monitoramento e alertas.
+- Conectar Kiwify real ao cadastro/assinatura.
+- Criar limites de uso por plano.
+- Melhorar histórico com busca e filtros.
+- Adicionar templates por nicho no Supabase.
+- Implementar webhook de assinatura.
+- Futuramente conectar WhatsApp Cloud API ou provedor aprovado.

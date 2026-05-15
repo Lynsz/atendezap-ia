@@ -1,25 +1,27 @@
-import { CheckCircle2, FileText, MailCheck, MessageCircle, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clipboard, MessageCircle, Sparkles, Users } from "lucide-react";
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { KiwifyCheckoutButton } from "@/components/checkout/KiwifyCheckoutButton";
 import { PricingSection } from "@/components/pricing/PricingSection";
 import { SectionTitle } from "@/components/section-title";
 
-const kitItems = [
-  "Painel de atendimento",
-  "Clientes e leads",
-  "Automações IA",
-  "Dashboard comercial",
-  "Histórico local no navegador",
-  "Interface moderna estilo SaaS",
-  "Mensagem de boas-vindas",
-  "Respostas rápidas",
-  "Follow-ups",
-  "PDF pronto para copiar e usar"
+const benefits = [
+  "Responda clientes mais rápido",
+  "Pareça mais profissional",
+  "Organize atendimentos",
+  "Recupere clientes indecisos",
+  "Crie mensagens de venda em segundos",
+  "Funciona para vários tipos de negócio"
 ];
 
-const audiences = ["salões", "manicures", "barbearias", "marmitarias", "estética", "lojas", "pet shops", "assistência técnica"];
+const audiences = ["salão de beleza", "manicure", "loja de roupa", "marmitaria", "delivery", "estética", "mecânica", "infoprodutor", "pequenos comércios"];
+
+const faqs = [
+  ["O AtendeZap IA conecta no WhatsApp?", "Nesta primeira versão, não. Você gera a resposta com IA, copia e envia manualmente pelo WhatsApp."],
+  ["Preciso cadastrar meu negócio?", "Sim. A IA usa os dados do negócio para adaptar tom, horários, preços, serviços e formas de pagamento."],
+  ["A IA promete vender mais?", "Não prometemos resultado financeiro. O objetivo é ajudar você a responder melhor e com mais agilidade."],
+  ["Funciona para qual nicho?", "Funciona para pequenos negócios que atendem clientes pelo WhatsApp, como beleza, delivery, lojas e serviços."]
+];
 
 export default function Home() {
   return (
@@ -27,25 +29,27 @@ export default function Home() {
       <section className="bg-white">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-20">
           <div>
-            <Badge>Produto digital mensal para WhatsApp Business</Badge>
+            <Badge>Assistente IA para WhatsApp</Badge>
             <h1 className="mt-5 max-w-3xl text-4xl font-black tracking-tight text-ink md:text-6xl">
-              Crie um atendimento profissional para WhatsApp Business em minutos
+              Atenda melhor no WhatsApp com respostas criadas por IA.
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              Use o AtendeZap IA para centralizar conversas, acompanhar leads, simular automações e gerar kits de
-              atendimento com IA em um painel simples e profissional.
+              Cadastre seu negócio, cole a pergunta do cliente e receba uma resposta profissional pronta para copiar e enviar.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <KiwifyCheckoutButton planId="starter" />
-              <Button href="/suporte" variant="ghost">
-                Falar com suporte
+              <Button href="/cadastro">
+                Começar agora
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button href="/login" variant="ghost">
+                Entrar
               </Button>
             </div>
             <p className="mt-5 text-sm text-slate-500">
-              Planos a partir de R$29,00/mês. O AtendeZap IA não promete aumento de vendas ou resultado financeiro. O
-              objetivo é ajudar a organizar e padronizar o atendimento.
+              MVP sem conexão automática ao WhatsApp. Você mantém o controle: gera, revisa, copia e envia.
             </p>
           </div>
+
           <div className="rounded-lg border border-slate-200 bg-brand-50 p-5 shadow-soft">
             <div className="rounded-md bg-white p-5">
               <div className="mb-4 flex items-center gap-3">
@@ -53,17 +57,12 @@ export default function Home() {
                   <Sparkles className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-extrabold">Plano Starter</p>
-                  <p className="text-sm text-slate-500">R$49,00/mês para começar</p>
+                  <p className="font-extrabold">Resposta pronta para WhatsApp</p>
+                  <p className="text-sm text-slate-500">Gerada com os dados do seu negócio</p>
                 </div>
               </div>
-              <div className="space-y-3 text-sm">
-                {["Painel de conversas", "Clientes e leads", "Automações IA", "Kit em PDF"].map((item) => (
-                  <div className="flex items-center gap-2 rounded-md bg-slate-50 p-3" key={item}>
-                    <CheckCircle2 className="h-4 w-4 text-brand-600" />
-                    <span>{item}</span>
-                  </div>
-                ))}
+              <div className="rounded-md bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                Oi, Maria! Consigo te ajudar sim. Para te passar o valor correto, me confirma qual serviço você deseja e o melhor horário para atendimento? Aceitamos Pix e cartão.
               </div>
             </div>
           </div>
@@ -71,14 +70,12 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <SectionTitle title="O que você recebe" eyebrow="Produto completo">
-          Um mini CRM local para organizar conversas, leads e automações, além do kit de atendimento pronto para usar.
-        </SectionTitle>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {kitItems.map((item) => (
-            <Card className="p-4" key={item}>
-              <FileText className="mb-3 h-5 w-5 text-brand-600" />
-              <p className="text-sm font-bold text-ink">{item}</p>
+        <SectionTitle title="Como funciona" />
+        <div className="mt-10 grid gap-5 md:grid-cols-4">
+          {["Crie sua conta", "Cadastre seu negócio", "Cole a pergunta do cliente", "Copie a resposta da IA"].map((step, index) => (
+            <Card key={step}>
+              <p className="mb-4 flex h-9 w-9 items-center justify-center rounded-md bg-brand-100 font-black text-brand-700">{index + 1}</p>
+              <h3 className="font-extrabold text-ink">{step}</h3>
             </Card>
           ))}
         </div>
@@ -86,14 +83,12 @@ export default function Home() {
 
       <section className="bg-white py-16">
         <div className="mx-auto max-w-6xl px-4">
-          <SectionTitle title="Como funciona" />
-          <div className="mt-10 grid gap-5 md:grid-cols-4">
-            {["Assine pela Kiwify", "Receba o link de acesso", "Use o painel", "Baixe seu kit em PDF"].map((step, index) => (
-              <Card key={step}>
-                <p className="mb-4 flex h-9 w-9 items-center justify-center rounded-md bg-brand-100 font-black text-brand-700">
-                  {index + 1}
-                </p>
-                <h3 className="font-extrabold text-ink">{step}</h3>
+          <SectionTitle title="Benefícios para o atendimento" />
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {benefits.map((benefit) => (
+              <Card className="p-5" key={benefit}>
+                <CheckCircle2 className="mb-3 h-5 w-5 text-brand-600" />
+                <p className="font-bold text-ink">{benefit}</p>
               </Card>
             ))}
           </div>
@@ -101,7 +96,7 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <SectionTitle title="Feito para pequenos negócios que atendem pelo WhatsApp." />
+        <SectionTitle title="Para quem serve" />
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {audiences.map((item) => (
             <Badge className="bg-white text-ink ring-1 ring-slate-200" key={item}>
@@ -111,35 +106,52 @@ export default function Home() {
         </div>
       </section>
 
-      <PricingSection />
-
-      <section className="bg-[#090d12] py-16 text-white">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="rounded-lg border border-white/10 bg-[#101821] p-8 shadow-2xl shadow-black/30 md:p-10">
-            <MessageCircle className="mb-5 h-9 w-9 text-emerald-300" />
-            <h2 className="max-w-3xl text-3xl font-black tracking-tight md:text-5xl">
-              Comece a organizar seus atendimentos com IA hoje
-            </h2>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300">
-              Use o AtendeZap IA para centralizar conversas, acompanhar leads e automatizar respostas em um painel
-              simples e profissional.
-            </p>
-            <div className="mt-8">
-              <KiwifyCheckoutButton planId="starter" />
-            </div>
-          </div>
+      <section className="bg-white py-16">
+        <div className="mx-auto grid max-w-6xl gap-6 px-4 md:grid-cols-3">
+          <Card>
+            <MessageCircle className="mb-4 h-6 w-6 text-brand-600" />
+            <h3 className="font-black text-ink">Gerador de respostas</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Perguntas de clientes viram respostas naturais, profissionais e adaptadas ao seu negócio.</p>
+          </Card>
+          <Card>
+            <Users className="mb-4 h-6 w-6 text-brand-600" />
+            <h3 className="font-black text-ink">Clientes organizados</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Cadastre leads, acompanhe status e mantenha observações importantes.</p>
+          </Card>
+          <Card>
+            <Clipboard className="mb-4 h-6 w-6 text-brand-600" />
+            <h3 className="font-black text-ink">Scripts prontos</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Use modelos de boas-vindas, orçamento, pós-venda e recuperação de clientes.</p>
+          </Card>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <Card className="flex flex-col gap-4 bg-ink text-white md:flex-row md:items-center md:justify-between">
-          <div>
-            <MailCheck className="mb-3 h-6 w-6 text-brand-100" />
-            <h2 className="text-2xl font-black">Pronto para padronizar seu atendimento?</h2>
-            <p className="mt-2 text-slate-200">O link de acesso chega por e-mail após a confirmação da assinatura.</p>
+      <PricingSection />
+
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <SectionTitle title="Perguntas frequentes" />
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {faqs.map(([question, answer]) => (
+            <Card key={question}>
+              <h3 className="font-black text-ink">{question}</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{answer}</p>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-[#090d12] py-16 text-white">
+        <div className="mx-auto max-w-6xl px-4 text-center">
+          <h2 className="mx-auto max-w-3xl text-3xl font-black tracking-tight md:text-5xl">Comece a responder melhor seus clientes hoje</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300">
+            Crie sua conta, cadastre seu negócio e gere sua primeira resposta profissional para WhatsApp.
+          </p>
+          <div className="mt-8">
+            <Button href="/cadastro" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300">
+              Criar conta grátis
+            </Button>
           </div>
-          <KiwifyCheckoutButton className="bg-white text-ink hover:bg-slate-100" planId="starter" />
-        </Card>
+        </div>
       </section>
     </main>
   );
