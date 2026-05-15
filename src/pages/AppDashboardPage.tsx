@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bot, Building2, CreditCard, Database, LayoutDashboard, LogOut, MessageCircle, Plug, Settings, Users } from "lucide-react";
+import { Bot, Building2, CreditCard, Database, LayoutDashboard, LogOut, MessageCircle, Plug, Settings, Smartphone, Users } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UserPlanBadge } from "@/components/auth/UserPlanBadge";
 import { clearSession, getCurrentSession } from "@/utils/authStorage";
@@ -45,6 +45,12 @@ const dashboardLinks = [
     title: "Integração Kiwify",
     description: "Simule eventos futuros de assinatura e webhook.",
     icon: Plug
+  },
+  {
+    href: "/integracoes/whatsapp",
+    title: "WhatsApp",
+    description: "Conecte um numero de atendimento em modo demo.",
+    icon: Smartphone
   },
   {
     href: "/configuracoes",

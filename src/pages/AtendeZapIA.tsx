@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   Bot,
@@ -10,6 +11,7 @@ import {
   Search,
   Send,
   Sparkles,
+  Smartphone,
   UserRound,
   Zap
 } from "lucide-react";
@@ -17,6 +19,7 @@ import { atendezapMockConversations } from "@/data/atendezapMock";
 import type { Conversation, ConversationStatus, Message, Priority } from "@/types/atendezap";
 import { calculateConversationUrgency, createAgentMessage, generateConversationSummary, generateSuggestedReply } from "@/utils/atendezapAI";
 import { getBusinessProfile } from "@/utils/onboardingStorage";
+import { getWhatsAppConnection } from "@/utils/whatsappStorage";
 
 const STORAGE_KEY = "atendezap_ia_conversations_v1";
 
@@ -88,6 +91,7 @@ export default function AtendeZapIA() {
   const [conversations, setConversations] = useState<Conversation[]>(() => loadStoredConversations());
   const [selectedId, setSelectedId] = useState(() => loadStoredConversations()[0]?.id || "");
   const [businessProfile] = useState(() => getBusinessProfile());
+  const [whatsAppConnection] = useState(() => getWhatsAppConnection());
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | ConversationStatus>("all");
   const [draft, setDraft] = useState("");
@@ -217,6 +221,38 @@ export default function AtendeZapIA() {
             </div>
           </div>
         </header>
+
+        <div className="mb-5 rounded-lg border border-sky-400/20 bg-sky-400/10 p-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-sky-400/15 text-sky-200">
+                <Smartphone className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-white">WhatsApp em modo demo</p>
+                <p className="mt-1 text-sm leading-6 text-sky-100">
+                  Status da conexao:{" "}
+                  <span className="font-bold">
+                    {whatsAppConnection?.status === "connected"
+                      ? `conectado em ${whatsAppConnection.phoneNumber || "numero demo"}`
+                      : whatsAppConnection?.status === "paused"
+                        ? "pausado"
+                        : "desconectado"}
+                  </span>
+                  . Nenhuma mensagem real sera enviada ou recebida.
+                </p>
+              </div>
+            </div>
+            {whatsAppConnection?.status !== "connected" ? (
+              <Link
+                href="/integracoes/whatsapp"
+                className="inline-flex min-h-10 items-center justify-center rounded-md bg-sky-300 px-4 text-sm font-black text-slate-950 transition hover:bg-sky-200"
+              >
+                Conectar WhatsApp
+              </Link>
+            ) : null}
+          </div>
+        </div>
 
         <section className="grid min-h-[calc(100vh-150px)] gap-4 lg:grid-cols-[340px_minmax(0,1fr)_320px]">
           <aside className="flex min-h-[520px] flex-col rounded-lg border border-white/10 bg-[#101821]">

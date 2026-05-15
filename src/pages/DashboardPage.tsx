@@ -14,6 +14,7 @@ import {
   MessageCircle,
   Plug,
   Settings,
+  Smartphone,
   Target,
   TrendingUp,
   Users,
@@ -105,6 +106,12 @@ const quickLinks = [
     title: "Kiwify",
     description: "Status e simulação de webhook.",
     icon: Plug
+  },
+  {
+    href: "/integracoes/whatsapp",
+    title: "WhatsApp",
+    description: "Conexao demo do canal.",
+    icon: Smartphone
   },
   {
     href: "/configuracoes",
@@ -415,7 +422,7 @@ function DashboardContent() {
 
         <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-2xl shadow-black/25">
           <h2 className="text-xl font-black text-white">Atalhos rápidos</h2>
-          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-7">
+          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {quickLinks.map((item) => {
               const Icon = item.icon;
 

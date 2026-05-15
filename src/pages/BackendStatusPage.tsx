@@ -26,6 +26,7 @@ const nextSteps = [
   "Criar tabelas e migrations",
   "Configurar autenticação",
   "Conectar webhook Kiwify",
+  "Criar webhook de mensagens do WhatsApp",
   "Migrar dados locais"
 ];
 
