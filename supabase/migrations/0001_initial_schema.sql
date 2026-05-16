@@ -251,8 +251,9 @@ create policy "events_no_client_access" on public.events for all to anon, authen
 
 grant usage on schema public to anon, authenticated;
 grant select, insert, update, delete on public.profiles, public.businesses, public.generated_responses, public.customers to authenticated;
+revoke all privileges on public.subscriptions from anon, authenticated;
 grant select on public.subscriptions to authenticated;
-revoke insert, update, delete on public.subscriptions from authenticated;
+revoke all privileges on public.plans from anon, authenticated;
 grant select on public.plans to anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;
@@ -265,3 +266,12 @@ values
 on conflict (name) do update set
   price = excluded.price,
   response_limit = excluded.response_limit;
+
+insert into public.subscriptions (user_id, plan_name, status)
+select u.id, 'free', 'trial'
+from auth.users u
+where not exists (
+  select 1
+  from public.subscriptions s
+  where s.user_id = u.id
+);
