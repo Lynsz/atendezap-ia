@@ -1,4 +1,4 @@
-import type { GenerateResponseInput } from "@/lib/mvp-validators";
+﻿import type { GenerateResponseInput } from "@/lib/mvp-validators";
 import { supabase } from "@/lib/supabase/browser";
 import type { GeneratedResponse } from "@/types/mvp";
 
@@ -41,7 +41,7 @@ export async function generateCustomerResponse({ customerQuestion, responseType,
   const data = (await response.json().catch(() => ({}))) as Partial<GenerateCustomerResponseResult> & { error?: string };
 
   if (!response.ok || !data.generatedAnswer) {
-    throw new Error(data.error || "Nao foi possivel gerar a resposta agora.");
+    throw new Error(data.error || "Não foi possível gerar a resposta agora.");
   }
 
   return {

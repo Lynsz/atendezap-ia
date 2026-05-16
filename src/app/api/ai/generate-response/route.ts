@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { generateCustomerResponseWithAi } from "@/lib/ai-response";
 import { generateResponseSchema } from "@/lib/mvp-validators";

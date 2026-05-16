@@ -239,9 +239,10 @@ create policy "customers_delete_own" on public.customers for delete to authentic
 
 create policy "subscriptions_select_own" on public.subscriptions for select to authenticated using ((select auth.uid()) = user_id);
 -- Assinaturas pagas devem ser atualizadas apenas por webhook/backend seguro.
--- Clientes autenticados podem ler a propria assinatura, mas nao podem criar ou alterar plano/status pelo navegador.
+-- Clientes autenticados podem ler a propria assinatura, mas nao podem criar, apagar ou alterar plano/status pelo navegador.
 
 create policy "plans_select_public" on public.plans for select to anon, authenticated using (true);
+-- Planos sao leitura publica para exibicao comercial. Escrita em plans nao e liberada para anon/authenticated.
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
 create policy "orders_no_client_access" on public.orders for all to anon, authenticated using (false) with check (false);
 create policy "kits_no_client_access" on public.kits for all to anon, authenticated using (false) with check (false);
