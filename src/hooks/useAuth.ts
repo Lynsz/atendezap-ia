@@ -1,132 +1,177 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { getSupabasePublicDiagnostic, isSupabaseBrowserConfigured, supabase } from "@/lib/supabase/browser";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Session, User } from '@supabase/supabase-js';
+import { supabase, supabaseEnv } from '@/lib/supabase';
 
-type SignUpInput = {
-  name: string;
+export const SUPABASE_CONNECTION_ERROR =
+  'Não foi possível conectar ao Supabase. Confira NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, internet, navegador e se o projeto Supabase está ativo.';
+
+type AuthResult = {
+  error: string | null;
+};
+
+type SignUpData = {
+  name?: string;
   email: string;
   password: string;
 };
 
-export const SUPABASE_CONNECTION_ERROR =
-  "Não foi possível conectar ao Supabase. Confira NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, internet, navegador e se o projeto Supabase está ativo.";
-
-function withDiagnostic(message: string) {
-  const diagnostic = getSupabasePublicDiagnostic();
-  return `${message} hasUrl=${diagnostic.hasUrl}; hasAnonKey=${diagnostic.hasAnonKey}; anonKeyLength=${diagnostic.anonKeyLength}.`;
-}
-
-function getAuthErrorMessage(error: unknown, fallback: string) {
-  const message = error instanceof Error ? error.message.toLowerCase() : "";
-
-  if (error instanceof TypeError && message.includes("fetch")) {
-    return withDiagnostic(SUPABASE_CONNECTION_ERROR);
-  }
-
-  if (message.includes("failed to fetch") || message.includes("network") || message.includes("fetch failed")) {
-    return withDiagnostic(SUPABASE_CONNECTION_ERROR);
-  }
-
-  return fallback;
-}
-
-async function assertSupabaseConnection() {
-  try {
-    const { data, error } = await supabase.auth.getSession();
-
-    console.info("[Supabase getSession diagnostic]", {
-      ok: !error,
-      hasSession: Boolean(data.session),
-      env: getSupabasePublicDiagnostic(),
-      errorMessage: error?.message ?? null
-    });
-
-    if (error) {
-      throw error;
-    }
-  } catch (error) {
-    console.info("[Supabase getSession diagnostic]", {
-      ok: false,
-      env: getSupabasePublicDiagnostic(),
-      errorKind: error instanceof TypeError ? "connection" : "env_or_auth",
-      errorMessage: error instanceof Error ? error.message : String(error)
-    });
-
-    throw new Error(getAuthErrorMessage(error, SUPABASE_CONNECTION_ERROR));
-  }
-}
+type SignInData = {
+  email: string;
+  password: string;
+};
 
 export function useAuth() {
-  const isConfigured = useMemo(() => isSupabaseBrowserConfigured(), []);
-  const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(isConfigured);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isConfigured) {
-      return;
+  const normalizeAuthError = useCallback((error: unknown) => {
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      return [
+        SUPABASE_CONNECTION_ERROR,
+        `Diagnóstico: hasUrl=${supabaseEnv.hasUrl}, hasAnonKey=${supabaseEnv.hasAnonKey}, anonKeyLength=${supabaseEnv.anonKeyLength}.`,
+      ].join(' ');
     }
 
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        setSession(data.session);
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return 'Erro inesperado de autenticação.';
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadSession() {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error('[Supabase getSession error]', error);
+        }
+
+        if (!mounted) return;
+
+        setSession(data.session ?? null);
         setUser(data.session?.user ?? null);
-      })
-      .catch(() => {
-        setSession(null);
-        setUser(null);
-      })
-      .finally(() => setLoading(false));
+      } catch (error) {
+        console.error('[Supabase getSession failed]', {
+          error,
+          env: supabaseEnv,
+        });
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadSession();
 
     const {
-      data: { subscription }
+      data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, [isConfigured]);
-
-  const signIn = useCallback(async (email: string, password: string) => {
-    try {
-      await assertSupabaseConnection();
-      return await supabase.auth.signInWithPassword({ email, password });
-    } catch (error) {
-      throw new Error(getAuthErrorMessage(error, "Nao foi possivel entrar. Confira seus dados."));
-    }
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const signUp = useCallback(async ({ name, email, password }: SignUpInput) => {
-    try {
-      await assertSupabaseConnection();
-      return await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { name }
+  const signUp = useCallback(
+    async ({ name, email, password }: SignUpData): Promise<AuthResult> => {
+      try {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              name: name ?? '',
+            },
+          },
+        });
+
+        if (error) {
+          return { error: error.message };
         }
-      });
+
+        return { error: null };
+      } catch (error) {
+        console.error('[Supabase signUp failed]', {
+          error,
+          env: supabaseEnv,
+        });
+
+        return {
+          error: normalizeAuthError(error),
+        };
+      }
+    },
+    [normalizeAuthError],
+  );
+
+  const signIn = useCallback(
+    async ({ email, password }: SignInData): Promise<AuthResult> => {
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          return { error: error.message };
+        }
+
+        return { error: null };
+      } catch (error) {
+        console.error('[Supabase signIn failed]', {
+          error,
+          env: supabaseEnv,
+        });
+
+        return {
+          error: normalizeAuthError(error),
+        };
+      }
+    },
+    [normalizeAuthError],
+  );
+
+  const signOut = useCallback(async (): Promise<AuthResult> => {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { error: null };
     } catch (error) {
-      throw new Error(getAuthErrorMessage(error, "Nao foi possivel criar sua conta. Tente outro e-mail."));
+      console.error('[Supabase signOut failed]', error);
+
+      return {
+        error: normalizeAuthError(error),
+      };
     }
-  }, []);
+  }, [normalizeAuthError]);
 
-  const signOut = useCallback(async () => {
-    return supabase.auth.signOut();
-  }, []);
-
-  return {
-    user,
-    session,
-    loading,
-    isConfigured,
-    signIn,
-    signUp,
-    signOut
-  };
+  return useMemo(
+    () => ({
+      session,
+      user,
+      loading,
+      isAuthenticated: Boolean(user),
+      signUp,
+      signIn,
+      signOut,
+    }),
+    [session, user, loading, signUp, signIn, signOut],
+  );
 }

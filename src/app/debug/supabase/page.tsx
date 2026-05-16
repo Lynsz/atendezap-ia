@@ -1,131 +1,166 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { getSupabasePublicDiagnostic, supabase } from "@/lib/supabase/browser";
+import { useEffect, useState } from 'react';
+import { supabase, supabaseEnv } from '@/lib/supabase';
 
-type Status = "pending" | "success" | "error" | "skipped";
-
-type Check = {
-  label: string;
-  status: Status;
+type TestResult = {
+  name: string;
+  status: 'loading' | 'success' | 'error';
   message: string;
 };
 
-const protectedTables = ["profiles", "businesses", "generated_responses", "customers", "subscriptions"] as const;
-
-function statusClass(status: Status) {
-  if (status === "success") return "border-emerald-400/30 bg-emerald-400/10 text-emerald-100";
-  if (status === "error") return "border-red-400/30 bg-red-500/10 text-red-100";
-  if (status === "skipped") return "border-amber-400/30 bg-amber-400/10 text-amber-100";
-  return "border-white/10 bg-white/[0.04] text-slate-200";
-}
-
-function messageFromError(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
-}
-
 export default function SupabaseDebugPage() {
-  const diagnostic = getSupabasePublicDiagnostic();
-  const [checks, setChecks] = useState<Check[]>([
-    { label: "supabase.auth.getSession()", status: "pending", message: "Aguardando..." },
-    { label: "plans select limit 1", status: "pending", message: "Aguardando..." },
-    ...protectedTables.map((table) => ({ label: `${table} select limit 1`, status: "pending" as Status, message: "Aguardando..." }))
+  const [tests, setTests] = useState<TestResult[]>([
+    {
+      name: 'getSession',
+      status: 'loading',
+      message: 'Testando sessão...',
+    },
+    {
+      name: 'plans select',
+      status: 'loading',
+      message: 'Testando tabela plans...',
+    },
   ]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    function update(label: string, status: Status, message: string) {
-      if (cancelled) return;
-      setChecks((current) => current.map((check) => (check.label === label ? { ...check, status, message } : check)));
-    }
-
-    async function runDiagnostics() {
-      let userId = "";
+    async function runTests() {
+      const results: TestResult[] = [];
 
       try {
         const { data, error } = await supabase.auth.getSession();
+
         if (error) {
-          update("supabase.auth.getSession()", "error", error.message);
+          results.push({
+            name: 'getSession',
+            status: 'error',
+            message: error.message,
+          });
         } else {
-          userId = data.session?.user.id ?? "";
-          update("supabase.auth.getSession()", "success", data.session ? "Sessao ativa." : "Sem sessao ativa.");
+          results.push({
+            name: 'getSession',
+            status: 'success',
+            message: data.session
+              ? `Sessão encontrada para ${data.session.user.email ?? 'usuário logado'}`
+              : 'Sem sessão ativa. Isso é normal se você não está logada.',
+          });
         }
       } catch (error) {
-        update("supabase.auth.getSession()", "error", messageFromError(error));
+        results.push({
+          name: 'getSession',
+          status: 'error',
+          message: error instanceof Error ? error.message : 'Erro desconhecido em getSession.',
+        });
       }
 
       try {
-        const { error } = await supabase.from("plans").select("id,name").limit(1);
-        update("plans select limit 1", error ? "error" : "success", error?.message ?? "Tabela plans respondeu.");
+        const { data, error } = await supabase.from('plans').select('id, name').limit(1);
+
+        if (error) {
+          results.push({
+            name: 'plans select',
+            status: 'error',
+            message: error.message,
+          });
+        } else {
+          results.push({
+            name: 'plans select',
+            status: 'success',
+            message: `Consulta funcionou. Registros retornados: ${data?.length ?? 0}.`,
+          });
+        }
       } catch (error) {
-        update("plans select limit 1", "error", messageFromError(error));
+        results.push({
+          name: 'plans select',
+          status: 'error',
+          message: error instanceof Error ? error.message : 'Erro desconhecido em plans select.',
+        });
       }
 
-      for (const table of protectedTables) {
-        const label = `${table} select limit 1`;
-
-        if (!userId) {
-          update(label, "skipped", "Requer usuario logado para testar com RLS autenticada.");
-          continue;
-        }
-
-        try {
-          const query = table === "profiles"
-            ? supabase.from(table).select("id").eq("id", userId).limit(1)
-            : supabase.from(table).select("id").eq("user_id", userId).limit(1);
-          const { error } = await query;
-          update(label, error ? "error" : "success", error?.message ?? `Tabela ${table} respondeu para o usuario logado.`);
-        } catch (error) {
-          update(label, "error", messageFromError(error));
-        }
-      }
+      setTests(results);
     }
 
-    void runDiagnostics();
-
-    return () => {
-      cancelled = true;
-    };
+    runTests();
   }, []);
 
-  const envRows = [
-    ["Supabase URL", diagnostic.url || "Nao configurada"],
-    ["Has URL", String(diagnostic.hasUrl)],
-    ["Has anon key", String(diagnostic.hasAnonKey)],
-    ["Anon key length", String(diagnostic.anonKeyLength)]
-  ];
-
   return (
-    <main className="min-h-screen bg-[#090d12] px-4 py-10 text-slate-100">
-      <section className="mx-auto max-w-4xl rounded-lg border border-white/10 bg-[#101821] p-6 shadow-2xl shadow-black/30">
-        <p className="text-xs font-black uppercase tracking-[0.24em] text-emerald-300">Pagina de diagnostico</p>
-        <h1 className="mt-2 text-3xl font-black text-white">Diagnostico Supabase</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-400">
-          Esta pagina nao mostra secrets, anon key completa, tokens de sessao ou dados sensiveis. Use apenas para validar ambiente e RLS.
-        </p>
-
-        <div className="mt-6 grid gap-3 md:grid-cols-2">
-          {envRows.map(([label, value]) => (
-            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4" key={label}>
-              <p className="text-xs font-black uppercase tracking-wide text-slate-400">{label}</p>
-              <p className="mt-2 break-words font-mono text-sm text-white">{value}</p>
-            </div>
-          ))}
+    <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
+      <div className="mx-auto max-w-3xl space-y-6">
+        <div>
+          <p className="text-sm font-medium text-emerald-300">AtendeZap IA</p>
+          <h1 className="mt-2 text-3xl font-bold">Debug Supabase</h1>
+          <p className="mt-2 text-slate-300">
+            Esta página serve apenas para diagnóstico. Ela não mostra tokens nem chaves completas.
+          </p>
         </div>
 
-        <div className="mt-6 grid gap-3">
-          {checks.map((check) => (
-            <article className={`rounded-lg border p-4 ${statusClass(check.status)}`} key={check.label}>
-              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                <h2 className="font-black text-white">{check.label}</h2>
-                <span className="rounded-full border border-current px-3 py-1 text-xs font-black uppercase">{check.status}</span>
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <h2 className="text-xl font-semibold">Variáveis de ambiente</h2>
+
+          <div className="mt-4 grid gap-3 text-sm">
+            <InfoRow label="Has URL" value={String(supabaseEnv.hasUrl)} />
+            <InfoRow label="URL" value={supabaseEnv.url ?? 'Não configurada'} />
+            <InfoRow label="Has anon key" value={String(supabaseEnv.hasAnonKey)} />
+            <InfoRow label="Anon key length" value={String(supabaseEnv.anonKeyLength)} />
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <h2 className="text-xl font-semibold">Testes</h2>
+
+          <div className="mt-4 space-y-3">
+            {tests.map((test) => (
+              <div
+                key={test.name}
+                className="rounded-xl border border-slate-800 bg-slate-950 p-4"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="font-medium">{test.name}</h3>
+                  <span
+                    className={
+                      test.status === 'success'
+                        ? 'text-emerald-300'
+                        : test.status === 'error'
+                          ? 'text-red-300'
+                          : 'text-yellow-300'
+                    }
+                  >
+                    {test.status}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-slate-300">{test.message}</p>
               </div>
-              <p className="mt-2 break-words font-mono text-sm">{check.message}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm text-yellow-100">
+          <h2 className="font-semibold">Como interpretar</h2>
+          <ul className="mt-3 list-disc space-y-2 pl-5">
+            <li>
+              Se <strong>Has anon key</strong> for false, o arquivo .env.local está errado ou o
+              servidor não foi reiniciado.
+            </li>
+            <li>
+              Se <strong>plans select</strong> falhar com tabela inexistente, o SQL ainda não foi
+              aplicado no Supabase.
+            </li>
+            <li>
+              Se aparecer <strong>Failed to fetch</strong>, teste a URL do Supabase no navegador e
+              confira internet, firewall, extensão e chave anon public.
+            </li>
+          </ul>
+        </section>
+      </div>
     </main>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-950 p-3 sm:flex-row sm:items-center sm:justify-between">
+      <span className="text-slate-400">{label}</span>
+      <span className="break-all font-mono text-slate-100">{value}</span>
+    </div>
   );
 }
