@@ -27,6 +27,8 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const isConfigured = supabaseEnv.hasUrl && supabaseEnv.hasAnonKey;
+
   const normalizeAuthError = useCallback((error: unknown) => {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       return [
@@ -47,6 +49,14 @@ export function useAuth() {
 
     async function loadSession() {
       try {
+        if (!supabaseEnv.hasUrl || !supabaseEnv.hasAnonKey) {
+          if (mounted) {
+            setLoading(false);
+          }
+
+          return;
+        }
+
         const { data, error } = await supabase.auth.getSession();
 
         if (error) {
@@ -60,7 +70,11 @@ export function useAuth() {
       } catch (error) {
         console.error('[Supabase getSession failed]', {
           error,
-          env: supabaseEnv,
+          env: {
+            hasUrl: supabaseEnv.hasUrl,
+            hasAnonKey: supabaseEnv.hasAnonKey,
+            anonKeyLength: supabaseEnv.anonKeyLength,
+          },
         });
       } finally {
         if (mounted) {
@@ -87,6 +101,10 @@ export function useAuth() {
 
   const signUp = useCallback(
     async ({ name, email, password }: SignUpData): Promise<AuthResult> => {
+      if (!isConfigured) {
+        return { error: SUPABASE_CONNECTION_ERROR };
+      }
+
       try {
         const { error } = await supabase.auth.signUp({
           email,
@@ -106,7 +124,11 @@ export function useAuth() {
       } catch (error) {
         console.error('[Supabase signUp failed]', {
           error,
-          env: supabaseEnv,
+          env: {
+            hasUrl: supabaseEnv.hasUrl,
+            hasAnonKey: supabaseEnv.hasAnonKey,
+            anonKeyLength: supabaseEnv.anonKeyLength,
+          },
         });
 
         return {
@@ -114,11 +136,15 @@ export function useAuth() {
         };
       }
     },
-    [normalizeAuthError],
+    [isConfigured, normalizeAuthError],
   );
 
   const signIn = useCallback(
     async ({ email, password }: SignInData): Promise<AuthResult> => {
+      if (!isConfigured) {
+        return { error: SUPABASE_CONNECTION_ERROR };
+      }
+
       try {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -133,7 +159,11 @@ export function useAuth() {
       } catch (error) {
         console.error('[Supabase signIn failed]', {
           error,
-          env: supabaseEnv,
+          env: {
+            hasUrl: supabaseEnv.hasUrl,
+            hasAnonKey: supabaseEnv.hasAnonKey,
+            anonKeyLength: supabaseEnv.anonKeyLength,
+          },
         });
 
         return {
@@ -141,10 +171,14 @@ export function useAuth() {
         };
       }
     },
-    [normalizeAuthError],
+    [isConfigured, normalizeAuthError],
   );
 
   const signOut = useCallback(async (): Promise<AuthResult> => {
+    if (!isConfigured) {
+      return { error: SUPABASE_CONNECTION_ERROR };
+    }
+
     try {
       const { error } = await supabase.auth.signOut();
 
@@ -160,18 +194,19 @@ export function useAuth() {
         error: normalizeAuthError(error),
       };
     }
-  }, [normalizeAuthError]);
+  }, [isConfigured, normalizeAuthError]);
 
   return useMemo(
     () => ({
       session,
       user,
       loading,
+      isConfigured,
       isAuthenticated: Boolean(user),
       signUp,
       signIn,
       signOut,
     }),
-    [session, user, loading, signUp, signIn, signOut],
+    [session, user, loading, isConfigured, signUp, signIn, signOut],
   );
 }
