@@ -118,7 +118,7 @@ export default function SupabaseDebugPage() {
             Esta página serve apenas para diagnóstico. Ela não mostra tokens nem chaves completas.
           </p>
           <p className="mt-2 text-sm font-semibold text-yellow-200">
-            Página de diagnóstico. Não compartilhe prints contendo dados pessoais.
+            Página de diagnóstico. Não compartilhe prints com dados pessoais.
           </p>
         </div>
 

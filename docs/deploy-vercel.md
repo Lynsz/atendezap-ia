@@ -1,59 +1,84 @@
 # Deploy na Vercel
 
+Use este guia para publicar o MVP SaaS do AtendeZap IA em produção.
+
 ## Passo a passo
 
-1. Faça commit de todas as mudanças.
-2. Faça push para o GitHub.
-3. Entre na Vercel.
-4. Importe o repositório.
-5. Confirme o framework como `Next.js`.
-6. Use build command `npm run build`.
-7. Use o output padrão do Next.js.
-8. Adicione as Environment Variables obrigatórias:
+1. Rode a validação local:
 
-```text
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
-NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
-OPENAI_API_KEY=
+```bash
+npm run check
 ```
 
-9. Faça o deploy.
-10. Copie a URL gerada pela Vercel.
-11. Vá no Supabase em `Authentication -> URL Configuration`.
-12. Configure:
+2. Faça commit:
 
-Site URL:
+```bash
+git add .
+git commit -m "chore: prepare production deploy"
+```
+
+3. Faça push:
+
+```bash
+git push
+```
+
+4. Entre na Vercel.
+5. Importe o repositório.
+6. Em Framework, selecione `Next.js`.
+7. Em Build command, use:
+
+```bash
+npm run build
+```
+
+8. Configure as Environment Variables na Vercel:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL
+NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL
+OPENAI_API_KEY
+```
+
+9. Faça deploy.
+10. Copie a URL gerada pela Vercel.
+11. No Supabase, vá em `Authentication -> URL Configuration`.
+12. Configure Site URL:
 
 ```text
 https://URL-DA-VERCEL
 ```
 
-Redirect URLs:
+13. Configure Redirect URLs:
 
 ```text
 https://URL-DA-VERCEL/**
 ```
 
-13. Faça redeploy na Vercel se alterar variáveis.
-14. Abra `/debug/supabase` em produção.
-15. Teste cadastro/login em produção.
-16. Teste `/dashboard` em produção.
-17. Teste geração de resposta.
-18. Teste histórico.
-19. Teste clientes.
-20. Teste planos/checkout.
+14. Faça redeploy na Vercel se alterar variáveis.
+15. Teste em produção:
 
-## Variáveis
+```text
+/debug/supabase
+/cadastro
+/login
+/dashboard
+/plans
+```
 
-`NEXT_PUBLIC_SUPABASE_URL` pode ir para o navegador.
+## Variáveis de ambiente
 
-`NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ir para o navegador com RLS ativo.
+`NEXT_PUBLIC_SUPABASE_URL` pode ficar pública.
 
-`OPENAI_API_KEY` fica apenas no servidor e nunca deve usar prefixo `NEXT_PUBLIC`.
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ficar pública com RLS ativo.
 
-`SUPABASE_SERVICE_ROLE_KEY`, se usada em fluxos futuros, nunca deve ir para o front-end.
+`NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL` e `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL` são URLs públicas de checkout. Se ficarem vazias, `/plans` mostra fallback amigável.
+
+`OPENAI_API_KEY` é somente servidor. Nunca use prefixo `NEXT_PUBLIC_` nesta chave.
+
+`SUPABASE_SERVICE_ROLE_KEY`, se for usada em fluxos futuros, nunca deve ir para o front-end.
 
 ## Supabase Auth URLs
 
@@ -98,12 +123,11 @@ https://www.atendezapia.com.br/**
 ## Rotas para validar
 
 - `/`
+- `/debug/supabase`
 - `/cadastro`
 - `/login`
 - `/dashboard`
 - `/plans`
-- `/debug/supabase`
-- `/api/ai/generate-response`
 
 ## Observações
 
