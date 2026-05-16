@@ -27,18 +27,20 @@ export function KiwifyCheckoutButton({
     starter: "Começar por R$49/mês",
     premium: "Assinar Premium"
   };
+  const checkoutUrl = getCheckoutUrl(planId);
+  const isDisabled = disabled || !checkoutUrl;
 
   function handleCheckout() {
-    if (disabled) return;
+    if (isDisabled) return;
     onBeforeRedirect?.();
-    window.location.href = getCheckoutUrl(planId);
+    window.location.href = checkoutUrl;
   }
 
   return (
     <button
       type="button"
       onClick={handleCheckout}
-      disabled={disabled}
+      disabled={isDisabled}
       className={cn(
         "inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-black shadow-lg transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50",
         planId === "premium"
@@ -48,7 +50,7 @@ export function KiwifyCheckoutButton({
         className
       )}
     >
-      {label || defaultLabels[planId]}
+      {label || (checkoutUrl ? defaultLabels[planId] : "Checkout em configuração")}
       <ArrowRight className="h-4 w-4" />
     </button>
   );

@@ -1,4 +1,4 @@
-import { PricingSection } from "@/components/pricing/PricingSection";
+﻿import { PricingSection } from "@/components/pricing/PricingSection";
 
 export function PricingPageContent() {
   return (
@@ -18,11 +18,11 @@ export function PricingPageContent() {
       <section className="mx-auto max-w-6xl px-4 pb-16 text-center">
         <div className="rounded-lg border border-emerald-300/20 bg-emerald-400/10 p-5">
           <p className="text-sm font-bold leading-6 text-emerald-100">
-            A integracao automatica com WhatsApp sera liberada em etapa futura. Nesta versao, voce gera a resposta, revisa e copia para enviar.
+            A integração automática com WhatsApp será liberada em etapa futura. Nesta versão, você gera a resposta, revisa e copia para enviar.
           </p>
         </div>
         <p className="mx-auto mt-6 max-w-3xl text-sm leading-6 text-slate-400">
-          Os planos do AtendeZap IA sao cobrados mensalmente pela Kiwify, conforme o plano escolhido. O AtendeZap IA nao e afiliado ao WhatsApp, Meta ou Kiwify e nao promete aumento de vendas ou resultado financeiro.
+          Os planos do AtendeZap IA são cobrados mensalmente pela Kiwify, conforme o plano escolhido. O AtendeZap IA não é afiliado ao WhatsApp, Meta ou Kiwify e não promete aumento de vendas ou resultado financeiro.
         </p>
       </section>
     </main>

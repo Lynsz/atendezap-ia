@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { buildKitPrompt } from "@/lib/openai";
 import type { KitFormData } from "@/lib/validators";
 

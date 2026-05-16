@@ -13,22 +13,22 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanId, CheckoutPlan> = {
     id: "basic",
     name: "Plano Básico",
     price: "R$29,00/mês",
-    checkoutUrl: "https://pay.kiwify.com.br/SoDyO2k",
-    active: true
+    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || "",
+    active: Boolean(process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL)
   },
   starter: {
     id: "starter",
     name: "Plano Starter",
     price: "R$49,00/mês",
-    checkoutUrl: "https://pay.kiwify.com.br/KfYbZzC",
-    active: true
+    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || "",
+    active: Boolean(process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL)
   },
   premium: {
     id: "premium",
     name: "Plano Premium",
     price: "R$79,00/mês",
-    checkoutUrl: "https://pay.kiwify.com.br/n6jZUdh",
-    active: true
+    checkoutUrl: "",
+    active: false
   }
 };
 
@@ -38,6 +38,8 @@ export function getCheckoutPlan(planId: CheckoutPlanId): CheckoutPlan {
 
 export function getCheckoutUrl(planId: CheckoutPlanId): string {
   const plan = getCheckoutPlan(planId);
+  if (!plan.checkoutUrl) return "";
+
   const url = new URL(plan.checkoutUrl);
   const utmContent: Record<CheckoutPlanId, string> = {
     basic: "plano_basico",

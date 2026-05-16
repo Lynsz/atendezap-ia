@@ -2,24 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { generateCustomerResponseWithAi } from "@/lib/ai-response";
 import { generateResponseSchema } from "@/lib/mvp-validators";
+import { getPlanResponseLimit } from "@/lib/plan-limits";
 
 export const runtime = "nodejs";
-
-const PLAN_LIMITS: Record<string, number> = {
-  free: 30,
-  trial: 30,
-  inicial: 300,
-  pro: 1000,
-  premium: 3000
-};
-
-function getPlanLimit(planName?: string | null, status?: string | null) {
-  const normalizedPlan = planName?.trim().toLowerCase() || "";
-  const normalizedStatus = status?.trim().toLowerCase() || "";
-
-  if (normalizedStatus === "trial") return PLAN_LIMITS.trial;
-  return PLAN_LIMITS[normalizedPlan] ?? PLAN_LIMITS.free;
-}
 
 function getCurrentMonthStart() {
   const now = new Date();
@@ -32,7 +17,7 @@ export async function POST(request: Request) {
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!url || !anonKey) {
-      return NextResponse.json({ error: "Supabase não configurado no servidor." }, { status: 500 });
+      return NextResponse.json({ error: "Supabase não configurado no servidor. Revise as variáveis de ambiente." }, { status: 500 });
     }
 
     const authorization = request.headers.get("authorization");
@@ -74,7 +59,7 @@ export async function POST(request: Request) {
       .limit(1)
       .maybeSingle();
 
-    const limit = getPlanLimit(subscription?.plan_name, subscription?.status);
+    const limit = getPlanResponseLimit(subscription?.plan_name, subscription?.status);
     const monthStart = getCurrentMonthStart();
     const { count, error: countError } = await supabase
       .from("generated_responses")
@@ -83,7 +68,7 @@ export async function POST(request: Request) {
       .gte("created_at", monthStart);
 
     if (countError) {
-      return NextResponse.json({ error: "Não foi possível verificar seu uso mensal agora." }, { status: 500 });
+      return NextResponse.json({ error: "Não foi possível verificar seu uso mensal agora. Tente novamente em instantes." }, { status: 500 });
     }
 
     const used = count ?? 0;
@@ -121,7 +106,11 @@ export async function POST(request: Request) {
 
     if (insertError || !savedResponse) {
       return NextResponse.json(
-        { error: "Resposta gerada, mas não conseguimos salvar no histórico.", generatedAnswer, savedResponseId: null },
+        {
+          error: "Resposta gerada, mas não conseguimos salvar no histórico. Tente novamente antes de usar em produção.",
+          generatedAnswer,
+          savedResponseId: null
+        },
         { status: 500 }
       );
     }
@@ -139,6 +128,6 @@ export async function POST(request: Request) {
       }
     });
   } catch {
-    return NextResponse.json({ error: "Não foi possível gerar a resposta agora." }, { status: 500 });
+    return NextResponse.json({ error: "Não foi possível gerar a resposta agora. Tente novamente em instantes." }, { status: 500 });
   }
 }

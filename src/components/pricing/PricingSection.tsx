@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+﻿import { createClient } from "@supabase/supabase-js";
 import { CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/badge";
 import { cn } from "@/lib/utils";
@@ -23,38 +23,38 @@ type PlanRow = {
 const fallbackPlans: PricingPlan[] = [
   {
     name: "Plano Inicial",
-    price: "R$ 19,90/mes",
+    price: "R$ 19,90/mês",
     description: "Para comecar a responder clientes com IA de forma profissional.",
     checkoutUrl: process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || "",
     cta: "Comecar no Inicial",
     badge: "Essencial",
-    features: ["Gerador de respostas com IA", "Cadastro do negocio", "Scripts prontos", "Historico basico", "Organizacao basica de clientes"]
+    features: ["Gerador de respostas com IA", "Cadastro do negócio", "Scripts prontos", "Histórico básico", "Organizacao basica de clientes"]
   },
   {
     name: "Plano Pro",
-    price: "R$ 39,90/mes",
-    description: "Para negocios que querem mais modelos e organizacao comercial.",
+    price: "R$ 39,90/mês",
+    description: "Para negócios que querem mais modelos e organização comercial.",
     checkoutUrl: process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || "",
     cta: "Assinar Pro",
     badge: "Mais vendido",
     recommended: true,
-    features: ["Tudo do Inicial", "Mais respostas por mes", "Mais modelos de mensagem", "Funil de atendimento", "Personalizacao por nicho"]
+    features: ["Tudo do Inicial", "Mais respostas por mês", "Mais modelos de mensagem", "Funil de atendimento", "Personalizacao por nicho"]
   },
   {
     name: "Plano Premium",
-    price: "R$ 69,90/mes",
-    description: "Para a proxima fase com WhatsApp conectado e relatorios.",
+    price: "R$ 69,90/mês",
+    description: "Para a proxima fase com WhatsApp conectado e relatórios.",
     checkoutUrl: "",
     cta: "Em breve",
     badge: "Futuro",
-    features: ["WhatsApp conectado", "Atendimento automatico", "Relatorios", "IA treinada com dados do negocio"]
+    features: ["WhatsApp conectado", "Atendimento automatico", "Relatorios", "IA treinada com dados do negócio"]
   }
 ];
 
 function formatPrice(value: number | string | null) {
   const numeric = typeof value === "string" ? Number(value) : value;
   if (typeof numeric !== "number" || Number.isNaN(numeric)) return "Em breve";
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(numeric) + "/mes";
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(numeric) + "/mês";
 }
 
 async function loadPlans(): Promise<PricingPlan[]> {
@@ -88,10 +88,10 @@ async function loadPlans(): Promise<PricingPlan[]> {
       name: `Plano ${plan.name}`,
       price: formatPrice(plan.price),
       checkoutUrl,
-      cta: checkoutUrl ? fallback.cta : "Checkout em configuracao",
+      cta: checkoutUrl ? fallback.cta : "Checkout em configuração",
       features: [
         ...fallback.features.slice(0, 2),
-        `Limite de ${plan.response_limit ?? "uso"} respostas por mes`,
+        `Limite de ${plan.response_limit ?? "uso"} respostas por mês`,
         ...fallback.features.slice(3)
       ]
     };

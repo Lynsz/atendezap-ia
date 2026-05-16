@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
+import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
 import { generateCustomerResponse } from "@/services/ai";
 import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, Subscription } from "@/types/mvp";
@@ -84,25 +85,13 @@ const customerStatusLabels: Record<CustomerStatus, string> = {
   perdido: "Perdido"
 };
 
-const fallbackPlanLimits: Record<string, number> = {
-  free: 30,
-  trial: 30,
-  inicial: 300,
-  pro: 1000,
-  premium: 3000
-};
-
 function getCurrentMonthStart() {
   const now = new Date();
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
 }
 
 function getPlanLimit(subscription: Subscription | null, plan: Plan | null) {
-  const normalizedStatus = subscription?.status?.trim().toLowerCase();
-  const normalizedPlan = subscription?.plan_name?.trim().toLowerCase() || plan?.name.trim().toLowerCase() || "free";
-
-  if (normalizedStatus === "trial") return fallbackPlanLimits.trial;
-  return plan?.response_limit || fallbackPlanLimits[normalizedPlan] || fallbackPlanLimits.free;
+  return plan?.response_limit || getPlanResponseLimit(subscription?.plan_name, subscription?.status);
 }
 
 function formatDate(value: string) {
@@ -168,7 +157,7 @@ function SaasDashboardContent() {
 
   const loadDashboardData = useCallback(async () => {
     if (!supabase) {
-      setError("Configuracao de conexao incompleta. Revise o ambiente e tente novamente.");
+      setError("Configuração de conexão incompleta. Revise o ambiente e tente novamente.");
       setLoading(false);
       return;
     }
@@ -210,7 +199,7 @@ function SaasDashboardContent() {
     ]);
 
     if (businessError || responseError || customerError || subscriptionError || monthlyUsageError) {
-      setError("Nao conseguimos carregar todos os dados agora. Atualize a pagina ou tente novamente em instantes.");
+      setError("Não conseguimos carregar todos os dados agora. Atualize a página ou tente novamente em instantes.");
     }
 
     const subscriptionRow = (subscriptionData as Subscription | null) || null;
@@ -244,18 +233,25 @@ function SaasDashboardContent() {
     event?.preventDefault();
     setError("");
 
-    if (!supabase) return;
+    if (!supabase) {
+      setError("Supabase indisponível. Revise o ambiente e tente novamente.");
+      return;
+    }
 
     const parsed = businessSchema.safeParse(businessDraft);
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message || "Revise os dados do negocio.");
+      setError(parsed.error.issues[0]?.message || "Revise os dados do negócio.");
       return;
     }
 
     const {
       data: { user }
     } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setError("Sessão não encontrada. Faça login novamente.");
+      router.replace("/login");
+      return;
+    }
 
     setSavingBusiness(true);
     const payload = { ...parsed.data, user_id: user.id };
@@ -269,13 +265,13 @@ function SaasDashboardContent() {
     setSavingBusiness(false);
 
     if (saveError) {
-      setError("Nao conseguimos salvar o negocio agora. Revise os campos e tente novamente.");
+      setError("Não conseguimos salvar o negócio agora. Revise os campos e tente novamente.");
       return;
     }
 
     setBusiness(data as Business);
     setBusinessDraft(toBusinessDraft(data as Business));
-    showFeedback("Negocio salvo com sucesso.");
+    showFeedback("Negócio salvo com sucesso.");
   }
 
   async function handleGenerateResponse(event: FormEvent) {
@@ -283,9 +279,12 @@ function SaasDashboardContent() {
     setError("");
     setGeneratedAnswer("");
 
-    if (!supabase) return;
+    if (!supabase) {
+      setError("Supabase indisponível. Revise o ambiente e tente novamente.");
+      return;
+    }
     if (!business) {
-      setError("Cadastre seu negocio antes de gerar respostas.");
+      setError("Cadastre seu negócio antes de gerar respostas.");
       setTab("business");
       return;
     }
@@ -298,6 +297,7 @@ function SaasDashboardContent() {
       data: { user }
     } = await supabase.auth.getUser();
     if (!user) {
+      setError("Sessão não encontrada. Faça login novamente.");
       router.replace("/login");
       return;
     }
@@ -318,9 +318,9 @@ function SaasDashboardContent() {
       if (savedResponse) {
         setHistory((current) => [savedResponse, ...current]);
       }
-      showFeedback("Resposta salva no historico.");
+      showFeedback("Resposta salva no histórico.");
     } catch (generationError) {
-      setError(generationError instanceof Error ? generationError.message : "Nao foi possivel gerar a resposta agora.");
+      setError(generationError instanceof Error ? generationError.message : "Não foi possível gerar a resposta agora.");
     } finally {
       setGenerating(false);
     }
@@ -330,27 +330,33 @@ function SaasDashboardContent() {
     if (!supabase) return;
     const { error: deleteError } = await supabase.from("generated_responses").delete().eq("id", itemId);
     if (deleteError) {
-      setError("Nao conseguimos excluir a resposta.");
+      setError("Não conseguimos excluir a resposta.");
       return;
     }
     setHistory((current) => current.filter((item) => item.id !== itemId));
   }
 
   async function handleDeleteCustomer(itemId: string) {
-    if (!supabase) return;
+    if (!supabase) {
+      setError("Supabase indisponível. Revise o ambiente e tente novamente.");
+      return;
+    }
     const { error: deleteError } = await supabase.from("customers").delete().eq("id", itemId);
     if (deleteError) {
-      setError("Nao conseguimos excluir o cliente.");
+      setError("Não conseguimos excluir o cliente.");
       return;
     }
     setCustomers((current) => current.filter((item) => item.id !== itemId));
-    showFeedback("Cliente excluido.");
+    showFeedback("Cliente excluído.");
   }
 
   async function handleCreateCustomer(event: FormEvent) {
     event.preventDefault();
     setError("");
-    if (!supabase) return;
+    if (!supabase) {
+      setError("Supabase indisponível. Revise o ambiente e tente novamente.");
+      return;
+    }
 
     const parsed = customerSchema.safeParse(customerDraft);
     if (!parsed.success) {
@@ -361,7 +367,11 @@ function SaasDashboardContent() {
     const {
       data: { user }
     } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setError("Sessão não encontrada. Faça login novamente.");
+      router.replace("/login");
+      return;
+    }
 
     const { data, error: insertError } = await supabase
       .from("customers")
@@ -370,7 +380,7 @@ function SaasDashboardContent() {
       .single();
 
     if (insertError) {
-      setError("Nao conseguimos salvar o cliente.");
+      setError("Não conseguimos salvar o cliente.");
       return;
     }
 
@@ -380,11 +390,14 @@ function SaasDashboardContent() {
   }
 
   async function updateCustomer(item: CustomerLead, updates: Partial<CustomerLead>) {
-    if (!supabase) return;
+    if (!supabase) {
+      setError("Supabase indisponível. Revise o ambiente e tente novamente.");
+      return;
+    }
     const next = { ...item, ...updates, updated_at: new Date().toISOString() };
     setCustomers((current) => current.map((customer) => (customer.id === item.id ? next : customer)));
     const { error: updateError } = await supabase.from("customers").update(updates).eq("id", item.id);
-    if (updateError) setError("Nao conseguimos atualizar o cliente.");
+    if (updateError) setError("Não conseguimos atualizar o cliente.");
   }
 
   function copyText(value: string) {
@@ -402,7 +415,7 @@ function SaasDashboardContent() {
     {
       label: "Plano atual",
       value: planName,
-      detail: subscription?.status ? `Status: ${subscription.status}` : "Assinatura ainda nao configurada",
+      detail: subscription?.status ? `Status: ${subscription.status}` : "Assinatura ainda não configurada",
       icon: CreditCard
     },
     {
@@ -412,7 +425,7 @@ function SaasDashboardContent() {
       icon: Bot
     },
     {
-      label: "Negocio cadastrado",
+      label: "Negócio cadastrado",
       value: business ? "Sim" : "Pendente",
       detail: business ? business.business_name : "Cadastre para personalizar respostas",
       icon: BriefcaseBusiness
@@ -426,7 +439,7 @@ function SaasDashboardContent() {
     {
       label: "Respostas geradas",
       value: history.length.toString(),
-      detail: "Historico salvo da conta",
+      detail: "Histórico salvo da conta",
       icon: Clipboard
     }
   ];
@@ -454,7 +467,7 @@ function SaasDashboardContent() {
               </p>
               <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Assistente IA para WhatsApp</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-                Ola, {userName}. Cadastre seu negocio, cole a pergunta do cliente e gere uma resposta profissional.
+                Olá, {userName}. Cadastre seu negócio, cole a pergunta do cliente e gere uma resposta profissional.
               </p>
             </div>
             <button type="button" onClick={handleLogout} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 text-sm font-bold text-slate-200 hover:bg-white/10">
@@ -466,10 +479,10 @@ function SaasDashboardContent() {
 
         {!business ? (
           <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-5 text-sm font-bold text-amber-100">
-            <p className="text-base text-white">Nenhum negocio cadastrado ainda.</p>
-            <p className="mt-2 font-medium text-amber-100/90">Cadastre os dados do seu negocio para a IA personalizar as respostas.</p>
+            <p className="text-base text-white">Nenhum negócio cadastrado ainda.</p>
+            <p className="mt-2 font-medium text-amber-100/90">Cadastre os dados do seu negócio para a IA personalizar as respostas.</p>
             <button type="button" onClick={() => setTab("business")} className="mt-4 rounded-md bg-amber-300 px-4 py-2 text-xs font-black text-slate-950 hover:bg-amber-200">
-              Cadastrar negocio
+              Cadastrar negócio
             </button>
           </div>
         ) : null}
@@ -510,7 +523,7 @@ function SaasDashboardContent() {
         <section className="mb-5 grid gap-3 md:grid-cols-4">
           {[
             ["Gerar resposta", "assistant", Bot],
-            ["Cadastrar negocio", "business", BriefcaseBusiness],
+            ["Cadastrar negócio", "business", BriefcaseBusiness],
             ["Clientes", "customers", Users],
             ["Planos", "plans", CreditCard]
           ].map(([label, target, Icon]) => (
@@ -531,8 +544,8 @@ function SaasDashboardContent() {
         <nav className="mb-5 flex flex-wrap gap-2 rounded-lg border border-white/10 bg-[#101821] p-2">
           {[
             ["assistant", "Gerar resposta", Bot],
-            ["business", "Meu negocio", BriefcaseBusiness],
-            ["history", "Historico", Clipboard],
+            ["business", "Meu negócio", BriefcaseBusiness],
+            ["history", "Histórico", Clipboard],
             ["customers", "Clientes", Users]
           ].map(([id, label, Icon]) => (
             <button
@@ -604,10 +617,10 @@ function SaasDashboardContent() {
 
         {tab === "business" ? (
           <form onSubmit={handleSaveBusiness} className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
-            <h2 className="text-xl font-black text-white">Dados do negocio</h2>
+            <h2 className="text-xl font-black text-white">Dados do negócio</h2>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {[
-                ["business_name", "Nome do negocio"],
+                ["business_name", "Nome do negócio"],
                 ["business_area", "Area de atuacao"],
                 ["opening_hours", "Horario de atendimento"],
                 ["address", "Endereco"],
@@ -621,7 +634,7 @@ function SaasDashboardContent() {
                 </label>
               ))}
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
-                Descricao do negocio
+                Descrição do negócio
                 <textarea value={businessDraft.description} onChange={(event) => setBusinessDraft((current) => ({ ...current, description: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
@@ -629,20 +642,20 @@ function SaasDashboardContent() {
                 <textarea value={businessDraft.products_services} onChange={(event) => setBusinessDraft((current) => ({ ...current, products_services: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
-                Precos
+                Preços
                 <textarea value={businessDraft.prices} onChange={(event) => setBusinessDraft((current) => ({ ...current, prices: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
               </label>
             </div>
             <button type="submit" disabled={savingBusiness} className="mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300 disabled:opacity-60">
               <Save className="h-4 w-4" />
-              {savingBusiness ? "Salvando..." : "Salvar negocio"}
+              {savingBusiness ? "Salvando..." : "Salvar negócio"}
             </button>
           </form>
         ) : null}
 
         {tab === "history" ? (
           <section className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
-            <h2 className="text-xl font-black text-white">Historico de respostas</h2>
+            <h2 className="text-xl font-black text-white">Histórico de respostas</h2>
             <div className="mt-5 grid gap-3">
               {history.length ? history.map((item) => (
                 <article className="rounded-md border border-white/10 bg-white/[0.04] p-4" key={item.id}>
@@ -661,7 +674,7 @@ function SaasDashboardContent() {
                 <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
                   <Clipboard className="mx-auto mb-4 h-8 w-8 text-slate-500" />
                   <p className="font-bold text-slate-200">Nenhuma resposta gerada ainda.</p>
-                  <p className="mt-2">Gere sua primeira resposta para ver o historico salvo aqui.</p>
+                  <p className="mt-2">Gere sua primeira resposta para ver o histórico salvo aqui.</p>
                   <button type="button" onClick={() => setTab("assistant")} className="mt-4 rounded-md bg-emerald-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
                     Gerar resposta
                   </button>

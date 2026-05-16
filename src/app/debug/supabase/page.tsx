@@ -1,27 +1,42 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { supabase, supabaseEnv } from '@/lib/supabase';
+import { useEffect, useState } from "react";
+import { supabase, supabaseEnv } from "@/lib/supabase";
+
+type TestStatus = "loading" | "success" | "error" | "skipped";
 
 type TestResult = {
   name: string;
-  status: 'loading' | 'success' | 'error';
+  status: TestStatus;
   message: string;
 };
 
+const protectedTables = [
+  { name: "profiles", columns: "id", filterColumn: "id" },
+  { name: "businesses", columns: "id", filterColumn: "user_id" },
+  { name: "subscriptions", columns: "id, plan_name, status", filterColumn: "user_id" },
+  { name: "generated_responses", columns: "id", filterColumn: "user_id" },
+  { name: "customers", columns: "id", filterColumn: "user_id" }
+];
+
+function initialTests(): TestResult[] {
+  return [
+    "getSession",
+    "plans select",
+    "profiles select",
+    "businesses select",
+    "subscriptions select",
+    "generated_responses select",
+    "customers select"
+  ].map((name) => ({
+    name,
+    status: "loading",
+    message: "Aguardando teste..."
+  }));
+}
+
 export default function SupabaseDebugPage() {
-  const [tests, setTests] = useState<TestResult[]>([
-    {
-      name: 'getSession',
-      status: 'loading',
-      message: 'Testando sessão...',
-    },
-    {
-      name: 'plans select',
-      status: 'loading',
-      message: 'Testando tabela plans...',
-    },
-  ]);
+  const [tests, setTests] = useState<TestResult[]>(initialTests);
 
   useEffect(() => {
     async function runTests() {
@@ -32,55 +47,65 @@ export default function SupabaseDebugPage() {
 
         if (error) {
           results.push({
-            name: 'getSession',
-            status: 'error',
-            message: error.message,
+            name: "getSession",
+            status: "error",
+            message: error.message
           });
         } else {
+          const session = data.session;
           results.push({
-            name: 'getSession',
-            status: 'success',
-            message: data.session
-              ? `Sessão encontrada para ${data.session.user.email ?? 'usuário logado'}`
-              : 'Sem sessão ativa. Isso é normal se você não está logada.',
+            name: "getSession",
+            status: "success",
+            message: session
+              ? `Sessão encontrada para ${session.user.email ?? "usuário logado"}.`
+              : "Sem sessão ativa. Isso é normal antes de fazer login."
           });
+
+          const { data: plansData, error: plansError } = await supabase.from("plans").select("id, name").limit(1);
+          results.push({
+            name: "plans select",
+            status: plansError ? "error" : "success",
+            message: plansError ? plansError.message : `Consulta funcionou. Registros retornados: ${plansData?.length ?? 0}.`
+          });
+
+          if (!session?.user) {
+            protectedTables.forEach((table) => {
+              results.push({
+                name: `${table.name} select`,
+                status: "skipped",
+                message: "Faça login para testar esta tabela protegida por RLS."
+              });
+            });
+            setTests(results);
+            return;
+          }
+
+          for (const table of protectedTables) {
+            const { data: tableData, error: tableError } = await supabase
+              .from(table.name)
+              .select(table.columns)
+              .eq(table.filterColumn, session.user.id)
+              .limit(1);
+
+            results.push({
+              name: `${table.name} select`,
+              status: tableError ? "error" : "success",
+              message: tableError ? tableError.message : `Consulta funcionou. Registros retornados: ${tableData?.length ?? 0}.`
+            });
+          }
         }
       } catch (error) {
         results.push({
-          name: 'getSession',
-          status: 'error',
-          message: error instanceof Error ? error.message : 'Erro desconhecido em getSession.',
-        });
-      }
-
-      try {
-        const { data, error } = await supabase.from('plans').select('id, name').limit(1);
-
-        if (error) {
-          results.push({
-            name: 'plans select',
-            status: 'error',
-            message: error.message,
-          });
-        } else {
-          results.push({
-            name: 'plans select',
-            status: 'success',
-            message: `Consulta funcionou. Registros retornados: ${data?.length ?? 0}.`,
-          });
-        }
-      } catch (error) {
-        results.push({
-          name: 'plans select',
-          status: 'error',
-          message: error instanceof Error ? error.message : 'Erro desconhecido em plans select.',
+          name: "debug geral",
+          status: "error",
+          message: error instanceof Error ? error.message : "Erro desconhecido ao testar Supabase."
         });
       }
 
       setTests(results);
     }
 
-    runTests();
+    void runTests();
   }, []);
 
   return (
@@ -98,9 +123,9 @@ export default function SupabaseDebugPage() {
           <h2 className="text-xl font-semibold">Variáveis de ambiente</h2>
 
           <div className="mt-4 grid gap-3 text-sm">
-            <InfoRow label="Has URL" value={String(supabaseEnv.hasUrl)} />
-            <InfoRow label="URL" value={supabaseEnv.url ?? 'Não configurada'} />
-            <InfoRow label="Has anon key" value={String(supabaseEnv.hasAnonKey)} />
+            <InfoRow label="Env URL existe" value={String(supabaseEnv.hasUrl)} />
+            <InfoRow label="URL" value={supabaseEnv.url ? "Configurada" : "Não configurada"} />
+            <InfoRow label="Env anon key existe" value={String(supabaseEnv.hasAnonKey)} />
             <InfoRow label="Anon key length" value={String(supabaseEnv.anonKeyLength)} />
           </div>
         </section>
@@ -118,11 +143,13 @@ export default function SupabaseDebugPage() {
                   <h3 className="font-medium">{test.name}</h3>
                   <span
                     className={
-                      test.status === 'success'
-                        ? 'text-emerald-300'
-                        : test.status === 'error'
-                          ? 'text-red-300'
-                          : 'text-yellow-300'
+                      test.status === "success"
+                        ? "text-emerald-300"
+                        : test.status === "error"
+                          ? "text-red-300"
+                          : test.status === "skipped"
+                            ? "text-slate-400"
+                            : "text-yellow-300"
                     }
                   >
                     {test.status}
@@ -137,18 +164,9 @@ export default function SupabaseDebugPage() {
         <section className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-5 text-sm text-yellow-100">
           <h2 className="font-semibold">Como interpretar</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5">
-            <li>
-              Se <strong>Has anon key</strong> for false, o arquivo .env.local está errado ou o
-              servidor não foi reiniciado.
-            </li>
-            <li>
-              Se <strong>plans select</strong> falhar com tabela inexistente, o SQL ainda não foi
-              aplicado no Supabase.
-            </li>
-            <li>
-              Se aparecer <strong>Failed to fetch</strong>, teste a URL do Supabase no navegador e
-              confira internet, firewall, extensão e chave anon public.
-            </li>
+            <li>Se a anon key estiver ausente, revise `.env.local` e reinicie o servidor.</li>
+            <li>Se `plans select` falhar com tabela inexistente, aplique `supabase/schema.sql`.</li>
+            <li>Se uma tabela protegida falhar após login, revise RLS e policies no Supabase.</li>
           </ul>
         </section>
       </div>
