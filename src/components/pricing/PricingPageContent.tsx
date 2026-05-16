@@ -9,7 +9,7 @@ export function PricingPageContent() {
           Escolha o plano certo para o seu volume de atendimento
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-300">
-          O Inicial e bom para comecar. O Pro e melhor para quem atende mais clientes. O Premium fica reservado para a proxima fase com WhatsApp conectado.
+          O Inicial é bom para começar. O Pro é melhor para quem atende mais clientes. O Premium fica reservado para a próxima fase com WhatsApp conectado.
         </p>
       </section>
 

@@ -57,7 +57,7 @@ export default function SupabaseDebugPage() {
             name: "getSession",
             status: "success",
             message: session
-              ? `Sessão encontrada para ${session.user.email ?? "usuário logado"}.`
+              ? "Sessão ativa para usuário autenticado."
               : "Sem sessão ativa. Isso é normal antes de fazer login."
           });
 
@@ -116,6 +116,9 @@ export default function SupabaseDebugPage() {
           <h1 className="mt-2 text-3xl font-bold">Debug Supabase</h1>
           <p className="mt-2 text-slate-300">
             Esta página serve apenas para diagnóstico. Ela não mostra tokens nem chaves completas.
+          </p>
+          <p className="mt-2 text-sm font-semibold text-yellow-200">
+            Página de diagnóstico. Não compartilhe prints contendo dados pessoais.
           </p>
         </div>
 

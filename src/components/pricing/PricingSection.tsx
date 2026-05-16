@@ -24,11 +24,11 @@ const fallbackPlans: PricingPlan[] = [
   {
     name: "Plano Inicial",
     price: "R$ 19,90/mês",
-    description: "Para comecar a responder clientes com IA de forma profissional.",
+    description: "Para começar a responder clientes com IA de forma profissional.",
     checkoutUrl: process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || "",
-    cta: "Comecar no Inicial",
+    cta: "Começar no Inicial",
     badge: "Essencial",
-    features: ["Gerador de respostas com IA", "Cadastro do negócio", "Scripts prontos", "Histórico básico", "Organizacao basica de clientes"]
+    features: ["Gerador de respostas com IA", "Cadastro do negócio", "Scripts prontos", "Histórico básico", "Organização básica de clientes"]
   },
   {
     name: "Plano Pro",
@@ -38,16 +38,16 @@ const fallbackPlans: PricingPlan[] = [
     cta: "Assinar Pro",
     badge: "Mais vendido",
     recommended: true,
-    features: ["Tudo do Inicial", "Mais respostas por mês", "Mais modelos de mensagem", "Funil de atendimento", "Personalizacao por nicho"]
+    features: ["Tudo do Inicial", "Mais respostas por mês", "Mais modelos de mensagem", "Funil de atendimento", "Personalização por nicho"]
   },
   {
     name: "Plano Premium",
     price: "R$ 69,90/mês",
-    description: "Para a proxima fase com WhatsApp conectado e relatórios.",
+    description: "Para a próxima fase com WhatsApp conectado e relatórios.",
     checkoutUrl: "",
     cta: "Em breve",
     badge: "Futuro",
-    features: ["WhatsApp conectado", "Atendimento automatico", "Relatorios", "IA treinada com dados do negócio"]
+    features: ["WhatsApp conectado", "Atendimento automático", "Relatórios", "IA treinada com dados do negócio"]
   }
 ];
 

@@ -65,7 +65,7 @@ describe("POST /api/ai/generate-response", () => {
   it("retorna 403 quando o limite mensal do plano foi atingido", async () => {
     const { POST } = await import("./route");
     const response = await POST(
-      new Request("http://localhost/api/ai/generate-response", {
+      new Request("https://app.example.test/api/ai/generate-response", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

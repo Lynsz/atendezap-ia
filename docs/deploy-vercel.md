@@ -1,78 +1,112 @@
 # Deploy na Vercel
 
-## 1. Criar projeto
+## Passo a passo
 
-1. Suba o repositório para o GitHub.
-2. Acesse a Vercel.
-3. Crie um novo projeto.
-4. Conecte o repositório.
-
-## 2. Configurar build
-
-A Vercel detecta Next.js automaticamente.
-
-Scripts:
-
-```bash
-npm install
-npm run build
-```
-
-## 3. Configurar variáveis
-
-Configure em Project Settings > Environment Variables:
+1. Faça commit de todas as mudanças.
+2. Faça push para o GitHub.
+3. Entre na Vercel.
+4. Importe o repositório.
+5. Confirme o framework como `Next.js`.
+6. Use build command `npm run build`.
+7. Use o output padrão do Next.js.
+8. Adicione as Environment Variables obrigatórias:
 
 ```text
-NEXT_PUBLIC_APP_URL=https://seu-dominio.com
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
+NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
-RESEND_API_KEY=
-EMAIL_FROM=AtendeZap IA <noreply@seudominio.com>
-KIWIFY_WEBHOOK_SECRET=
-SUPPORT_EMAIL=suporte@seudominio.com
 ```
 
-Não configure `OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` ou `KIWIFY_WEBHOOK_SECRET` com prefixo `NEXT_PUBLIC`.
+9. Faça o deploy.
+10. Copie a URL gerada pela Vercel.
+11. Vá no Supabase em `Authentication -> URL Configuration`.
+12. Configure:
 
-## 4. Primeiro deploy
+Site URL:
 
-1. Rode o deploy.
-2. Confira se `npm run build` passa na Vercel.
-3. Acesse `/`, `/precos`, `/suporte`, `/termos` e `/privacidade`.
+```text
+https://URL-DA-VERCEL
+```
 
-## 5. Domínio
+Redirect URLs:
 
-1. Configure o domínio em Domains.
-2. Atualize `NEXT_PUBLIC_APP_URL`.
-3. Redeploy se necessário.
+```text
+https://URL-DA-VERCEL/**
+```
 
-## 6. Testar rotas principais
+13. Faça redeploy na Vercel se alterar variáveis.
+14. Abra `/debug/supabase` em produção.
+15. Teste cadastro/login em produção.
+16. Teste `/dashboard` em produção.
+17. Teste geração de resposta.
+18. Teste histórico.
+19. Teste clientes.
+20. Teste planos/checkout.
 
-- `GET /`
-- `GET /precos`
-- `POST /api/kiwify/webhook`
-- `GET /gerar/[token]`
-- `POST /api/generate-kit`
-- `GET /kit/[kitId]`
-- `GET /api/download/[kitId]`
+## Variáveis
 
-## 7. Logs
+`NEXT_PUBLIC_SUPABASE_URL` pode ir para o navegador.
 
-Use:
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ir para o navegador com RLS ativo.
 
-- Vercel Functions Logs para erros de API.
-- Supabase tabela `events` para eventos de negócio.
-- Resend logs para entrega de e-mails.
+`OPENAI_API_KEY` fica apenas no servidor e nunca deve usar prefixo `NEXT_PUBLIC`.
 
-## 8. Compatibilidade
+`SUPABASE_SERVICE_ROLE_KEY`, se usada em fluxos futuros, nunca deve ir para o front-end.
 
-O MVP é compatível com Vercel porque:
+## Supabase Auth URLs
 
-- usa App Router;
-- APIs rodam em runtime Node.js;
-- PDF é gerado sob demanda sem filesystem persistente;
-- segredos ficam apenas no backend;
-- links absolutos usam `NEXT_PUBLIC_APP_URL`.
+Local:
+
+Site URL:
+
+```text
+http://localhost:3000
+```
+
+Redirect URLs:
+
+```text
+http://localhost:3000/**
+http://localhost:3001/**
+http://localhost:3002/**
+http://localhost:3003/**
+```
+
+Produção:
+
+Site URL:
+
+```text
+https://URL-DA-VERCEL
+```
+
+Redirect URLs:
+
+```text
+https://URL-DA-VERCEL/**
+```
+
+Domínio futuro:
+
+```text
+https://atendezapia.com.br/**
+https://www.atendezapia.com.br/**
+```
+
+## Rotas para validar
+
+- `/`
+- `/cadastro`
+- `/login`
+- `/dashboard`
+- `/plans`
+- `/debug/supabase`
+- `/api/ai/generate-response`
+
+## Observações
+
+- A Vercel injeta `VERCEL_URL`; links absolutos server-side usam essa URL quando `NEXT_PUBLIC_APP_URL` não existir.
+- Checkouts Kiwify ficam em fallback se as URLs públicas estiverem vazias.
+- O webhook Kiwify automático permanece como placeholder seguro até a validação real de autenticidade ser implementada.

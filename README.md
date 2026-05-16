@@ -6,16 +6,16 @@ O produto permite criar conta, cadastrar o negócio, gerar respostas com IA para
 
 ## Status Comercial Do MVP
 
-O MVP ja tem landing page comercial, pagina de planos, cadastro/login, cadastro do negócio, geracao de respostas com IA por rota segura, histórico e clientes/leads conectados ao Supabase.
+O MVP já tem landing page comercial, página de planos, cadastro/login, cadastro do negócio, geração de respostas com IA por rota segura, histórico e clientes/leads conectados ao Supabase.
 
-O checkout depende das URLs publicas da Kiwify:
+O checkout depende das URLs públicas da Kiwify:
 
 ```bash
 NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
 NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
 ```
 
-Quando essas URLs estiverem vazias, os botoes de plano mostram checkout em configuração. A automacao direta com WhatsApp ainda não faz parte desta versão; nesta etapa o usuario cola a pergunta, gera a resposta e copia para enviar manualmente.
+Quando essas URLs estiverem vazias, os botões de plano mostram checkout em configuração. A automação direta com WhatsApp ainda não faz parte desta versão; nesta etapa o usuário cola a pergunta, gera a resposta e copia para enviar manualmente.
 
 ## Status atual do MVP
 
@@ -192,6 +192,28 @@ npm run test
 - Testar o botão de checkout ou confirmar a mensagem de checkout em configuração.
 - Fazer logout e login novamente.
 - Testar o fluxo no celular.
+
+## Checklist antes de anunciar
+
+- Supabase schema aplicado.
+- RLS ativo.
+- Project URL configurada.
+- Anon key configurada.
+- `OPENAI_API_KEY` configurada.
+- URLs Kiwify configuradas ou fallback aceito.
+- Vercel env vars configuradas.
+- Supabase Auth URLs configuradas.
+- `/debug/supabase` OK em produção.
+- Cadastro OK.
+- Login OK.
+- Cadastrar negócio OK.
+- Gerar resposta OK.
+- Histórico OK.
+- Clientes OK.
+- Planos OK.
+- Checkout OK.
+- Teste mobile OK.
+- Teste aba anônima OK.
 
 ## Fluxo Conectado
 

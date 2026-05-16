@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function appUrl() {
   if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
-  return "http://localhost:3000";
+  throw new Error("Configure NEXT_PUBLIC_APP_URL ou VERCEL_URL para gerar links absolutos.");
 }
 
 export function formatCurrency(value?: number | null) {
