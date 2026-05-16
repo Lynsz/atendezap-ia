@@ -70,18 +70,18 @@ const emptyCustomer: CustomerDraft = {
 const responseTypeLabels: Record<ResponseType, string> = {
   atendimento: "Atendimento",
   venda: "Venda",
-  orcamento: "Orcamento",
+  orcamento: "Orçamento",
   cliente_indeciso: "Cliente indeciso",
   pos_venda: "Pos-venda",
-  recuperacao: "Recuperacao"
+  recuperacao: "Recuperação"
 };
 
 const customerStatusLabels: Record<CustomerStatus, string> = {
   novo: "Novo",
   em_atendimento: "Em atendimento",
-  orcamento_enviado: "Orcamento enviado",
+  orcamento_enviado: "Orçamento enviado",
   aguardando_resposta: "Aguardando resposta",
-  venda_concluida: "Venda concluida",
+  venda_concluida: "Venda concluída",
   perdido: "Perdido"
 };
 
@@ -572,7 +572,7 @@ function SaasDashboardContent() {
               <p className="mt-2 text-sm leading-6 text-slate-400">Cole a mensagem recebida no WhatsApp e escolha o objetivo da resposta.</p>
               <label className="mt-5 grid gap-2 text-sm font-bold text-slate-300">
                 Pergunta do cliente
-                <textarea value={question} onChange={(event) => setQuestion(event.target.value)} className="field-input min-h-40 resize-none py-3" placeholder="Ex.: Oi, quanto custa e tem horario hoje?" />
+                <textarea value={question} onChange={(event) => setQuestion(event.target.value)} className="field-input min-h-40 resize-none py-3" placeholder="Ex.: Oi, quanto custa e tem horário hoje?" />
               </label>
               <label className="mt-4 grid gap-2 text-sm font-bold text-slate-300">
                 Tipo de resposta
@@ -607,7 +607,7 @@ function SaasDashboardContent() {
               ) : (
                 <div className="flex min-h-72 flex-col items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm leading-6 text-slate-400">
                   <MessageCircle className="mb-4 h-8 w-8 text-slate-500" />
-                  <p className="font-bold text-slate-200">A resposta pronta para copiar aparecera aqui.</p>
+                  <p className="font-bold text-slate-200">A resposta pronta para copiar aparecerá aqui.</p>
                   <p className="mt-2 max-w-sm">Cole uma pergunta real do cliente e escolha o objetivo da mensagem.</p>
                 </div>
               )}
@@ -621,9 +621,9 @@ function SaasDashboardContent() {
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {[
                 ["business_name", "Nome do negócio"],
-                ["business_area", "Area de atuacao"],
-                ["opening_hours", "Horario de atendimento"],
-                ["address", "Endereco"],
+                ["business_area", "Área de atuação"],
+                ["opening_hours", "Horário de atendimento"],
+                ["address", "Endereço"],
                 ["payment_methods", "Formas de pagamento"],
                 ["booking_or_payment_link", "Link de pagamento ou agendamento"],
                 ["brand_tone", "Tom de voz da marca"]
@@ -638,7 +638,7 @@ function SaasDashboardContent() {
                 <textarea value={businessDraft.description} onChange={(event) => setBusinessDraft((current) => ({ ...current, description: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
-                Produtos ou servicos
+                Produtos ou serviços
                 <textarea value={businessDraft.products_services} onChange={(event) => setBusinessDraft((current) => ({ ...current, products_services: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
@@ -705,7 +705,7 @@ function SaasDashboardContent() {
                 </select>
               </label>
               <label className="mt-4 grid gap-2 text-sm font-bold text-slate-300">
-                Observacoes
+                Observações
                 <textarea value={customerDraft.notes} onChange={(event) => setCustomerDraft((current) => ({ ...current, notes: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
               </label>
               <button type="submit" className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300">
@@ -730,7 +730,7 @@ function SaasDashboardContent() {
                     <select value={customer.status} onChange={(event) => updateCustomer(customer, { status: event.target.value as CustomerStatus })} className="field-input">
                       {customerStatuses.map((status) => <option value={status} key={status}>{customerStatusLabels[status]}</option>)}
                     </select>
-                    <textarea value={customer.notes || ""} onChange={(event) => updateCustomer(customer, { notes: event.target.value })} className="field-input min-h-20 resize-none py-3" placeholder="Observacoes do atendimento" />
+                    <textarea value={customer.notes || ""} onChange={(event) => updateCustomer(customer, { notes: event.target.value })} className="field-input min-h-20 resize-none py-3" placeholder="Observações do atendimento" />
                   </div>
                   <button type="button" onClick={() => handleDeleteCustomer(customer.id)} className="mt-3 inline-flex items-center gap-2 rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-200">
                     <Trash2 className="h-3.5 w-3.5" />
@@ -741,7 +741,7 @@ function SaasDashboardContent() {
                 <div className="rounded-lg border border-dashed border-white/15 bg-[#101821] p-8 text-center text-sm text-slate-400">
                   <Users className="mx-auto mb-4 h-8 w-8 text-slate-500" />
                   <p className="font-bold text-slate-200">Nenhum cliente cadastrado ainda.</p>
-                  <p className="mt-2">Cadastre clientes e leads para acompanhar status e observacoes importantes.</p>
+                  <p className="mt-2">Cadastre clientes e leads para acompanhar status e observações importantes.</p>
                 </div>
               )}
             </div>

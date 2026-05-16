@@ -5,7 +5,7 @@ export const responseTypes = ["atendimento", "venda", "orcamento", "cliente_inde
 export const customerStatuses = ["novo", "em_atendimento", "orcamento_enviado", "aguardando_resposta", "venda_concluida", "perdido"] as const;
 
 export const businessSchema = z.object({
-  business_name: z.string().trim().min(2, "Informe o nome do negocio."),
+  business_name: z.string().trim().min(2, "Informe o nome do negócio."),
   business_area: z.string().trim().optional().default(""),
   description: z.string().trim().optional().default(""),
   products_services: z.string().trim().optional().default(""),
