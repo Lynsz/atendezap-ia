@@ -211,6 +211,7 @@ drop policy if exists "customers_delete_own" on public.customers;
 drop policy if exists "subscriptions_select_own" on public.subscriptions;
 drop policy if exists "subscriptions_insert_own" on public.subscriptions;
 drop policy if exists "subscriptions_update_own" on public.subscriptions;
+drop policy if exists "subscriptions_delete_own" on public.subscriptions;
 drop policy if exists "plans_select_public" on public.plans;
 drop policy if exists "purchasers_no_client_access" on public.purchasers;
 drop policy if exists "orders_no_client_access" on public.orders;
@@ -237,8 +238,8 @@ create policy "customers_update_own" on public.customers for update to authentic
 create policy "customers_delete_own" on public.customers for delete to authenticated using ((select auth.uid()) = user_id);
 
 create policy "subscriptions_select_own" on public.subscriptions for select to authenticated using ((select auth.uid()) = user_id);
-create policy "subscriptions_insert_own" on public.subscriptions for insert to authenticated with check ((select auth.uid()) = user_id);
-create policy "subscriptions_update_own" on public.subscriptions for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+-- Assinaturas pagas devem ser atualizadas apenas por webhook/backend seguro.
+-- Clientes autenticados podem ler a propria assinatura, mas nao podem criar ou alterar plano/status pelo navegador.
 
 create policy "plans_select_public" on public.plans for select to anon, authenticated using (true);
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
@@ -248,7 +249,9 @@ create policy "support_requests_no_client_access" on public.support_requests for
 create policy "events_no_client_access" on public.events for all to anon, authenticated using (false) with check (false);
 
 grant usage on schema public to anon, authenticated;
-grant select, insert, update, delete on public.profiles, public.businesses, public.generated_responses, public.customers, public.subscriptions to authenticated;
+grant select, insert, update, delete on public.profiles, public.businesses, public.generated_responses, public.customers to authenticated;
+grant select on public.subscriptions to authenticated;
+revoke insert, update, delete on public.subscriptions from authenticated;
 grant select on public.plans to anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;

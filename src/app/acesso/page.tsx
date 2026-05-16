@@ -1,4 +1,4 @@
-import AccessPage from "@/pages/AccessPage";
+import AccessPage from "@/components/pages/AccessPage";
 
 export const metadata = {
   title: "AtendeZap IA - Acesso"

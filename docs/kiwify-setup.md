@@ -2,17 +2,55 @@
 
 Guia para operar os checkouts recorrentes da Kiwify com o AtendeZap IA em produção.
 
-## 1. Criar produtos
+## Status atual
 
-Crie três produtos digitais mensais na Kiwify:
+O webhook `/api/kiwify/webhook` está seguro como placeholder do SaaS: ele valida `KIWIFY_WEBHOOK_SECRET` quando a variável existir, registra apenas metadados mínimos e não atualiza `subscriptions` automaticamente.
 
-- Plano Básico: `R$29,00/mês`
-- Plano Starter: `R$49,00/mês`
-- Plano Premium: `R$79,00/mês`
+A liberação automática por webhook será implementada em etapa futura, com validação real de autenticidade da Kiwify e mapeamento seguro entre compra, usuário Supabase e plano contratado.
 
-Configure todos como produtos digitais automatizados com cobrança mensal.
+## Fluxo manual inicial
 
-## 2. Configurar checkouts
+1. Cliente compra na Kiwify.
+2. Admin confirma o pagamento na Kiwify.
+3. Admin localiza o `user_id` do cliente no Supabase.
+4. Admin atualiza a tabela `subscriptions` manualmente no SQL Editor do Supabase.
+
+## SQL manual para upgrade
+
+Para Inicial:
+
+```sql
+update subscriptions
+set plan_name = 'Inicial',
+    status = 'active',
+    current_period_end = now() + interval '30 days',
+    updated_at = now()
+where user_id = 'COLE_USER_ID_AQUI';
+```
+
+Para Pro:
+
+```sql
+update subscriptions
+set plan_name = 'Pro',
+    status = 'active',
+    current_period_end = now() + interval '30 days',
+    updated_at = now()
+where user_id = 'COLE_USER_ID_AQUI';
+```
+
+Para Premium:
+
+```sql
+update subscriptions
+set plan_name = 'Premium',
+    status = 'active',
+    current_period_end = now() + interval '30 days',
+    updated_at = now()
+where user_id = 'COLE_USER_ID_AQUI';
+```
+
+## Configurar checkouts
 
 Defina a página de obrigado de cada produto como:
 
@@ -20,25 +58,14 @@ Defina a página de obrigado de cada produto como:
 [APP_URL]/obrigado
 ```
 
-Configure a URL de obrigado na Kiwify como `/obrigado` quando publicar o projeto.
+Configure as URLs públicas no ambiente:
 
-Exemplo:
-
-```text
-https://atendezap-ia.com/obrigado
+```bash
+NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
+NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
 ```
 
-Os links oficiais ficam centralizados em `src/config/checkout.ts`:
-
-```text
-Plano Básico: https://pay.kiwify.com.br/SoDyO2k
-Plano Starter: https://pay.kiwify.com.br/KfYbZzC
-Plano Premium: https://pay.kiwify.com.br/n6jZUdh
-```
-
-Os botões do site adicionam UTMs automaticamente, incluindo `billing=monthly`.
-
-## 3. Configurar webhook
+## Configurar webhook
 
 Configure a URL:
 
@@ -46,13 +73,7 @@ Configure a URL:
 [APP_URL]/api/kiwify/webhook
 ```
 
-Evento esperado:
-
-- compra aprovada
-- pagamento aprovado
-- status equivalente a `approved`, `paid` ou `completed`
-
-Se a Kiwify permitir segredo/header, configure também:
+Se a Kiwify permitir segredo/header, configure:
 
 ```text
 KIWIFY_WEBHOOK_SECRET=um-segredo-forte
@@ -64,7 +85,7 @@ O app aceita o segredo em:
 - `x-webhook-secret`
 - `Authorization: Bearer seu-segredo`
 
-## 4. Testar webhook local
+## Testar webhook local
 
 Com `npm run dev` rodando:
 
@@ -83,27 +104,17 @@ curl -X POST http://localhost:3000/api/kiwify/webhook \
   -d @docs/mock-kiwify-webhook.json
 ```
 
-## 5. Conferir resultado
+Resposta esperada nesta etapa:
 
-No Supabase, confira:
-
-- `customers`: comprador criado ou atualizado.
-- `orders`: pedido criado com `access_token`.
-- `events`: eventos `webhook_received`, `order_approved` e `access_email_sent` ou `access_email_failed`.
-
-Se `RESEND_API_KEY` não estiver configurada, o pedido é criado e o evento de e-mail informa falha/pulo. Para teste manual, use `orders.access_token` e acesse:
-
-```text
-[APP_URL]/gerar/[access_token]
+```json
+{
+  "ok": true,
+  "mode": "manual_subscription_release"
+}
 ```
 
-## 6. Idempotência
+## Erros comuns
 
-Se o mesmo webhook chegar duas vezes com o mesmo `kiwify_order_id`, o app não cria novo pedido nem novo token. A resposta retorna sucesso com `duplicate: true`.
-
-## 7. Erros comuns
-
-- `Webhook não autorizado.`: segredo ausente ou diferente.
+- `Webhook não autorizado.`: segredo ausente ou diferente quando `KIWIFY_WEBHOOK_SECRET` está configurado.
 - `JSON inválido no webhook da Kiwify.`: payload malformado.
-- `Webhook recebido sem e-mail do comprador.`: payload não trouxe e-mail em nenhum campo conhecido.
-- Pedido criado, mas e-mail não enviado: confira `RESEND_API_KEY`, `EMAIL_FROM` e domínio verificado no Resend.
+- Cliente pagou, mas plano não mudou: comportamento esperado nesta etapa; faça o upgrade manual no Supabase.

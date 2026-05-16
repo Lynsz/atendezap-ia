@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -139,24 +139,12 @@ function DashboardContent() {
 
         setBusiness(businessResult.data ?? null);
 
-        if (subscriptionResult.data) {
-          setSubscription(subscriptionResult.data);
-        } else {
-          const { data: createdSubscription, error: createSubscriptionError } =
-            await supabase
-              .from('subscriptions')
-              .insert({
-                user_id: currentUser.id,
-                plan_name: 'free',
-                status: 'trial',
-              })
-              .select('id, plan_name, status, current_period_end')
-              .single();
-
-          if (createSubscriptionError) throw createSubscriptionError;
-
-          setSubscription(createdSubscription);
-        }
+        setSubscription(subscriptionResult.data ?? {
+          id: 'initial-trigger-pending',
+          plan_name: 'free',
+          status: 'trial',
+          current_period_end: null,
+        });
 
         setStats({
           customersCount: customersResult.count ?? 0,
@@ -188,7 +176,7 @@ function DashboardContent() {
     <main className="min-h-screen bg-slate-950 text-white">
       <header className="border-b border-slate-800 bg-slate-950/95 px-6 py-4 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          <Link href="/app" className="flex items-center gap-3">
+          <Link href="/dashboard" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400 text-slate-950">
               <MessageCircle className="h-5 w-5" />
             </div>
@@ -200,13 +188,13 @@ function DashboardContent() {
           </Link>
 
           <nav className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
-            <Link href="/app/business" className="hover:text-white">
+            <Link href="/dashboard" className="hover:text-white">
               Meu negócio
             </Link>
-            <Link href="/app/generate" className="hover:text-white">
+            <Link href="/dashboard" className="hover:text-white">
               Gerar resposta
             </Link>
-            <Link href="/app/customers" className="hover:text-white">
+            <Link href="/dashboard" className="hover:text-white">
               Clientes
             </Link>
             <Link href="/plans" className="hover:text-white">
@@ -240,7 +228,7 @@ function DashboardContent() {
           </div>
 
           <Link
-            href="/app/generate"
+            href="/dashboard"
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300"
           >
             <Wand2 className="h-4 w-4" />
@@ -315,7 +303,7 @@ function DashboardContent() {
                         ? `${business.business_name} cadastrado.`
                         : 'Informe serviços, preços, horários e tom de voz.'
                     }
-                    href="/app/business"
+                    href="/dashboard"
                     buttonText={business ? 'Editar' : 'Cadastrar'}
                   />
 
@@ -323,7 +311,7 @@ function DashboardContent() {
                     done={stats.monthlyResponsesCount > 0}
                     title="Gerar primeira resposta"
                     description="Cole uma pergunta real de cliente e gere uma resposta profissional."
-                    href="/app/generate"
+                    href="/dashboard"
                     buttonText="Gerar"
                   />
 
@@ -331,7 +319,7 @@ function DashboardContent() {
                     done={stats.customersCount > 0}
                     title="Cadastrar clientes"
                     description="Organize leads por status: novo, orçamento enviado ou venda concluída."
-                    href="/app/customers"
+                    href="/dashboard"
                     buttonText="Clientes"
                   />
                 </div>
@@ -354,7 +342,7 @@ function DashboardContent() {
                   </div>
 
                   <Link
-                    href="/app/business"
+                    href="/dashboard"
                     className="mt-5 inline-flex w-full items-center justify-center rounded-2xl border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-200 transition hover:border-emerald-400 hover:text-emerald-300"
                   >
                     {business ? 'Editar negócio' : 'Cadastrar negócio'}

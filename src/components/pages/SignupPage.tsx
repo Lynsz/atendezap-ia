@@ -33,14 +33,14 @@ export default function SignupPage() {
     }
 
     setLoading(true);
-    const { data, error: signUpError } = await auth.signUp({ name, email, password }).catch((authError: unknown) => ({
+    const { data = { user: null, session: null }, error: signUpError } = await auth.signUp({ name, email, password }).catch((authError: unknown) => ({
       data: { user: null, session: null },
       error: authError instanceof Error ? authError : new Error("Nao foi possivel criar sua conta. Tente outro e-mail.")
     }));
 
     if (signUpError) {
       setLoading(false);
-      setError(signUpError.message || "Nao foi possivel criar sua conta. Tente outro e-mail.");
+      setError(signUpError instanceof Error ? signUpError.message : signUpError || "Nao foi possivel criar sua conta. Tente outro e-mail.");
       return;
     }
 

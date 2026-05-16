@@ -9,6 +9,10 @@ export const SUPABASE_CONNECTION_ERROR =
 
 type AuthResult = {
   error: string | null;
+  data?: {
+    user: User | null;
+    session: Session | null;
+  };
 };
 
 type SignUpData = {
@@ -106,7 +110,7 @@ export function useAuth() {
       }
 
       try {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -120,7 +124,7 @@ export function useAuth() {
           return { error: error.message };
         }
 
-        return { error: null };
+        return { error: null, data };
       } catch (error) {
         console.error('[Supabase signUp failed]', {
           error,
@@ -133,6 +137,10 @@ export function useAuth() {
 
         return {
           error: normalizeAuthError(error),
+          data: {
+            user: null,
+            session: null,
+          },
         };
       }
     },
@@ -146,7 +154,7 @@ export function useAuth() {
       }
 
       try {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -155,7 +163,7 @@ export function useAuth() {
           return { error: error.message };
         }
 
-        return { error: null };
+        return { error: null, data };
       } catch (error) {
         console.error('[Supabase signIn failed]', {
           error,
@@ -168,6 +176,10 @@ export function useAuth() {
 
         return {
           error: normalizeAuthError(error),
+          data: {
+            user: null,
+            session: null,
+          },
         };
       }
     },

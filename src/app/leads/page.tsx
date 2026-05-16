@@ -1,4 +1,4 @@
-import LeadsPage from "@/pages/LeadsPage";
+import LeadsPage from "@/components/pages/LeadsPage";
 
 export const metadata = {
   title: "AtendeZap IA - Clientes & Leads"

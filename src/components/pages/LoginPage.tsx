@@ -1,6 +1,7 @@
-'use client';
+﻿'use client';
 
-import { FormEvent, useState } from 'react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LogIn, MessageCircle, UserPlus } from 'lucide-react';
 import { SUPABASE_CONNECTION_ERROR, useAuth } from '@/hooks/useAuth';
@@ -85,7 +86,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.replace('/app');
+      router.replace('/dashboard');
     } finally {
       setSubmitting(false);
     }

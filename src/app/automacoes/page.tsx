@@ -1,4 +1,4 @@
-import AutomationsPage from "@/pages/AutomationsPage";
+import AutomationsPage from "@/components/pages/AutomationsPage";
 
 export const metadata = {
   title: "AtendeZap IA - Automações IA"

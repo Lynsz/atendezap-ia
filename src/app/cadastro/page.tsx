@@ -1,4 +1,4 @@
-import SignupPage from "@/pages/SignupPage";
+import SignupPage from "@/components/pages/SignupPage";
 
 export const metadata = {
   title: "AtendeZap IA - Cadastro"

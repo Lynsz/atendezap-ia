@@ -1,4 +1,4 @@
-import SaasDashboardPage from "@/pages/SaasDashboardPage";
+import SaasDashboardPage from "@/components/pages/SaasDashboardPage";
 
 export const metadata = {
   title: "AtendeZap IA - Dashboard"

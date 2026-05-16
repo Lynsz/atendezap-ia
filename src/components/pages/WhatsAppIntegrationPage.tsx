@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { AlertTriangle, Bot, History, MessageCircle, Plug, Plus, Save, Server, Smartphone, Webhook } from "lucide-react";

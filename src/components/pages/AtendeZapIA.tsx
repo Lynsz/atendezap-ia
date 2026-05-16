@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -205,7 +205,7 @@ export default function AtendeZapIA() {
             </p>
             {businessProfile ? (
               <p className="mt-2 text-xs font-bold text-emerald-200">
-                Empresa: {businessProfile.businessName} • Tom da IA: {businessProfile.aiTone}
+                Empresa: {businessProfile.businessName} â€¢ Tom da IA: {businessProfile.aiTone}
               </p>
             ) : null}
           </div>

@@ -1,4 +1,4 @@
-import WhatsAppIntegrationPage from "@/pages/WhatsAppIntegrationPage";
+import WhatsAppIntegrationPage from "@/components/pages/WhatsAppIntegrationPage";
 
 export const metadata = {
   title: "AtendeZap IA - Integração WhatsApp"

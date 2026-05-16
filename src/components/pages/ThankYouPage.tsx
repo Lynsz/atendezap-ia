@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { CheckCircle2, Home, LogIn, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";

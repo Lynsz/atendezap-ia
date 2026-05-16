@@ -17,6 +17,17 @@ NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
 
 Quando essas URLs estiverem vazias, os botoes de plano mostram checkout em configuracao. A automacao direta com WhatsApp ainda nao faz parte desta versao; nesta etapa o usuario cola a pergunta, gera a resposta e copia para enviar manualmente.
 
+## Status atual do MVP
+
+- `/dashboard` é a rota oficial da área logada do SaaS.
+- `/app/*` não é mais usado como área do produto; acessos legados redirecionam para `/dashboard`.
+- Componentes reutilizáveis saíram de `src/pages` para evitar rotas públicas antigas como `/LoginPage`, `/SignupPage`, `/DashboardPage`, `/SaasDashboardPage` e `/AppDashboardPage`.
+- A geração de resposta é feita server-side por `/api/ai/generate-response`.
+- O limite mensal é aplicado no servidor antes de chamar a OpenAI e antes de salvar em `generated_responses`.
+- `subscriptions` é leitura para o client; plano, status e período devem ser atualizados por trigger, webhook validado ou operação backend segura.
+- Upgrade pago por enquanto é manual via Supabase/Kiwify.
+- Webhook Kiwify automático para liberar plano é etapa futura.
+
 ## Stack
 
 - Next.js com App Router
@@ -45,7 +56,7 @@ supabase/schema.sql
 
 Ele cria as tabelas `profiles`, `businesses`, `generated_responses`, `customers`, `subscriptions`, `plans`, alem das tabelas server-side do fluxo Kiwify/kit: `purchasers`, `orders`, `kits`, `support_requests` e `events`.
 
-As tabelas usadas pelo app logado tem RLS ativa por `auth.uid()`. As tabelas do fluxo Kiwify/kit ficam sem acesso para `anon` e `authenticated`, sendo usadas apenas por rotas backend com service role.
+As tabelas usadas pelo app logado tem RLS ativa por `auth.uid()`. `subscriptions` permite apenas leitura pelo usuario autenticado; criacao e alteracao de plano/status ficam restritas a trigger, SQL administrativo ou backend seguro. As tabelas do fluxo Kiwify/kit ficam sem acesso para `anon` e `authenticated`, sendo usadas apenas por rotas backend com service role.
 
 Para configurar:
 
@@ -170,7 +181,7 @@ npm run test
 
 - `/cadastro`: cria usuario no Supabase Auth e profile.
 - `/login`: autentica com Supabase Auth.
-- `/dashboard`: rota protegida.
+- `/dashboard`: rota oficial protegida do SaaS.
 - Aba "Meu negocio": salva/edita `businesses`.
 - Aba "Gerar resposta": chama `/api/ai/generate-response`, nunca OpenAI direto do React.
 - Aba "Historico": lista e exclui `generated_responses`.
@@ -204,7 +215,7 @@ OPENAI_API_KEY=
 
 `OPENAI_API_KEY` deve ficar apenas no servidor ou `.env.local`; nunca use prefixo `NEXT_PUBLIC_` para essa chave.
 
-Se `OPENAI_API_KEY` nao estiver configurada, a rota retorna um fallback util usando a pergunta do cliente e os dados cadastrados do negocio, sem inventar informacoes. Depois de gerada, a resposta e salva em `generated_responses` no Supabase com `user_id`, `business_id`, pergunta, resposta, tipo e data.
+Se `OPENAI_API_KEY` nao estiver configurada, a rota retorna um fallback util usando a pergunta do cliente e os dados cadastrados do negocio, sem inventar informacoes. Antes de gerar, a rota autentica o usuario, le a assinatura, conta as respostas do mes atual e bloqueia o uso acima do limite do plano. Depois de gerada, a resposta e salva em `generated_responses` no Supabase com `user_id`, `business_id`, pergunta, resposta, tipo e data.
 
 ## Placeholders
 
@@ -219,5 +230,4 @@ Se `OPENAI_API_KEY` nao estiver configurada, a rota retorna um fallback util usa
 - Configurar Auth URLs no Supabase.
 - Colocar a anon public key no `.env.local`.
 - Configurar `OPENAI_API_KEY` no ambiente serverless.
-- Adicionar limites de uso por plano.
-- Evoluir Kiwify para atualizar assinaturas reais em `subscriptions`.
+- Evoluir Kiwify para atualizar assinaturas reais em `subscriptions` somente apos validar autenticidade do webhook.

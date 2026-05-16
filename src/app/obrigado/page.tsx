@@ -1,4 +1,4 @@
-import ThankYouPage from "@/pages/ThankYouPage";
+import ThankYouPage from "@/components/pages/ThankYouPage";
 
 export const metadata = {
   title: "AtendeZap IA - Obrigado"

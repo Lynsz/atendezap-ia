@@ -1,4 +1,4 @@
-import ScriptsPage from "@/pages/ScriptsPage";
+import ScriptsPage from "@/components/pages/ScriptsPage";
 
 export const metadata = {
   title: "AtendeZap IA - Scripts para WhatsApp"

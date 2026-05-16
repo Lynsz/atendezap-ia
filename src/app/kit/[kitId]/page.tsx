@@ -31,7 +31,7 @@ export default async function KitPage({ params }: { params: Promise<{ kitId: str
         <div>
           <h1 className="text-3xl font-black text-ink">Kit de atendimento gerado</h1>
           <p className="mt-2 text-slate-600">
-            {kit.business_name} • {new Date(kit.created_at).toLocaleDateString("pt-BR")}
+            {kit.business_name} â€¢ {new Date(kit.created_at).toLocaleDateString("pt-BR")}
           </p>
         </div>
         <Button href={`/api/download/${kit.id}`} className="gap-2">

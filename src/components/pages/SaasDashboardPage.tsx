@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
@@ -84,6 +84,27 @@ const customerStatusLabels: Record<CustomerStatus, string> = {
   perdido: "Perdido"
 };
 
+const fallbackPlanLimits: Record<string, number> = {
+  free: 30,
+  trial: 30,
+  inicial: 300,
+  pro: 1000,
+  premium: 3000
+};
+
+function getCurrentMonthStart() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+}
+
+function getPlanLimit(subscription: Subscription | null, plan: Plan | null) {
+  const normalizedStatus = subscription?.status?.trim().toLowerCase();
+  const normalizedPlan = subscription?.plan_name?.trim().toLowerCase() || plan?.name.trim().toLowerCase() || "free";
+
+  if (normalizedStatus === "trial") return fallbackPlanLimits.trial;
+  return plan?.response_limit || fallbackPlanLimits[normalizedPlan] || fallbackPlanLimits.free;
+}
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
@@ -136,6 +157,7 @@ function SaasDashboardContent() {
   const [customerDraft, setCustomerDraft] = useState<CustomerDraft>(emptyCustomer);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [currentPlan, setCurrentPlan] = useState<Plan | null>(null);
+  const [monthlyUsage, setMonthlyUsage] = useState(0);
 
   const supabase = useMemo(() => (isSupabaseBrowserConfigured() ? supabaseBrowserClient : null), []);
 
@@ -176,16 +198,18 @@ function SaasDashboardContent() {
       { data: responseData, error: responseError },
       { data: customerData, error: customerError },
       { data: subscriptionData, error: subscriptionError },
-      { data: planData }
+      { data: planData },
+      { count: monthlyResponseCount, error: monthlyUsageError }
     ] = await Promise.all([
       supabase.from("businesses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("generated_responses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
       supabase.from("customers").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }),
       supabase.from("subscriptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-      supabase.from("plans").select("*").order("price", { ascending: true })
+      supabase.from("plans").select("*").order("price", { ascending: true }),
+      supabase.from("generated_responses").select("id", { count: "exact", head: true }).eq("user_id", user.id).gte("created_at", getCurrentMonthStart())
     ]);
 
-    if (businessError || responseError || customerError || subscriptionError) {
+    if (businessError || responseError || customerError || subscriptionError || monthlyUsageError) {
       setError("Nao conseguimos carregar todos os dados agora. Atualize a pagina ou tente novamente em instantes.");
     }
 
@@ -201,6 +225,7 @@ function SaasDashboardContent() {
     setCustomers((customerData as CustomerLead[] | null) || []);
     setSubscription(subscriptionRow);
     setCurrentPlan(matchedPlan || null);
+    setMonthlyUsage(monthlyResponseCount || 0);
     setLoading(false);
   }, [router, supabase]);
 
@@ -279,7 +304,7 @@ function SaasDashboardContent() {
 
     setGenerating(true);
     try {
-      const { generatedAnswer: answer } = await generateCustomerResponse({
+      const { generatedAnswer: answer, savedResponse, usage } = await generateCustomerResponse({
         customerQuestion: question,
         responseType,
         business: {
@@ -288,26 +313,11 @@ function SaasDashboardContent() {
         }
       });
 
-      const { data: saved, error: insertError } = await supabase
-        .from("generated_responses")
-        .insert({
-          user_id: user.id,
-          business_id: business.id,
-          customer_question: question,
-          generated_answer: answer,
-          response_type: responseType
-        })
-        .select("*")
-        .single();
-
-      if (insertError || !saved) {
-        setError("Resposta gerada, mas nao conseguimos salvar no historico.");
-        setGeneratedAnswer(answer);
-        return;
-      }
-
       setGeneratedAnswer(answer);
-      setHistory((current) => [saved as GeneratedResponse, ...current]);
+      setMonthlyUsage(usage.used);
+      if (savedResponse) {
+        setHistory((current) => [savedResponse, ...current]);
+      }
       showFeedback("Resposta salva no historico.");
     } catch (generationError) {
       setError(generationError instanceof Error ? generationError.message : "Nao foi possivel gerar a resposta agora.");
@@ -383,7 +393,11 @@ function SaasDashboardContent() {
   }
 
   const planName = subscription?.plan_name || currentPlan?.name || "Sem assinatura";
-  const responseLimit = currentPlan?.response_limit ? currentPlan.response_limit.toLocaleString("pt-BR") : "Em configuracao";
+  const monthlyLimit = getPlanLimit(subscription, currentPlan);
+  const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
+  const hasReachedMonthlyLimit = monthlyUsage >= monthlyLimit;
+  const isFreeOrTrial = !subscription?.plan_name || subscription.plan_name.toLowerCase() === "free" || subscription.status?.toLowerCase() === "trial";
+  const responseLimit = monthlyLimit.toLocaleString("pt-BR");
   const overviewCards = [
     {
       label: "Plano atual",
@@ -393,8 +407,8 @@ function SaasDashboardContent() {
     },
     {
       label: "Uso mensal",
-      value: currentPlan?.response_limit ? `${history.length}/${responseLimit}` : `${history.length}`,
-      detail: "Respostas carregadas neste painel",
+      value: `${monthlyUsage}/${responseLimit}`,
+      detail: "Respostas usadas neste mês",
       icon: Bot
     },
     {
@@ -462,6 +476,21 @@ function SaasDashboardContent() {
         {(feedback || error) ? (
           <div className={`mb-5 rounded-lg border p-4 text-sm font-bold ${error ? "border-red-400/30 bg-red-500/10 text-red-200" : "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"}`}>
             {error || feedback}
+          </div>
+        ) : null}
+        {isFreeOrTrial ? (
+          <div className="mb-5 flex flex-col gap-3 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm text-emerald-100 md:flex-row md:items-center md:justify-between">
+            <p>
+              Respostas usadas neste mês: <strong>{monthlyUsage} / {responseLimit}</strong>. Faça upgrade para aumentar seu limite.
+            </p>
+            <button type="button" onClick={() => router.push("/plans")} className="rounded-md bg-emerald-300 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-200">
+              Ver planos
+            </button>
+          </div>
+        ) : null}
+        {hasReachedMonthlyLimit ? (
+          <div className="mb-5 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">
+            Você atingiu o limite de respostas do seu plano neste mês. Faça upgrade para continuar usando.
           </div>
         ) : null}
 
@@ -542,9 +571,12 @@ function SaasDashboardContent() {
                   ))}
                 </select>
               </label>
-              <button type="submit" disabled={generating || !business} className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300 disabled:opacity-60">
+              <p className="mt-4 text-xs font-bold text-slate-400">
+                Respostas usadas neste mês: {monthlyUsage} / {responseLimit}. Restam {monthlyRemaining}.
+              </p>
+              <button type="submit" disabled={generating || !business || hasReachedMonthlyLimit} className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300 disabled:opacity-60">
                 <Send className="h-4 w-4" />
-                {generating ? "Gerando resposta..." : "Gerar resposta com IA"}
+                {hasReachedMonthlyLimit ? "Limite mensal atingido" : generating ? "Gerando resposta..." : "Gerar resposta com IA"}
               </button>
             </form>
 

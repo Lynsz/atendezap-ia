@@ -1,4 +1,4 @@
-import BillingPage from "@/pages/BillingPage";
+import BillingPage from "@/components/pages/BillingPage";
 
 export const metadata = {
   title: "AtendeZap IA - Minha Assinatura"
