@@ -6,30 +6,32 @@ type GenerateCustomerResponseInput = {
   business: GenerateResponseInput["businessData"];
 };
 
-const responseTypeLabels: Record<GenerateResponseInput["responseType"], string> = {
-  atendimento: "atendimento",
-  venda: "venda",
-  orcamento: "orcamento",
-  cliente_indeciso: "cliente indeciso",
-  pos_venda: "pos-venda",
-  recuperacao: "recuperacao"
+type GenerateCustomerResponseResult = {
+  generatedAnswer: string;
+  mode?: string;
 };
 
 export async function generateCustomerResponse({ customerQuestion, responseType, business }: GenerateCustomerResponseInput) {
-  const details = [
-    business.products_services ? `servicos/produtos: ${business.products_services}` : "",
-    business.opening_hours ? `horario: ${business.opening_hours}` : "",
-    business.payment_methods ? `formas de pagamento: ${business.payment_methods}` : "",
-    business.booking_or_payment_link ? `link: ${business.booking_or_payment_link}` : ""
-  ].filter(Boolean);
+  const response = await fetch("/api/ai/generate-response", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      customerQuestion,
+      responseType,
+      businessData: business
+    })
+  });
 
-  return [
-    `Ola! Sobre sua duvida: "${customerQuestion}".`,
-    `Aqui e ${business.business_name}.`,
-    details.length ? `No momento, posso te ajudar com estas informacoes do nosso negocio: ${details.join("; ")}.` : "Posso te ajudar com mais detalhes do nosso atendimento.",
-    `Esta resposta foi preparada para ${responseTypeLabels[responseType]}. Se quiser, me envie mais detalhes para eu orientar melhor.`
-  ].join(" ");
+  const data = (await response.json().catch(() => ({}))) as Partial<GenerateCustomerResponseResult> & { error?: string };
+
+  if (!response.ok || !data.generatedAnswer) {
+    throw new Error(data.error || "Nao foi possivel gerar a resposta agora.");
+  }
+
+  return {
+    generatedAnswer: data.generatedAnswer,
+    mode: data.mode
+  };
 }
-
-// A integracao real com OpenAI deve entrar no backend/route handler,
-// usando OPENAI_API_KEY apenas no servidor e mantendo este contrato.

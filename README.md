@@ -173,6 +173,26 @@ Para testar cadastro/login:
 5. Entre em `/login`.
 6. Abra `/dashboard` e salve os dados do negocio.
 
+## Geracao De Respostas Com IA
+
+A geracao de respostas usa a rota interna:
+
+```bash
+/api/ai/generate-response
+```
+
+O front-end chama essa rota por `src/services/ai.ts`; ele nunca chama OpenAI diretamente.
+
+Para usar IA real, configure no ambiente local ou no servidor:
+
+```bash
+OPENAI_API_KEY=
+```
+
+`OPENAI_API_KEY` deve ficar apenas no servidor ou `.env.local`; nunca use prefixo `NEXT_PUBLIC_` para essa chave.
+
+Se `OPENAI_API_KEY` nao estiver configurada, a rota retorna um fallback util usando a pergunta do cliente e os dados cadastrados do negocio, sem inventar informacoes. Depois de gerada, a resposta e salva em `generated_responses` no Supabase com `user_id`, `business_id`, pergunta, resposta, tipo e data.
+
 ## Placeholders
 
 - Se `OPENAI_API_KEY` nao estiver configurada, `/api/generate-response` salva uma resposta placeholder segura baseada nos dados do negocio.

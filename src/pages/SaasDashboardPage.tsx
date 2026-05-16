@@ -20,6 +20,7 @@ import {
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
+import { generateCustomerResponse } from "@/services/ai";
 import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, ResponseType } from "@/types/mvp";
 
 type DashboardTab = "assistant" | "business" | "history" | "customers";
@@ -250,41 +251,50 @@ function SaasDashboardContent() {
     }
 
     const {
-      data: { session }
-    } = await supabase.auth.getSession();
-    if (!session) {
+      data: { user }
+    } = await supabase.auth.getUser();
+    if (!user) {
       router.replace("/login");
       return;
     }
 
     setGenerating(true);
-    const response = await fetch("/api/generate-response", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({
+    try {
+      const { generatedAnswer: answer } = await generateCustomerResponse({
         customerQuestion: question,
         responseType,
-        businessId: business.id,
-        businessData: {
+        business: {
           id: business.id,
           ...businessDraft
         }
-      })
-    });
-    const json = (await response.json()) as { error?: string; generatedAnswer?: string; saved?: GeneratedResponse };
-    setGenerating(false);
+      });
 
-    if (!response.ok || !json.generatedAnswer) {
-      setError(json.error || "Nao conseguimos gerar a resposta agora.");
-      return;
+      const { data: saved, error: insertError } = await supabase
+        .from("generated_responses")
+        .insert({
+          user_id: user.id,
+          business_id: business.id,
+          customer_question: question,
+          generated_answer: answer,
+          response_type: responseType
+        })
+        .select("*")
+        .single();
+
+      if (insertError || !saved) {
+        setError("Resposta gerada, mas nao conseguimos salvar no historico.");
+        setGeneratedAnswer(answer);
+        return;
+      }
+
+      setGeneratedAnswer(answer);
+      setHistory((current) => [saved as GeneratedResponse, ...current]);
+      showFeedback("Resposta salva no historico.");
+    } catch (generationError) {
+      setError(generationError instanceof Error ? generationError.message : "Nao foi possivel gerar a resposta agora.");
+    } finally {
+      setGenerating(false);
     }
-
-    setGeneratedAnswer(json.generatedAnswer);
-    if (json.saved) setHistory((current) => [json.saved as GeneratedResponse, ...current]);
-    showFeedback("Resposta gerada e salva no historico.");
   }
 
   async function handleDeleteHistory(itemId: string) {
@@ -350,7 +360,7 @@ function SaasDashboardContent() {
 
   function copyText(value: string) {
     void navigator.clipboard?.writeText(value);
-    showFeedback("Texto copiado.");
+    showFeedback("Resposta copiada.");
   }
 
   if (loading) {
@@ -442,7 +452,7 @@ function SaasDashboardContent() {
               </label>
               <button type="submit" disabled={generating || !business} className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300 disabled:opacity-60">
                 <Send className="h-4 w-4" />
-                {generating ? "Gerando..." : "Gerar resposta com IA"}
+                {generating ? "Gerando resposta..." : "Gerar resposta com IA"}
               </button>
             </form>
 

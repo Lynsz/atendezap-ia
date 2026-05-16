@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { generateResponseSchema } from "@/lib/mvp-validators";
-import { generateCustomerResponse } from "@/services/ai";
+import { generateCustomerResponseWithAi } from "@/lib/ai-response";
 
 export async function POST(request: Request) {
   try {
@@ -43,10 +43,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Sessao invalida. Faca login novamente." }, { status: 401 });
     }
 
-    const generatedAnswer = await generateCustomerResponse({
+    const { generatedAnswer } = await generateCustomerResponseWithAi({
       customerQuestion: payload.data.customerQuestion,
       responseType: payload.data.responseType,
-      business: payload.data.businessData
+      businessData: payload.data.businessData
     });
 
     const { data: saved, error: insertError } = await supabase
