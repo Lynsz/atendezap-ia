@@ -6,40 +6,34 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "AtendeZap IA",
-  description: "Gere um kit completo de mensagens para organizar o atendimento do seu WhatsApp Business."
+  title: "AtendeZap IA - Respostas com IA para WhatsApp",
+  description: "Cadastre seu negocio, cole a pergunta do cliente e gere uma resposta profissional com IA pronta para enviar no WhatsApp."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <header className="border-b border-slate-200 bg-white">
+        <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
             <Link href="/" className="text-lg font-extrabold tracking-tight text-brand-700">
               AtendeZap IA
             </Link>
-            <nav className="flex items-center gap-4 text-sm font-medium text-slate-700">
-              <Link href="/app" className="hover:text-brand-700">
-                Painel
+            <nav className="flex items-center gap-3 text-sm font-bold text-slate-700 md:gap-5">
+              <Link href="/#como-funciona" className="hidden hover:text-brand-700 sm:inline">
+                Como funciona
               </Link>
-              <Link href="/onboarding" className="hover:text-brand-700">
-                Empresa
+              <Link href="/#beneficios" className="hidden hover:text-brand-700 sm:inline">
+                Beneficios
               </Link>
-              <Link href="/precos" className="hover:text-brand-700">
+              <Link href="/plans" className="hover:text-brand-700">
                 Planos
               </Link>
-              <Link href="/atendezap" className="hover:text-brand-700">
-                AtendeZap IA
+              <Link href="/login" className="hover:text-brand-700">
+                Entrar
               </Link>
-              <Link href="/leads" className="hover:text-brand-700">
-                Clientes & Leads
-              </Link>
-              <Link href="/automacoes" className="hover:text-brand-700">
-                Automações IA
-              </Link>
-              <Link href="/suporte" className="hover:text-brand-700">
-                Suporte
+              <Link href="/cadastro" className="rounded-md bg-brand-600 px-4 py-2 text-white shadow-sm hover:bg-brand-700">
+                Comecar agora
               </Link>
             </nav>
           </div>

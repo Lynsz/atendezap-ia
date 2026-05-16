@@ -8,6 +8,7 @@ import {
   BriefcaseBusiness,
   CheckCircle2,
   Clipboard,
+  CreditCard,
   LogOut,
   MessageCircle,
   Plus,
@@ -21,7 +22,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
 import { generateCustomerResponse } from "@/services/ai";
-import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, ResponseType } from "@/types/mvp";
+import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, Subscription } from "@/types/mvp";
 
 type DashboardTab = "assistant" | "business" | "history" | "customers";
 
@@ -133,6 +134,8 @@ function SaasDashboardContent() {
   const [history, setHistory] = useState<GeneratedResponse[]>([]);
   const [customers, setCustomers] = useState<CustomerLead[]>([]);
   const [customerDraft, setCustomerDraft] = useState<CustomerDraft>(emptyCustomer);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<Plan | null>(null);
 
   const supabase = useMemo(() => (isSupabaseBrowserConfigured() ? supabaseBrowserClient : null), []);
 
@@ -143,7 +146,7 @@ function SaasDashboardContent() {
 
   const loadDashboardData = useCallback(async () => {
     if (!supabase) {
-      setError("Supabase nao configurado. Configure as variaveis de ambiente.");
+      setError("Configuracao de conexao incompleta. Revise o ambiente e tente novamente.");
       setLoading(false);
       return;
     }
@@ -168,20 +171,36 @@ function SaasDashboardContent() {
       email: user.email
     });
 
-    const [{ data: businessData, error: businessError }, { data: responseData, error: responseError }, { data: customerData, error: customerError }] = await Promise.all([
+    const [
+      { data: businessData, error: businessError },
+      { data: responseData, error: responseError },
+      { data: customerData, error: customerError },
+      { data: subscriptionData, error: subscriptionError },
+      { data: planData }
+    ] = await Promise.all([
       supabase.from("businesses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("generated_responses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
-      supabase.from("customers").select("*").eq("user_id", user.id).order("updated_at", { ascending: false })
+      supabase.from("customers").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }),
+      supabase.from("subscriptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      supabase.from("plans").select("*").order("price", { ascending: true })
     ]);
 
-    if (businessError || responseError || customerError) {
-      setError("Nao conseguimos carregar todos os dados do Supabase. Confira sua sessao e as policies.");
+    if (businessError || responseError || customerError || subscriptionError) {
+      setError("Nao conseguimos carregar todos os dados agora. Atualize a pagina ou tente novamente em instantes.");
     }
+
+    const subscriptionRow = (subscriptionData as Subscription | null) || null;
+    const planRows = (planData as Plan[] | null) || [];
+    const matchedPlan = subscriptionRow?.plan_name
+      ? planRows.find((plan) => plan.name.toLowerCase() === subscriptionRow.plan_name?.toLowerCase())
+      : planRows.find((plan) => plan.name.toLowerCase() === "inicial");
 
     setBusiness((businessData as Business | null) || null);
     setBusinessDraft(toBusinessDraft((businessData as Business | null) || null));
     setHistory((responseData as GeneratedResponse[] | null) || []);
     setCustomers((customerData as CustomerLead[] | null) || []);
+    setSubscription(subscriptionRow);
+    setCurrentPlan(matchedPlan || null);
     setLoading(false);
   }, [router, supabase]);
 
@@ -225,7 +244,7 @@ function SaasDashboardContent() {
     setSavingBusiness(false);
 
     if (saveError) {
-      setError("Nao conseguimos salvar o negocio. Confira o schema e as policies no Supabase.");
+      setError("Nao conseguimos salvar o negocio agora. Revise os campos e tente novamente.");
       return;
     }
 
@@ -363,6 +382,41 @@ function SaasDashboardContent() {
     showFeedback("Resposta copiada.");
   }
 
+  const planName = subscription?.plan_name || currentPlan?.name || "Sem assinatura";
+  const responseLimit = currentPlan?.response_limit ? currentPlan.response_limit.toLocaleString("pt-BR") : "Em configuracao";
+  const overviewCards = [
+    {
+      label: "Plano atual",
+      value: planName,
+      detail: subscription?.status ? `Status: ${subscription.status}` : "Assinatura ainda nao configurada",
+      icon: CreditCard
+    },
+    {
+      label: "Uso mensal",
+      value: currentPlan?.response_limit ? `${history.length}/${responseLimit}` : `${history.length}`,
+      detail: "Respostas carregadas neste painel",
+      icon: Bot
+    },
+    {
+      label: "Negocio cadastrado",
+      value: business ? "Sim" : "Pendente",
+      detail: business ? business.business_name : "Cadastre para personalizar respostas",
+      icon: BriefcaseBusiness
+    },
+    {
+      label: "Clientes",
+      value: customers.length.toString(),
+      detail: "Clientes e leads cadastrados",
+      icon: Users
+    },
+    {
+      label: "Respostas geradas",
+      value: history.length.toString(),
+      detail: "Historico salvo da conta",
+      icon: Clipboard
+    }
+  ];
+
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#090d12] px-4 text-slate-100">
@@ -397,8 +451,12 @@ function SaasDashboardContent() {
         </header>
 
         {!business ? (
-          <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4 text-sm font-bold text-amber-100">
-            Cadastre os dados do seu negocio para a IA personalizar as respostas.
+          <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-5 text-sm font-bold text-amber-100">
+            <p className="text-base text-white">Nenhum negocio cadastrado ainda.</p>
+            <p className="mt-2 font-medium text-amber-100/90">Cadastre os dados do seu negocio para a IA personalizar as respostas.</p>
+            <button type="button" onClick={() => setTab("business")} className="mt-4 rounded-md bg-amber-300 px-4 py-2 text-xs font-black text-slate-950 hover:bg-amber-200">
+              Cadastrar negocio
+            </button>
           </div>
         ) : null}
         {(feedback || error) ? (
@@ -406,6 +464,40 @@ function SaasDashboardContent() {
             {error || feedback}
           </div>
         ) : null}
+
+        <section className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {overviewCards.map((card) => (
+            <article className="rounded-lg border border-white/10 bg-[#101821] p-4 shadow-xl shadow-black/20" key={card.label}>
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-emerald-400/10 text-emerald-300">
+                <card.icon className="h-5 w-5" />
+              </div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">{card.label}</p>
+              <p className="mt-2 text-2xl font-black text-white">{card.value}</p>
+              <p className="mt-2 text-xs leading-5 text-slate-400">{card.detail}</p>
+            </article>
+          ))}
+        </section>
+
+        <section className="mb-5 grid gap-3 md:grid-cols-4">
+          {[
+            ["Gerar resposta", "assistant", Bot],
+            ["Cadastrar negocio", "business", BriefcaseBusiness],
+            ["Clientes", "customers", Users],
+            ["Planos", "plans", CreditCard]
+          ].map(([label, target, Icon]) => (
+            target === "plans" ? (
+              <button key={label as string} type="button" onClick={() => router.push("/plans")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-black text-slate-100 hover:bg-white/10">
+                <Icon className="h-4 w-4" />
+                {label as string}
+              </button>
+            ) : (
+              <button key={label as string} type="button" onClick={() => setTab(target as DashboardTab)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-black text-slate-100 hover:bg-white/10">
+                <Icon className="h-4 w-4" />
+                {label as string}
+              </button>
+            )
+          ))}
+        </section>
 
         <nav className="mb-5 flex flex-wrap gap-2 rounded-lg border border-white/10 bg-[#101821] p-2">
           {[
@@ -468,8 +560,10 @@ function SaasDashboardContent() {
               {generatedAnswer ? (
                 <p className="whitespace-pre-wrap rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm leading-7 text-emerald-50">{generatedAnswer}</p>
               ) : (
-                <div className="flex min-h-72 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm leading-6 text-slate-400">
-                  A resposta pronta para copiar aparecerá aqui.
+                <div className="flex min-h-72 flex-col items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm leading-6 text-slate-400">
+                  <MessageCircle className="mb-4 h-8 w-8 text-slate-500" />
+                  <p className="font-bold text-slate-200">A resposta pronta para copiar aparecera aqui.</p>
+                  <p className="mt-2 max-w-sm">Cole uma pergunta real do cliente e escolha o objetivo da mensagem.</p>
                 </div>
               )}
             </article>
@@ -532,7 +626,14 @@ function SaasDashboardContent() {
                   </div>
                 </article>
               )) : (
-                <p className="rounded-md border border-white/10 bg-white/[0.04] p-5 text-sm text-slate-400">Nenhuma resposta gerada ainda.</p>
+                <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
+                  <Clipboard className="mx-auto mb-4 h-8 w-8 text-slate-500" />
+                  <p className="font-bold text-slate-200">Nenhuma resposta gerada ainda.</p>
+                  <p className="mt-2">Gere sua primeira resposta para ver o historico salvo aqui.</p>
+                  <button type="button" onClick={() => setTab("assistant")} className="mt-4 rounded-md bg-emerald-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
+                    Gerar resposta
+                  </button>
+                </div>
               )}
             </div>
           </section>
@@ -592,7 +693,11 @@ function SaasDashboardContent() {
                   </button>
                 </article>
               )) : (
-                <p className="rounded-lg border border-white/10 bg-[#101821] p-5 text-sm text-slate-400">Nenhum cliente cadastrado ainda.</p>
+                <div className="rounded-lg border border-dashed border-white/15 bg-[#101821] p-8 text-center text-sm text-slate-400">
+                  <Users className="mx-auto mb-4 h-8 w-8 text-slate-500" />
+                  <p className="font-bold text-slate-200">Nenhum cliente cadastrado ainda.</p>
+                  <p className="mt-2">Cadastre clientes e leads para acompanhar status e observacoes importantes.</p>
+                </div>
               )}
             </div>
           </section>

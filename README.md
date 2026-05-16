@@ -4,6 +4,19 @@ MVP SaaS para pequenos negocios que atendem pelo WhatsApp Business.
 
 O produto permite criar conta, cadastrar o negocio, gerar respostas com IA para perguntas de clientes, salvar historico no Supabase, organizar clientes/leads e vender planos mensais via checkout Kiwify.
 
+## Status Comercial Do MVP
+
+O MVP ja tem landing page comercial, pagina de planos, cadastro/login, cadastro do negocio, geracao de respostas com IA por rota segura, historico e clientes/leads conectados ao Supabase.
+
+O checkout depende das URLs publicas da Kiwify:
+
+```bash
+NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
+NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
+```
+
+Quando essas URLs estiverem vazias, os botoes de plano mostram checkout em configuracao. A automacao direta com WhatsApp ainda nao faz parte desta versao; nesta etapa o usuario cola a pergunta, gera a resposta e copia para enviar manualmente.
+
 ## Stack
 
 - Next.js com App Router
@@ -159,10 +172,10 @@ npm run test
 - `/login`: autentica com Supabase Auth.
 - `/dashboard`: rota protegida.
 - Aba "Meu negocio": salva/edita `businesses`.
-- Aba "Gerar resposta": chama `/api/generate-response`, nunca OpenAI direto do React.
+- Aba "Gerar resposta": chama `/api/ai/generate-response`, nunca OpenAI direto do React.
 - Aba "Historico": lista e exclui `generated_responses`.
 - Aba "Clientes": CRUD basico em `customers`.
-- `/precos`: carrega `plans` do Supabase e usa `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL` e `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL` para checkouts.
+- `/plans` e `/precos`: carregam `plans` do Supabase e usam `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL` e `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL` para checkouts.
 
 Para testar cadastro/login:
 
@@ -195,7 +208,7 @@ Se `OPENAI_API_KEY` nao estiver configurada, a rota retorna um fallback util usa
 
 ## Placeholders
 
-- Se `OPENAI_API_KEY` nao estiver configurada, `/api/generate-response` salva uma resposta placeholder segura baseada nos dados do negocio.
+- Se `OPENAI_API_KEY` nao estiver configurada, `/api/ai/generate-response` salva uma resposta placeholder segura baseada nos dados do negocio.
 - Plano Premium continua como "Em breve".
 - Modulos antigos de demo ainda podem usar `localStorage` para simulacoes, mas o fluxo SaaS principal usa Supabase.
 - WhatsApp conectado, dashboard administrativo complexo e automacoes reais ficam fora do escopo do MVP atual.
