@@ -1,4 +1,4 @@
-﻿import { PricingSection } from "@/components/pricing/PricingSection";
+import { PricingSection } from "@/components/pricing/PricingSection";
 
 export function PricingPageContent() {
   return (
@@ -6,10 +6,13 @@ export function PricingPageContent() {
       <section className="mx-auto max-w-6xl px-4 py-16 text-center">
         <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">Planos</p>
         <h1 className="mx-auto mt-3 max-w-3xl text-4xl font-black tracking-tight md:text-5xl">
-          Escolha o plano certo para o seu volume de atendimento
+          Planos para responder melhor no WhatsApp com IA
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-300">
-          O Inicial é bom para começar. O Pro é melhor para quem atende mais clientes. O Premium fica reservado para a próxima fase com WhatsApp conectado.
+          Escolha uma opção mensal para gerar respostas mais profissionais, economizar tempo no atendimento e manter seus clientes mais organizados.
+        </p>
+        <p className="mx-auto mt-5 inline-flex rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-sm font-black text-emerald-100">
+          Plano Pro por R$ 29 no primeiro mês. Depois, R$ 97/mês.
         </p>
       </section>
 
@@ -18,11 +21,11 @@ export function PricingPageContent() {
       <section className="mx-auto max-w-6xl px-4 pb-16 text-center">
         <div className="rounded-lg border border-emerald-300/20 bg-emerald-400/10 p-5">
           <p className="text-sm font-bold leading-6 text-emerald-100">
-            A integração automática com WhatsApp será liberada em etapa futura. Nesta versão, você gera a resposta, revisa e copia para enviar.
+            R$ 29 no primeiro mês para novos usuários. Depois, R$ 97/mês. A integração automática com WhatsApp pode evoluir em etapas futuras; nesta versão, você gera, revisa e copia a resposta.
           </p>
         </div>
         <p className="mx-auto mt-6 max-w-3xl text-sm leading-6 text-slate-400">
-          Os planos do AtendeZap IA são cobrados mensalmente pela Kiwify, conforme o plano escolhido. O AtendeZap IA não é afiliado ao WhatsApp, Meta ou Kiwify e não promete aumento de vendas ou resultado financeiro.
+          Os planos do AtendeZap IA são cobrados mensalmente pelo checkout configurado. O AtendeZap IA não é afiliado ao WhatsApp, Meta ou Kiwify e não promete resultado financeiro garantido.
         </p>
       </section>
     </main>

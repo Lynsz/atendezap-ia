@@ -1,18 +1,34 @@
 ﻿# AtendeZap IA
 
-MVP SaaS para pequenos negócios que atendem pelo WhatsApp Business.
+MVP SaaS para pessoas, autônomos, prestadores de serviço, pequenos negócios e empresas que atendem pelo WhatsApp.
 
-O produto permite criar conta, cadastrar o negócio, gerar respostas com IA para perguntas de clientes, salvar histórico no Supabase, organizar clientes/leads e vender planos mensais via checkout Kiwify.
+O produto permite criar conta, cadastrar o negócio, serviço ou atividade, gerar respostas com IA para perguntas de clientes, salvar histórico no Supabase, organizar clientes/leads e vender planos mensais via checkout.
 
 ## Status Comercial Do MVP
 
-O MVP já tem landing page comercial, página de planos, cadastro/login, cadastro do negócio, geração de respostas com IA por rota segura, histórico e clientes/leads conectados ao Supabase.
+O MVP já tem landing page comercial, página de ebook gratuito, página de obrigado, página de preços, cadastro/login, cadastro do negócio, geração de respostas com IA por rota segura, histórico e clientes/leads conectados ao Supabase.
 
-O checkout depende das URLs públicas da Kiwify:
+O funil comercial é:
+
+```text
+Ebook gratuito -> página de obrigado -> oferta Pro -> planos pagos
+```
+
+A oferta permanente do Plano Pro é:
+
+```text
+Plano Pro por R$ 29 no primeiro mês. Depois, R$ 97/mês.
+```
+
+Ela é válida para novos usuários, não é temporária e não usa urgência artificial.
+
+O checkout depende das URLs públicas configuradas no ambiente:
 
 ```bash
-NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
-NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
+NEXT_PUBLIC_CHECKOUT_STARTER_URL=
+NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL=
+NEXT_PUBLIC_CHECKOUT_PRO_URL=
+NEXT_PUBLIC_CHECKOUT_PREMIUM_URL=
 ```
 
 Quando essas URLs estiverem vazias, os botões de plano mostram checkout em configuração. A automação direta com WhatsApp ainda não faz parte desta versão; nesta etapa o usuário cola a pergunta, gera a resposta e copia para enviar manualmente.
@@ -54,9 +70,9 @@ O schema principal está em:
 supabase/schema.sql
 ```
 
-Ele cria as tabelas `profiles`, `businesses`, `generated_responses`, `customers`, `subscriptions`, `plans`, além das tabelas server-side do fluxo Kiwify/kit: `purchasers`, `orders`, `kits`, `support_requests` e `events`.
+Ele cria as tabelas `profiles`, `businesses`, `generated_responses`, `customers`, `subscriptions`, `plans`, `ebook_leads`, além das tabelas server-side do fluxo Kiwify/kit: `purchasers`, `orders`, `kits`, `support_requests` e `events`.
 
-As tabelas usadas pelo app logado têm RLS ativa por `auth.uid()`. `subscriptions` permite apenas leitura pelo usuário autenticado; criação e alteração de plano/status ficam restritas a trigger, SQL administrativo ou backend seguro. As tabelas do fluxo Kiwify/kit ficam sem acesso para `anon` e `authenticated`, sendo usadas apenas por rotas backend com service role.
+As tabelas usadas pelo app logado têm RLS ativa por `auth.uid()`. `subscriptions` permite apenas leitura pelo usuário autenticado; criação e alteração de plano/status ficam restritas a trigger, SQL administrativo ou backend seguro. `ebook_leads` e as tabelas do fluxo Kiwify/kit ficam sem acesso para `anon` e `authenticated`, sendo usadas apenas por rotas backend com service role.
 
 Para configurar:
 
@@ -90,8 +106,10 @@ Copie `.env.example` para `.env.local`:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
-NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
+NEXT_PUBLIC_CHECKOUT_STARTER_URL=
+NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL=
+NEXT_PUBLIC_CHECKOUT_PRO_URL=
+NEXT_PUBLIC_CHECKOUT_PREMIUM_URL=
 
 OPENAI_API_KEY=
 
@@ -108,6 +126,8 @@ SUPPORT_EMAIL=
 `NEXT_PUBLIC_SUPABASE_URL` pode ficar pública.
 
 `NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ficar pública com RLS ativo.
+
+`NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL` deve apontar para o checkout do primeiro mês do Pro por R$ 29 para novos usuários. `NEXT_PUBLIC_CHECKOUT_PRO_URL` fica reservado para a recorrência normal de R$ 97/mês ou para uso futuro em fluxos de troca de plano.
 
 `OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` e `KIWIFY_WEBHOOK_SECRET` nunca devem ficar no front-end. A service role nunca deve ser usada no React.
 
@@ -207,7 +227,10 @@ npm run test
 - Verificar se a resposta aparece no histórico.
 - Cadastrar um cliente.
 - Alterar o status do cliente.
-- Abrir `/plans`.
+- Abrir `/ebook`.
+- Enviar o formulário do ebook.
+- Confirmar redirecionamento para `/ebook/obrigado`.
+- Abrir `/precos`.
 - Testar o botão de checkout ou confirmar a mensagem de checkout em configuração.
 - Fazer logout e login novamente.
 - Testar o fluxo no celular.
@@ -219,7 +242,7 @@ npm run test
 - Project URL configurada.
 - Anon key configurada.
 - `OPENAI_API_KEY` configurada.
-- URLs Kiwify configuradas ou fallback aceito.
+- URLs de checkout configuradas ou fallback aceito.
 - Vercel env vars configuradas.
 - Supabase Auth URLs configuradas.
 - `/debug/supabase` OK em produção.
@@ -243,12 +266,14 @@ npm run test
 - Vercel env vars configuradas:
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL`
-  - `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL`
+  - `NEXT_PUBLIC_CHECKOUT_STARTER_URL`
+  - `NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL`
+  - `NEXT_PUBLIC_CHECKOUT_PRO_URL`
+  - `NEXT_PUBLIC_CHECKOUT_PREMIUM_URL`
   - `OPENAI_API_KEY`
 - Supabase Auth URLs configuradas para a URL da Vercel.
 - `/debug/supabase` validado em produção.
-- `/cadastro`, `/login`, `/dashboard` e `/plans` testados em produção.
+- `/ebook`, `/ebook/obrigado`, `/precos`, `/cadastro`, `/login` e `/dashboard` testados em produção.
 
 Guia detalhado: `docs/deploy-vercel.md`.
 
@@ -256,12 +281,14 @@ Guia detalhado: `docs/deploy-vercel.md`.
 
 - `/cadastro`: cria usuário no Supabase Auth e profile.
 - `/login`: autentica com Supabase Auth.
+- `/ebook`: captura nome, email e WhatsApp pela rota server-side `/api/ebook-lead`.
+- `/ebook/obrigado`: confirma o guia e apresenta o Plano Pro por R$ 29 no primeiro mês para novos usuários.
 - `/dashboard`: rota oficial protegida do SaaS.
 - Aba "Meu negócio": salva/edita `businesses`.
 - Aba "Gerar resposta": chama `/api/ai/generate-response`, nunca OpenAI direto do React.
 - Aba "Histórico": lista e exclui `generated_responses`.
 - Aba "Clientes": CRUD básico em `customers`.
-- `/plans` e `/precos`: carregam `plans` do Supabase e usam `NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL` e `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL` para checkouts.
+- `/plans` e `/precos`: carregam `plans` do Supabase e usam `NEXT_PUBLIC_CHECKOUT_STARTER_URL`, `NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL`, `NEXT_PUBLIC_CHECKOUT_PRO_URL` e `NEXT_PUBLIC_CHECKOUT_PREMIUM_URL` para checkouts.
 
 Para testar cadastro/login:
 
@@ -295,9 +322,19 @@ Se `OPENAI_API_KEY` não estiver configurada, a rota retorna um fallback útil u
 ## Placeholders
 
 - Se `OPENAI_API_KEY` não estiver configurada, `/api/ai/generate-response` salva uma resposta placeholder segura baseada nos dados do negócio.
-- Plano Premium continua como "Em breve".
+- Se os links de checkout não estiverem configurados, os botões mostram fallback seguro.
 - Modulos antigos de demo ainda podem usar `localStorage` para simulacoes, mas o fluxo SaaS principal usa Supabase.
 - WhatsApp conectado, dashboard administrativo complexo e automacoes reais ficam fora do escopo do MVP atual.
+
+## Oferta Pro De Primeiro Mês
+
+O Plano Pro é o plano principal do funil e aparece como "Mais recomendado".
+
+- Primeiro mês para novos usuários: R$ 29.
+- Recorrência depois do primeiro mês: R$ 97/mês.
+- Limite mensal: 600 respostas com IA.
+- A estrutura do banco inclui `first_month_price`, `is_first_month_offer` e `first_month_offer_used_at`.
+- A regra completa deve ser aplicada no webhook/backend de checkout: aceitar `NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL` apenas quando a assinatura da conta ainda não tiver `first_month_offer_used_at`; depois da compra aprovada, gravar essa data e manter as renovações em R$ 97/mês.
 
 ## Proximos Passos
 

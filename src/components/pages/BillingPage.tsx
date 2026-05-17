@@ -32,15 +32,15 @@ import {
 } from "@/utils/billingStorage";
 
 const planOrder: Record<CheckoutPlanId, number> = {
-  basic: 1,
-  starter: 2,
+  starter: 1,
+  pro: 2,
   premium: 3
 };
 
 const planFeatures: Record<CheckoutPlanId, string[]> = {
-  basic: ["Painel de atendimento", "Clientes e leads", "Histórico local no navegador", "Organização básica"],
-  starter: ["Tudo do Básico", "Automações básicas com IA", "Sugestões de resposta", "Funil simples de vendas"],
-  premium: ["Tudo do Starter", "Automações IA avançadas", "Dashboard comercial", "Funil completo", "Organização avançada de leads"]
+  starter: ["150 respostas com IA por mês", "Cadastro do negócio", "Dashboard", "Histórico básico"],
+  pro: ["600 respostas com IA por mês", "Histórico completo", "Organização de clientes", "Respostas mais personalizadas"],
+  premium: ["2.000 respostas com IA por mês", "Biblioteca premium", "Modelos avançados", "Suporte prioritário assíncrono"]
 };
 
 const statusLabels: Record<SubscriptionStatus, string> = {

@@ -3,7 +3,7 @@
 ## O que foi preparado nesta rodada
 
 - Checkouts oficiais Kiwify centralizados em `src/config/checkout.ts`.
-- Botões de compra apontando para os planos Básico, Starter e Premium.
+- Botões de compra apontando para os planos Starter, Pro e Premium.
 - Webhook Kiwify com parse seguro, segredo opcional, idempotência e eventos padronizados.
 - Criação ou atualização de customer por e-mail.
 - Geração de kit com eventos de sucesso/falha e preservação do token quando a IA falha.

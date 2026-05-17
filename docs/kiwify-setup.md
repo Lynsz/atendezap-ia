@@ -17,11 +17,11 @@ A liberação automática por webhook será implementada em etapa futura, com va
 
 ## SQL manual para upgrade
 
-Para Inicial:
+Para Starter:
 
 ```sql
 update subscriptions
-set plan_name = 'Inicial',
+set plan_name = 'starter',
     status = 'active',
     current_period_end = now() + interval '30 days',
     updated_at = now()
@@ -61,8 +61,10 @@ Defina a página de obrigado de cada produto como:
 Configure as URLs públicas no ambiente:
 
 ```bash
-NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL=
-NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL=
+NEXT_PUBLIC_CHECKOUT_STARTER_URL=
+NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL=
+NEXT_PUBLIC_CHECKOUT_PRO_URL=
+NEXT_PUBLIC_CHECKOUT_PREMIUM_URL=
 ```
 
 ## Configurar webhook

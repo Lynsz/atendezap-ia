@@ -37,8 +37,10 @@ npm run build
 ```text
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
-NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL
-NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL
+NEXT_PUBLIC_CHECKOUT_STARTER_URL
+NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL
+NEXT_PUBLIC_CHECKOUT_PRO_URL
+NEXT_PUBLIC_CHECKOUT_PREMIUM_URL
 OPENAI_API_KEY
 ```
 
@@ -74,7 +76,7 @@ https://URL-DA-VERCEL/**
 
 `NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ficar pública com RLS ativo.
 
-`NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL` e `NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL` são URLs públicas de checkout. Se ficarem vazias, `/plans` mostra fallback amigável.
+As variáveis `NEXT_PUBLIC_CHECKOUT_*` são URLs públicas de checkout. Se ficarem vazias, `/plans` e `/precos` mostram fallback amigável.
 
 `OPENAI_API_KEY` é somente servidor. Nunca use prefixo `NEXT_PUBLIC_` nesta chave.
 

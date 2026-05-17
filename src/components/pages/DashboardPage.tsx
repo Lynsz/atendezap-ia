@@ -57,7 +57,7 @@ type DashboardSnapshot = {
   userName: string;
   businessName: string;
   aiTone: string;
-  planId: "basic" | "starter" | "premium";
+  planId: "starter" | "pro" | "premium";
   planName: string;
 };
 

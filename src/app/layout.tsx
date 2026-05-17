@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "AtendeZap IA - Respostas com IA para WhatsApp",
-  description: "Cadastre seu negocio, cole a pergunta do cliente e gere uma resposta profissional com IA pronta para enviar no WhatsApp."
+  description: "Responda no WhatsApp com mais rapidez usando IA, organize melhor seu atendimento e gere respostas mais profissionais."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -26,14 +26,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/#beneficios" className="hidden hover:text-brand-700 sm:inline">
                 Beneficios
               </Link>
-              <Link href="/plans" className="hover:text-brand-700">
-                Planos
+              <Link href="/ebook" className="hover:text-brand-700">
+                Ebook
+              </Link>
+              <Link href="/precos" className="hover:text-brand-700">
+                Preços
               </Link>
               <Link href="/login" className="hover:text-brand-700">
                 Entrar
               </Link>
               <Link href="/cadastro" className="rounded-md bg-brand-600 px-4 py-2 text-white shadow-sm hover:bg-brand-700">
-                Comecar agora
+                Cadastro
               </Link>
             </nav>
           </div>

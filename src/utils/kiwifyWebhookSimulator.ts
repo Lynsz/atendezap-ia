@@ -53,7 +53,7 @@ export function addKiwifyWebhookEvent(event: KiwifyWebhookEvent) {
 export function mapKiwifyPlanToCheckoutPlanId(planName: string): CheckoutPlanId {
   const normalized = planName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  if (normalized.includes("basico")) return "basic";
+  if (normalized.includes("pro")) return "pro";
   if (normalized.includes("premium")) return "premium";
   return "starter";
 }

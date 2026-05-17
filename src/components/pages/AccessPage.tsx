@@ -9,8 +9,8 @@ import { createDefaultSubscription } from "@/utils/billingStorage";
 import { hasCompletedOnboarding } from "@/utils/onboardingStorage";
 
 const planOptions: Array<{ value: UserPlan; label: string }> = [
-  { value: "basic", label: "Plano Básico" },
   { value: "starter", label: "Plano Starter" },
+  { value: "pro", label: "Plano Pro" },
   { value: "premium", label: "Plano Premium" }
 ];
 

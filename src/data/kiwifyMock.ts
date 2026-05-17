@@ -10,8 +10,8 @@ const customer = {
 };
 
 const paymentMethods: Record<CheckoutPlanId, KiwifyPaymentMethod> = {
-  basic: "pix",
   starter: "credit_card",
+  pro: "pix",
   premium: "credit_card"
 };
 
@@ -56,10 +56,10 @@ export function createKiwifyMockEvent(type: KiwifyEventType, planId: CheckoutPla
 }
 
 export const kiwifyMockEvents: KiwifyWebhookEvent[] = [
-  createKiwifyMockEvent("order_paid", "basic"),
   createKiwifyMockEvent("order_paid", "starter"),
+  createKiwifyMockEvent("order_paid", "pro"),
   createKiwifyMockEvent("order_paid", "premium"),
-  createKiwifyMockEvent("subscription_renewed", "starter"),
-  createKiwifyMockEvent("subscription_late", "starter"),
-  createKiwifyMockEvent("subscription_canceled", "starter")
+  createKiwifyMockEvent("subscription_renewed", "pro"),
+  createKiwifyMockEvent("subscription_late", "pro"),
+  createKiwifyMockEvent("subscription_canceled", "pro")
 ];

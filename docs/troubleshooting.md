@@ -5,7 +5,7 @@
 Confira o arquivo `src/config/checkout.ts`. Os checkouts oficiais atuais são mensais:
 
 ```text
-Plano Básico: https://pay.kiwify.com.br/SoDyO2k
+Plano Starter: configure `NEXT_PUBLIC_CHECKOUT_STARTER_URL`
 Plano Starter: https://pay.kiwify.com.br/KfYbZzC
 Plano Premium: https://pay.kiwify.com.br/n6jZUdh
 ```

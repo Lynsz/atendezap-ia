@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  BookOpen,
   CheckCircle2,
   ClipboardCheck,
   Clock,
@@ -15,98 +16,102 @@ import { Card } from "@/components/card";
 
 const flowSteps = [
   {
-    title: "Cadastre seu negocio",
-    description: "Informe servicos, precos, horarios e tom de voz.",
+    title: "Baixe o guia gratuito",
+    description: "Comece com 50 respostas prontas para adaptar ao seu atendimento.",
+    icon: BookOpen
+  },
+  {
+    title: "Cadastre sua atividade",
+    description: "Informe serviços, preços, horários e tom de voz no AtendeZap IA.",
     icon: Store
   },
   {
-    title: "Cole a pergunta do cliente",
-    description: "Use a duvida real que chegou no seu WhatsApp.",
-    icon: MessageCircle
-  },
-  {
-    title: "Copie a resposta da IA",
-    description: "Receba uma mensagem profissional pronta para enviar.",
+    title: "Gere respostas personalizadas",
+    description: "Cole a pergunta do cliente e copie uma resposta profissional feita com IA.",
     icon: ClipboardCheck
   }
 ];
 
 const benefits = [
-  "Responda mais rapido",
-  "Pareca mais profissional",
+  "Responda com mais rapidez",
+  "Gere respostas mais profissionais com IA",
   "Economize tempo no atendimento",
-  "Organize clientes e leads",
-  "Recupere clientes indecisos",
-  "Crie mensagens de venda em segundos",
-  "Tenha historico das respostas",
-  "Funciona para varios nichos"
+  "Organize melhor clientes e histórico",
+  "Adapte respostas prontas para cada conversa",
+  "Use modelos por tipo de atendimento",
+  "Mantenha um tom mais claro e consistente",
+  "Funciona para vários segmentos"
 ];
 
 const audiences = [
-  "Salao de beleza",
-  "Manicure",
-  "Loja de roupa",
-  "Marmitaria",
-  "Delivery",
-  "Clinica estetica",
-  "Mecanica",
-  "Infoprodutor",
-  "Pequenos comercios"
+  "Pessoas autônomas",
+  "Prestadores de serviço",
+  "Lojas locais",
+  "Restaurantes e delivery",
+  "Salões de beleza",
+  "Clínicas de estética",
+  "Assistência técnica",
+  "Vendedores",
+  "Social media",
+  "Infoprodutores",
+  "Pequenos negócios",
+  "Empresas que atendem pelo WhatsApp"
 ];
 
 const beforeItems = [
-  "Demora para responder",
-  "Mensagens improvisadas",
-  "Perde clientes indecisos",
-  "Atendimento desorganizado"
+  "Demora para responder dúvidas simples",
+  "Mensagens improvisadas a cada atendimento",
+  "Orçamentos enviados sem padrão",
+  "Histórico e clientes espalhados"
 ];
 
 const afterItems = [
-  "Resposta profissional em segundos",
-  "Historico salvo",
-  "Scripts de venda",
-  "Clientes organizados"
+  "Respostas prontas para revisar e enviar",
+  "Atendimento com tom mais profissional",
+  "Clientes e histórico mais organizados",
+  "Modelos adaptados pela IA para cada contexto"
 ];
 
 const plans = [
   {
-    name: "Inicial",
-    price: "R$ 19,90/mes",
-    description: "Bom para comecar a responder melhor e testar o fluxo no dia a dia."
+    name: "Starter",
+    price: "R$ 49/mês",
+    description: "Até 150 respostas com IA por mês para quem está começando."
   },
   {
     name: "Pro",
-    price: "R$ 39,90/mes",
-    description: "Melhor para quem atende mais clientes e quer mais organizacao comercial.",
+    price: "R$ 29 no primeiro mês",
+    recurring: "Depois, R$ 97/mês",
+    description: "Até 600 respostas com IA por mês. Mais recomendado para uso diário.",
     featured: true
   },
   {
     name: "Premium",
-    price: "Em breve",
-    description: "Etapa futura com recursos avancados e WhatsApp conectado."
+    price: "R$ 197/mês",
+    description: "Até 2.000 respostas com IA por mês para maior volume de atendimento."
   }
 ];
 
 const faqs = [
   [
     "Preciso conectar meu WhatsApp?",
-    "Nao nesta primeira versao. Voce cola a pergunta do cliente, gera a resposta e copia para enviar no WhatsApp."
+    "Não nesta versão. Você cola a pergunta do cliente, gera a resposta e copia para enviar no WhatsApp."
   ],
   [
-    "Funciona para qualquer area?",
-    "Sim. O sistema usa as informacoes cadastradas do seu negocio para adaptar as respostas."
+    "O ebook é para qual tipo de profissional?",
+    "Para pessoas, autônomos, prestadores de serviço, lojas, restaurantes, clínicas, vendedores e qualquer operação que atende pelo WhatsApp."
   ],
   [
-    "A IA inventa precos ou horarios?",
-    "Nao deve inventar. Ela usa os dados que voce cadastrou. Quanto mais completo o cadastro, melhor a resposta."
+    "A IA inventa preços ou horários?",
+    "Ela deve usar os dados cadastrados. Quanto mais completo o cadastro, melhor a resposta. Informações ausentes não devem ser inventadas."
   ],
   [
-    "Ja responde automaticamente meus clientes?",
-    "A versao atual ajuda voce a gerar respostas prontas. A automacao direta do WhatsApp esta planejada para uma proxima etapa."
+    "O Pro por R$ 29 é uma oferta temporária?",
+    "Não. É uma oferta permanente para novos usuários no primeiro mês. Depois, o plano custa R$ 97/mês."
   ],
   [
     "Preciso saber usar tecnologia?",
-    "Nao. A ideia e ser simples: cadastrar o negocio, colar a pergunta e copiar a resposta."
+    "Não. A ideia é ser simples: cadastrar a atividade, colar a pergunta e copiar a resposta."
   ]
 ];
 
@@ -116,24 +121,24 @@ export default function Home() {
       <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,#d1fae5,transparent_34%),linear-gradient(135deg,#ffffff_0%,#f8fafc_58%,#ecfeff_100%)]">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 md:grid-cols-[1.05fr_0.95fr] md:items-center md:py-20">
           <div>
-            <Badge>Assistente IA para WhatsApp</Badge>
+            <Badge>IA para atendimento no WhatsApp</Badge>
             <h1 className="mt-5 max-w-4xl text-4xl font-black tracking-tight text-ink md:text-6xl">
-              Atenda melhor no WhatsApp com respostas criadas por IA.
+              Responda no WhatsApp com mais rapidez usando IA
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              Cadastre seu negocio, cole a pergunta do cliente e receba uma resposta profissional pronta para copiar e enviar.
+              O AtendeZap IA ajuda pessoas, autônomos e pequenos negócios a criar respostas mais profissionais, economizar tempo e organizar melhor o atendimento pelo WhatsApp.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href="/cadastro">
-                Comecar agora
+              <Button href="/ebook">
+                Baixar guia gratuito
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button href="/plans" variant="ghost">
+              <Button href="/precos" variant="ghost">
                 Ver planos
               </Button>
             </div>
             <p className="mt-5 inline-flex rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">
-              Sem precisar conectar o WhatsApp nesta primeira versao.
+              Funil: ebook gratuito, apresentação do AtendeZap IA e planos mensais.
             </p>
           </div>
 
@@ -149,7 +154,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.06] p-4 text-sm leading-7 text-slate-200">
-                Oi, Ana! Consigo te ajudar sim. Temos atendimento hoje e posso te passar as opcoes disponiveis. Voce prefere agendar para qual horario?
+                Oi, Ana! Consigo te ajudar sim. Posso te passar as opções e valores certinhos. Você prefere receber o orçamento por aqui ou quer me contar primeiro qual serviço precisa?
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 {["Pergunta", "IA", "Copiar"].map((item) => (
@@ -166,7 +171,7 @@ export default function Home() {
       <section id="como-funciona" className="mx-auto max-w-6xl px-4 py-16">
         <div className="max-w-2xl">
           <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Como funciona</p>
-          <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">Do cadastro a resposta pronta em poucos passos</h2>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">Do guia gratuito à resposta personalizada</h2>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {flowSteps.map((step, index) => (
@@ -187,8 +192,8 @@ export default function Home() {
       <section id="beneficios" className="bg-white py-16">
         <div className="mx-auto max-w-6xl px-4">
           <div className="max-w-2xl">
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Beneficios</p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">Mais clareza, velocidade e organizacao no atendimento</h2>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Benefícios</p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">Mais clareza, velocidade e organização no atendimento</h2>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {benefits.map((benefit) => (
@@ -204,7 +209,7 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="max-w-2xl">
           <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Para quem serve</p>
-          <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">Feito para pequenos negocios que vendem pelo WhatsApp</h2>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">Para quem usa WhatsApp para atender, vender ou responder dúvidas</h2>
         </div>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {audiences.map((item) => (
@@ -248,16 +253,18 @@ export default function Home() {
             <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">Planos</p>
             <h2 className="mt-3 text-3xl font-black tracking-tight md:text-4xl">Comece simples e evolua quando precisar</h2>
             <p className="mt-4 text-sm leading-6 text-slate-300">
-              A integracao automatica com WhatsApp sera liberada em etapa futura.
+              O Plano Pro é o caminho principal para quem usa WhatsApp todos os dias.
             </p>
           </div>
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
             {plans.map((plan) => (
               <article className={`rounded-lg border p-6 shadow-2xl shadow-black/25 ${plan.featured ? "border-emerald-300 bg-[#101821]" : "border-white/10 bg-white/[0.04]"}`} key={plan.name}>
+                {plan.featured ? <Badge className="mb-4 bg-emerald-300 text-slate-950">Mais recomendado</Badge> : null}
                 <h3 className="text-2xl font-black">{plan.name}</h3>
                 <p className="mt-4 text-3xl font-black">{plan.price}</p>
+                {plan.recurring ? <p className="mt-1 text-sm font-black text-emerald-200">{plan.recurring}</p> : null}
                 <p className="mt-4 min-h-16 text-sm leading-6 text-slate-300">{plan.description}</p>
-                <Button href="/plans" className="mt-6 w-full justify-center bg-emerald-400 text-slate-950 hover:bg-emerald-300">
+                <Button href="/precos" className="mt-6 w-full justify-center bg-emerald-400 text-slate-950 hover:bg-emerald-300">
                   Ver planos
                 </Button>
               </article>
@@ -284,13 +291,16 @@ export default function Home() {
       <section className="bg-[#090d12] py-16 text-white">
         <div className="mx-auto max-w-6xl px-4 text-center">
           <Users className="mx-auto mb-5 h-9 w-9 text-emerald-300" />
-          <h2 className="mx-auto max-w-3xl text-3xl font-black tracking-tight md:text-5xl">Comece a atender melhor seus clientes hoje.</h2>
+          <h2 className="mx-auto max-w-3xl text-3xl font-black tracking-tight md:text-5xl">Baixe o guia e veja o próximo passo com IA.</h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300">
-            Cadastre seu negocio, gere sua primeira resposta e veja como fica mais facil manter um atendimento profissional.
+            Comece com respostas prontas e depois transforme essas mensagens em respostas personalizadas para seu atendimento.
           </p>
-          <div className="mt-8">
-            <Button href="/cadastro" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300">
-              Comecar agora
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Button href="/ebook" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300">
+              Baixar guia gratuito
+            </Button>
+            <Button href="/precos" variant="ghost">
+              Ver planos
             </Button>
           </div>
         </div>

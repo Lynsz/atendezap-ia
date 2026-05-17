@@ -2,14 +2,14 @@ import type { UserPlan } from "@/types/auth";
 import { cn } from "@/lib/utils";
 
 const planLabels: Record<UserPlan, string> = {
-  basic: "Plano Básico",
   starter: "Plano Starter",
+  pro: "Plano Pro",
   premium: "Plano Premium"
 };
 
 const planClasses: Record<UserPlan, string> = {
-  basic: "border-sky-400/30 bg-sky-400/10 text-sky-200",
-  starter: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
+  starter: "border-sky-400/30 bg-sky-400/10 text-sky-200",
+  pro: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
   premium: "border-violet-400/30 bg-violet-400/10 text-violet-200"
 };
 

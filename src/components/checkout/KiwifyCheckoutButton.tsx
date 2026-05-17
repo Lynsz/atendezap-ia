@@ -23,8 +23,8 @@ export function KiwifyCheckoutButton({
   onBeforeRedirect
 }: KiwifyCheckoutButtonProps) {
   const defaultLabels: Record<CheckoutPlanId, string> = {
-    basic: "Começar por R$29/mês",
-    starter: "Começar por R$49/mês",
+    starter: "Começar no Starter",
+    pro: "Começar por R$ 29",
     premium: "Assinar Premium"
   };
   const checkoutUrl = getCheckoutUrl(planId);

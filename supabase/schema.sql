@@ -50,7 +50,14 @@ create table if not exists public.subscriptions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   plan_name text default 'free',
+  plan text default 'free',
+  monthly_limit integer default 30,
+  price numeric,
+  first_month_price numeric,
+  is_first_month_offer boolean default false,
+  first_month_offer_used_at timestamptz,
   status text default 'trial',
+  current_period_start timestamptz,
   current_period_end timestamptz,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -60,8 +67,32 @@ create table if not exists public.plans (
   id uuid primary key default gen_random_uuid(),
   name text not null unique,
   price numeric,
+  first_month_price numeric,
+  is_first_month_offer boolean default false,
   response_limit integer,
+  status text default 'active',
   created_at timestamptz default now()
+);
+
+alter table public.subscriptions add column if not exists plan text default 'free';
+alter table public.subscriptions add column if not exists monthly_limit integer default 30;
+alter table public.subscriptions add column if not exists price numeric;
+alter table public.subscriptions add column if not exists first_month_price numeric;
+alter table public.subscriptions add column if not exists is_first_month_offer boolean default false;
+alter table public.subscriptions add column if not exists first_month_offer_used_at timestamptz;
+alter table public.subscriptions add column if not exists current_period_start timestamptz;
+alter table public.plans add column if not exists first_month_price numeric;
+alter table public.plans add column if not exists is_first_month_offer boolean default false;
+alter table public.plans add column if not exists status text default 'active';
+
+create table if not exists public.ebook_leads (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  whatsapp text not null,
+  source text default 'ebook_page',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
 create table if not exists public.purchasers (
@@ -120,6 +151,7 @@ create index if not exists generated_responses_business_id_idx on public.generat
 create index if not exists customers_user_id_idx on public.customers(user_id);
 create index if not exists subscriptions_user_id_idx on public.subscriptions(user_id);
 create unique index if not exists subscriptions_user_id_unique_idx on public.subscriptions(user_id);
+create unique index if not exists ebook_leads_email_unique_idx on public.ebook_leads(email);
 create index if not exists purchasers_email_idx on public.purchasers(email);
 create unique index if not exists purchasers_email_unique_idx on public.purchasers(email);
 create index if not exists orders_customer_id_idx on public.orders(customer_id);
@@ -157,6 +189,11 @@ create trigger set_subscriptions_updated_at
   before update on public.subscriptions
   for each row execute function public.set_updated_at();
 
+drop trigger if exists set_ebook_leads_updated_at on public.ebook_leads;
+create trigger set_ebook_leads_updated_at
+  before update on public.ebook_leads
+  for each row execute function public.set_updated_at();
+
 create or replace function public.handle_new_user()
 returns trigger
 set search_path = ''
@@ -169,8 +206,8 @@ begin
     name = coalesce(excluded.name, public.profiles.name),
     updated_at = now();
 
-  insert into public.subscriptions (user_id, plan_name, status)
-  values (new.id, 'free', 'trial')
+  insert into public.subscriptions (user_id, plan_name, plan, monthly_limit, status)
+  values (new.id, 'free', 'free', 30, 'trial')
   on conflict (user_id) do nothing;
 
   return new;
@@ -188,6 +225,7 @@ alter table public.generated_responses enable row level security;
 alter table public.customers enable row level security;
 alter table public.subscriptions enable row level security;
 alter table public.plans enable row level security;
+alter table public.ebook_leads enable row level security;
 alter table public.purchasers enable row level security;
 alter table public.orders enable row level security;
 alter table public.kits enable row level security;
@@ -213,6 +251,7 @@ drop policy if exists "subscriptions_insert_own" on public.subscriptions;
 drop policy if exists "subscriptions_update_own" on public.subscriptions;
 drop policy if exists "subscriptions_delete_own" on public.subscriptions;
 drop policy if exists "plans_select_public" on public.plans;
+drop policy if exists "ebook_leads_no_client_access" on public.ebook_leads;
 drop policy if exists "purchasers_no_client_access" on public.purchasers;
 drop policy if exists "orders_no_client_access" on public.orders;
 drop policy if exists "kits_no_client_access" on public.kits;
@@ -243,6 +282,7 @@ create policy "subscriptions_select_own" on public.subscriptions for select to a
 
 create policy "plans_select_public" on public.plans for select to anon, authenticated using (true);
 -- Planos sao leitura publica para exibicao comercial. Escrita em plans nao e liberada para anon/authenticated.
+create policy "ebook_leads_no_client_access" on public.ebook_leads for all to anon, authenticated using (false) with check (false);
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
 create policy "orders_no_client_access" on public.orders for all to anon, authenticated using (false) with check (false);
 create policy "kits_no_client_access" on public.kits for all to anon, authenticated using (false) with check (false);
@@ -255,20 +295,24 @@ revoke all privileges on public.subscriptions from anon, authenticated;
 grant select on public.subscriptions to authenticated;
 revoke all privileges on public.plans from anon, authenticated;
 grant select on public.plans to anon, authenticated;
+revoke all on public.ebook_leads from anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;
 
-insert into public.plans (name, price, response_limit)
+insert into public.plans (name, price, first_month_price, is_first_month_offer, response_limit, status)
 values
-  ('Inicial', 19.90, 300),
-  ('Pro', 39.90, 1000),
-  ('Premium', 69.90, 3000)
+  ('starter', 49.00, null, false, 150, 'active'),
+  ('pro', 97.00, 29.00, true, 600, 'active'),
+  ('premium', 197.00, null, false, 2000, 'active')
 on conflict (name) do update set
   price = excluded.price,
-  response_limit = excluded.response_limit;
+  first_month_price = excluded.first_month_price,
+  is_first_month_offer = excluded.is_first_month_offer,
+  response_limit = excluded.response_limit,
+  status = excluded.status;
 
-insert into public.subscriptions (user_id, plan_name, status)
-select u.id, 'free', 'trial'
+insert into public.subscriptions (user_id, plan_name, plan, monthly_limit, status)
+select u.id, 'free', 'free', 30, 'trial'
 from auth.users u
 where not exists (
   select 1

@@ -1,16 +1,20 @@
-﻿import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/badge";
+import { getCheckoutUrl } from "@/config/checkout";
 import { cn } from "@/lib/utils";
 
 type PricingPlan = {
+  id: "starter" | "pro" | "premium";
   name: string;
   price: string;
+  recurringPrice?: string;
   description: string;
   checkoutUrl: string;
   cta: string;
   badge: string;
   recommended?: boolean;
+  responseLimit: number;
   features: string[];
 };
 
@@ -22,39 +26,78 @@ type PlanRow = {
 
 const fallbackPlans: PricingPlan[] = [
   {
-    name: "Plano Inicial",
-    price: "R$ 19,90/mês",
-    description: "Para começar a responder clientes com IA de forma profissional.",
-    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || "",
-    cta: "Começar no Inicial",
-    badge: "Essencial",
-    features: ["Gerador de respostas com IA", "Cadastro do negócio", "Scripts prontos", "Histórico básico", "Organização básica de clientes"]
+    id: "starter",
+    name: "Starter",
+    price: "R$ 49/mês",
+    description: "Para quem está começando ou tem baixo volume de mensagens.",
+    checkoutUrl: getCheckoutUrl("starter"),
+    cta: "Começar no Starter",
+    badge: "Entrada",
+    responseLimit: 150,
+    features: [
+      "Até 150 respostas com IA por mês",
+      "Cadastro do negócio, serviço ou atividade",
+      "Geração de respostas com IA",
+      "Dashboard",
+      "Histórico básico",
+      "Modelos básicos de respostas"
+    ]
   },
   {
-    name: "Plano Pro",
-    price: "R$ 39,90/mês",
-    description: "Para negócios que querem mais modelos e organização comercial.",
-    checkoutUrl: process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || "",
-    cta: "Assinar Pro",
-    badge: "Mais vendido",
+    id: "pro",
+    name: "Pro",
+    price: "R$ 29 no primeiro mês",
+    recurringPrice: "Depois, R$ 97/mês",
+    description: "Para quem usa WhatsApp todos os dias para atender, vender ou responder clientes.",
+    checkoutUrl: getCheckoutUrl("pro"),
+    cta: "Começar por R$ 29",
+    badge: "Mais recomendado",
     recommended: true,
-    features: ["Tudo do Inicial", "Mais respostas por mês", "Mais modelos de mensagem", "Funil de atendimento", "Personalização por nicho"]
+    responseLimit: 600,
+    features: [
+      "Até 600 respostas com IA por mês",
+      "Tudo do Starter",
+      "Histórico completo",
+      "Organização de clientes",
+      "Respostas mais personalizadas",
+      "Modelos por tipo de atendimento",
+      "Acesso a melhorias futuras",
+      "Prioridade nas atualizações"
+    ]
   },
   {
-    name: "Plano Premium",
-    price: "R$ 69,90/mês",
-    description: "Para a próxima fase com WhatsApp conectado e relatórios.",
-    checkoutUrl: "",
-    cta: "Em breve",
-    badge: "Futuro",
-    features: ["WhatsApp conectado", "Atendimento automático", "Relatórios", "IA treinada com dados do negócio"]
+    id: "premium",
+    name: "Premium",
+    price: "R$ 197/mês",
+    description: "Para quem tem maior volume de atendimento ou quer mais recursos.",
+    checkoutUrl: getCheckoutUrl("premium"),
+    cta: "Assinar Premium",
+    badge: "Alto volume",
+    responseLimit: 2000,
+    features: [
+      "Até 2.000 respostas com IA por mês",
+      "Tudo do Pro",
+      "Biblioteca premium de respostas",
+      "Modelos avançados para vendas, suporte, cobrança e pós-venda",
+      "Acesso antecipado a novas funções",
+      "Suporte prioritário assíncrono",
+      "Bônus de onboarding gravado"
+    ]
   }
 ];
 
-function formatPrice(value: number | string | null) {
-  const numeric = typeof value === "string" ? Number(value) : value;
-  if (typeof numeric !== "number" || Number.isNaN(numeric)) return "Em breve";
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(numeric) + "/mês";
+function normalizePlanName(name: string) {
+  return name
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function loadFallbackForRow(plan: PlanRow) {
+  const normalized = normalizePlanName(plan.name);
+  if (normalized === "inicial") return fallbackPlans[0];
+  return fallbackPlans.find((item) => item.id === normalized || normalizePlanName(item.name) === normalized);
 }
 
 async function loadPlans(): Promise<PricingPlan[]> {
@@ -73,29 +116,16 @@ async function loadPlans(): Promise<PricingPlan[]> {
   const { data, error } = await supabase.from("plans").select("name,price,response_limit").order("price", { ascending: true });
   if (error || !data?.length) return fallbackPlans;
 
-  return (data as PlanRow[]).map((plan) => {
-    const fallback = fallbackPlans.find((item) => item.name.toLowerCase().includes(plan.name.toLowerCase())) || fallbackPlans[0];
-    const isInitial = plan.name.toLowerCase() === "inicial";
-    const isPro = plan.name.toLowerCase() === "pro";
-    const checkoutUrl = isInitial
-      ? process.env.NEXT_PUBLIC_KIWI_INITIAL_CHECKOUT_URL || ""
-      : isPro
-        ? process.env.NEXT_PUBLIC_KIWI_PRO_CHECKOUT_URL || ""
-        : "";
+  const mergedPlans = (data as PlanRow[]).reduce<PricingPlan[]>((plans, plan) => {
+    const fallback = loadFallbackForRow(plan);
+    if (!fallback) return plans;
 
-    return {
-      ...fallback,
-      name: `Plano ${plan.name}`,
-      price: formatPrice(plan.price),
-      checkoutUrl,
-      cta: checkoutUrl ? fallback.cta : "Checkout em configuração",
-      features: [
-        ...fallback.features.slice(0, 2),
-        `Limite de ${plan.response_limit ?? "uso"} respostas por mês`,
-        ...fallback.features.slice(3)
-      ]
-    };
-  });
+    plans.push(fallback);
+
+    return plans;
+  }, []);
+
+  return mergedPlans.length ? mergedPlans : fallbackPlans;
 }
 
 export async function PricingSection() {
@@ -108,7 +138,7 @@ export async function PricingSection() {
           <p className="mb-2 text-sm font-bold uppercase tracking-wide text-emerald-300">Planos mensais</p>
           <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">Escolha seu plano</h2>
           <p className="mt-4 text-base leading-7 text-slate-300">
-            Comece com um assistente de respostas para WhatsApp e evolua conforme seu atendimento crescer.
+            Planos para pessoas, autônomos e pequenos negócios que querem responder com mais rapidez e organizar melhor o atendimento no WhatsApp.
           </p>
         </div>
 
@@ -117,15 +147,19 @@ export async function PricingSection() {
             <article
               className={cn(
                 "relative flex h-full flex-col rounded-lg border bg-[#101821] p-6 shadow-2xl shadow-black/25",
-                plan.recommended ? "border-emerald-300 shadow-emerald-950/30" : "border-white/10"
+                plan.recommended ? "scale-[1.01] border-emerald-300 shadow-emerald-950/30" : "border-white/10"
               )}
-              key={plan.name}
+              key={plan.id}
             >
               <div className="mb-5">
-                <Badge className={plan.recommended ? "bg-emerald-300 text-slate-950" : "bg-white text-slate-950"}>{plan.badge}</Badge>
+                <Badge className={plan.recommended ? "bg-emerald-300 text-slate-950" : "bg-white text-slate-950"}>
+                  {plan.badge}
+                </Badge>
                 <h3 className="mt-4 text-2xl font-black text-white">{plan.name}</h3>
                 <p className="mt-3 text-4xl font-black tracking-tight">{plan.price}</p>
-                <p className="mt-3 text-sm leading-6 text-slate-300">{plan.description}</p>
+                {plan.recurringPrice ? <p className="mt-1 text-base font-black text-emerald-200">{plan.recurringPrice}</p> : null}
+                {plan.id === "pro" ? <p className="mt-2 text-xs font-bold text-slate-400">Oferta válida para novos usuários.</p> : null}
+                <p className="mt-3 min-h-16 text-sm leading-6 text-slate-300">{plan.description}</p>
               </div>
 
               <ul className="flex flex-1 flex-col gap-3 text-sm text-slate-200">
@@ -140,7 +174,10 @@ export async function PricingSection() {
               {plan.checkoutUrl ? (
                 <a
                   href={plan.checkoutUrl}
-                  className="mt-7 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300"
+                  className={cn(
+                    "mt-7 inline-flex min-h-11 w-full items-center justify-center rounded-md px-5 text-sm font-black transition",
+                    plan.recommended ? "bg-emerald-400 text-slate-950 hover:bg-emerald-300" : "bg-white text-slate-950 hover:bg-slate-100"
+                  )}
                 >
                   {plan.cta}
                 </a>
@@ -150,7 +187,7 @@ export async function PricingSection() {
                   disabled
                   className="mt-7 inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-white/5 px-5 text-sm font-black text-slate-500"
                 >
-                  {plan.cta}
+                  Checkout em configuração
                 </button>
               )}
             </article>

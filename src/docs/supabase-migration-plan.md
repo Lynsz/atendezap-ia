@@ -73,6 +73,6 @@ Observação: o projeto atual usa Next.js; quando a conexão real for criada, al
 - Criar importador de dados locais.
 - Criar endpoint real de webhook Kiwify.
 - Adicionar logs e auditoria.
-- Testar com usuário Básico, Starter e Premium.
+- Testar com usuário Starter, Pro e Premium.
 - Testar bloqueio por assinatura atrasada/cancelada.
 - Remover dependência operacional de localStorage em produção.

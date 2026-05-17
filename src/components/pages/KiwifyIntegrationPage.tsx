@@ -183,7 +183,8 @@ function KiwifyIntegrationContent() {
               Eventos simulados
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">
-              <SimulationButton label="Simular compra Básico" type="order_paid" planId="basic" onSimulate={handleSimulate} />
+              <SimulationButton label="Simular compra Starter" type="order_paid" planId="starter" onSimulate={handleSimulate} />
+              <SimulationButton label="Simular compra Pro" type="order_paid" planId="pro" onSimulate={handleSimulate} />
               <SimulationButton label="Simular compra Starter" type="order_paid" planId="starter" onSimulate={handleSimulate} />
               <SimulationButton label="Simular compra Premium" type="order_paid" planId="premium" onSimulate={handleSimulate} />
               <SimulationButton label="Simular renovação" type="subscription_renewed" planId="starter" onSimulate={handleSimulate} />

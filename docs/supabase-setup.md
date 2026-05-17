@@ -18,7 +18,7 @@ Verificado no banco:
 - funções `public.set_updated_at()` e `public.handle_new_user()`
 - trigger `on_auth_user_created` em `auth.users`
 - triggers de `updated_at` em `profiles`, `businesses`, `customers` e `subscriptions`
-- planos iniciais inseridos: `Inicial`, `Pro`, `Premium`
+- planos inseridos: `starter`, `pro`, `premium`
 
 O advisor de segurança pode avisar que a proteção contra senhas vazadas do Supabase Auth está desativada; isso é uma configuração do painel de Auth, não um erro de schema/RLS. O advisor de performance pode listar índices como "unused" enquanto o banco estiver vazio ou com pouco uso; isso é esperado no início do MVP.
 
@@ -92,7 +92,7 @@ No Supabase Dashboard:
 
 1. Vá em **Table Editor**.
 2. Confirme que as tabelas acima aparecem no schema `public`.
-3. Abra `plans` e confirme os planos `Inicial`, `Pro` e `Premium`.
+3. Abra `plans` e confirme os planos `starter`, `pro` e `premium`.
 
 ## Verificar RLS
 

@@ -38,9 +38,13 @@ type DashboardStats = {
 const PLAN_LIMITS: Record<string, number> = {
   free: 30,
   trial: 30,
-  Inicial: 300,
-  Pro: 1000,
-  Premium: 3000,
+  Inicial: 150,
+  Starter: 150,
+  starter: 150,
+  Pro: 600,
+  pro: 600,
+  Premium: 2000,
+  premium: 2000,
 };
 
 export default function AppDashboardPage() {

@@ -34,5 +34,13 @@ export const supportSchema = z.object({
   message: z.string().trim().min(10, "Descreva sua solicitação.").max(3000)
 });
 
+export const ebookLeadSchema = z.object({
+  name: requiredText("Nome", 160),
+  email: z.string().trim().email("Informe um e-mail válido.").max(180),
+  whatsapp: requiredText("WhatsApp", 40),
+  source: z.string().trim().max(80).optional().default("ebook_page")
+});
+
 export type KitFormData = z.infer<typeof kitFormSchema>;
 export type GenerateKitBody = z.infer<typeof generateKitSchema>;
+export type EbookLeadBody = z.infer<typeof ebookLeadSchema>;
