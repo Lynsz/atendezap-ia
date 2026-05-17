@@ -2,43 +2,45 @@
 
 ## O que foi preparado nesta rodada
 
-- Checkouts oficiais Kiwify centralizados em `src/config/checkout.ts`.
-- Botões de compra apontando para os planos Starter, Pro e Premium.
-- Webhook Kiwify com parse seguro, segredo opcional, idempotência e eventos padronizados.
-- Criação ou atualização de customer por e-mail.
-- Geração de kit com eventos de sucesso/falha e preservação do token quando a IA falha.
+- Planos Starter, Pro e Premium centralizados em `src/config/plans.ts`.
+- Billing recorrente preparado para Asaas, com Kiwify reposicionada para aquisicao.
+- Webhooks Kiwify/Asaas com responsabilidades separadas: funil e assinatura.
+- Criacao ou atualizacao de customer por e-mail no fluxo do Asaas.
+- Geracao de kit com eventos de sucesso/falha e preservacao do token quando a IA falha.
 - Registro de eventos para suporte e download de PDF.
-- Schema Supabase com RLS habilitado e acesso público direto revogado.
-- Documentação operacional para Kiwify, Supabase, Vercel, testes manuais e troubleshooting.
+- Schema Supabase com RLS habilitado e acesso publico direto revogado.
+- Documentacao operacional para Asaas, Kiwify, Supabase, Vercel, testes manuais e troubleshooting.
 
-## Como configurar produção
+## Como configurar producao
 
 1. Rodar `supabase/schema.sql` no Supabase.
-2. Configurar variáveis na Vercel.
-3. Conferir os checkouts em `src/config/checkout.ts`.
-4. Configurar webhook na Kiwify.
-5. Verificar domínio do Resend.
-6. Definir `NEXT_PUBLIC_APP_URL` com o domínio final.
+2. Configurar variaveis na Vercel.
+3. Configurar Asaas e webhook `/api/asaas/webhook`.
+4. Configurar Kiwify apenas para ebook/order bump e webhook de aquisicao.
+5. Verificar dominio do Resend.
+6. Definir `NEXT_PUBLIC_APP_URL` com o dominio final.
 
 ## Como testar
 
 1. Rodar `npm run lint`.
 2. Rodar `npm run typecheck`.
-3. Rodar `npm run build`.
-4. Seguir `docs/manual-test-checklist.md`.
-5. Conferir eventos na tabela `events`.
+3. Rodar `npm run test`.
+4. Rodar `npm run build`.
+5. Seguir `docs/smoke-test.md`.
+6. Conferir eventos nas tabelas `asaas_webhook_events` e `events`.
 
-## Limitações restantes
+## Limitacoes restantes
 
-- Sem integração direta com WhatsApp API.
+- Sem integracao direta com WhatsApp API.
 - Sem painel administrativo.
 - Sem Supabase Storage para PDFs.
-- Rate limit em memória não é compartilhado entre instâncias serverless.
-- Conteúdo gerado por IA deve ser revisado pelo usuário.
+- Rate limit em memoria nao e compartilhado entre instancias serverless.
+- Conteudo gerado por IA deve ser revisado pelo usuario.
+- Captura de CPF/CNPJ no checkout Asaas ainda deve ser refinada na interface.
 
-## Próximos passos recomendados
+## Proximos passos recomendados
 
-- Adicionar verificação de assinatura HMAC se a Kiwify disponibilizar.
-- Criar painel mínimo de pedidos e kits.
+- Concluir captura de CPF/CNPJ no checkout Asaas quando necessario para criar novo customer.
+- Criar painel minimo de pedidos e kits.
 - Salvar PDFs em Supabase Storage se houver necessidade de auditoria/arquivo.
 - Melhorar observabilidade com alertas externos.

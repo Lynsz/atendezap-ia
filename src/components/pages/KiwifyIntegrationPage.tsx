@@ -116,7 +116,7 @@ function KiwifyIntegrationContent() {
               </p>
               <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Integração Kiwify</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-                Prepare e monitore eventos de assinatura e pagamento em uma simulação local, sem backend real.
+                Use a Kiwify como funil de aquisição para ebook, order bump e origem do lead. A assinatura recorrente do SaaS fica no Asaas.
               </p>
             </div>
             <IntegrationStatusBadge status="simulated" />
@@ -145,11 +145,11 @@ function KiwifyIntegrationContent() {
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-md bg-amber-400/15 text-amber-300">
               <Server className="h-5 w-5" />
             </div>
-            <p className="text-sm font-bold text-slate-400">Webhook real</p>
+            <p className="text-sm font-bold text-slate-400">Webhook de aquisição</p>
             <div className="mt-3">
               <IntegrationStatusBadge status="pending" />
             </div>
-            <p className="mt-3 text-sm leading-6 text-slate-500">Pendente de backend, endpoint seguro e validação do payload recebido.</p>
+            <p className="mt-3 text-sm leading-6 text-slate-500">O endpoint registra eventos de funil, sem liberar assinatura recorrente.</p>
           </article>
 
           <article className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
@@ -166,14 +166,14 @@ function KiwifyIntegrationContent() {
           <article className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
             <h2 className="mb-4 flex items-center gap-2 text-xl font-black text-white">
               <AlertTriangle className="h-5 w-5 text-amber-300" />
-              Instruções futuras
+              Responsabilidade da Kiwify
             </h2>
             <ol className="grid gap-3 text-sm leading-6 text-slate-300">
-              <li className="rounded-md bg-white/[0.04] p-3">1. Criar backend seguro para receber webhooks.</li>
-              <li className="rounded-md bg-white/[0.04] p-3">2. Criar endpoint futuro `/api/webhooks/kiwify`.</li>
-              <li className="rounded-md bg-white/[0.04] p-3">3. Configurar a URL do webhook na Kiwify.</li>
-              <li className="rounded-md bg-white/[0.04] p-3">4. Validar assinatura/segredo e normalizar eventos recebidos.</li>
-              <li className="rounded-md bg-white/[0.04] p-3">5. Liberar, marcar pendência ou bloquear acesso automaticamente.</li>
+              <li className="rounded-md bg-white/[0.04] p-3">1. Capturar lead via ebook ou produto de entrada.</li>
+              <li className="rounded-md bg-white/[0.04] p-3">2. Registrar origem `acquisition_source = kiwify` e `funnel_source = ebook`.</li>
+              <li className="rounded-md bg-white/[0.04] p-3">3. Aceitar order bump do primeiro mês do Pro por R$ 29 quando fizer sentido.</li>
+              <li className="rounded-md bg-white/[0.04] p-3">4. Orientar o usuário a criar conta no AtendeZap IA.</li>
+              <li className="rounded-md bg-white/[0.04] p-3">5. Deixar a liberação recorrente do SaaS para o Asaas e Supabase.</li>
             </ol>
           </article>
 

@@ -17,13 +17,12 @@ import {
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { UserPlanBadge } from "@/components/auth/UserPlanBadge";
-import { KiwifyCheckoutButton } from "@/components/checkout/KiwifyCheckoutButton";
+import { AsaasSubscriptionButton } from "@/components/checkout/AsaasSubscriptionButton";
 import { CHECKOUT_PLANS } from "@/config/checkout";
 import type { CheckoutPlanId } from "@/config/checkout";
 import { cn } from "@/lib/utils";
 import type { BillingEvent, SubscriptionStatus, UserSubscription } from "@/types/billing";
 import {
-  addBillingEvent,
   cancelLocalSubscription,
   createDefaultSubscription,
   getBillingEvents,
@@ -47,6 +46,8 @@ const statusLabels: Record<SubscriptionStatus, string> = {
   active: "Ativa",
   trial: "Teste",
   overdue: "Em atraso",
+  past_due: "Em atraso",
+  inactive: "Inativa",
   canceled: "Cancelada",
   pending: "Pendente"
 };
@@ -55,6 +56,8 @@ const statusClasses: Record<SubscriptionStatus, string> = {
   active: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
   trial: "border-sky-400/30 bg-sky-400/10 text-sky-200",
   overdue: "border-amber-400/30 bg-amber-400/10 text-amber-200",
+  past_due: "border-amber-400/30 bg-amber-400/10 text-amber-200",
+  inactive: "border-slate-400/30 bg-slate-400/10 text-slate-200",
   canceled: "border-red-400/30 bg-red-500/10 text-red-200",
   pending: "border-slate-400/30 bg-slate-400/10 text-slate-200"
 };
@@ -109,16 +112,6 @@ function BillingContent() {
     setEvents(getBillingEvents());
   }
 
-  function handleBeforeCheckout(planId: CheckoutPlanId) {
-    const plan = CHECKOUT_PLANS[planId];
-    addBillingEvent({
-      title: "Checkout aberto",
-      description: `Redirecionamento para o checkout mensal do ${plan.name} na Kiwify.`,
-      type: "checkout_redirect"
-    });
-    setEvents(getBillingEvents());
-  }
-
   function handleCancelLocal() {
     refreshBillingState(cancelLocalSubscription());
   }
@@ -143,7 +136,7 @@ function BillingContent() {
               </p>
               <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Minha Assinatura</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-                Gerencie seu plano mensal do AtendeZap IA, compare opções e acesse os checkouts oficiais da Kiwify.
+                Gerencie seu plano mensal do AtendeZap IA, compare opções e inicie a cobrança recorrente pelo Asaas.
               </p>
             </div>
             {subscription ? <UserPlanBadge plan={subscription.planId} /> : null}
@@ -220,21 +213,19 @@ function BillingContent() {
             <div className="rounded-lg border border-amber-400/20 bg-amber-400/10 p-5">
               <AlertCircle className="mb-3 h-5 w-5 text-amber-200" />
               <p className="text-sm leading-6 text-amber-100">
-                Os pagamentos são processados pela Kiwify. Esta tela exibe uma simulação local da assinatura até a
-                integração com webhook/backend.
+                Os pagamentos recorrentes do SaaS são processados pelo Asaas. O dashboard libera recursos a partir do status salvo no Supabase.
               </p>
             </div>
             <div className="rounded-lg border border-white/10 bg-[#101821] p-5">
               <CalendarClock className="mb-3 h-5 w-5 text-emerald-300" />
               <p className="text-sm leading-6 text-slate-300">
-                Para cancelar, alterar cartão ou gerenciar cobranças reais, use o link enviado pela Kiwify no e-mail da
-                compra.
+                Para cancelar, alterar forma de pagamento ou gerenciar cobranças reais, use o painel do Asaas ou o fluxo de suporte configurado.
               </p>
             </div>
             <div className="rounded-lg border border-sky-400/20 bg-sky-400/10 p-5">
               <Plug className="mb-3 h-5 w-5 text-sky-200" />
               <p className="text-sm leading-6 text-sky-100">
-                A assinatura real é processada pela Kiwify. A sincronização automática depende da integração via webhook/backend.
+                A Kiwify fica posicionada como funil de aquisição. A assinatura real do SaaS deve ser sincronizada pelo webhook do Asaas.
               </p>
               <Link
                 href="/integracoes/kiwify"
@@ -255,7 +246,7 @@ function BillingContent() {
               </p>
               <h2 className="text-2xl font-black text-white">Comparação dos planos</h2>
             </div>
-            <p className="text-sm text-slate-400">Checkouts oficiais da Kiwify com cobrança recorrente mensal.</p>
+            <p className="text-sm text-slate-400">Cobrança recorrente mensal pelo Asaas, com liberação via Supabase.</p>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
@@ -292,19 +283,15 @@ function BillingContent() {
                     ))}
                   </ul>
 
-                  <KiwifyCheckoutButton
+                  <AsaasSubscriptionButton
                     planId={planId}
                     label={actionLabel}
                     disabled={isCurrentPlan}
-                    fullWidth
-                    onBeforeRedirect={() => handleBeforeCheckout(planId)}
                     className={cn(
                       "mt-6",
-                      planId === "premium"
-                        ? "bg-violet-400 text-slate-950 hover:bg-violet-300"
-                        : "bg-emerald-400 text-slate-950 hover:bg-emerald-300",
                       isCurrentPlan && "bg-white/10 text-slate-200 hover:bg-white/10"
                     )}
+                    recommended={planId === "pro"}
                   />
                 </article>
               );

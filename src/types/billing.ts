@@ -1,6 +1,6 @@
 import type { CheckoutPlanId } from "@/config/checkout";
 
-export type SubscriptionStatus = "active" | "trial" | "overdue" | "canceled" | "pending";
+export type SubscriptionStatus = "active" | "trial" | "overdue" | "past_due" | "inactive" | "canceled" | "pending";
 
 export type BillingCycle = "monthly";
 

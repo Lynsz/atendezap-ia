@@ -1,30 +1,33 @@
 # Deploy na Vercel
 
-Use este guia para publicar o MVP SaaS do AtendeZap IA em produção.
+Use este guia para publicar o MVP SaaS do AtendeZap IA em producao.
 
 ## Passo a passo
 
-1. Rode a validação local:
+1. Rode a validacao local:
 
 ```bash
-npm run check
+npm run lint
+npm run typecheck
+npm run test
+npm run build
 ```
 
-2. Faça commit:
+2. Faca commit:
 
 ```bash
 git add .
 git commit -m "chore: prepare production deploy"
 ```
 
-3. Faça push:
+3. Faca push:
 
 ```bash
 git push
 ```
 
 4. Entre na Vercel.
-5. Importe o repositório.
+5. Importe o repositorio.
 6. Em Framework, selecione `Next.js`.
 7. Em Build command, use:
 
@@ -35,18 +38,22 @@ npm run build
 8. Configure as Environment Variables na Vercel:
 
 ```text
+NEXT_PUBLIC_APP_URL
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
-NEXT_PUBLIC_CHECKOUT_STARTER_URL
-NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL
-NEXT_PUBLIC_CHECKOUT_PRO_URL
-NEXT_PUBLIC_CHECKOUT_PREMIUM_URL
+SUPABASE_SERVICE_ROLE_KEY
 OPENAI_API_KEY
+ASAAS_API_KEY
+ASAAS_ENVIRONMENT
+ASAAS_WEBHOOK_TOKEN
+KIWIFY_WEBHOOK_SECRET
+NEXT_PUBLIC_KIWIFY_EBOOK_URL
+NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL
 ```
 
-9. Faça deploy.
+9. Faca deploy.
 10. Copie a URL gerada pela Vercel.
-11. No Supabase, vá em `Authentication -> URL Configuration`.
+11. No Supabase, va em `Authentication -> URL Configuration`.
 12. Configure Site URL:
 
 ```text
@@ -59,8 +66,8 @@ https://URL-DA-VERCEL
 https://URL-DA-VERCEL/**
 ```
 
-14. Faça redeploy na Vercel se alterar variáveis.
-15. Teste em produção:
+14. Faca redeploy na Vercel se alterar variaveis.
+15. Teste em producao:
 
 ```text
 /debug/supabase
@@ -68,31 +75,32 @@ https://URL-DA-VERCEL/**
 /login
 /dashboard
 /plans
+/precos
 ```
 
-## Variáveis de ambiente
+## Variaveis de ambiente
 
-`NEXT_PUBLIC_SUPABASE_URL` pode ficar pública.
+`NEXT_PUBLIC_SUPABASE_URL` pode ficar publica.
 
-`NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ficar pública com RLS ativo.
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ficar publica com RLS ativo.
 
-As variáveis `NEXT_PUBLIC_CHECKOUT_*` são URLs públicas de checkout. Se ficarem vazias, `/plans` e `/precos` mostram fallback amigável.
+`SUPABASE_SERVICE_ROLE_KEY` e somente servidor. Nunca use prefixo `NEXT_PUBLIC_`.
 
-`OPENAI_API_KEY` é somente servidor. Nunca use prefixo `NEXT_PUBLIC_` nesta chave.
+`OPENAI_API_KEY` e somente servidor. Nunca use prefixo `NEXT_PUBLIC_`.
 
-`SUPABASE_SERVICE_ROLE_KEY`, se for usada em fluxos futuros, nunca deve ir para o front-end.
+As variaveis `ASAAS_*` controlam a cobranca recorrente do SaaS e ficam no servidor. Se `ASAAS_API_KEY` ficar vazia, o build continua funcionando e o erro aparece apenas no fluxo de pagamento.
+
+As variaveis `NEXT_PUBLIC_KIWIFY_*` sao URLs publicas do funil de aquisicao, como ebook e order bump.
 
 ## Supabase Auth URLs
 
 Local:
 
-Site URL:
-
 ```text
 http://localhost:3000
 ```
 
-Redirect URLs:
+Redirect URLs locais:
 
 ```text
 http://localhost:3000/**
@@ -101,38 +109,9 @@ http://localhost:3002/**
 http://localhost:3003/**
 ```
 
-Produção:
-
-Site URL:
+Producao:
 
 ```text
 https://URL-DA-VERCEL
-```
-
-Redirect URLs:
-
-```text
 https://URL-DA-VERCEL/**
 ```
-
-Domínio futuro:
-
-```text
-https://atendezapia.com.br/**
-https://www.atendezapia.com.br/**
-```
-
-## Rotas para validar
-
-- `/`
-- `/debug/supabase`
-- `/cadastro`
-- `/login`
-- `/dashboard`
-- `/plans`
-
-## Observações
-
-- A Vercel injeta `VERCEL_URL`; links absolutos server-side usam essa URL quando `NEXT_PUBLIC_APP_URL` não existir.
-- Checkouts Kiwify ficam em fallback se as URLs públicas estiverem vazias.
-- O webhook Kiwify automático permanece como placeholder seguro até a validação real de autenticidade ser implementada.

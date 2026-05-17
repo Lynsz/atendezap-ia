@@ -2,7 +2,7 @@
 
 MVP SaaS para pessoas, autônomos, prestadores de serviço, pequenos negócios e empresas que atendem pelo WhatsApp.
 
-O produto permite criar conta, cadastrar o negócio, serviço ou atividade, gerar respostas com IA para perguntas de clientes, salvar histórico no Supabase, organizar clientes/leads e vender planos mensais via checkout.
+O produto permite criar conta, cadastrar o negócio, serviço ou atividade, gerar respostas com IA para perguntas de clientes, salvar histórico no Supabase, organizar clientes/leads e vender planos mensais com billing recorrente pelo Asaas.
 
 ## Status Comercial Do MVP
 
@@ -22,16 +22,15 @@ Plano Pro por R$ 29 no primeiro mês. Depois, R$ 97/mês.
 
 Ela é válida para novos usuários, não é temporária e não usa urgência artificial.
 
-O checkout depende das URLs públicas configuradas no ambiente:
+O billing recorrente do SaaS é feito pelo Asaas. A Kiwify fica como funil de aquisição para ebook, order bump e origem do lead.
 
 ```bash
-NEXT_PUBLIC_CHECKOUT_STARTER_URL=
-NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL=
-NEXT_PUBLIC_CHECKOUT_PRO_URL=
-NEXT_PUBLIC_CHECKOUT_PREMIUM_URL=
+ASAAS_API_KEY=
+ASAAS_ENVIRONMENT=sandbox
+ASAAS_WEBHOOK_TOKEN=
 ```
 
-Quando essas URLs estiverem vazias, os botões de plano mostram checkout em configuração. A automação direta com WhatsApp ainda não faz parte desta versão; nesta etapa o usuário cola a pergunta, gera a resposta e copia para enviar manualmente.
+Quando as variáveis do Asaas estiverem vazias, o build continua funcionando e o erro aparece apenas ao iniciar pagamento. A automação direta com WhatsApp ainda não faz parte desta versão; nesta etapa o usuário cola a pergunta, gera a resposta e copia para enviar manualmente.
 
 ## Status atual do MVP
 
@@ -41,8 +40,9 @@ Quando essas URLs estiverem vazias, os botões de plano mostram checkout em conf
 - A geração de resposta é feita server-side por `/api/ai/generate-response`.
 - O limite mensal é aplicado no servidor antes de chamar a OpenAI e antes de salvar em `generated_responses`.
 - `subscriptions` é leitura para o client; plano, status e período devem ser atualizados por trigger, webhook validado ou operação backend segura.
-- Upgrade pago por enquanto é manual via Supabase/Kiwify.
-- Webhook Kiwify automático para liberar plano é etapa futura.
+- Upgrade pago usa rota server-side de criação de assinatura no Asaas.
+- Webhook Asaas atualiza `subscriptions` no Supabase.
+- Webhook Kiwify registra aquisição/funil e não é a fonte principal da assinatura recorrente.
 
 ## Stack
 
@@ -106,10 +106,16 @@ Copie `.env.example` para `.env.local`:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_CHECKOUT_STARTER_URL=
-NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL=
-NEXT_PUBLIC_CHECKOUT_PRO_URL=
-NEXT_PUBLIC_CHECKOUT_PREMIUM_URL=
+NEXT_PUBLIC_APP_URL=
+
+ASAAS_API_KEY=
+ASAAS_ENVIRONMENT=sandbox
+ASAAS_WEBHOOK_TOKEN=
+
+NEXT_PUBLIC_KIWIFY_EBOOK_URL=
+NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL=
+NEXT_PUBLIC_KIWIFY_STARTER_URL=
+NEXT_PUBLIC_KIWIFY_PREMIUM_URL=
 
 OPENAI_API_KEY=
 
@@ -127,7 +133,7 @@ SUPPORT_EMAIL=
 
 `NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ficar pública com RLS ativo.
 
-`NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL` deve apontar para o checkout do primeiro mês do Pro por R$ 29 para novos usuários. `NEXT_PUBLIC_CHECKOUT_PRO_URL` fica reservado para a recorrência normal de R$ 97/mês ou para uso futuro em fluxos de troca de plano.
+`ASAAS_API_KEY` e `ASAAS_WEBHOOK_TOKEN` ficam apenas no servidor. `NEXT_PUBLIC_KIWIFY_*` é usado apenas para funil de aquisição.
 
 `OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` e `KIWIFY_WEBHOOK_SECRET` nunca devem ficar no front-end. A service role nunca deve ser usada no React.
 
@@ -242,7 +248,7 @@ npm run test
 - Project URL configurada.
 - Anon key configurada.
 - `OPENAI_API_KEY` configurada.
-- URLs de checkout configuradas ou fallback aceito.
+- Asaas configurado ou fallback de erro controlado aceito.
 - Vercel env vars configuradas.
 - Supabase Auth URLs configuradas.
 - `/debug/supabase` OK em produção.
@@ -266,10 +272,10 @@ npm run test
 - Vercel env vars configuradas:
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - `NEXT_PUBLIC_CHECKOUT_STARTER_URL`
-  - `NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL`
-  - `NEXT_PUBLIC_CHECKOUT_PRO_URL`
-  - `NEXT_PUBLIC_CHECKOUT_PREMIUM_URL`
+  - `NEXT_PUBLIC_APP_URL`
+  - `ASAAS_API_KEY`
+  - `ASAAS_ENVIRONMENT`
+  - `ASAAS_WEBHOOK_TOKEN`
   - `OPENAI_API_KEY`
 - Supabase Auth URLs configuradas para a URL da Vercel.
 - `/debug/supabase` validado em produção.
@@ -288,7 +294,7 @@ Guia detalhado: `docs/deploy-vercel.md`.
 - Aba "Gerar resposta": chama `/api/ai/generate-response`, nunca OpenAI direto do React.
 - Aba "Histórico": lista e exclui `generated_responses`.
 - Aba "Clientes": CRUD básico em `customers`.
-- `/plans` e `/precos`: carregam `plans` do Supabase e usam `NEXT_PUBLIC_CHECKOUT_STARTER_URL`, `NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL`, `NEXT_PUBLIC_CHECKOUT_PRO_URL` e `NEXT_PUBLIC_CHECKOUT_PREMIUM_URL` para checkouts.
+- `/plans` e `/precos`: usam `src/config/plans.ts` como fonte comercial e iniciam assinatura recorrente pelo Asaas.
 
 Para testar cadastro/login:
 
@@ -322,19 +328,27 @@ Se `OPENAI_API_KEY` não estiver configurada, a rota retorna um fallback útil u
 ## Placeholders
 
 - Se `OPENAI_API_KEY` não estiver configurada, `/api/ai/generate-response` salva uma resposta placeholder segura baseada nos dados do negócio.
-- Se os links de checkout não estiverem configurados, os botões mostram fallback seguro.
+- Se o Asaas não estiver configurado, o build não quebra e o fluxo de pagamento retorna erro controlado.
 - Modulos antigos de demo ainda podem usar `localStorage` para simulacoes, mas o fluxo SaaS principal usa Supabase.
 - WhatsApp conectado, dashboard administrativo complexo e automacoes reais ficam fora do escopo do MVP atual.
 
 ## Oferta Pro De Primeiro Mês
 
-O Plano Pro é o plano principal do funil e aparece como "Mais recomendado".
+O Plano Pro é o plano principal do funil e aparece como "Mais recomendado". A assinatura recorrente é do Asaas; a Kiwify pode oferecer ebook/order bump como aquisição.
 
 - Primeiro mês para novos usuários: R$ 29.
 - Recorrência depois do primeiro mês: R$ 97/mês.
 - Limite mensal: 600 respostas com IA.
 - A estrutura do banco inclui `first_month_price`, `is_first_month_offer` e `first_month_offer_used_at`.
-- A regra completa deve ser aplicada no webhook/backend de checkout: aceitar `NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL` apenas quando a assinatura da conta ainda não tiver `first_month_offer_used_at`; depois da compra aprovada, gravar essa data e manter as renovações em R$ 97/mês.
+- A regra completa fica no backend/webhook: aplicar R$ 29 apenas quando a assinatura da conta ainda não tiver `first_month_offer_used_at`; depois da confirmação, gravar essa data e manter renovações em R$ 97/mês.
+
+## Billing
+
+Guia completo: `docs/billing.md`.
+
+- Kiwify: aquisição, ebook, order bump e origem do lead.
+- Asaas: cobrança mensal recorrente dos planos Starter, Pro e Premium.
+- Supabase: fonte final de verdade para plano, status, limite e liberação no dashboard.
 
 ## Proximos Passos
 
@@ -342,4 +356,5 @@ O Plano Pro é o plano principal do funil e aparece como "Mais recomendado".
 - Configurar Auth URLs no Supabase.
 - Colocar a anon public key no `.env.local`.
 - Configurar `OPENAI_API_KEY` no ambiente serverless.
-- Evoluir Kiwify para atualizar assinaturas reais em `subscriptions` somente apos validar autenticidade do webhook.
+- Configurar Asaas sandbox/producao e webhook `/api/asaas/webhook`.
+- Manter Kiwify apenas para ebook, order bump e marcacao de origem do funil.

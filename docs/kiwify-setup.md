@@ -1,70 +1,40 @@
-# Integração Kiwify
+# Integracao Kiwify
 
-Guia para operar os checkouts recorrentes da Kiwify com o AtendeZap IA em produção.
+Este guia descreve a nova responsabilidade da Kiwify no AtendeZap IA.
 
-## Status atual
+A Kiwify nao e mais a fonte principal da assinatura recorrente do SaaS. Ela deve ser usada para aquisicao:
 
-O webhook `/api/kiwify/webhook` está seguro como placeholder do SaaS: ele valida `KIWIFY_WEBHOOK_SECRET` quando a variável existir, registra apenas metadados mínimos e não atualiza `subscriptions` automaticamente.
+- ebook gratuito ou baixo ticket;
+- order bump do primeiro mes do Plano Pro por R$ 29;
+- upsell/cross-sell apontando para criar conta no AtendeZap IA;
+- marcacao de origem do usuario/funil.
 
-A liberação automática por webhook será implementada em etapa futura, com validação real de autenticidade da Kiwify e mapeamento seguro entre compra, usuário Supabase e plano contratado.
+O billing recorrente dos planos Starter, Pro e Premium fica no Asaas.
 
-## Fluxo manual inicial
-
-1. Cliente compra na Kiwify.
-2. Admin confirma o pagamento na Kiwify.
-3. Admin localiza o `user_id` do cliente no Supabase.
-4. Admin atualiza a tabela `subscriptions` manualmente no SQL Editor do Supabase.
-
-## SQL manual para upgrade
-
-Para Starter:
-
-```sql
-update subscriptions
-set plan_name = 'starter',
-    status = 'active',
-    current_period_end = now() + interval '30 days',
-    updated_at = now()
-where user_id = 'COLE_USER_ID_AQUI';
-```
-
-Para Pro:
-
-```sql
-update subscriptions
-set plan_name = 'Pro',
-    status = 'active',
-    current_period_end = now() + interval '30 days',
-    updated_at = now()
-where user_id = 'COLE_USER_ID_AQUI';
-```
-
-Para Premium:
-
-```sql
-update subscriptions
-set plan_name = 'Premium',
-    status = 'active',
-    current_period_end = now() + interval '30 days',
-    updated_at = now()
-where user_id = 'COLE_USER_ID_AQUI';
-```
-
-## Configurar checkouts
-
-Defina a página de obrigado de cada produto como:
-
-```text
-[APP_URL]/obrigado
-```
-
-Configure as URLs públicas no ambiente:
+## Variaveis
 
 ```bash
-NEXT_PUBLIC_CHECKOUT_STARTER_URL=
-NEXT_PUBLIC_CHECKOUT_PRO_FIRST_MONTH_URL=
-NEXT_PUBLIC_CHECKOUT_PRO_URL=
-NEXT_PUBLIC_CHECKOUT_PREMIUM_URL=
+KIWIFY_WEBHOOK_SECRET=
+NEXT_PUBLIC_KIWIFY_EBOOK_URL=
+NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL=
+NEXT_PUBLIC_KIWIFY_STARTER_URL=
+NEXT_PUBLIC_KIWIFY_PREMIUM_URL=
+```
+
+As URLs publicas sao opcionais e servem para CTAs do funil. A liberacao de plano pago no dashboard deve vir do Supabase atualizado pelo webhook do Asaas.
+
+## Configurar pagina de obrigado
+
+Defina a pagina de obrigado dos produtos de aquisicao como:
+
+```text
+[APP_URL]/ebook/obrigado
+```
+
+Para upsell/cross-sell, aponte para:
+
+```text
+[APP_URL]/precos
 ```
 
 ## Configurar webhook
@@ -87,6 +57,16 @@ O app aceita o segredo em:
 - `x-webhook-secret`
 - `Authorization: Bearer seu-segredo`
 
+## Nomes esperados no funil
+
+Use estes nomes ao mapear eventos ou metadata:
+
+- `kiwify_lead`
+- `kiwify_order_bump`
+- `kiwify_product_purchase`
+- `acquisition_source = "kiwify"`
+- `funnel_source = "ebook"`
+
 ## Testar webhook local
 
 Com `npm run dev` rodando:
@@ -106,17 +86,19 @@ curl -X POST http://localhost:3000/api/kiwify/webhook \
   -d @docs/mock-kiwify-webhook.json
 ```
 
-Resposta esperada nesta etapa:
+Resposta esperada:
 
 ```json
 {
   "ok": true,
-  "mode": "manual_subscription_release"
+  "mode": "acquisition_funnel",
+  "acquisition_source": "kiwify",
+  "funnel_source": "ebook"
 }
 ```
 
-## Erros comuns
+## O que nao fazer
 
-- `Webhook não autorizado.`: segredo ausente ou diferente quando `KIWIFY_WEBHOOK_SECRET` está configurado.
-- `JSON inválido no webhook da Kiwify.`: payload malformado.
-- Cliente pagou, mas plano não mudou: comportamento esperado nesta etapa; faça o upgrade manual no Supabase.
+- Nao usar Kiwify como fonte principal de assinatura recorrente.
+- Nao liberar Starter/Pro/Premium no dashboard apenas por compra Kiwify.
+- Nao usar urgencia artificial como vagas limitadas, primeiros usuarios ou oferta temporaria.

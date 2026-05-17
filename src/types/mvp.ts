@@ -52,7 +52,9 @@ export type Subscription = {
   id: string;
   user_id: string;
   plan_name: string | null;
+  plan: string | null;
   status: string | null;
+  provider: string | null;
   current_period_end: string | null;
   created_at: string;
   updated_at: string;

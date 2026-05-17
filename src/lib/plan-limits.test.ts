@@ -15,4 +15,10 @@ describe("getPlanResponseLimit", () => {
     expect(getPlanResponseLimit(null, null)).toBe(30);
     expect(getPlanResponseLimit("plano-inexistente")).toBe(30);
   });
+
+  it("nao libera limite pago para assinatura pendente, vencida ou cancelada", () => {
+    expect(getPlanResponseLimit("Pro", "pending")).toBe(30);
+    expect(getPlanResponseLimit("Pro", "past_due")).toBe(30);
+    expect(getPlanResponseLimit("Premium", "canceled")).toBe(30);
+  });
 });

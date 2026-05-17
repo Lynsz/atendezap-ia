@@ -91,7 +91,7 @@ function getCurrentMonthStart() {
 }
 
 function getPlanLimit(subscription: Subscription | null, plan: Plan | null) {
-  return plan?.response_limit || getPlanResponseLimit(subscription?.plan_name, subscription?.status);
+  return plan?.response_limit || getPlanResponseLimit(subscription?.plan || subscription?.plan_name, subscription?.status);
 }
 
 function formatDate(value: string) {
@@ -204,8 +204,9 @@ function SaasDashboardContent() {
 
     const subscriptionRow = (subscriptionData as Subscription | null) || null;
     const planRows = (planData as Plan[] | null) || [];
-    const matchedPlan = subscriptionRow?.plan_name
-      ? planRows.find((plan) => plan.name.toLowerCase() === subscriptionRow.plan_name?.toLowerCase())
+    const activePlanName = subscriptionRow?.plan || subscriptionRow?.plan_name;
+    const matchedPlan = activePlanName
+      ? planRows.find((plan) => plan.name.toLowerCase() === activePlanName.toLowerCase())
       : planRows.find((plan) => plan.name.toLowerCase() === "inicial");
 
     setBusiness((businessData as Business | null) || null);
@@ -405,11 +406,12 @@ function SaasDashboardContent() {
     showFeedback("Resposta copiada.");
   }
 
-  const planName = subscription?.plan_name || currentPlan?.name || "Sem assinatura";
+  const planName = subscription?.plan || subscription?.plan_name || currentPlan?.name || "Sem assinatura";
   const monthlyLimit = getPlanLimit(subscription, currentPlan);
   const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
   const hasReachedMonthlyLimit = monthlyUsage >= monthlyLimit;
-  const isFreeOrTrial = !subscription?.plan_name || subscription.plan_name.toLowerCase() === "free" || subscription.status?.toLowerCase() === "trial";
+  const subscriptionPlanName = subscription?.plan || subscription?.plan_name;
+  const isFreeOrTrial = !subscriptionPlanName || subscriptionPlanName.toLowerCase() === "free" || subscription.status?.toLowerCase() === "trial";
   const responseLimit = monthlyLimit.toLocaleString("pt-BR");
   const overviewCards = [
     {

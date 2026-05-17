@@ -1,40 +1,33 @@
 # Notas internas: Webhook Kiwify
 
-O projeto atual usa simulação local com `localStorage`. A página `/integracoes/kiwify` permite testar eventos mockados de assinatura e pagamento sem chamadas reais para a Kiwify.
+A Kiwify agora deve ser tratada como canal de aquisicao do funil, nao como billing recorrente principal do SaaS.
 
-## Integração real futura
+A pagina `/integracoes/kiwify` pode continuar sendo usada para testes e demonstracoes de eventos mockados, mas a liberacao real de Starter, Pro e Premium deve vir do Supabase atualizado pelo webhook do Asaas.
 
-A integração real precisa de backend para receber, validar e processar webhooks com segurança.
+## Integracao real
 
-Endpoint futuro sugerido:
+Endpoint atual:
 
 ```text
-/api/webhooks/kiwify
+/api/kiwify/webhook
 ```
 
-## Eventos necessários
+## Eventos esperados
 
-- `order_paid`
-- `order_refunded`
-- `subscription_created`
-- `subscription_renewed`
-- `subscription_late`
-- `subscription_canceled`
-- `subscription_expired`
+- `kiwify_lead`
+- `kiwify_order_bump`
+- `kiwify_product_purchase`
 
 ## Fluxo esperado
 
-- Compra aprovada -> liberar acesso e marcar assinatura como ativa.
-- Assinatura criada -> criar ou atualizar cliente e assinatura.
-- Renovação -> manter acesso ativo e atualizar próxima cobrança.
-- Atraso -> marcar assinatura como pendente/em atraso.
-- Cancelamento ou expiração -> bloquear ou limitar acesso.
-- Reembolso -> cancelar assinatura e registrar evento.
+- Lead/ebook -> registrar origem do funil.
+- Order bump -> registrar interesse ou compra inicial vinculada ao funil.
+- Upsell/cross-sell -> orientar o usuario para criar conta e assinar pelo fluxo Asaas.
 
-## Segurança esperada
+## Seguranca esperada
 
-- Validar segredo ou assinatura do webhook.
+- Validar segredo ou assinatura do webhook quando disponivel.
 - Normalizar payloads antes de salvar.
-- Não confiar em dados enviados pelo client.
-- Não expor chaves privadas no navegador.
-- Registrar eventos suficientes para auditoria sem salvar payloads sensíveis completos.
+- Nao confiar em dados enviados pelo client.
+- Nao expor chaves privadas no navegador.
+- Registrar eventos suficientes para auditoria sem salvar payloads sensiveis completos.

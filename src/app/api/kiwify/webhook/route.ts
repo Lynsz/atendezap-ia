@@ -34,7 +34,10 @@ export async function POST(request: NextRequest) {
     const payload = await parseWebhookJson(request);
 
     await logEvent("kiwify_webhook_received", {
-      mode: "saas_placeholder",
+      mode: "acquisition_funnel",
+      acquisition_source: "kiwify",
+      funnel_source: "ebook",
+      funnel_event: "kiwify_product_purchase",
       secret_validated: secretValidated,
       event: typeof payload.event === "string" ? payload.event : null,
       status: typeof payload.status === "string" ? payload.status : null
@@ -42,8 +45,10 @@ export async function POST(request: NextRequest) {
 
     return Response.json({
       ok: true,
-      mode: "manual_subscription_release",
-      message: "Webhook recebido. A liberação automática de assinatura SaaS ainda não está ativa; atualize subscriptions manualmente no Supabase após confirmar o pagamento."
+      mode: "acquisition_funnel",
+      acquisition_source: "kiwify",
+      funnel_source: "ebook",
+      message: "Webhook Kiwify recebido como evento de aquisição. A assinatura recorrente do SaaS deve ser liberada pelo webhook do Asaas."
     });
   } catch (error) {
     return errorResponse(error);

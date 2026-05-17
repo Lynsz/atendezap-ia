@@ -116,7 +116,7 @@ export type DatabaseSubscription = {
 
 export type DatabaseWebhookEvent = {
   id: string;
-  provider: "kiwify";
+  provider: "kiwify" | "asaas";
   eventType: string;
   payload: Record<string, unknown>;
   processedAt?: string;

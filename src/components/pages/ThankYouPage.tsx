@@ -93,7 +93,7 @@ export default function ThankYouPage() {
         </div>
 
         <p className="mt-6 text-xs leading-5 text-slate-500">
-          A cobrança real depende dos links de checkout configurados. Configure a URL de obrigado do checkout como `/obrigado` ou use `/ebook/obrigado` para o funil do guia.
+          A assinatura recorrente do SaaS e liberada pelo Asaas. A Kiwify pode continuar no funil do guia, order bump e origem do lead.
         </p>
       </section>
     </main>

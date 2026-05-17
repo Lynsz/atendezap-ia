@@ -9,7 +9,7 @@ export function PricingPageContent() {
           Planos para responder melhor no WhatsApp com IA
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-300">
-          Escolha uma opção mensal para gerar respostas mais profissionais, economizar tempo no atendimento e manter seus clientes mais organizados.
+          Escolha uma opção mensal com cobrança recorrente pelo Asaas para gerar respostas mais profissionais, economizar tempo no atendimento e manter seus clientes mais organizados.
         </p>
         <p className="mx-auto mt-5 inline-flex rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-sm font-black text-emerald-100">
           Plano Pro por R$ 29 no primeiro mês. Depois, R$ 97/mês.
@@ -21,11 +21,11 @@ export function PricingPageContent() {
       <section className="mx-auto max-w-6xl px-4 pb-16 text-center">
         <div className="rounded-lg border border-emerald-300/20 bg-emerald-400/10 p-5">
           <p className="text-sm font-bold leading-6 text-emerald-100">
-            R$ 29 no primeiro mês para novos usuários. Depois, R$ 97/mês. A integração automática com WhatsApp pode evoluir em etapas futuras; nesta versão, você gera, revisa e copia a resposta.
+            R$ 29 no primeiro mês para novos usuários. Depois, R$ 97/mês. O Asaas fica responsável pela cobrança recorrente; o dashboard libera recursos a partir do status salvo no Supabase.
           </p>
         </div>
         <p className="mx-auto mt-6 max-w-3xl text-sm leading-6 text-slate-400">
-          Os planos do AtendeZap IA são cobrados mensalmente pelo checkout configurado. O AtendeZap IA não é afiliado ao WhatsApp, Meta ou Kiwify e não promete resultado financeiro garantido.
+          O AtendeZap IA não é afiliado ao WhatsApp, Meta, Kiwify ou Asaas e não promete resultado financeiro garantido.
         </p>
       </section>
     </main>

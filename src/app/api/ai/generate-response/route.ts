@@ -53,13 +53,13 @@ export async function POST(request: Request) {
 
     const { data: subscription } = await supabase
       .from("subscriptions")
-      .select("plan_name, status")
+      .select("plan_name, plan, status")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    const limit = getPlanResponseLimit(subscription?.plan_name, subscription?.status);
+    const limit = getPlanResponseLimit(subscription?.plan || subscription?.plan_name, subscription?.status);
     const monthStart = getCurrentMonthStart();
     const { count, error: countError } = await supabase
       .from("generated_responses")
