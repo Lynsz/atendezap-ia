@@ -19,13 +19,15 @@ import {
   Users
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
+import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
 import { generateCustomerResponse } from "@/services/ai";
 import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, Subscription } from "@/types/mvp";
 
-type DashboardTab = "assistant" | "business" | "history" | "customers";
+type DashboardTab = "assistant" | "business" | "history" | "customers" | "billing";
 
 type BusinessDraft = {
   business_name: string;
@@ -104,6 +106,15 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+function formatShortDate(value?: string | null) {
+  if (!value) return "Nao informado";
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  }).format(new Date(value));
+}
+
 function toBusinessDraft(business: Business | null): BusinessDraft {
   if (!business) return emptyBusiness;
   return {
@@ -125,6 +136,39 @@ function statusClass(status: CustomerStatus) {
   if (status === "perdido") return "border-red-400/30 bg-red-500/10 text-red-200";
   if (status === "aguardando_resposta") return "border-amber-400/30 bg-amber-400/10 text-amber-200";
   return "border-sky-400/30 bg-sky-400/10 text-sky-200";
+}
+
+function subscriptionStatusLabel(status?: string | null) {
+  const normalizedStatus = status?.toLowerCase();
+  if (normalizedStatus === "active") return "Ativa";
+  if (normalizedStatus === "trial") return "Teste";
+  if (normalizedStatus === "trialing") return "Teste";
+  if (normalizedStatus === "pending") return "Pendente";
+  if (normalizedStatus === "past_due") return "Pagamento pendente";
+  if (normalizedStatus === "canceled") return "Cancelada";
+  if (normalizedStatus === "inactive") return "Inativa";
+  return "Sem assinatura ativa";
+}
+
+function subscriptionStatusClass(status?: string | null) {
+  const normalizedStatus = status?.toLowerCase();
+  if (normalizedStatus === "active" || normalizedStatus === "trial" || normalizedStatus === "trialing") {
+    return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
+  }
+  if (normalizedStatus === "pending") return "border-amber-400/30 bg-amber-400/10 text-amber-200";
+  if (normalizedStatus === "past_due") return "border-orange-400/30 bg-orange-400/10 text-orange-200";
+  return "border-red-400/30 bg-red-500/10 text-red-200";
+}
+
+function hasActiveSubscription(status?: string | null) {
+  const normalizedStatus = status?.toLowerCase();
+  return normalizedStatus === "active" || normalizedStatus === "trial" || normalizedStatus === "trialing";
+}
+
+function normalizePlanId(planName?: string | null): PlanId | null {
+  if (!planName) return null;
+  const normalizedPlanName = planName.toLowerCase();
+  return PLAN_IDS.find((planId) => planId === normalizedPlanName || SAAS_PLANS[planId].name.toLowerCase() === normalizedPlanName) ?? null;
 }
 
 function SaasDashboardContent() {
@@ -438,7 +482,12 @@ function SaasDashboardContent() {
   const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
   const hasReachedMonthlyLimit = monthlyUsage >= monthlyLimit;
   const subscriptionPlanName = subscription?.plan || subscription?.plan_name;
-  const isFreeOrTrial = !subscriptionPlanName || subscriptionPlanName.toLowerCase() === "free" || subscription.status?.toLowerCase() === "trial";
+  const activeSubscription = hasActiveSubscription(subscription?.status);
+  const currentPlanId = normalizePlanId(subscriptionPlanName);
+  const usagePercent = monthlyLimit > 0 ? Math.min(100, Math.round((monthlyUsage / monthlyLimit) * 100)) : 0;
+  const isNearMonthlyLimit = usagePercent >= 80 && !hasReachedMonthlyLimit;
+  const canManageStripeSubscription = subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id);
+  const isFreeOrTrial = !subscriptionPlanName || subscriptionPlanName.toLowerCase() === "free" || subscription?.status?.toLowerCase() === "trial";
   const responseLimit = monthlyLimit.toLocaleString("pt-BR");
   const renewalDetail = subscription?.current_period_end
     ? `Renova em ${new Intl.DateTimeFormat("pt-BR").format(new Date(subscription.current_period_end))}`
@@ -505,7 +554,7 @@ function SaasDashboardContent() {
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
-              {subscription?.provider === "stripe" && subscription.provider_customer_id ? (
+              {canManageStripeSubscription ? (
                 <button type="button" onClick={manageStripeSubscription} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-emerald-300 px-4 text-sm font-black text-slate-950 hover:bg-emerald-200">
                   <CreditCard className="h-4 w-4" />
                   Gerenciar assinatura
@@ -562,12 +611,13 @@ function SaasDashboardContent() {
           ))}
         </section>
 
-        <section className="mb-5 grid gap-3 md:grid-cols-4">
+        <section className="mb-5 grid gap-3 md:grid-cols-5">
           {[
             ["Gerar resposta", "assistant", Bot],
             ["Cadastrar negócio", "business", BriefcaseBusiness],
             ["Clientes", "customers", Users],
-            ["Planos", "plans", CreditCard]
+            ["Assinatura", "billing", CreditCard],
+            ["Preços", "plans", CreditCard]
           ].map(([label, target, Icon]) => (
             target === "plans" ? (
               <button key={label as string} type="button" onClick={() => router.push("/plans")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-black text-slate-100 hover:bg-white/10">
@@ -588,7 +638,8 @@ function SaasDashboardContent() {
             ["assistant", "Gerar resposta", Bot],
             ["business", "Meu negócio", BriefcaseBusiness],
             ["history", "Histórico", Clipboard],
-            ["customers", "Clientes", Users]
+            ["customers", "Clientes", Users],
+            ["billing", "Assinatura", CreditCard]
           ].map(([id, label, Icon]) => (
             <button
               key={id as string}
@@ -606,6 +657,162 @@ function SaasDashboardContent() {
             </button>
           ))}
         </nav>
+
+        {tab === "billing" ? (
+          <section className="grid gap-5">
+            <div className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Plano e assinatura</p>
+                  <h2 className="text-2xl font-black text-white">Minha assinatura</h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                    Veja seu plano, limite mensal, uso atual e gerencie a assinatura do AtendeZap IA.
+                  </p>
+                </div>
+                {canManageStripeSubscription ? (
+                  <button type="button" onClick={manageStripeSubscription} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300">
+                    <CreditCard className="h-4 w-4" />
+                    Gerenciar assinatura
+                  </button>
+                ) : (
+                  <button type="button" onClick={() => router.push("/precos")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-black text-slate-950 hover:bg-slate-100">
+                    <CreditCard className="h-4 w-4" />
+                    Escolher plano
+                  </button>
+                )}
+              </div>
+
+              <div className="mt-5 grid gap-3 md:grid-cols-4">
+                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Plano atual</p>
+                  <p className="mt-2 text-2xl font-black text-white">{activeSubscription ? planName : "Sem plano ativo"}</p>
+                  <p className="mt-2 text-xs leading-5 text-slate-400">{canManageStripeSubscription ? "Assinatura gerenciada pela Stripe" : "Assine um plano para aumentar seu limite"}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</p>
+                  <span className={`mt-3 inline-flex rounded-full border px-3 py-1 text-xs font-black ${subscriptionStatusClass(subscription?.status)}`}>
+                    {subscriptionStatusLabel(subscription?.status)}
+                  </span>
+                  <p className="mt-3 text-xs leading-5 text-slate-400">{subscription?.cancel_at_period_end ? "Cancelamento agendado para o fim do periodo." : "Acesso liberado quando a assinatura esta ativa."}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Limite mensal</p>
+                  <p className="mt-2 text-2xl font-black text-white">{responseLimit}</p>
+                  <p className="mt-2 text-xs leading-5 text-slate-400">Respostas com IA incluidas neste ciclo.</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Renovacao</p>
+                  <p className="mt-2 text-2xl font-black text-white">{formatShortDate(subscription?.current_period_end)}</p>
+                  <p className="mt-2 text-xs leading-5 text-slate-400">Fim do periodo atual, quando enviado pela Stripe.</p>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-sm font-black text-white">Uso mensal</p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      Voce usou {monthlyUsage} de {responseLimit} respostas neste mes. Restam {monthlyRemaining}.
+                    </p>
+                  </div>
+                  <span className="text-sm font-black text-emerald-300">{usagePercent}%</span>
+                </div>
+                <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-800">
+                  <div className={`h-full rounded-full ${hasReachedMonthlyLimit ? "bg-red-400" : isNearMonthlyLimit ? "bg-amber-300" : "bg-emerald-400"}`} style={{ width: `${usagePercent}%` }} />
+                </div>
+                {hasReachedMonthlyLimit ? (
+                  <p className="mt-3 text-sm font-bold text-red-200">Voce atingiu o limite mensal do seu plano.</p>
+                ) : isNearMonthlyLimit ? (
+                  <p className="mt-3 text-sm font-bold text-amber-200">Voce usou {usagePercent}% do seu limite mensal. Faca upgrade para continuar respondendo clientes sem travar o atendimento.</p>
+                ) : null}
+              </div>
+
+              {!activeSubscription ? (
+                <div className="mt-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-100">
+                  <p className="font-black text-white">Sua assinatura nao esta ativa no momento.</p>
+                  <p className="mt-2 leading-6">Escolha um plano para continuar usando o AtendeZap IA com mais limite e recursos.</p>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              {PLAN_IDS.map((planId) => {
+                const plan = SAAS_PLANS[planId];
+                const isCurrentActivePlan = currentPlanId === plan.id && activeSubscription;
+                const checkoutLabel =
+                  plan.id === "pro"
+                    ? "Assinar Pro por R$ 29 no primeiro mes"
+                    : `Assinar ${plan.name}`;
+
+                return (
+                  <article
+                    key={plan.id}
+                    className={`relative rounded-lg border p-5 shadow-xl shadow-black/20 ${
+                      plan.recommended ? "border-emerald-300 bg-emerald-300/10" : "border-white/10 bg-[#101821]"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">{plan.badge}</p>
+                        <h3 className="mt-2 text-2xl font-black text-white">{plan.name}</h3>
+                      </div>
+                      {isCurrentActivePlan ? (
+                        <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-black text-emerald-200">
+                          Plano atual
+                        </span>
+                      ) : plan.recommended ? (
+                        <span className="rounded-full bg-emerald-300 px-3 py-1 text-xs font-black text-slate-950">
+                          Mais recomendado
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="mt-3 min-h-12 text-sm leading-6 text-slate-400">{plan.description}</p>
+                    <div className="mt-4">
+                      {plan.id === "pro" ? (
+                        <>
+                          <p className="text-3xl font-black text-white">Primeiro mes por R$ 29</p>
+                          <p className="mt-1 text-sm font-bold text-emerald-200">Primeiro mês por R$ 29 para novos usuários</p>
+                          <p className="mt-1 text-xs text-slate-400">{plan.recurringPriceLabel || "Depois, continua no valor mensal normal."}</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-3xl font-black text-white">{plan.monthlyPriceLabel}</p>
+                          <p className="mt-1 text-xs text-slate-400">Cobranca mensal pela Stripe.</p>
+                        </>
+                      )}
+                    </div>
+                    <p className="mt-4 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-slate-200">
+                      Ate {plan.responseLimit.toLocaleString("pt-BR")} respostas com IA por mes
+                    </p>
+                    <ul className="mt-4 grid gap-2 text-sm text-slate-300">
+                      {plan.features.slice(0, 5).map((feature) => (
+                        <li key={feature} className="flex gap-2">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-5">
+                      {isCurrentActivePlan ? (
+                        canManageStripeSubscription ? (
+                          <button type="button" onClick={manageStripeSubscription} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-black text-slate-950 hover:bg-slate-100">
+                            Gerenciar assinatura
+                          </button>
+                        ) : (
+                          <button type="button" disabled className="inline-flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-md bg-white/10 px-5 text-sm font-black text-slate-400">
+                            Plano atual
+                          </button>
+                        )
+                      ) : (
+                        <StripeCheckoutButton planId={plan.id} recommended={plan.recommended} label={checkoutLabel} />
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
 
         {tab === "assistant" ? (
           <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
