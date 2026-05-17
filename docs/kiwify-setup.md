@@ -9,7 +9,7 @@ A Kiwify nao e mais a fonte principal da assinatura recorrente do SaaS. Ela deve
 - upsell/cross-sell apontando para criar conta no AtendeZap IA;
 - marcacao de origem do usuario/funil.
 
-O billing recorrente dos planos Starter, Pro e Premium fica no Asaas.
+O billing recorrente dos planos Starter, Pro e Premium fica na Stripe.
 
 ## Variaveis
 
@@ -21,7 +21,7 @@ NEXT_PUBLIC_KIWIFY_STARTER_URL=
 NEXT_PUBLIC_KIWIFY_PREMIUM_URL=
 ```
 
-As URLs publicas sao opcionais e servem para CTAs do funil. A liberacao de plano pago no dashboard deve vir do Supabase atualizado pelo webhook do Asaas.
+As URLs publicas sao opcionais e servem para CTAs do funil. A liberacao de plano pago no dashboard deve vir do Supabase atualizado pelo webhook da Stripe.
 
 ## Configurar pagina de obrigado
 
@@ -101,4 +101,4 @@ Resposta esperada:
 
 - Nao usar Kiwify como fonte principal de assinatura recorrente.
 - Nao liberar Starter/Pro/Premium no dashboard apenas por compra Kiwify.
-- Nao usar urgencia artificial como vagas limitadas, primeiros usuarios ou oferta temporaria.
+- Nao usar urgencia artificial ou restricao temporaria na comunicacao.

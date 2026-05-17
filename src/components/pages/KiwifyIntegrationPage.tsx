@@ -116,7 +116,7 @@ function KiwifyIntegrationContent() {
               </p>
               <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Integração Kiwify</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-                Use a Kiwify como funil de aquisição para ebook, order bump e origem do lead. A assinatura recorrente do SaaS fica no Asaas.
+                Use a Kiwify como funil de aquisição para ebook, order bump e origem do lead. A assinatura recorrente do SaaS fica na Stripe.
               </p>
             </div>
             <IntegrationStatusBadge status="simulated" />
@@ -173,7 +173,7 @@ function KiwifyIntegrationContent() {
               <li className="rounded-md bg-white/[0.04] p-3">2. Registrar origem `acquisition_source = kiwify` e `funnel_source = ebook`.</li>
               <li className="rounded-md bg-white/[0.04] p-3">3. Aceitar order bump do primeiro mês do Pro por R$ 29 quando fizer sentido.</li>
               <li className="rounded-md bg-white/[0.04] p-3">4. Orientar o usuário a criar conta no AtendeZap IA.</li>
-              <li className="rounded-md bg-white/[0.04] p-3">5. Deixar a liberação recorrente do SaaS para o Asaas e Supabase.</li>
+              <li className="rounded-md bg-white/[0.04] p-3">5. Deixar a liberação recorrente do SaaS para a Stripe e Supabase.</li>
             </ol>
           </article>
 

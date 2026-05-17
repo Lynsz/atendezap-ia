@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { supabase } from "@/lib/supabase/browser";
-import type { PlanId } from "@/config/plans";
-import { SAAS_PLANS } from "@/config/plans";
+import { type PlanId, SAAS_PLANS } from "@/config/plans";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase/browser";
 
-type AsaasSubscriptionButtonProps = {
+type StripeCheckoutButtonProps = {
   planId: PlanId;
   className?: string;
   recommended?: boolean;
@@ -15,14 +14,12 @@ type AsaasSubscriptionButtonProps = {
   label?: string;
 };
 
-type CreateSubscriptionResponse = {
-  checkoutUrl?: string;
-  invoiceUrl?: string;
-  subscriptionId?: string;
+type CreateCheckoutResponse = {
+  url?: string;
   error?: string;
 };
 
-export function AsaasSubscriptionButton({ planId, className, recommended, disabled, label }: AsaasSubscriptionButtonProps) {
+export function StripeCheckoutButton({ planId, className, recommended, disabled, label }: StripeCheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
   const plan = SAAS_PLANS[planId];
@@ -41,38 +38,25 @@ export function AsaasSubscriptionButton({ planId, className, recommended, disabl
         return;
       }
 
-      const response = await fetch("/api/asaas/create-subscription", {
+      const response = await fetch("/api/stripe/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({
-          planId,
-          billingType: "UNDEFINED",
-          customer: {
-            name: data.session?.user.user_metadata?.name || data.session?.user.email || "Cliente AtendeZap IA",
-            email: data.session?.user.email
-          }
-        })
+        body: JSON.stringify({ planId })
       });
 
-      const result = (await response.json()) as CreateSubscriptionResponse;
+      const result = (await response.json()) as CreateCheckoutResponse;
 
-      if (!response.ok) {
-        setFeedback(result.error || "Não foi possível iniciar a assinatura agora.");
+      if (!response.ok || !result.url) {
+        setFeedback(result.error || "Nao foi possivel iniciar o checkout agora.");
         return;
       }
 
-      const paymentUrl = result.checkoutUrl || result.invoiceUrl;
-      if (paymentUrl) {
-        window.location.href = paymentUrl;
-        return;
-      }
-
-      setFeedback("Assinatura criada. Verifique as instruções de pagamento no Asaas.");
+      window.location.href = result.url;
     } catch {
-      setFeedback("Não foi possível iniciar o pagamento. Tente novamente em instantes.");
+      setFeedback("Nao foi possivel iniciar o pagamento. Tente novamente em instantes.");
     } finally {
       setLoading(false);
     }
@@ -89,7 +73,7 @@ export function AsaasSubscriptionButton({ planId, className, recommended, disabl
           recommended ? "bg-emerald-400 text-slate-950 hover:bg-emerald-300" : "bg-white text-slate-950 hover:bg-slate-100"
         )}
       >
-        {loading ? "Iniciando..." : label || (plan.id === "pro" ? "Começar por R$ 29" : `Assinar ${plan.name}`)}
+        {loading ? "Iniciando..." : label || (plan.id === "pro" ? "Comecar por R$ 29" : `Assinar ${plan.name}`)}
         <ArrowRight className="h-4 w-4" />
       </button>
       {feedback ? <p className="mt-3 text-xs font-bold leading-5 text-amber-200">{feedback}</p> : null}

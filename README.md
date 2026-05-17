@@ -1,48 +1,26 @@
 ﻿# AtendeZap IA
 
-MVP SaaS para pessoas, autônomos, prestadores de serviço, pequenos negócios e empresas que atendem pelo WhatsApp.
+MVP SaaS para pessoas autonomas, prestadores de servico, pequenos negocios e qualquer pessoa que usa WhatsApp para atender, vender ou responder clientes.
 
-O produto permite criar conta, cadastrar o negócio, serviço ou atividade, gerar respostas com IA para perguntas de clientes, salvar histórico no Supabase, organizar clientes/leads e vender planos mensais com billing recorrente pelo Asaas.
+O produto permite criar conta, cadastrar negocio, servico ou atividade, gerar respostas com IA, salvar historico no Supabase, organizar clientes/leads e vender planos mensais com Stripe Billing.
 
-## Status Comercial Do MVP
+## Status Comercial
 
-O MVP já tem landing page comercial, página de ebook gratuito, página de obrigado, página de preços, cadastro/login, cadastro do negócio, geração de respostas com IA por rota segura, histórico e clientes/leads conectados ao Supabase.
-
-O funil comercial é:
+Funil principal:
 
 ```text
-Ebook gratuito -> página de obrigado -> oferta Pro -> planos pagos
+Ebook gratuito -> pagina de obrigado -> oferta Pro -> Stripe Checkout -> dashboard
 ```
 
-A oferta permanente do Plano Pro é:
+Oferta permanente do Plano Pro:
 
 ```text
-Plano Pro por R$ 29 no primeiro mês. Depois, R$ 97/mês.
+Plano Pro por R$ 29 no primeiro mes. Depois, R$ 97/mes.
 ```
 
-Ela é válida para novos usuários, não é temporária e não usa urgência artificial.
+Essa oferta vale para novos usuarios, nao e temporaria e nao usa urgencia artificial.
 
-O billing recorrente do SaaS é feito pelo Asaas. A Kiwify fica como funil de aquisição para ebook, order bump e origem do lead.
-
-```bash
-ASAAS_API_KEY=
-ASAAS_ENVIRONMENT=sandbox
-ASAAS_WEBHOOK_TOKEN=
-```
-
-Quando as variáveis do Asaas estiverem vazias, o build continua funcionando e o erro aparece apenas ao iniciar pagamento. A automação direta com WhatsApp ainda não faz parte desta versão; nesta etapa o usuário cola a pergunta, gera a resposta e copia para enviar manualmente.
-
-## Status atual do MVP
-
-- `/dashboard` é a rota oficial da área logada do SaaS.
-- `/app/*` não é mais usado como área do produto; acessos legados redirecionam para `/dashboard`.
-- Componentes reutilizáveis saíram de `src/pages` para evitar rotas públicas antigas como `/LoginPage`, `/SignupPage`, `/DashboardPage`, `/SaasDashboardPage` e `/AppDashboardPage`.
-- A geração de resposta é feita server-side por `/api/ai/generate-response`.
-- O limite mensal é aplicado no servidor antes de chamar a OpenAI e antes de salvar em `generated_responses`.
-- `subscriptions` é leitura para o client; plano, status e período devem ser atualizados por trigger, webhook validado ou operação backend segura.
-- Upgrade pago usa rota server-side de criação de assinatura no Asaas.
-- Webhook Asaas atualiza `subscriptions` no Supabase.
-- Webhook Kiwify registra aquisição/funil e não é a fonte principal da assinatura recorrente.
+Stripe e o billing principal do SaaS. Kiwify fica apenas como canal opcional de aquisicao para ebook, captura de lead, order bump e redirecionamento.
 
 ## Stack
 
@@ -50,165 +28,130 @@ Quando as variáveis do Asaas estiverem vazias, o build continua funcionando e o
 - React e TypeScript
 - Tailwind CSS
 - Supabase Auth e Database
-- OpenAI SDK em rota serverless segura
-- Resend para emails do fluxo de compra
-- `@react-pdf/renderer` para PDF do kit
+- Stripe Billing, Stripe Checkout, Stripe Webhooks e Customer Portal
+- OpenAI SDK em rota server-side
+- Resend para e-mails do fluxo de kit
+- `@react-pdf/renderer`
 - Vitest
-- Deploy compatível com Vercel
+- Deploy compativel com Vercel
 
-## Configuração do Supabase
+## Rotas Principais
 
-Project URL:
+- `/`: landing page.
+- `/ebook`: captura do guia gratuito.
+- `/ebook/obrigado`: pagina de obrigado e oferta do Pro.
+- `/precos` e `/plans`: pagina de planos.
+- `/cadastro` e `/login`: autenticacao.
+- `/dashboard`: area logada do SaaS.
+- `/api/stripe/create-checkout-session`: inicia Stripe Checkout.
+- `/api/stripe/create-portal-session`: abre Customer Portal.
+- `/api/stripe/webhook`: atualiza assinaturas no Supabase.
+- `/api/kiwify/webhook`: registra aquisicao/funil.
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL
-```
+## Planos
 
-O schema principal está em:
+Fonte unica: `src/config/plans.ts`.
 
-```bash
-supabase/schema.sql
-```
+- Starter: R$ 49/mes, 150 respostas com IA por mes.
+- Pro: R$ 29 no primeiro mes para novos usuarios, depois R$ 97/mes, 600 respostas com IA por mes.
+- Premium: R$ 197/mes, 2.000 respostas com IA por mes.
 
-Ele cria as tabelas `profiles`, `businesses`, `generated_responses`, `customers`, `subscriptions`, `plans`, `ebook_leads`, além das tabelas server-side do fluxo Kiwify/kit: `purchasers`, `orders`, `kits`, `support_requests` e `events`.
+O Pro e o plano recomendado.
 
-As tabelas usadas pelo app logado têm RLS ativa por `auth.uid()`. `subscriptions` permite apenas leitura pelo usuário autenticado; criação e alteração de plano/status ficam restritas a trigger, SQL administrativo ou backend seguro. `ebook_leads` e as tabelas do fluxo Kiwify/kit ficam sem acesso para `anon` e `authenticated`, sendo usadas apenas por rotas backend com service role.
-
-Para configurar:
-
-1. Preencha `.env.local` com `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` e demais variáveis server-side quando necessário.
-2. Aplique `supabase/schema.sql` no SQL Editor do Supabase.
-3. Configure Authentication -> URL Configuration com as URLs locais e de produção.
-4. Reinicie `npm run dev` depois de alterar `.env.local`.
-5. Abra `/debug/supabase` para verificar se o Next.js leu as variáveis e se `getSession` funciona.
-
-Guia detalhado: `docs/supabase-setup.md`.
-
-### Debug Supabase
-
-Abra `http://localhost:3000/debug/supabase` durante o desenvolvimento.
-
-A pagina mostra:
-
-- se `NEXT_PUBLIC_SUPABASE_URL` foi lida
-- se `NEXT_PUBLIC_SUPABASE_ANON_KEY` existe, sem revelar a chave
-- tamanho da anon key
-- resultado de `supabase.auth.getSession()`
-- select público em `plans`
-- selects protegidos em `profiles`, `businesses`, `generated_responses`, `customers` e `subscriptions` quando houver usuário logado
-
-Resultados em verde indicam conexão/RLS funcionando. Resultados em amarelo indicam testes pulados por falta de sessão. Resultados em vermelho mostram a mensagem retornada pelo Supabase.
-
-## Variáveis De Ambiente
+## Variaveis De Ambiente
 
 Copie `.env.example` para `.env.local`:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_APP_URL=
+SUPABASE_SERVICE_ROLE_KEY=
 
-ASAAS_API_KEY=
-ASAAS_ENVIRONMENT=sandbox
-ASAAS_WEBHOOK_TOKEN=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PRICE_STARTER=
+STRIPE_PRICE_PRO=
+STRIPE_PRICE_PREMIUM=
+STRIPE_COUPON_PRO_FIRST_MONTH_29=
 
 NEXT_PUBLIC_KIWIFY_EBOOK_URL=
 NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL=
 NEXT_PUBLIC_KIWIFY_STARTER_URL=
 NEXT_PUBLIC_KIWIFY_PREMIUM_URL=
+KIWIFY_WEBHOOK_SECRET=
 
 OPENAI_API_KEY=
-
-SUPABASE_SERVICE_ROLE_KEY=
 OPENAI_MODEL=gpt-4o-mini
 RESEND_API_KEY=
 EMAIL_FROM=
-KIWIFY_WEBHOOK_SECRET=
 SUPPORT_EMAIL=
 ```
 
-`NEXT_PUBLIC_SUPABASE_ANON_KEY` deve ser a anon public key do Supabase, encontrada em Project Settings -> API Keys. Ela pode ser usada no navegador junto com RLS.
+`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `RESEND_API_KEY` e `KIWIFY_WEBHOOK_SECRET` sao somente servidor.
 
-`NEXT_PUBLIC_SUPABASE_URL` pode ficar pública.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` e `NEXT_PUBLIC_KIWIFY_*` podem ser publicas.
 
-`NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ficar pública com RLS ativo.
+## Supabase
 
-`ASAAS_API_KEY` e `ASAAS_WEBHOOK_TOKEN` ficam apenas no servidor. `NEXT_PUBLIC_KIWIFY_*` é usado apenas para funil de aquisição.
+Schema principal:
 
-`OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` e `KIWIFY_WEBHOOK_SECRET` nunca devem ficar no front-end. A service role nunca deve ser usada no React.
-
-Este projeto usa Next.js. Variáveis que precisam chegar ao navegador devem usar o prefixo `NEXT_PUBLIC_`.
-
-Depois de alterar `.env.local`, pare e reinicie `npm run dev`. O Next.js injeta variáveis públicas no bundle durante a inicialização do servidor de desenvolvimento. Em produção, configure essas variáveis na Vercel.
-
-## Aplicar Schema
-
-1. Abra o Supabase Dashboard do projeto.
-2. Vá em SQL Editor.
-3. Cole o conteúdo de `supabase/schema.sql`.
-4. Execute o SQL.
-5. Verifique se RLS está ativa nas tabelas principais.
-
-Se o projeto já tiver tabelas antigas de teste, revise antes de executar porque `customers` agora é a tabela de leads do usuário logado, e compradores Kiwify ficam em `purchasers`.
-
-## Auth URLs
-
-No Supabase, configure Authentication -> URL Configuration:
-
-Local:
-
-Site URL:
-
-```bash
-http://localhost:3000
+```text
+supabase/schema.sql
 ```
 
-Redirect URLs:
+Migrations:
 
-```bash
-http://localhost:3000/**
-http://localhost:3001/**
-http://localhost:3002/**
-http://localhost:3003/**
+```text
+supabase/migrations/0001_initial_schema.sql
+supabase/migrations/0002_funnel_pricing_ebook.sql
+supabase/migrations/0003_stripe_billing.sql
 ```
 
-Produção:
+`subscriptions` e a fonte final de verdade para plano, status, limite mensal, periodo e provider. O client pode ler a propria assinatura, mas atualizacoes de plano/status devem vir de backend seguro ou webhook validado.
 
-Site URL:
+## Stripe
 
-```bash
-https://URL-DA-VERCEL
-```
+Configure no Dashboard da Stripe:
 
-Redirect URLs:
+1. Produtos Starter, Pro e Premium.
+2. Prices mensais:
+   - Starter: R$ 49
+   - Pro: R$ 97
+   - Premium: R$ 197
+3. Cupom do primeiro mes do Pro com `duration=once`, reduzindo a primeira fatura para R$ 29.
+4. Customer Portal.
+5. Webhook para `/api/stripe/webhook`.
 
-```bash
-https://URL-DA-VERCEL/**
-```
+Eventos usados:
 
-Domínio futuro:
+- `checkout.session.completed`
+- `customer.subscription.created`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+- `invoice.payment_succeeded`
+- `invoice.payment_failed`
 
-```bash
-https://atendezapia.com.br/**
-https://www.atendezapia.com.br/**
-```
+## Kiwify
 
-Para Vercel e domínio próprio, mantenha também as URLs de produção listadas acima.
+Kiwify nao e billing principal do SaaS. Use apenas para:
 
-## Rodar Localmente
+- ebook gratuito ou baixo ticket;
+- captura de lead;
+- order bump;
+- upsell/cross-sell apontando para `/precos`;
+- registro de `acquisition_source = "kiwify"` e `funnel_source = "ebook"`.
+
+## Desenvolvimento
 
 ```bash
 npm install
 npm run dev
 ```
 
-Acesse:
-
-```bash
-http://localhost:3000
-```
-
-## Build E Qualidade
+Antes de finalizar qualquer alteracao:
 
 ```bash
 npm run lint
@@ -216,145 +159,32 @@ npm run typecheck
 npm run build
 ```
 
-Quando tocar validação, webhook, prompt, geração de kit ou lógica crítica:
+Quando a mudanca tocar webhook, checkout, assinatura, plano, limite ou IA:
 
 ```bash
 npm run test
 ```
 
-## Checklist para validar antes de anunciar
-
-- Criar uma conta nova em `/cadastro`.
-- Logar em `/login`.
-- Confirmar que o usuário entra em `/dashboard`.
-- Cadastrar os dados do negócio.
-- Gerar uma resposta com IA ou fallback.
-- Copiar a resposta gerada.
-- Verificar se a resposta aparece no histórico.
-- Cadastrar um cliente.
-- Alterar o status do cliente.
-- Abrir `/ebook`.
-- Enviar o formulário do ebook.
-- Confirmar redirecionamento para `/ebook/obrigado`.
-- Abrir `/precos`.
-- Testar o botão de checkout ou confirmar a mensagem de checkout em configuração.
-- Fazer logout e login novamente.
-- Testar o fluxo no celular.
-
-## Checklist antes de anunciar
-
-- Supabase schema aplicado.
-- RLS ativo.
-- Project URL configurada.
-- Anon key configurada.
-- `OPENAI_API_KEY` configurada.
-- Asaas configurado ou fallback de erro controlado aceito.
-- Vercel env vars configuradas.
-- Supabase Auth URLs configuradas.
-- `/debug/supabase` OK em produção.
-- Cadastro OK.
-- Login OK.
-- Cadastrar negócio OK.
-- Gerar resposta OK.
-- Histórico OK.
-- Clientes OK.
-- Planos OK.
-- Checkout OK.
-- Teste mobile OK.
-- Teste aba anônima OK.
-
-## Checklist de deploy
-
-- `npm run check` passou localmente.
-- Código commitado e enviado para o GitHub.
-- Projeto importado na Vercel como Next.js.
-- Build command configurado como `npm run build`.
-- Vercel env vars configuradas:
-  - `NEXT_PUBLIC_SUPABASE_URL`
-  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - `NEXT_PUBLIC_APP_URL`
-  - `ASAAS_API_KEY`
-  - `ASAAS_ENVIRONMENT`
-  - `ASAAS_WEBHOOK_TOKEN`
-  - `OPENAI_API_KEY`
-- Supabase Auth URLs configuradas para a URL da Vercel.
-- `/debug/supabase` validado em produção.
-- `/ebook`, `/ebook/obrigado`, `/precos`, `/cadastro`, `/login` e `/dashboard` testados em produção.
-
-Guia detalhado: `docs/deploy-vercel.md`.
-
-## Fluxo Conectado
-
-- `/cadastro`: cria usuário no Supabase Auth e profile.
-- `/login`: autentica com Supabase Auth.
-- `/ebook`: captura nome, email e WhatsApp pela rota server-side `/api/ebook-lead`.
-- `/ebook/obrigado`: confirma o guia e apresenta o Plano Pro por R$ 29 no primeiro mês para novos usuários.
-- `/dashboard`: rota oficial protegida do SaaS.
-- Aba "Meu negócio": salva/edita `businesses`.
-- Aba "Gerar resposta": chama `/api/ai/generate-response`, nunca OpenAI direto do React.
-- Aba "Histórico": lista e exclui `generated_responses`.
-- Aba "Clientes": CRUD básico em `customers`.
-- `/plans` e `/precos`: usam `src/config/plans.ts` como fonte comercial e iniciam assinatura recorrente pelo Asaas.
-
-Para testar cadastro/login:
-
-1. Confirme a anon public key completa em `.env.local`.
-2. Reinicie `npm run dev`.
-3. Abra `/debug/supabase` e confirme `plans select limit 1` em verde.
-4. Crie conta em `/cadastro`.
-5. Entre em `/login`.
-6. Abra `/dashboard` e salve os dados do negócio.
-
-## Geração De Respostas Com IA
-
-A geração de respostas usa a rota interna:
+## Testar Stripe Localmente
 
 ```bash
-/api/ai/generate-response
+stripe login
+stripe listen --forward-to localhost:3000/api/stripe/webhook
 ```
 
-O front-end chama essa rota por `src/services/ai.ts`; ele nunca chama OpenAI diretamente.
+Copie o `whsec_...` para `STRIPE_WEBHOOK_SECRET`, rode `npm run dev`, crie/login de usuario, abra `/precos`, escolha um plano e pague em modo teste.
 
-Para usar IA real, configure no ambiente local ou no servidor:
+Confirme no Supabase:
 
-```bash
-OPENAI_API_KEY=
-```
+- `subscriptions.provider = 'stripe'`
+- `subscriptions.provider_customer_id` preenchido
+- `subscriptions.provider_subscription_id` preenchido
+- `subscriptions.status = 'active'`
+- `subscriptions.monthly_limit` conforme plano
 
-`OPENAI_API_KEY` deve ficar apenas no servidor ou `.env.local`; nunca use prefixo `NEXT_PUBLIC_` para essa chave.
+## Documentacao
 
-Se `OPENAI_API_KEY` não estiver configurada, a rota retorna um fallback útil usando a pergunta do cliente e os dados cadastrados do negócio, sem inventar informações. Antes de gerar, a rota autentica o usuário, lê a assinatura, conta as respostas do mês atual e bloqueia o uso acima do limite do plano. Depois de gerada, a resposta é salva em `generated_responses` no Supabase com `user_id`, `business_id`, pergunta, resposta, tipo e data.
-
-## Placeholders
-
-- Se `OPENAI_API_KEY` não estiver configurada, `/api/ai/generate-response` salva uma resposta placeholder segura baseada nos dados do negócio.
-- Se o Asaas não estiver configurado, o build não quebra e o fluxo de pagamento retorna erro controlado.
-- Modulos antigos de demo ainda podem usar `localStorage` para simulacoes, mas o fluxo SaaS principal usa Supabase.
-- WhatsApp conectado, dashboard administrativo complexo e automacoes reais ficam fora do escopo do MVP atual.
-
-## Oferta Pro De Primeiro Mês
-
-O Plano Pro é o plano principal do funil e aparece como "Mais recomendado". A assinatura recorrente é do Asaas; a Kiwify pode oferecer ebook/order bump como aquisição.
-
-- Primeiro mês para novos usuários: R$ 29.
-- Recorrência depois do primeiro mês: R$ 97/mês.
-- Limite mensal: 600 respostas com IA.
-- A estrutura do banco inclui `first_month_price`, `is_first_month_offer` e `first_month_offer_used_at`.
-- A regra completa fica no backend/webhook: aplicar R$ 29 apenas quando a assinatura da conta ainda não tiver `first_month_offer_used_at`; depois da confirmação, gravar essa data e manter renovações em R$ 97/mês.
-
-## Billing
-
-Guia completo: `docs/billing.md`.
-
-- Kiwify: aquisição, ebook, order bump e origem do lead.
-- Asaas: cobrança mensal recorrente dos planos Starter, Pro e Premium.
-- Supabase: fonte final de verdade para plano, status, limite e liberação no dashboard.
-
-## Proximos Passos
-
-- Aplicar o schema no Supabase real.
-- Configurar Auth URLs no Supabase.
-- Colocar a anon public key no `.env.local`.
-- Configurar `OPENAI_API_KEY` no ambiente serverless.
-- Configurar Asaas sandbox/producao e webhook `/api/asaas/webhook`.
-- Manter Kiwify apenas para ebook, order bump e marcacao de origem do funil.
+- `docs/billing.md`: arquitetura Kiwify + Stripe.
+- `docs/kiwify-setup.md`: funil de aquisicao.
+- `docs/smoke-test.md`: checklist manual.
+- `docs/troubleshooting.md`: erros comuns.

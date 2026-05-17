@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       mode: "acquisition_funnel",
       acquisition_source: "kiwify",
       funnel_source: "ebook",
-      message: "Webhook Kiwify recebido como evento de aquisição. A assinatura recorrente do SaaS deve ser liberada pelo webhook do Asaas."
+      message: "Webhook Kiwify recebido como evento de aquisição. A assinatura recorrente do SaaS deve ser liberada pelo webhook da Stripe."
     });
   } catch (error) {
     return errorResponse(error);

@@ -6,7 +6,7 @@ export default function TermsPage() {
         <p>O AtendeZap IA e um produto digital automatizado para geracao de kits e respostas de atendimento.</p>
         <p>
           Os planos do AtendeZap IA sao cobrados mensalmente pela plataforma de pagamento recorrente configurada,
-          atualmente Asaas.
+          atualmente Stripe.
         </p>
         <p>Nao ha promessa de aumento de vendas, receita, lucro ou qualquer resultado financeiro.</p>
         <p>O conteudo e gerado por IA e deve ser revisado pelo usuario antes do uso com clientes.</p>

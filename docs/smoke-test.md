@@ -10,16 +10,11 @@ Use este checklist antes de anunciar, subir deploy ou testar uma venda real.
 | Confirmar `/dashboard` | Entre com usuario autenticado. | Dashboard protegido carrega; sem sessao, redireciona para `/login`. |
 | Cadastrar negocio | Na aba de negocio, preencha dados minimos e salve. | Mensagem de sucesso aparece e dados persistem em `businesses`. |
 | Gerar resposta | Cole pergunta real de cliente e clique em gerar. | API gera resposta, aplica limite mensal e salva em `generated_responses`. |
-| Copiar resposta | Clique em `Copiar`. | Mensagem de copia aparece e o texto fica disponivel para colar. |
-| Verificar historico | Abra a aba `Historico`. | Resposta recem-gerada aparece uma unica vez. |
-| Cadastrar cliente | Abra `Clientes`, preencha nome/status e salve. | Cliente aparece na lista e persiste em `customers`. |
-| Alterar status | Mude o status de um cliente. | Novo status aparece na lista e atualizacao nao mostra erro. |
-| Abrir `/plans` | Acesse a pagina de planos. | Planos aparecem sem erro. |
-| Testar checkout sem env | Deixe `ASAAS_API_KEY` vazia, faca login e tente iniciar um plano em `/plans`. | API retorna erro amigavel de billing indisponivel, sem quebrar a pagina. |
-| Testar webhook Asaas sandbox | Envie evento com `asaas-access-token` correto para `/api/asaas/webhook`. | Evento fica idempotente e `subscriptions` e atualizada conforme status do pagamento. |
+| Abrir `/plans` ou `/precos` | Acesse a pagina de planos. | Starter, Pro e Premium aparecem sem erro; Pro esta recomendado. |
+| Testar checkout sem env | Deixe `STRIPE_SECRET_KEY` vazia, faca login e tente iniciar um plano. | API retorna erro amigavel de billing indisponivel, sem quebrar a pagina. |
+| Testar checkout Stripe | Configure chaves e Price IDs de teste, clique em um plano. | Usuario vai para Stripe Checkout. |
+| Testar webhook Stripe | Use Stripe CLI apontando para `/api/stripe/webhook`. | Evento fica idempotente e `subscriptions` e atualizada conforme status da assinatura. |
 | Testar webhook Kiwify | Envie payload de ebook/order bump para `/api/kiwify/webhook`. | Evento e tratado como aquisicao/funil, sem liberar assinatura recorrente. |
+| Testar Customer Portal | Com assinatura Stripe criada, clique em `Gerenciar assinatura` no dashboard. | Usuario abre o portal da Stripe. |
 | Testar logout | Clique em `Sair`. | Sessao encerra e usuario vai para `/login`. |
-| Testar login | Entre novamente com a mesma conta. | Dashboard abre e dados cadastrados continuam salvos. |
 | Abrir no celular | Use viewport mobile ou aparelho real. | Fluxo principal continua legivel e botoes principais funcionam. |
-| Abrir aba anonima | Acesse `/dashboard` sem sessao. | Usuario e redirecionado para `/login`. |
-| Abrir `/debug/supabase` | Acesse com e sem sessao. | Pagina mostra status/booleanos, nao mostra tokens nem chaves completas. |

@@ -1,5 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
-import { AsaasSubscriptionButton } from "@/components/checkout/AsaasSubscriptionButton";
+import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
 import { Badge } from "@/components/badge";
 import { PLAN_IDS, SAAS_PLANS } from "@/config/plans";
 import { cn } from "@/lib/utils";
@@ -53,7 +53,7 @@ export function PricingSection() {
                 ))}
               </ul>
 
-              <AsaasSubscriptionButton planId={plan.id} className="mt-7" recommended={plan.recommended} />
+              <StripeCheckoutButton planId={plan.id} className="mt-7" recommended={plan.recommended} />
             </article>
           ))}
         </div>

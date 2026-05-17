@@ -10,7 +10,7 @@ export default function PrivacyPage() {
         <p>Usamos os dados do formulario para gerar respostas, kits de atendimento e historico do usuario.</p>
         <p>
           Podemos usar provedores externos para operar o servico: Supabase para banco de dados, OpenAI para geracao de
-          conteudo, Resend para envio de e-mails, Asaas para assinatura mensal e Kiwify para funis de aquisicao.
+          conteudo, Resend para envio de e-mails, Stripe para assinatura mensal e Kiwify para funis de aquisicao.
         </p>
         <p>
           Nao vendemos dados pessoais. Mantemos apenas as informacoes necessarias para suporte, entrega do produto,

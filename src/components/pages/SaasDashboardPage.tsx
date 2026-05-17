@@ -406,6 +406,33 @@ function SaasDashboardContent() {
     showFeedback("Resposta copiada.");
   }
 
+  async function manageStripeSubscription() {
+    setError("");
+    try {
+      const { data } = await supabaseBrowserClient.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch("/api/stripe/create-portal-session", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const result = (await response.json()) as { url?: string; error?: string };
+      if (!response.ok || !result.url) {
+        setError(result.error || "Nao foi possivel abrir o portal da assinatura.");
+        return;
+      }
+      window.location.href = result.url;
+    } catch {
+      setError("Nao foi possivel abrir o portal da assinatura agora.");
+    }
+  }
+
   const planName = subscription?.plan || subscription?.plan_name || currentPlan?.name || "Sem assinatura";
   const monthlyLimit = getPlanLimit(subscription, currentPlan);
   const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
@@ -413,11 +440,16 @@ function SaasDashboardContent() {
   const subscriptionPlanName = subscription?.plan || subscription?.plan_name;
   const isFreeOrTrial = !subscriptionPlanName || subscriptionPlanName.toLowerCase() === "free" || subscription.status?.toLowerCase() === "trial";
   const responseLimit = monthlyLimit.toLocaleString("pt-BR");
+  const renewalDetail = subscription?.current_period_end
+    ? `Renova em ${new Intl.DateTimeFormat("pt-BR").format(new Date(subscription.current_period_end))}`
+    : subscription?.status
+      ? `Status: ${subscription.status}`
+      : "Assinatura ainda não configurada";
   const overviewCards = [
     {
       label: "Plano atual",
       value: planName,
-      detail: subscription?.status ? `Status: ${subscription.status}` : "Assinatura ainda não configurada",
+      detail: renewalDetail,
       icon: CreditCard
     },
     {
@@ -472,10 +504,18 @@ function SaasDashboardContent() {
                 Olá, {userName}. Cadastre seu negócio, cole a pergunta do cliente e gere uma resposta profissional.
               </p>
             </div>
-            <button type="button" onClick={handleLogout} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 text-sm font-bold text-slate-200 hover:bg-white/10">
-              <LogOut className="h-4 w-4" />
-              Sair
-            </button>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              {subscription?.provider === "stripe" && subscription.provider_customer_id ? (
+                <button type="button" onClick={manageStripeSubscription} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-emerald-300 px-4 text-sm font-black text-slate-950 hover:bg-emerald-200">
+                  <CreditCard className="h-4 w-4" />
+                  Gerenciar assinatura
+                </button>
+              ) : null}
+              <button type="button" onClick={handleLogout} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 text-sm font-bold text-slate-200 hover:bg-white/10">
+                <LogOut className="h-4 w-4" />
+                Sair
+              </button>
+            </div>
           </div>
         </header>
 

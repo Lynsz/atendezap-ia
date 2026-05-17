@@ -76,7 +76,7 @@ export function createDefaultSubscription(planId: CheckoutPlanId = "starter") {
   saveSubscription(subscription);
   addBillingEvent({
     title: "Assinatura local criada",
-    description: `Simulação local iniciada no ${subscription.planName}. A cobrança real do SaaS é gerenciada pelo Asaas.`,
+    description: `Simulação local iniciada no ${subscription.planName}. A cobrança real do SaaS é gerenciada pela Stripe.`,
     type: "created"
   });
   return subscription;
@@ -100,7 +100,7 @@ export function updateSubscriptionPlan(planId: CheckoutPlanId) {
   saveSubscription(subscription);
   addBillingEvent({
     title: "Plano local atualizado",
-    description: `A assinatura local foi atualizada para ${plan.name}. Confirme a cobrança real pelo Asaas.`,
+    description: `A assinatura local foi atualizada para ${plan.name}. Confirme a cobrança real pela Stripe.`,
     type: "plan_changed"
   });
 
@@ -120,7 +120,7 @@ export function cancelLocalSubscription() {
   saveSubscription(subscription);
   addBillingEvent({
     title: "Assinatura local cancelada",
-    description: "O status foi alterado apenas neste navegador. Para cancelar cobranças reais, use o painel do Asaas ou suporte.",
+    description: "O status foi alterado apenas neste navegador. Para cancelar cobranças reais, use o Customer Portal da Stripe ou suporte.",
     type: "canceled"
   });
 

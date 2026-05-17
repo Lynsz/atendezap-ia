@@ -13,29 +13,9 @@ npm run test
 npm run build
 ```
 
-2. Faca commit:
-
-```bash
-git add .
-git commit -m "chore: prepare production deploy"
-```
-
-3. Faca push:
-
-```bash
-git push
-```
-
-4. Entre na Vercel.
-5. Importe o repositorio.
-6. Em Framework, selecione `Next.js`.
-7. Em Build command, use:
-
-```bash
-npm run build
-```
-
-8. Configure as Environment Variables na Vercel:
+2. Faca commit e push.
+3. Importe o repositorio na Vercel como `Next.js`.
+4. Configure as Environment Variables:
 
 ```text
 NEXT_PUBLIC_APP_URL
@@ -43,31 +23,27 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 OPENAI_API_KEY
-ASAAS_API_KEY
-ASAAS_ENVIRONMENT
-ASAAS_WEBHOOK_TOKEN
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+STRIPE_PRICE_STARTER
+STRIPE_PRICE_PRO
+STRIPE_PRICE_PREMIUM
+STRIPE_COUPON_PRO_FIRST_MONTH_29
 KIWIFY_WEBHOOK_SECRET
 NEXT_PUBLIC_KIWIFY_EBOOK_URL
 NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL
 ```
 
-9. Faca deploy.
-10. Copie a URL gerada pela Vercel.
-11. No Supabase, va em `Authentication -> URL Configuration`.
-12. Configure Site URL:
+5. Faca deploy.
+6. Configure Supabase Auth URLs com o dominio da Vercel.
+7. Configure webhook Stripe:
 
 ```text
-https://URL-DA-VERCEL
+https://URL-DA-VERCEL/api/stripe/webhook
 ```
 
-13. Configure Redirect URLs:
-
-```text
-https://URL-DA-VERCEL/**
-```
-
-14. Faca redeploy na Vercel se alterar variaveis.
-15. Teste em producao:
+8. Teste:
 
 ```text
 /debug/supabase
@@ -80,38 +56,8 @@ https://URL-DA-VERCEL/**
 
 ## Variaveis de ambiente
 
-`NEXT_PUBLIC_SUPABASE_URL` pode ficar publica.
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` e `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` podem ficar publicas.
 
-`NEXT_PUBLIC_SUPABASE_ANON_KEY` pode ficar publica com RLS ativo.
+`SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` sao somente servidor.
 
-`SUPABASE_SERVICE_ROLE_KEY` e somente servidor. Nunca use prefixo `NEXT_PUBLIC_`.
-
-`OPENAI_API_KEY` e somente servidor. Nunca use prefixo `NEXT_PUBLIC_`.
-
-As variaveis `ASAAS_*` controlam a cobranca recorrente do SaaS e ficam no servidor. Se `ASAAS_API_KEY` ficar vazia, o build continua funcionando e o erro aparece apenas no fluxo de pagamento.
-
-As variaveis `NEXT_PUBLIC_KIWIFY_*` sao URLs publicas do funil de aquisicao, como ebook e order bump.
-
-## Supabase Auth URLs
-
-Local:
-
-```text
-http://localhost:3000
-```
-
-Redirect URLs locais:
-
-```text
-http://localhost:3000/**
-http://localhost:3001/**
-http://localhost:3002/**
-http://localhost:3003/**
-```
-
-Producao:
-
-```text
-https://URL-DA-VERCEL
-https://URL-DA-VERCEL/**
-```
+As variaveis `NEXT_PUBLIC_KIWIFY_*` sao URLs publicas do funil de aquisicao.

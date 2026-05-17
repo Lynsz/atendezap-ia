@@ -55,6 +55,10 @@ export type Subscription = {
   plan: string | null;
   status: string | null;
   provider: string | null;
+  provider_customer_id?: string | null;
+  provider_subscription_id?: string | null;
+  cancel_at_period_end?: boolean | null;
+  current_period_start?: string | null;
   current_period_end: string | null;
   created_at: string;
   updated_at: string;

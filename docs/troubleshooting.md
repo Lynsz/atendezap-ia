@@ -2,16 +2,17 @@
 
 ## O checkout nao abre ou retorna erro
 
-O billing recorrente do SaaS usa Asaas. Confira:
+O billing recorrente do SaaS usa Stripe. Confira:
 
 ```text
-ASAAS_API_KEY
-ASAAS_ENVIRONMENT=sandbox
-ASAAS_WEBHOOK_TOKEN
+STRIPE_SECRET_KEY
+STRIPE_PRICE_STARTER
+STRIPE_PRICE_PRO
+STRIPE_PRICE_PREMIUM
 NEXT_PUBLIC_APP_URL
 ```
 
-Se o erro acontecer antes de chamar o Asaas, verifique se o usuario esta autenticado e se o CPF/CNPJ foi informado quando for necessario criar um customer novo.
+Se o erro acontecer antes de abrir o Checkout, verifique se o usuario esta autenticado e se o plano existe em `src/config/plans.ts`.
 
 ## O preco aparece errado
 
@@ -25,14 +26,14 @@ Premium: R$ 197/mes
 
 Se aparecer qualquer outro valor, atualize a fonte unica em `src/config/plans.ts`.
 
-## Webhook Asaas retorna 401
+## Webhook Stripe retorna 400
 
-`ASAAS_WEBHOOK_TOKEN` esta configurado, mas o header nao foi enviado ou esta diferente.
+Confira:
 
-Envie o token no header:
-
-- `asaas-access-token`
-- `asaas_access_token`
+- `STRIPE_WEBHOOK_SECRET`
+- header `stripe-signature`
+- uso de raw body com `request.text()`
+- se o webhook foi criado no mesmo ambiente da chave usada, teste ou producao
 
 ## Webhook Kiwify retorna 401
 
@@ -44,7 +45,7 @@ Envie um dos headers:
 - `x-webhook-secret`
 - `Authorization: Bearer`
 
-## Pedido duplicado
+## Evento duplicado
 
 E esperado que webhooks repetidos retornem:
 
@@ -52,45 +53,14 @@ E esperado que webhooks repetidos retornem:
 { "ok": true, "duplicate": true }
 ```
 
-Isso evita processar o mesmo evento duas vezes.
-
-## E-mail nao chega
-
-Confira:
-
-- `RESEND_API_KEY`
-- `EMAIL_FROM`
-- dominio verificado no Resend
-- logs do Resend
-- evento `access_email_failed`
-
-Se o pedido foi criado, use temporariamente `orders.access_token` para testar o link magico.
+Isso evita processar o mesmo evento Stripe duas vezes.
 
 ## OpenAI falha
 
-Confira:
-
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL`
-- saldo/limites da conta
-- logs da Vercel
-- evento `kit_generation_failed`
+Confira `OPENAI_API_KEY`, `OPENAI_MODEL`, saldo/limites da conta e logs da Vercel.
 
 Quando a IA falha, o token nao e marcado como usado. O cliente pode tentar novamente.
 
-## PDF nao baixa
-
-Confira:
-
-- se `/kit/[kitId]` abre;
-- se o registro existe em `kits`;
-- logs da rota `/api/download/[kitId]`;
-- evento `pdf_downloaded`.
-
-O MVP gera o PDF sob demanda e nao depende de Supabase Storage.
-
 ## Supabase bloqueia leitura/escrita
 
-O schema habilita RLS e bloqueia acesso publico direto. As operacoes devem passar pelas APIs do Next usando `SUPABASE_SERVICE_ROLE_KEY`.
-
-Se falhar localmente, confira se a service role esta configurada no `.env.local`.
+O schema habilita RLS e bloqueia acesso publico direto. As operacoes sensiveis devem passar pelas APIs do Next usando `SUPABASE_SERVICE_ROLE_KEY`.

@@ -12,6 +12,6 @@
 | Histórico aparece | `/dashboard` | Abrir a aba Histórico. | Resposta gerada aparece no histórico. | Pendente |
 | Cliente salva | `/dashboard` | Cadastrar cliente. | Cliente aparece na lista. | Pendente |
 | Planos aparecem | `/plans` ou `/precos` | Abrir a página de planos. | Starter, Pro e Premium aparecem com valores e limites corretos. | Pendente |
-| Checkout | `/plans` | Clicar nos botões de plano. | Abre Kiwify ou mostra fallback. | Pendente |
+| Checkout | `/plans` | Clicar nos botoes de plano. | Abre Stripe Checkout ou mostra fallback controlado. | Pendente |
 | Logout | `/dashboard` | Clicar em sair. | Sai da conta e volta para `/login` ou `/`. | Pendente |
 | Mobile | Rotas principais | Testar em largura de celular. | Sem overflow ou botão cortado. | Pendente |

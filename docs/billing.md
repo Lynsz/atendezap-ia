@@ -1,145 +1,181 @@
-# Billing: Kiwify + Asaas
+# Billing: Kiwify + Stripe
 
-## Estratégia
+## Estrategia
 
-O AtendeZap IA usa dois papéis separados:
+- Stripe: billing principal do SaaS, Stripe Checkout, assinatura mensal, Customer Portal e webhooks.
+- Supabase: fonte final de verdade para plano, status, limite e acesso ao dashboard.
+- Kiwify: funil opcional de aquisicao, ebook, baixo ticket, order bump e origem do lead.
 
-- Kiwify: funil de aquisição, ebook, produto de entrada, order bump e origem do lead.
-- Asaas: billing principal do SaaS, cobrança recorrente mensal e webhooks que liberam ou bloqueiam assinatura.
-
-O dashboard não consulta Kiwify nem Asaas diretamente no front-end. A fonte final de verdade é a tabela `subscriptions` no Supabase.
+O dashboard nao consulta Stripe nem Kiwify diretamente no front-end.
 
 ```text
-Pagamento confirmado no Asaas
--> /api/asaas/webhook
+Pagamento confirmado na Stripe
+-> /api/stripe/webhook
 -> subscriptions no Supabase
--> dashboard lê Supabase
--> plano, limite e recursos são liberados
+-> dashboard le Supabase
+-> plano, limite e acesso sao liberados
 ```
 
 ## Planos
 
-A fonte única de planos está em `src/config/plans.ts`.
+Fonte unica no codigo: `src/config/plans.ts`.
 
-- Starter: R$ 49/mês, 150 respostas com IA por mês.
-- Pro: R$ 29 no primeiro mês para novos usuários, depois R$ 97/mês, 600 respostas com IA por mês.
-- Premium: R$ 197/mês, 2.000 respostas com IA por mês.
+- Starter: R$ 49/mes, 150 respostas com IA por mes.
+- Pro: R$ 29 no primeiro mes para novos usuarios, depois R$ 97/mes, 600 respostas com IA por mes.
+- Premium: R$ 197/mes, 2.000 respostas com IA por mes.
 
-A oferta do Pro é permanente para novos usuários. Não depende de lançamento, vagas ou prazo temporário.
+A oferta do Pro e permanente para novos usuarios. Nao depende de lancamento, vagas ou prazo temporario.
 
-No fluxo Asaas, a assinatura Pro deve ser criada com valor recorrente normal de R$ 97/mês. Quando a conta ainda não usou a oferta, a primeira cobrança pendente da assinatura é ajustada para R$ 29 e o uso da oferta é marcado no Supabase após confirmação do pagamento.
+## Oferta do primeiro mes do Pro
 
-## Variáveis de ambiente
+O preco normal do Pro fica na Stripe como um Price recorrente mensal de R$ 97.
+
+Para o primeiro mes por R$ 29, crie na Stripe um cupom com `duration=once`. Esse cupom deve reduzir a primeira fatura do Plano Pro para R$ 29. A partir do segundo mes, a Stripe cobra automaticamente o valor normal do Price mensal.
+
+O backend aplica o cupom apenas quando:
+
+- `planId = "pro"`;
+- a conta ainda nao tem `first_month_offer_used_at`;
+- a conta ainda nao tem `first_month_price_applied`.
+
+## Variaveis
 
 ```bash
-NEXT_PUBLIC_APP_URL=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-ASAAS_API_KEY=
-ASAAS_ENVIRONMENT=sandbox
-ASAAS_WEBHOOK_TOKEN=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PRICE_STARTER=
+STRIPE_PRICE_PRO=
+STRIPE_PRICE_PREMIUM=
+STRIPE_COUPON_PRO_FIRST_MONTH_29=
 
+KIWIFY_WEBHOOK_SECRET=
 NEXT_PUBLIC_KIWIFY_EBOOK_URL=
 NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL=
-NEXT_PUBLIC_KIWIFY_STARTER_URL=
-NEXT_PUBLIC_KIWIFY_PREMIUM_URL=
-KIWIFY_WEBHOOK_SECRET=
 ```
 
-Também mantenha as variáveis existentes do Supabase e OpenAI:
+`STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` sao somente servidor. Nunca use prefixo `NEXT_PUBLIC_` nessas chaves.
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-OPENAI_API_KEY=
-```
+O codigo tambem aceita os aliases antigos `STRIPE_PRICE_*_MONTHLY` e `STRIPE_COUPON_PRO_FIRST_MONTH`. Se voce preferir o nome sugerido `STRIPE_PRICE_PRO_FIRST_MONTH_29`, ele sera tratado como o ID do cupom de primeiro mes.
 
-## Asaas
+## Stripe
 
-### Configuração manual
+### Configuracao manual
 
-1. Criar conta Sandbox no Asaas.
-2. Gerar `ASAAS_API_KEY` em Integrações/API Keys.
-3. Configurar `ASAAS_ENVIRONMENT=sandbox` no ambiente local/Vercel.
-4. Criar um token forte para webhook e salvar em `ASAAS_WEBHOOK_TOKEN`.
-5. Configurar webhook no Asaas apontando para:
+1. Criar produtos no Dashboard da Stripe:
+   - AtendeZap IA Starter
+   - AtendeZap IA Pro
+   - AtendeZap IA Premium
+2. Criar Prices mensais recorrentes:
+   - Starter: R$ 49/mes
+   - Pro: R$ 97/mes
+   - Premium: R$ 197/mes
+3. Copiar os IDs para:
+   - `STRIPE_PRICE_STARTER`
+   - `STRIPE_PRICE_PRO`
+   - `STRIPE_PRICE_PREMIUM`
+4. Criar cupom do Pro:
+   - duration: once
+   - desconto suficiente para a primeira fatura do Pro virar R$ 29
+   - salvar em `STRIPE_COUPON_PRO_FIRST_MONTH_29`
+5. Ativar Customer Portal no Dashboard da Stripe.
+6. Configurar webhook apontando para:
 
 ```text
-https://SEU-DOMINIO/api/asaas/webhook
+https://SEU-DOMINIO/api/stripe/webhook
 ```
 
-6. Configurar o token do webhook no painel do Asaas. O app valida o header `asaas-access-token`.
-7. Habilitar eventos de pagamento/cobrança, especialmente:
-   - `PAYMENT_CREATED`
-   - `PAYMENT_RECEIVED`
-   - `PAYMENT_CONFIRMED`
-   - `PAYMENT_OVERDUE`
-   - `PAYMENT_CREDIT_CARD_CAPTURE_REFUSED`
-   - `PAYMENT_DELETED`
-   - `PAYMENT_REFUNDED`
+Eventos minimos:
 
-### Rotas
+- `checkout.session.completed`
+- `customer.subscription.created`
+- `customer.subscription.updated`
+- `customer.subscription.deleted`
+- `invoice.payment_succeeded`
+- `invoice.payment_failed`
 
-- `POST /api/asaas/create-subscription`: cria customer/assinatura no Asaas para usuário autenticado.
-- `POST /api/asaas/webhook`: recebe eventos do Asaas, valida token, registra idempotência e atualiza `subscriptions`.
+## Rotas
 
-Se `ASAAS_API_KEY` ou `ASAAS_ENVIRONMENT` não estiverem configuradas, o build continua funcionando. O erro aparece apenas ao iniciar pagamento.
+- `POST /api/stripe/create-checkout-session`: cria Customer quando necessario e inicia Stripe Checkout em `mode="subscription"`.
+- `POST /api/stripe/create-portal-session`: cria sessao do Customer Portal para usuario autenticado.
+- `POST /api/stripe/webhook`: valida assinatura, registra idempotencia e atualiza `subscriptions`.
+- `POST /api/kiwify/webhook`: registra aquisicao/funil, sem liberar assinatura recorrente.
 
-## Kiwify
-
-### Configuração manual
-
-1. Manter Kiwify para ebook, baixo ticket, order bump e upsell/cross-sell.
-2. Usar links públicos `NEXT_PUBLIC_KIWIFY_*` apenas no funil de aquisição.
-3. Configurar webhook Kiwify em:
-
-```text
-https://SEU-DOMINIO/api/kiwify/webhook
-```
-
-4. Se a Kiwify permitir header/segredo, configurar `KIWIFY_WEBHOOK_SECRET`.
-5. Não usar Kiwify como fonte principal de assinatura recorrente do SaaS.
-
-O webhook Kiwify registra o evento como aquisição:
-
-- `acquisition_source = "kiwify"`
-- `funnel_source = "ebook"`
-- `funnel_event = "kiwify_product_purchase"`
+Se as variaveis da Stripe estiverem vazias, o build continua funcionando. O erro aparece apenas ao iniciar pagamento ou validar webhook.
 
 ## Supabase
 
-Aplicar as migrations:
+Migration segura:
 
 ```text
-supabase/migrations/0002_funnel_pricing_ebook.sql
-supabase/migrations/0003_asaas_billing.sql
+supabase/migrations/0003_stripe_billing.sql
 ```
 
-A migration do Asaas adiciona campos em `subscriptions` sem apagar dados:
+Ela adiciona campos em `subscriptions` sem apagar dados:
 
 - `provider`
 - `provider_customer_id`
 - `provider_subscription_id`
+- `provider_price_id`
 - `provider_payment_id`
-- `acquisition_source`
-- `funnel_source`
+- `stripe_checkout_session_id`
+- `stripe_event_id`
+- `cancel_at_period_end`
 - `first_month_price_applied`
 - `promo_code`
+- `acquisition_source`
+- `funnel_source`
 - `last_payment_status`
 - `metadata`
 
-Também cria `asaas_webhook_events` com `provider_event_id` único para idempotência.
+Tambem cria `stripe_webhook_events` com `provider_event_id` unico para idempotencia.
 
-## Teste local/sandbox
+## Teste local
 
-1. Rodar `npm run dev`.
-2. Criar uma conta em `/cadastro`.
-3. Acessar `/precos`.
-4. Clicar no plano desejado.
-5. Se aparecer erro de CPF/CNPJ, enviar a chamada via API com dados completos do customer ou evoluir a UI para capturar CPF/CNPJ antes do checkout.
-6. Conferir no Asaas Sandbox se customer, assinatura e cobrança foram criados.
-7. Expor localhost com ngrok ou Cloudflare Tunnel.
-8. Configurar o webhook Sandbox para `https://URL-TUNNEL/api/asaas/webhook`.
-9. Simular ou pagar a cobrança no Sandbox.
-10. Confirmar no Supabase que `subscriptions.status` virou `active`, `provider = asaas` e `provider_subscription_id` foi salvo.
-11. Acessar `/dashboard` e confirmar que o limite do plano foi liberado.
+1. Rodar a migration no Supabase.
+2. Preencher `.env.local` com Stripe test mode.
+3. Rodar `npm run dev`.
+4. Criar/login de usuario.
+5. Acessar `/precos`.
+6. Clicar em um plano.
+7. Confirmar redirecionamento para Stripe Checkout.
+8. Pagar com cartao de teste da Stripe.
+9. Confirmar no Supabase:
+   - `subscriptions.provider = 'stripe'`
+   - `subscriptions.provider_customer_id` preenchido
+   - `subscriptions.provider_subscription_id` preenchido
+   - `subscriptions.status = 'active'`
+   - `subscriptions.monthly_limit` conforme plano
+
+## Teste de webhook com Stripe CLI
+
+```bash
+stripe login
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+Copie o `whsec_...` retornado para `STRIPE_WEBHOOK_SECRET`.
+
+Depois, use Checkout real em modo teste ou dispare eventos:
+
+```bash
+stripe trigger checkout.session.completed
+stripe trigger invoice.payment_succeeded
+stripe trigger invoice.payment_failed
+```
+
+Para validar o fluxo completo, prefira pagar uma Checkout Session criada pelo app, porque ela carrega `metadata.user_id` e `metadata.plan_id`.
+
+## Kiwify
+
+Mantenha Kiwify para:
+
+- ebook gratuito ou baixo ticket;
+- captura de lead;
+- order bump;
+- upsell/cross-sell para `/precos`;
+- origem do funil.
+
+Nao use Kiwify como fonte principal da assinatura recorrente do SaaS. A assinatura oficial usa `provider = "stripe"`.

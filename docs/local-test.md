@@ -12,9 +12,9 @@ Use este roteiro para validar o MVP localmente antes de anunciar ou publicar uma
 | 6. Gerar resposta | Colar uma pergunta real do cliente e clicar em gerar. | API autentica o usuário, aplica limite mensal, gera resposta e salva no histórico. |
 | 7. Verificar histórico | Abrir a aba Histórico. | A resposta recém-gerada aparece uma única vez com pergunta, resposta, tipo e data. |
 | 8. Cadastrar cliente | Abrir a aba Clientes e criar um lead. | Cliente aparece na lista e pode ter status/observações alterados. |
-| 9. Abrir planos | Acessar `/plans`. | Planos aparecem; se checkout não estiver configurado, o botão mostra fallback amigável. |
+| 9. Abrir planos | Acessar `/plans`. | Planos aparecem; se Stripe nao estiver configurada, o botao mostra fallback amigavel. |
 | 10. Testar logout/login | Sair da conta e entrar novamente por `/login`. | Login redireciona para `/dashboard` e os dados persistidos continuam visíveis. |
 | 11. Testar no celular | Abrir as rotas principais em viewport mobile. | Não há overflow horizontal, botão cortado ou formulário inutilizável. |
 | 12. Testar aba anônima | Abrir `/dashboard` sem sessão. | Usuário deslogado é enviado para `/login`. |
 
-Dependências externas para o teste completo: schema do Supabase aplicado, RLS ativo, envs `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` configuradas, e opcionalmente `OPENAI_API_KEY` e URLs da Kiwify.
+Dependencias externas para o teste completo: schema do Supabase aplicado, RLS ativo, envs `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, Stripe em modo teste e opcionalmente `OPENAI_API_KEY` e URLs da Kiwify.

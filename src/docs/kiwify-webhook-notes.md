@@ -2,7 +2,7 @@
 
 A Kiwify agora deve ser tratada como canal de aquisicao do funil, nao como billing recorrente principal do SaaS.
 
-A pagina `/integracoes/kiwify` pode continuar sendo usada para testes e demonstracoes de eventos mockados, mas a liberacao real de Starter, Pro e Premium deve vir do Supabase atualizado pelo webhook do Asaas.
+A pagina `/integracoes/kiwify` pode continuar sendo usada para testes e demonstracoes de eventos mockados, mas a liberacao real de Starter, Pro e Premium deve vir do Supabase atualizado pelo webhook da Stripe.
 
 ## Integracao real
 
@@ -22,7 +22,7 @@ Endpoint atual:
 
 - Lead/ebook -> registrar origem do funil.
 - Order bump -> registrar interesse ou compra inicial vinculada ao funil.
-- Upsell/cross-sell -> orientar o usuario para criar conta e assinar pelo fluxo Asaas.
+- Upsell/cross-sell -> orientar o usuario para criar conta e assinar pelo fluxo Stripe.
 
 ## Seguranca esperada
 

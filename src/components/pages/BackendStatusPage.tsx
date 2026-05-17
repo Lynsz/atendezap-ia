@@ -25,7 +25,7 @@ const nextSteps = [
   "Criar projeto Supabase",
   "Criar tabelas e migrations",
   "Configurar autenticação",
-  "Conectar webhook Asaas",
+  "Conectar webhook Stripe",
   "Criar webhook de mensagens do WhatsApp",
   "Migrar dados locais"
 ];
@@ -34,7 +34,7 @@ const architectureItems = [
   { title: "Front-end React", description: "Interface atual em Next.js/React com fallback local.", icon: Code2 },
   { title: "Supabase Auth", description: "Autenticação futura por usuário e tenant.", icon: KeyRound },
   { title: "Supabase Database", description: "Banco relacional para leads, conversas, mensagens e assinaturas.", icon: Database },
-  { title: "Webhook Asaas", description: "Entrada segura para eventos de cobranca recorrente.", icon: Plug },
+  { title: "Webhook Stripe", description: "Entrada segura para eventos de cobranca recorrente.", icon: Plug },
   { title: "WhatsApp Provider", description: "Camada futura para integração real com atendimento WhatsApp.", icon: Smartphone },
   { title: "IA Provider", description: "Serviço de IA para respostas, classificação e resumos.", icon: Wand2 }
 ];

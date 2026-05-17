@@ -9,7 +9,7 @@
 7. Confirmar valores: Starter R$ 49/mês, Pro R$ 29 no primeiro mês e depois R$ 97/mês, Premium R$ 197/mês.
 8. Confirmar limites: Starter 150, Pro 600, Premium 2.000 respostas com IA por mês.
 9. Confirmar que o Pro aparece como "Mais recomendado".
-10. Testar botões com checkouts configurados ou confirmar fallback de checkout em configuração.
+10. Testar botoes com Stripe configurado ou confirmar fallback controlado de checkout.
 11. Criar conta em `/cadastro`.
 12. Entrar em `/login`.
 13. Acessar `/dashboard`, cadastrar negócio, gerar resposta e verificar histórico.

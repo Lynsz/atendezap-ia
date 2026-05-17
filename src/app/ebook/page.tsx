@@ -8,23 +8,23 @@ export const metadata = {
 
 const benefits = [
   "Respostas prontas para primeiro contato",
-  "Modelos para orçamento, cobrança e pós-venda",
+  "Modelos para orcamento, cobranca e pos-venda",
   "Mensagens para cliente indeciso",
-  "Exemplos para delivery, estética e assistência técnica",
-  "Orientação para adaptar as respostas com IA"
+  "Exemplos para delivery, estetica e assistencia tecnica",
+  "Orientacao para adaptar as respostas com IA"
 ];
 
 const chapters = [
-  "Introdução",
-  "Por que atendimento rápido aumenta a chance de venda",
+  "Introducao",
+  "Por que atendimento rapido aumenta a chance de venda",
   "Respostas prontas para primeiro contato",
-  "Respostas para orçamento",
+  "Respostas para orcamento",
   "Respostas para cliente indeciso",
-  "Respostas para cobrança",
-  "Respostas para pós-venda",
+  "Respostas para cobranca",
+  "Respostas para pos-venda",
   "Respostas para delivery",
-  "Respostas para estética",
-  "Respostas para assistência técnica",
+  "Respostas para estetica",
+  "Respostas para assistencia tecnica",
   "Como usar IA para adaptar respostas ao seu atendimento",
   "Chamada final para conhecer o AtendeZap IA"
 ];
@@ -39,10 +39,11 @@ export default function EbookPage() {
               Ebook gratuito
             </p>
             <h1 className="mt-5 text-4xl font-black tracking-tight text-ink md:text-6xl">
-              Baixe grátis 50 respostas prontas para atender pelo WhatsApp
+              Voce perde tempo respondendo as mesmas perguntas no WhatsApp?
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              Um guia prático para responder com mais rapidez, clareza e profissionalismo.
+              Baixe gratis 50 respostas prontas para atender pelo WhatsApp com mais rapidez, clareza e profissionalismo.
+              O guia mostra como organizar mensagens e adaptar respostas com IA para vender e atender melhor.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {benefits.map((benefit) => (
@@ -60,7 +61,7 @@ export default function EbookPage() {
             </div>
             <h2 className="text-2xl font-black text-ink">Receber o guia gratuito</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Informe seus dados para liberar o material e continuar para a próxima etapa do funil.
+              Informe seus dados para liberar o material e continuar para a proxima etapa do funil.
             </p>
 
             <form action="/api/ebook-lead" method="post" className="mt-6 grid gap-4">
@@ -92,15 +93,16 @@ export default function EbookPage() {
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Conteúdo</p>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Conteudo</p>
             <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">
-              Um guia para quem atende, vende e envia orçamentos pelo WhatsApp
+              Um guia para quem atende, vende e envia orcamentos pelo WhatsApp
             </h2>
             <p className="mt-4 text-base leading-7 text-slate-600">
-              O material serve para pessoas autônomas, pequenos negócios, prestadores de serviço, lojas locais, restaurantes, salões, clínicas, assistência técnica, vendedores, social media e infoprodutores.
+              O material serve para autonomos, pequenos negocios, prestadores de servico, lojas locais, restaurantes,
+              saloes, clinicas, assistencia tecnica, vendedores, social media e infoprodutores.
             </p>
             <Button href="/precos" variant="ghost" className="mt-6">
-              Ver planos
+              Ver planos do AtendeZap IA
             </Button>
           </div>
 
@@ -124,12 +126,19 @@ export default function EbookPage() {
             Transforme respostas prontas em respostas personalizadas
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300">
-            Depois de baixar o guia, você pode usar o AtendeZap IA para adaptar mensagens ao seu negócio, serviço ou atividade.
+            Depois de baixar o guia, use o AtendeZap IA para adaptar mensagens ao seu negocio, servico ou atividade.
+            O fluxo foi pensado para comecar sozinho, sem configuracao complicada.
           </p>
-          <div className="mt-8">
+          <p className="mx-auto mt-4 inline-flex rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-sm font-black text-emerald-100">
+            Plano Pro com primeiro mes por R$ 29 para novos usuarios.
+          </p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button href="/ebook" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300">
               <Sparkles className="mr-2 h-4 w-4" />
               Baixar guia gratuito
+            </Button>
+            <Button href="/precos" variant="ghost">
+              Testar o AtendeZap IA
             </Button>
           </div>
         </div>

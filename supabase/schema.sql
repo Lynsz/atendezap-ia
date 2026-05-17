@@ -60,10 +60,14 @@ create table if not exists public.subscriptions (
   provider text,
   provider_customer_id text,
   provider_subscription_id text,
+  provider_price_id text,
   provider_payment_id text,
+  stripe_checkout_session_id text,
+  stripe_event_id text,
   acquisition_source text,
   funnel_source text,
   promo_code text,
+  cancel_at_period_end boolean default false,
   last_payment_status text,
   metadata jsonb default '{}'::jsonb,
   status text default 'trial',
@@ -94,10 +98,14 @@ alter table public.subscriptions add column if not exists first_month_price_appl
 alter table public.subscriptions add column if not exists provider text;
 alter table public.subscriptions add column if not exists provider_customer_id text;
 alter table public.subscriptions add column if not exists provider_subscription_id text;
+alter table public.subscriptions add column if not exists provider_price_id text;
 alter table public.subscriptions add column if not exists provider_payment_id text;
+alter table public.subscriptions add column if not exists stripe_checkout_session_id text;
+alter table public.subscriptions add column if not exists stripe_event_id text;
 alter table public.subscriptions add column if not exists acquisition_source text;
 alter table public.subscriptions add column if not exists funnel_source text;
 alter table public.subscriptions add column if not exists promo_code text;
+alter table public.subscriptions add column if not exists cancel_at_period_end boolean default false;
 alter table public.subscriptions add column if not exists last_payment_status text;
 alter table public.subscriptions add column if not exists metadata jsonb default '{}'::jsonb;
 alter table public.subscriptions add column if not exists current_period_start timestamptz;
@@ -115,12 +123,10 @@ create table if not exists public.ebook_leads (
   updated_at timestamptz default now()
 );
 
-create table if not exists public.asaas_webhook_events (
+create table if not exists public.stripe_webhook_events (
   id uuid primary key default gen_random_uuid(),
   provider_event_id text not null,
   event_type text not null,
-  provider_payment_id text,
-  provider_subscription_id text,
   payload jsonb not null default '{}'::jsonb,
   processed_at timestamptz,
   created_at timestamptz default now()
@@ -183,10 +189,10 @@ create index if not exists customers_user_id_idx on public.customers(user_id);
 create index if not exists subscriptions_user_id_idx on public.subscriptions(user_id);
 create unique index if not exists subscriptions_user_id_unique_idx on public.subscriptions(user_id);
 create unique index if not exists ebook_leads_email_unique_idx on public.ebook_leads(email);
-create unique index if not exists asaas_webhook_events_provider_event_id_unique_idx on public.asaas_webhook_events(provider_event_id);
+create unique index if not exists stripe_webhook_events_provider_event_id_unique_idx on public.stripe_webhook_events(provider_event_id);
 create index if not exists subscriptions_provider_subscription_id_idx on public.subscriptions(provider_subscription_id);
 create index if not exists subscriptions_provider_customer_id_idx on public.subscriptions(provider_customer_id);
-create index if not exists asaas_webhook_events_subscription_idx on public.asaas_webhook_events(provider_subscription_id);
+create index if not exists subscriptions_provider_price_id_idx on public.subscriptions(provider_price_id);
 create index if not exists purchasers_email_idx on public.purchasers(email);
 create unique index if not exists purchasers_email_unique_idx on public.purchasers(email);
 create index if not exists orders_customer_id_idx on public.orders(customer_id);
@@ -261,7 +267,7 @@ alter table public.customers enable row level security;
 alter table public.subscriptions enable row level security;
 alter table public.plans enable row level security;
 alter table public.ebook_leads enable row level security;
-alter table public.asaas_webhook_events enable row level security;
+alter table public.stripe_webhook_events enable row level security;
 alter table public.purchasers enable row level security;
 alter table public.orders enable row level security;
 alter table public.kits enable row level security;
@@ -288,7 +294,7 @@ drop policy if exists "subscriptions_update_own" on public.subscriptions;
 drop policy if exists "subscriptions_delete_own" on public.subscriptions;
 drop policy if exists "plans_select_public" on public.plans;
 drop policy if exists "ebook_leads_no_client_access" on public.ebook_leads;
-drop policy if exists "asaas_webhook_events_no_client_access" on public.asaas_webhook_events;
+drop policy if exists "stripe_webhook_events_no_client_access" on public.stripe_webhook_events;
 drop policy if exists "purchasers_no_client_access" on public.purchasers;
 drop policy if exists "orders_no_client_access" on public.orders;
 drop policy if exists "kits_no_client_access" on public.kits;
@@ -320,7 +326,7 @@ create policy "subscriptions_select_own" on public.subscriptions for select to a
 create policy "plans_select_public" on public.plans for select to anon, authenticated using (true);
 -- Planos sao leitura publica para exibicao comercial. Escrita em plans nao e liberada para anon/authenticated.
 create policy "ebook_leads_no_client_access" on public.ebook_leads for all to anon, authenticated using (false) with check (false);
-create policy "asaas_webhook_events_no_client_access" on public.asaas_webhook_events for all to anon, authenticated using (false) with check (false);
+create policy "stripe_webhook_events_no_client_access" on public.stripe_webhook_events for all to anon, authenticated using (false) with check (false);
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
 create policy "orders_no_client_access" on public.orders for all to anon, authenticated using (false) with check (false);
 create policy "kits_no_client_access" on public.kits for all to anon, authenticated using (false) with check (false);
@@ -334,7 +340,7 @@ grant select on public.subscriptions to authenticated;
 revoke all privileges on public.plans from anon, authenticated;
 grant select on public.plans to anon, authenticated;
 revoke all on public.ebook_leads from anon, authenticated;
-revoke all on public.asaas_webhook_events from anon, authenticated;
+revoke all on public.stripe_webhook_events from anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;
 
