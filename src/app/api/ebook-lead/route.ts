@@ -18,7 +18,13 @@ async function parseLead(request: NextRequest) {
     name: formData.get("name"),
     email: formData.get("email"),
     whatsapp: formData.get("whatsapp"),
-    source: formData.get("source") || "ebook_page"
+    business_type: formData.get("business_type"),
+    source: formData.get("source") || "ebook_page",
+    utm_source: formData.get("utm_source"),
+    utm_medium: formData.get("utm_medium"),
+    utm_campaign: formData.get("utm_campaign"),
+    utm_content: formData.get("utm_content"),
+    utm_term: formData.get("utm_term")
   });
 }
 
@@ -32,8 +38,14 @@ export async function POST(request: NextRequest) {
         {
           name: lead.name,
           email: lead.email.toLowerCase(),
-          whatsapp: lead.whatsapp,
-          source: lead.source
+          whatsapp: lead.whatsapp || null,
+          business_type: lead.business_type,
+          source: lead.source,
+          utm_source: lead.utm_source || null,
+          utm_medium: lead.utm_medium || null,
+          utm_campaign: lead.utm_campaign || null,
+          utm_content: lead.utm_content || null,
+          utm_term: lead.utm_term || null
         },
         { onConflict: "email" }
       );
@@ -43,7 +55,10 @@ export async function POST(request: NextRequest) {
 
     await logEvent("ebook_lead_created", {
       email_domain: lead.email.split("@")[1],
-      source: lead.source
+      source: lead.source,
+      business_type: lead.business_type,
+      utm_source: lead.utm_source,
+      utm_campaign: lead.utm_campaign
     });
 
     if (request.headers.get("content-type")?.includes("application/json")) {
