@@ -86,17 +86,33 @@ export async function POST(request: Request) {
       );
     }
 
+    const requestedBusinessId = payload.data.businessData.id || payload.data.businessId;
+    const { data: savedBusiness } = requestedBusinessId
+      ? await supabase
+          .from("businesses")
+          .select("*")
+          .eq("id", requestedBusinessId)
+          .eq("user_id", user.id)
+          .maybeSingle()
+      : { data: null };
+    const businessDataForAi = savedBusiness
+      ? {
+          ...payload.data.businessData,
+          ...savedBusiness
+        }
+      : payload.data.businessData;
+
     const { generatedAnswer, mode } = await generateCustomerResponseWithAi({
       customerQuestion: payload.data.customerQuestion,
       responseType: payload.data.responseType,
-      businessData: payload.data.businessData
+      businessData: businessDataForAi
     });
 
     const { data: savedResponse, error: insertError } = await supabase
       .from("generated_responses")
       .insert({
         user_id: user.id,
-        business_id: payload.data.businessData.id || payload.data.businessId || null,
+        business_id: businessDataForAi.id || requestedBusinessId || null,
         customer_question: payload.data.customerQuestion,
         generated_answer: generatedAnswer,
         response_type: payload.data.responseType

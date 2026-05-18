@@ -5,16 +5,23 @@ export const responseTypes = ["atendimento", "venda", "orcamento", "cliente_inde
 export const customerStatuses = ["novo", "em_atendimento", "orcamento_enviado", "aguardando_resposta", "venda_concluida", "perdido"] as const;
 
 export const businessSchema = z.object({
-  business_name: z.string().trim().min(2, "Informe o nome do negócio."),
+  business_name: z.string().trim().min(2, "Informe o nome do negocio."),
   business_area: z.string().trim().optional().default(""),
+  business_type: z.string().trim().optional().default(""),
+  location: z.string().trim().optional().default(""),
   description: z.string().trim().optional().default(""),
   products_services: z.string().trim().optional().default(""),
+  common_questions: z.string().trim().optional().default(""),
+  important_info: z.string().trim().optional().default(""),
   prices: z.string().trim().optional().default(""),
   opening_hours: z.string().trim().optional().default(""),
+  main_channel: z.string().trim().optional().default("WhatsApp"),
+  response_goal: z.string().trim().optional().default(""),
   address: z.string().trim().optional().default(""),
   payment_methods: z.string().trim().optional().default(""),
   booking_or_payment_link: z.string().trim().optional().default(""),
-  brand_tone: z.string().trim().optional().default("profissional")
+  brand_tone: z.string().trim().optional().default("profissional"),
+  onboarding_completed: z.boolean().optional().default(false)
 });
 
 export const generateResponseSchema = z.object({

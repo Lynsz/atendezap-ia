@@ -4,10 +4,16 @@ import type { ResponseType } from "@/types/mvp";
 export type BusinessDataForResponse = {
   business_name: string;
   business_area?: string;
+  business_type?: string;
+  location?: string;
   description?: string;
   products_services?: string;
+  common_questions?: string;
+  important_info?: string;
   prices?: string;
   opening_hours?: string;
+  main_channel?: string;
+  response_goal?: string;
   address?: string;
   payment_methods?: string;
   booking_or_payment_link?: string;
@@ -37,6 +43,7 @@ export function generateFallbackCustomerResponse({ customerQuestion, responseTyp
   const details = [
     businessData.products_services ? `trabalhamos com ${businessData.products_services}` : "",
     businessData.opening_hours ? `nosso atendimento funciona em ${businessData.opening_hours}` : "",
+    businessData.main_channel ? `o canal principal de atendimento e ${businessData.main_channel}` : "",
     businessData.payment_methods ? `aceitamos ${businessData.payment_methods}` : "",
     businessData.booking_or_payment_link ? `voce tambem pode acessar este link: ${businessData.booking_or_payment_link}` : ""
   ].filter(Boolean);
@@ -61,10 +68,16 @@ Dados do negocio:
 ${[
   line("Nome", businessData.business_name),
   line("Area", businessData.business_area),
+  line("Tipo de atuacao", businessData.business_type),
+  line("Cidade/estado", businessData.location),
   line("Descricao", businessData.description),
   line("Produtos/servicos", businessData.products_services),
+  line("Perguntas comuns dos clientes", businessData.common_questions),
+  line("Informacoes importantes para a IA", businessData.important_info),
   line("Precos", businessData.prices),
+  line("Canal principal", businessData.main_channel),
   line("Horario", businessData.opening_hours),
+  line("Meta de tempo de resposta", businessData.response_goal),
   line("Endereco", businessData.address),
   line("Formas de pagamento", businessData.payment_methods),
   line("Link de pagamento/agendamento", businessData.booking_or_payment_link),

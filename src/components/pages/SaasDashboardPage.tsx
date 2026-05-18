@@ -32,14 +32,21 @@ type DashboardTab = "assistant" | "business" | "history" | "customers" | "billin
 type BusinessDraft = {
   business_name: string;
   business_area: string;
+  business_type: string;
+  location: string;
   description: string;
   products_services: string;
+  common_questions: string;
+  important_info: string;
   prices: string;
   opening_hours: string;
+  main_channel: string;
+  response_goal: string;
   address: string;
   payment_methods: string;
   booking_or_payment_link: string;
   brand_tone: string;
+  onboarding_completed: boolean;
 };
 
 type CustomerDraft = {
@@ -52,14 +59,21 @@ type CustomerDraft = {
 const emptyBusiness: BusinessDraft = {
   business_name: "",
   business_area: "",
+  business_type: "Prestador de serviço",
+  location: "",
   description: "",
   products_services: "",
+  common_questions: "",
+  important_info: "",
   prices: "",
   opening_hours: "",
+  main_channel: "WhatsApp",
+  response_goal: "Responder em até 15 minutos",
   address: "",
   payment_methods: "",
   booking_or_payment_link: "",
-  brand_tone: "profissional, simpatico e objetivo"
+  brand_tone: "profissional, simpatico e objetivo",
+  onboarding_completed: false
 };
 
 const emptyCustomer: CustomerDraft = {
@@ -85,6 +99,25 @@ const customerStatusLabels: Record<CustomerStatus, string> = {
   aguardando_resposta: "Aguardando resposta",
   venda_concluida: "Venda concluída",
   perdido: "Perdido"
+};
+
+const businessTypeOptions = ["Autônomo", "Prestador de serviço", "Loja", "Delivery", "Estética", "Restaurante", "Assistência técnica", "Outro"];
+
+const mainChannelOptions = ["WhatsApp", "Instagram", "Telefone", "Outros"];
+
+const responseGoalOptions = ["Responder em até 5 minutos", "Responder em até 15 minutos", "Responder em até 1 hora", "Responder no mesmo dia"];
+
+const toneOptions = ["Profissional", "Simpático", "Direto", "Vendedor", "Acolhedor"];
+
+const exampleQuestionsByType: Record<string, string[]> = {
+  "Autônomo": ["Qual o valor do serviço?", "Você atende hoje?", "Como faço para agendar?"],
+  "Prestador de serviço": ["Qual o valor do serviço?", "Vocês fazem orçamento?", "Quais formas de pagamento?"],
+  Loja: ["Tem esse produto disponível?", "Quais formas de pagamento?", "Pode me passar mais informações?"],
+  Delivery: ["Tem entrega?", "Qual o prazo de entrega?", "Quais formas de pagamento?"],
+  Estética: ["Como faço para agendar?", "Qual o valor do procedimento?", "Vocês atendem hoje?"],
+  Restaurante: ["Tem entrega?", "Qual o cardápio de hoje?", "Quais formas de pagamento?"],
+  "Assistência técnica": ["Vocês fazem orçamento?", "Qual o prazo do conserto?", "Como funciona a garantia?"],
+  Outro: ["Qual o valor do serviço?", "Vocês atendem hoje?", "Pode me passar mais informações?"]
 };
 
 function getCurrentMonthStart() {
@@ -120,14 +153,21 @@ function toBusinessDraft(business: Business | null): BusinessDraft {
   return {
     business_name: business.business_name || "",
     business_area: business.business_area || "",
+    business_type: business.business_type || business.business_area || "Prestador de serviço",
+    location: business.location || "",
     description: business.description || "",
     products_services: business.products_services || "",
+    common_questions: business.common_questions || "",
+    important_info: business.important_info || "",
     prices: business.prices || "",
     opening_hours: business.opening_hours || "",
+    main_channel: business.main_channel || "WhatsApp",
+    response_goal: business.response_goal || "Responder em até 15 minutos",
     address: business.address || "",
     payment_methods: business.payment_methods || "",
     booking_or_payment_link: business.booking_or_payment_link || "",
-    brand_tone: business.brand_tone || "profissional, simpatico e objetivo"
+    brand_tone: business.brand_tone || "profissional, simpatico e objetivo",
+    onboarding_completed: Boolean(business.onboarding_completed)
   };
 }
 
@@ -171,6 +211,10 @@ function normalizePlanId(planName?: string | null): PlanId | null {
   return PLAN_IDS.find((planId) => planId === normalizedPlanName || SAAS_PLANS[planId].name.toLowerCase() === normalizedPlanName) ?? null;
 }
 
+function getExampleQuestions(businessType: string) {
+  return exampleQuestionsByType[businessType] || exampleQuestionsByType.Outro;
+}
+
 function SaasDashboardContent() {
   const router = useRouter();
   const [tab, setTab] = useState<DashboardTab>("assistant");
@@ -182,6 +226,7 @@ function SaasDashboardContent() {
   const [userName, setUserName] = useState("cliente");
   const [business, setBusiness] = useState<Business | null>(null);
   const [businessDraft, setBusinessDraft] = useState<BusinessDraft>(emptyBusiness);
+  const [onboardingStep, setOnboardingStep] = useState(1);
   const [question, setQuestion] = useState("");
   const [responseType, setResponseType] = useState<ResponseType>("atendimento");
   const [generatedAnswer, setGeneratedAnswer] = useState("");
@@ -274,7 +319,7 @@ function SaasDashboardContent() {
     router.push("/login");
   }
 
-  async function handleSaveBusiness(event?: FormEvent) {
+  async function handleSaveBusiness(event?: FormEvent, options?: { completeOnboarding?: boolean; successMessage?: string }) {
     event?.preventDefault();
     setError("");
 
@@ -299,7 +344,12 @@ function SaasDashboardContent() {
     }
 
     setSavingBusiness(true);
-    const payload = { ...parsed.data, user_id: user.id };
+    const payload = {
+      ...parsed.data,
+      user_id: user.id,
+      business_area: parsed.data.business_area || parsed.data.business_type,
+      onboarding_completed: options?.completeOnboarding ? true : parsed.data.onboarding_completed
+    };
     const existingBusiness = business
       ? business
       : (await supabase.from("businesses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle()).data as Business | null;
@@ -316,7 +366,57 @@ function SaasDashboardContent() {
 
     setBusiness(data as Business);
     setBusinessDraft(toBusinessDraft(data as Business));
-    showFeedback("Negócio salvo com sucesso.");
+    if (options?.completeOnboarding) {
+      setTab("assistant");
+      setQuestion(getExampleQuestions(payload.business_type)[0] || "Qual o valor do serviço?");
+    }
+    showFeedback(options?.successMessage || "Negócio salvo com sucesso.");
+  }
+
+  function validateOnboardingStep() {
+    if (onboardingStep === 1) {
+      if (!businessDraft.business_name.trim()) return "Informe o nome do negócio ou nome profissional.";
+      if (!businessDraft.business_type.trim()) return "Escolha o tipo de atuação.";
+    }
+    if (onboardingStep === 2) {
+      if (!businessDraft.main_channel.trim()) return "Escolha o principal canal de atendimento.";
+      if (!businessDraft.opening_hours.trim()) return "Informe o horário de atendimento.";
+      if (!businessDraft.response_goal.trim()) return "Escolha o tempo médio desejado para resposta.";
+    }
+    if (onboardingStep === 3) {
+      if (!businessDraft.products_services.trim()) return "Informe o que você vende ou oferece.";
+      if (!businessDraft.common_questions.trim()) return "Informe algumas perguntas comuns dos clientes.";
+      if (!businessDraft.important_info.trim()) return "Informe o que a IA precisa saber para responder melhor.";
+      if (!businessDraft.brand_tone.trim()) return "Escolha o tom de voz desejado.";
+    }
+    return "";
+  }
+
+  function handleNextOnboardingStep() {
+    const validationError = validateOnboardingStep();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError("");
+    setOnboardingStep((current) => Math.min(4, current + 1));
+  }
+
+  function handleBackOnboardingStep() {
+    setError("");
+    setOnboardingStep((current) => Math.max(1, current - 1));
+  }
+
+  async function handleFinishOnboarding() {
+    const validationError = validateOnboardingStep();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    await handleSaveBusiness(undefined, {
+      completeOnboarding: true,
+      successMessage: "Configuração concluída. Agora a IA já pode gerar respostas mais alinhadas ao seu atendimento."
+    });
   }
 
   async function handleGenerateResponse(event: FormEvent) {
@@ -488,6 +588,8 @@ function SaasDashboardContent() {
   const isNearMonthlyLimit = usagePercent >= 80 && !hasReachedMonthlyLimit;
   const canManageStripeSubscription = subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id);
   const isFreeOrTrial = !subscriptionPlanName || subscriptionPlanName.toLowerCase() === "free" || subscription?.status?.toLowerCase() === "trial";
+  const shouldShowOnboarding = !business?.onboarding_completed;
+  const exampleQuestions = getExampleQuestions(businessDraft.business_type);
   const responseLimit = monthlyLimit.toLocaleString("pt-BR");
   const renewalDetail = subscription?.current_period_end
     ? `Renova em ${new Intl.DateTimeFormat("pt-BR").format(new Date(subscription.current_period_end))}`
@@ -568,6 +670,151 @@ function SaasDashboardContent() {
           </div>
         </header>
 
+        {shouldShowOnboarding ? (
+          <section className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-2xl shadow-black/30">
+            <div className="mb-6">
+              <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-emerald-300">Configuração inicial</p>
+              <h2 className="text-2xl font-black text-white md:text-4xl">Vamos configurar sua IA em poucos minutos</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
+                Essas informações ajudam o AtendeZap IA a criar respostas melhores para seus clientes. Você poderá editar isso depois.
+              </p>
+            </div>
+
+            {(feedback || error) ? (
+              <div className={`mb-5 rounded-lg border p-4 text-sm font-bold ${error ? "border-red-400/30 bg-red-500/10 text-red-200" : "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"}`}>
+                {error || feedback}
+              </div>
+            ) : null}
+
+            <div className="mb-6">
+              <div className="mb-3 grid gap-2 sm:grid-cols-4">
+                {[
+                  [1, "Sobre seu atendimento"],
+                  [2, "Canais"],
+                  [3, "Produtos e IA"],
+                  [4, "Pronto para usar"]
+                ].map(([stepId, label]) => (
+                  <div
+                    key={stepId}
+                    className={`rounded-md border px-3 py-2 text-xs font-black ${
+                      onboardingStep >= Number(stepId) ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200" : "border-white/10 bg-white/5 text-slate-400"
+                    }`}
+                  >
+                    {stepId}. {label}
+                  </div>
+                ))}
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-emerald-400 transition-all" style={{ width: `${(onboardingStep / 4) * 100}%` }} />
+              </div>
+            </div>
+
+            {onboardingStep === 1 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  Nome do negócio ou nome profissional
+                  <input value={businessDraft.business_name} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_name: event.target.value }))} className="field-input" placeholder="Ex.: Studio Ana Lima" />
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  Tipo de atuação
+                  <select value={businessDraft.business_type} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_type: event.target.value, business_area: event.target.value }))} className="field-input">
+                    {businessTypeOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                  </select>
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
+                  Cidade/estado, opcional
+                  <input value={businessDraft.location} onChange={(event) => setBusinessDraft((current) => ({ ...current, location: event.target.value }))} className="field-input" placeholder="Ex.: Campinas/SP" />
+                </label>
+              </div>
+            ) : null}
+
+            {onboardingStep === 2 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  Principal canal de atendimento
+                  <select value={businessDraft.main_channel} onChange={(event) => setBusinessDraft((current) => ({ ...current, main_channel: event.target.value }))} className="field-input">
+                    {mainChannelOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                  </select>
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  Tempo médio desejado para resposta
+                  <select value={businessDraft.response_goal} onChange={(event) => setBusinessDraft((current) => ({ ...current, response_goal: event.target.value }))} className="field-input">
+                    {responseGoalOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                  </select>
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
+                  Horário de atendimento
+                  <input value={businessDraft.opening_hours} onChange={(event) => setBusinessDraft((current) => ({ ...current, opening_hours: event.target.value }))} className="field-input" placeholder="Ex.: segunda a sexta, 9h às 18h" />
+                </label>
+              </div>
+            ) : null}
+
+            {onboardingStep === 3 ? (
+              <div className="grid gap-4">
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  O que você vende ou oferece
+                  <textarea value={businessDraft.products_services} onChange={(event) => setBusinessDraft((current) => ({ ...current, products_services: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: limpeza de pele, design de sobrancelhas e pacotes mensais" />
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  Perguntas mais comuns dos clientes
+                  <textarea value={businessDraft.common_questions} onChange={(event) => setBusinessDraft((current) => ({ ...current, common_questions: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: valores, horários disponíveis, formas de pagamento e localização" />
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  Informações importantes que a IA deve saber
+                  <textarea value={businessDraft.important_info} onChange={(event) => setBusinessDraft((current) => ({ ...current, important_info: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: precisa agendar antes, atendimento com hora marcada, pagamento via Pix" />
+                </label>
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  Tom de voz desejado
+                  <select value={businessDraft.brand_tone} onChange={(event) => setBusinessDraft((current) => ({ ...current, brand_tone: event.target.value }))} className="field-input">
+                    {toneOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                  </select>
+                </label>
+              </div>
+            ) : null}
+
+            {onboardingStep === 4 ? (
+              <div className="grid gap-4 lg:grid-cols-[1fr_0.85fr]">
+                <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                  <h3 className="text-lg font-black text-white">Resumo da configuração</h3>
+                  <div className="mt-4 grid gap-3 text-sm leading-6 text-slate-300">
+                    <p><strong className="text-white">Atendimento:</strong> {businessDraft.business_name} ({businessDraft.business_type})</p>
+                    <p><strong className="text-white">Canal:</strong> {businessDraft.main_channel} - {businessDraft.response_goal}</p>
+                    <p><strong className="text-white">Horário:</strong> {businessDraft.opening_hours}</p>
+                    <p><strong className="text-white">Produtos/serviços:</strong> {businessDraft.products_services}</p>
+                    <p><strong className="text-white">Tom:</strong> {businessDraft.brand_tone}</p>
+                  </div>
+                </div>
+                <div className="rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4">
+                  <h3 className="text-lg font-black text-white">Perguntas para testar</h3>
+                  <p className="mt-2 text-sm leading-6 text-emerald-100">Depois de concluir, clique em uma pergunta ou cole uma pergunta real de cliente.</p>
+                  <div className="mt-4 grid gap-2">
+                    {exampleQuestions.map((example) => (
+                      <button key={example} type="button" onClick={() => setQuestion(example)} className="rounded-md border border-emerald-400/30 bg-[#101821] px-3 py-2 text-left text-sm font-bold text-emerald-100 hover:bg-[#172231]">
+                        {example}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+              <button type="button" onClick={handleBackOnboardingStep} disabled={onboardingStep === 1} className="inline-flex min-h-11 items-center justify-center rounded-md border border-white/10 bg-white/5 px-5 text-sm font-bold text-slate-200 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40">
+                Voltar
+              </button>
+              {onboardingStep < 4 ? (
+                <button type="button" onClick={handleNextOnboardingStep} className="inline-flex min-h-11 items-center justify-center rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300">
+                  Próximo
+                </button>
+              ) : (
+                <button type="button" onClick={handleFinishOnboarding} disabled={savingBusiness} className="inline-flex min-h-11 items-center justify-center rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300 disabled:opacity-60">
+                  {savingBusiness ? "Salvando..." : "Começar a gerar respostas"}
+                </button>
+              )}
+            </div>
+          </section>
+        ) : (
+          <>
         {!business ? (
           <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-5 text-sm font-bold text-amber-100">
             <p className="text-base text-white">Nenhum negócio cadastrado ainda.</p>
@@ -614,7 +861,7 @@ function SaasDashboardContent() {
         <section className="mb-5 grid gap-3 md:grid-cols-5">
           {[
             ["Gerar resposta", "assistant", Bot],
-            ["Cadastrar negócio", "business", BriefcaseBusiness],
+            [business ? "Editar configuração da IA" : "Configurar atendimento", "business", BriefcaseBusiness],
             ["Clientes", "customers", Users],
             ["Assinatura", "billing", CreditCard],
             ["Preços", "plans", CreditCard]
@@ -823,6 +1070,13 @@ function SaasDashboardContent() {
                 Pergunta do cliente
                 <textarea value={question} onChange={(event) => setQuestion(event.target.value)} className="field-input min-h-40 resize-none py-3" placeholder="Ex.: Oi, quanto custa e tem horário hoje?" />
               </label>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {exampleQuestions.map((example) => (
+                  <button key={example} type="button" onClick={() => setQuestion(example)} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 hover:bg-white/10">
+                    {example}
+                  </button>
+                ))}
+              </div>
               <label className="mt-4 grid gap-2 text-sm font-bold text-slate-300">
                 Tipo de resposta
                 <select value={responseType} onChange={(event) => setResponseType(event.target.value as ResponseType)} className="field-input">
@@ -866,22 +1120,41 @@ function SaasDashboardContent() {
 
         {tab === "business" ? (
           <form onSubmit={handleSaveBusiness} className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
-            <h2 className="text-xl font-black text-white">Dados do negócio</h2>
+            <h2 className="text-xl font-black text-white">Configuração da IA</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-400">Atualize o contexto do seu atendimento. As próximas respostas geradas pela IA vão usar essas informações.</p>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
-              {[
-                ["business_name", "Nome do negócio"],
-                ["business_area", "Área de atuação"],
+              {([
+                ["business_name", "Nome do negócio ou nome profissional"],
+                ["location", "Cidade/estado"],
                 ["opening_hours", "Horário de atendimento"],
                 ["address", "Endereço"],
                 ["payment_methods", "Formas de pagamento"],
                 ["booking_or_payment_link", "Link de pagamento ou agendamento"],
-                ["brand_tone", "Tom de voz da marca"]
-              ].map(([key, label]) => (
+                ["response_goal", "Tempo médio desejado para resposta"]
+              ] as Array<[Exclude<keyof BusinessDraft, "onboarding_completed">, string]>).map(([key, label]) => (
                 <label className="grid gap-2 text-sm font-bold text-slate-300" key={key}>
                   {label}
-                  <input value={businessDraft[key as keyof BusinessDraft]} onChange={(event) => setBusinessDraft((current) => ({ ...current, [key]: event.target.value }))} className="field-input" />
+                  <input value={businessDraft[key]} onChange={(event) => setBusinessDraft((current) => ({ ...current, [key]: event.target.value }))} className="field-input" />
                 </label>
               ))}
+              <label className="grid gap-2 text-sm font-bold text-slate-300">
+                Tipo de atuação
+                <select value={businessDraft.business_type} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_type: event.target.value, business_area: event.target.value }))} className="field-input">
+                  {businessTypeOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                </select>
+              </label>
+              <label className="grid gap-2 text-sm font-bold text-slate-300">
+                Principal canal de atendimento
+                <select value={businessDraft.main_channel} onChange={(event) => setBusinessDraft((current) => ({ ...current, main_channel: event.target.value }))} className="field-input">
+                  {mainChannelOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                </select>
+              </label>
+              <label className="grid gap-2 text-sm font-bold text-slate-300">
+                Tom de voz desejado
+                <select value={businessDraft.brand_tone} onChange={(event) => setBusinessDraft((current) => ({ ...current, brand_tone: event.target.value }))} className="field-input">
+                  {toneOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                </select>
+              </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
                 Descrição do negócio
                 <textarea value={businessDraft.description} onChange={(event) => setBusinessDraft((current) => ({ ...current, description: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
@@ -889,6 +1162,14 @@ function SaasDashboardContent() {
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
                 Produtos ou serviços
                 <textarea value={businessDraft.products_services} onChange={(event) => setBusinessDraft((current) => ({ ...current, products_services: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
+              </label>
+              <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
+                Perguntas mais comuns dos clientes
+                <textarea value={businessDraft.common_questions} onChange={(event) => setBusinessDraft((current) => ({ ...current, common_questions: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
+              </label>
+              <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
+                Informações importantes que a IA deve saber
+                <textarea value={businessDraft.important_info} onChange={(event) => setBusinessDraft((current) => ({ ...current, important_info: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
                 Preços
@@ -996,6 +1277,8 @@ function SaasDashboardContent() {
             </div>
           </section>
         ) : null}
+          </>
+        )}
       </section>
     </main>
   );
