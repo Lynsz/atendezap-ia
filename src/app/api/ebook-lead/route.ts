@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         message:
           emailResult.status === "sent"
             ? "Guia enviado para o seu e-mail."
-            : "Lead cadastrado. Voce tambem pode acessar o guia na proxima pagina.",
+            : "Lead cadastrado. Você também pode acessar o guia na próxima página.",
         emailStatus: emailResult.status
       });
     }

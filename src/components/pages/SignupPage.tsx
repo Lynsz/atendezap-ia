@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserPlus, MessageCircle } from "lucide-react";
 import { SUPABASE_CONNECTION_ERROR, useAuth } from "@/hooks/useAuth";
@@ -17,6 +17,12 @@ export default function SignupPage() {
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
   const auth = useAuth();
+
+  useEffect(() => {
+    if (!auth.loading && auth.isAuthenticated) {
+      router.replace("/dashboard");
+    }
+  }, [auth.isAuthenticated, auth.loading, router]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,7 +76,7 @@ export default function SignupPage() {
       return;
     }
 
-    setFeedback("Cadastro criado. Se o Supabase exigir confirmacao, confira seu e-mail antes de entrar.");
+    setFeedback("Cadastro criado. Se o Supabase exigir confirmação, confira seu e-mail antes de entrar.");
   }
 
   return (
@@ -113,7 +119,7 @@ export default function SignupPage() {
           </button>
 
           <p className="mt-5 text-center text-sm text-slate-400">
-            Ja tem conta?{" "}
+            Já tem conta?{" "}
             <Link href="/login" className="font-black text-emerald-300">
               Entrar
             </Link>

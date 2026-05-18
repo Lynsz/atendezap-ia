@@ -3,7 +3,7 @@ import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 
 export const metadata = {
-  title: "Como responder clientes mais rapido no WhatsApp usando IA",
+  title: "Como responder clientes mais rápido no WhatsApp usando IA",
   description: "Guia gratuito do AtendeZap IA com exemplos de respostas prontas e passos simples para melhorar o atendimento pelo WhatsApp."
 };
 

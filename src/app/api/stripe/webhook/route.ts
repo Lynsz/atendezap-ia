@@ -31,7 +31,7 @@ async function markEventProcessed(event: Stripe.Event) {
 
   if (error) {
     if (error.code === "23505") return false;
-    throw new AppError("Nao foi possivel registrar o webhook Stripe.", 500);
+    throw new AppError("Não foi possível registrar o webhook Stripe.", 500);
   }
 
   return true;
@@ -89,7 +89,7 @@ async function updateSubscriptionFromStripe(subscription: Stripe.Subscription, e
   );
 
   if (error) {
-    throw new AppError("Nao foi possivel atualizar a assinatura pelo webhook Stripe.", 500);
+    throw new AppError("Não foi possível atualizar a assinatura pelo webhook Stripe.", 500);
   }
 }
 
@@ -180,5 +180,5 @@ export async function POST(request: Request) {
 }
 
 export function GET() {
-  return Response.json({ error: "Metodo nao permitido. Use POST." }, { status: 405 });
+  return Response.json({ error: "Método não permitido. Use POST." }, { status: 405 });
 }

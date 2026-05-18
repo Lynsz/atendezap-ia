@@ -4,16 +4,16 @@ import type { GenerateResponseInput } from "@/lib/mvp-validators";
 const responseTypeLabels: Record<GenerateResponseInput["responseType"], string> = {
   atendimento: "atendimento inicial",
   venda: "venda",
-  orcamento: "orcamento",
+  orcamento: "orçamento",
   cliente_indeciso: "cliente indeciso",
   pos_venda: "pos-venda",
-  recuperacao: "recuperacao de cliente sumido"
+  recuperacao: "recuperação de cliente sumido"
 };
 
 export function buildResponsePrompt(input: GenerateResponseInput) {
   const business = input.businessData;
 
-  return `Voce e uma assistente comercial para WhatsApp de pequenos negocios no Brasil.
+  return `Você é uma assistente comercial para WhatsApp de pequenos negócios no Brasil.
 
 Crie uma resposta pronta para copiar e colar no WhatsApp.
 
@@ -22,31 +22,31 @@ ${input.customerQuestion}
 
 Tipo de resposta desejado: ${responseTypeLabels[input.responseType]}
 
-Dados cadastrados do negocio:
+Dados cadastrados do negócio:
 - Nome: ${business.business_name}
-- Area: ${business.business_area || "nao informado"}
-- Descricao: ${business.description || "nao informado"}
-- Produtos/servicos: ${business.products_services || "nao informado"}
-- Precos: ${business.prices || "nao informado"}
-- Horario: ${business.opening_hours || "nao informado"}
-- Endereco: ${business.address || "nao informado"}
-- Formas de pagamento: ${business.payment_methods || "nao informado"}
-- Link de pagamento/agendamento: ${business.booking_or_payment_link || "nao informado"}
+- Área: ${business.business_area || "não informado"}
+- Descrição: ${business.description || "não informado"}
+- Produtos/serviços: ${business.products_services || "não informado"}
+- Preços: ${business.prices || "não informado"}
+- Horário: ${business.opening_hours || "não informado"}
+- Endereço: ${business.address || "não informado"}
+- Formas de pagamento: ${business.payment_methods || "não informado"}
+- Link de pagamento/agendamento: ${business.booking_or_payment_link || "não informado"}
 - Tom de voz: ${business.brand_tone || "profissional"}
 
 Regras:
-- Responder em portugues do Brasil.
-- Ser natural, profissional, objetivo e persuasivo sem forcar.
-- Adaptar a resposta ao negocio cadastrado.
-- Nao inventar informacoes ausentes.
-- Se faltar informacao, pedir o dado de forma util.
-- Nao prometer resultado financeiro garantido.
-- Retornar apenas a mensagem final, sem titulo e sem explicacoes.`;
+- Responder em português do Brasil.
+- Ser natural, profissional, objetivo e persuasivo sem forçar.
+- Adaptar a resposta ao negócio cadastrado.
+- Não inventar informações ausentes.
+- Se faltar informação, pedir o dado de forma útil.
+- Não prometer resultado financeiro garantido.
+- Retornar apenas a mensagem final, sem título e sem explicações.`;
 }
 
 export async function generateWhatsAppResponse(input: GenerateResponseInput) {
   if (!process.env.OPENAI_API_KEY) {
-    return `Ola! Obrigado pelo contato com ${input.businessData.business_name}. ${input.businessData.products_services ? `Trabalhamos com ${input.businessData.products_services}. ` : ""}${input.businessData.opening_hours ? `Nosso horario de atendimento e ${input.businessData.opening_hours}. ` : ""}Para te orientar melhor, pode me confirmar mais detalhes do que voce precisa?`;
+    return `Olá! Obrigado pelo contato com ${input.businessData.business_name}. ${input.businessData.products_services ? `Trabalhamos com ${input.businessData.products_services}. ` : ""}${input.businessData.opening_hours ? `Nosso horário de atendimento é ${input.businessData.opening_hours}. ` : ""}Para te orientar melhor, pode me confirmar mais detalhes do que você precisa?`;
   }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -62,7 +62,7 @@ export async function generateWhatsAppResponse(input: GenerateResponseInput) {
 
   const answer = completion.choices[0]?.message?.content?.trim();
   if (!answer) {
-    throw new Error("A IA nao retornou uma resposta. Tente novamente.");
+    throw new Error("A IA não retornou uma resposta. Tente novamente.");
   }
 
   return answer;

@@ -90,7 +90,7 @@ function jsonError(error: unknown) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
   console.error("Falha na API admin:", error instanceof Error ? error.message : "unknown");
-  return NextResponse.json({ error: "Nao foi possivel carregar os dados administrativos." }, { status: 500 });
+  return NextResponse.json({ error: "Não foi possível carregar os dados administrativos." }, { status: 500 });
 }
 
 export async function GET(request: Request) {
@@ -241,7 +241,7 @@ export async function GET(request: Request) {
         utmCampaigns: [...new Set(leads.map((lead) => lead.utm_campaign).filter(Boolean))]
       },
       notes: {
-        conversion: "Conversao aproximada calculada por e-mail entre leads e profiles."
+        conversion: "Conversão aproximada calculada por e-mail entre leads e profiles."
       }
     });
   } catch (error) {

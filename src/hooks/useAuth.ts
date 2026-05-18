@@ -61,25 +61,17 @@ export function useAuth() {
           return;
         }
 
-        const { data, error } = await supabase.auth.getSession();
-
-        if (error) {
-          console.error('[Supabase getSession error]', error);
-        }
+        const { data } = await supabase.auth.getSession();
 
         if (!mounted) return;
 
         setSession(data.session ?? null);
         setUser(data.session?.user ?? null);
-      } catch (error) {
-        console.error('[Supabase getSession failed]', {
-          error,
-          env: {
-            hasUrl: supabaseEnv.hasUrl,
-            hasAnonKey: supabaseEnv.hasAnonKey,
-            anonKeyLength: supabaseEnv.anonKeyLength,
-          },
-        });
+      } catch {
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+        }
       } finally {
         if (mounted) {
           setLoading(false);
@@ -126,15 +118,6 @@ export function useAuth() {
 
         return { error: null, data };
       } catch (error) {
-        console.error('[Supabase signUp failed]', {
-          error,
-          env: {
-            hasUrl: supabaseEnv.hasUrl,
-            hasAnonKey: supabaseEnv.hasAnonKey,
-            anonKeyLength: supabaseEnv.anonKeyLength,
-          },
-        });
-
         return {
           error: normalizeAuthError(error),
           data: {
@@ -165,15 +148,6 @@ export function useAuth() {
 
         return { error: null, data };
       } catch (error) {
-        console.error('[Supabase signIn failed]', {
-          error,
-          env: {
-            hasUrl: supabaseEnv.hasUrl,
-            hasAnonKey: supabaseEnv.hasAnonKey,
-            anonKeyLength: supabaseEnv.anonKeyLength,
-          },
-        });
-
         return {
           error: normalizeAuthError(error),
           data: {
@@ -200,8 +174,6 @@ export function useAuth() {
 
       return { error: null };
     } catch (error) {
-      console.error('[Supabase signOut failed]', error);
-
       return {
         error: normalizeAuthError(error),
       };

@@ -11,11 +11,11 @@ async function authenticateRequest(request: Request) {
   const authorization = request.headers.get("authorization");
 
   if (!url || !anonKey) {
-    throw new AppError("Supabase nao configurado no servidor.", 500);
+    throw new AppError("Supabase não configurado no servidor.", 500);
   }
 
   if (!authorization) {
-    throw new AppError("Faca login para gerenciar sua assinatura.", 401);
+    throw new AppError("Faça login para gerenciar sua assinatura.", 401);
   }
 
   const supabase = createClient(url, anonKey, {
@@ -36,7 +36,7 @@ async function authenticateRequest(request: Request) {
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    throw new AppError("Sessao invalida. Faca login novamente.", 401);
+    throw new AppError("Sessão inválida. Faça login novamente.", 401);
   }
 
   return user;
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
 
     const customerId = subscription?.provider_customer_id as string | null | undefined;
     if (!customerId) {
-      throw new AppError("Nenhuma assinatura Stripe encontrada para este usuario.", 404);
+      throw new AppError("Nenhuma assinatura Stripe encontrada para este usuário.", 404);
     }
 
     const portalSession = await getStripe().billingPortal.sessions.create({

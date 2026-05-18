@@ -30,11 +30,11 @@ async function authenticateRequest(request: Request) {
   const authorization = request.headers.get("authorization");
 
   if (!url || !anonKey) {
-    throw new AppError("Supabase nao configurado no servidor.", 500);
+    throw new AppError("Supabase não configurado no servidor.", 500);
   }
 
   if (!authorization) {
-    throw new AppError("Faca login para iniciar a assinatura.", 401);
+    throw new AppError("Faça login para iniciar a assinatura.", 401);
   }
 
   const supabase = createClient(url, anonKey, {
@@ -55,7 +55,7 @@ async function authenticateRequest(request: Request) {
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    throw new AppError("Sessao invalida. Faca login novamente.", 401);
+    throw new AppError("Sessão inválida. Faça login novamente.", 401);
   }
 
   return user;
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
     const plan = getSaasPlan(body.planId);
     if (!plan) {
-      throw new AppError("Plano nao encontrado.", 404);
+      throw new AppError("Plano não encontrado.", 404);
     }
 
     const supabase = getSupabaseAdmin();
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
       line_items: [{ price: priceId, quantity: 1 }],
       // O preco normal do Pro fica no Price recorrente da Stripe. Este cupom
       // deve ter duration="once" para ajustar apenas a primeira fatura para R$ 29.
-      // A partir do segundo mes, a Stripe cobra automaticamente o valor normal.
+      // A partir do segundo mês, a Stripe cobra automaticamente o valor normal.
       discounts: couponId ? [{ coupon: couponId }] : undefined,
       allow_promotion_codes: false,
       success_url: `${appUrl}/dashboard?checkout=success`,
@@ -173,7 +173,7 @@ export async function POST(request: Request) {
     );
 
     if (upsertError) {
-      throw new AppError("Checkout criado na Stripe, mas nao foi possivel salvar a assinatura no Supabase.", 500);
+      throw new AppError("Checkout criado na Stripe, mas não foi possível salvar a assinatura no Supabase.", 500);
     }
 
     return Response.json({

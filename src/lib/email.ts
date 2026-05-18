@@ -35,13 +35,13 @@ type LeadEmailTemplate = {
 export const leadEmailTemplates: Record<LeadEmailTemplateKey, LeadEmailTemplate> = {
   ebook_delivery: {
     key: "ebook_delivery",
-    subject: "Seu guia gratuito do AtendeZap IA esta aqui",
+    subject: "Seu guia gratuito do AtendeZap IA está aqui",
     ctaLabel: "Conhecer o AtendeZap IA",
     description: "Entrega o guia gratuito e leva o lead para conhecer o produto."
   },
   manual_pain: {
     key: "manual_pain",
-    subject: "Voce ainda responde tudo manualmente no WhatsApp?",
+    subject: "Você ainda responde tudo manualmente no WhatsApp?",
     ctaLabel: "Ver como o AtendeZap IA funciona",
     description: "Mostra a dor do atendimento manual e apresenta o caminho simples com IA."
   },
@@ -53,9 +53,9 @@ export const leadEmailTemplates: Record<LeadEmailTemplateKey, LeadEmailTemplate>
   },
   pro_offer: {
     key: "pro_offer",
-    subject: "Comece com o Plano Pro por R$ 29 no primeiro mes",
+    subject: "Comece com o Plano Pro por R$ 29 no primeiro mês",
     ctaLabel: "Assinar Plano Pro",
-    description: "Apresenta a oferta permanente do Pro para novos usuarios."
+    description: "Apresenta a oferta permanente do Pro para novos usuários."
   }
 };
 
@@ -94,7 +94,7 @@ export async function sendTransactionalEmail({ to, subject, text, html }: SendEm
     return {
       status: "skipped",
       provider: "resend",
-      error: "RESEND_API_KEY nao configurada."
+      error: "RESEND_API_KEY não configurada."
     };
   }
 
@@ -138,17 +138,17 @@ export function buildEbookDeliveryEmail({ name, email }: EbookDeliveryEmailInput
 
   return {
     eventType: leadEmailTemplates.ebook_delivery.key,
-    subject: "Seu guia gratuito do AtendeZap IA esta aqui",
-    text: `Ola, ${firstName}.
+    subject: "Seu guia gratuito do AtendeZap IA está aqui",
+    text: `Olá, ${firstName}.
 
-Seu guia gratuito do AtendeZap IA esta aqui:
+Seu guia gratuito do AtendeZap IA está aqui:
 ${guideUrl}
 
-Voce acabou de dar o primeiro passo para responder clientes mais rapido no WhatsApp usando IA.
+Você acabou de dar o primeiro passo para responder clientes mais rápido no WhatsApp usando IA.
 
-O guia mostra exemplos praticos de respostas prontas, erros comuns no atendimento e como organizar perguntas frequentes.
+O guia mostra exemplos práticos de respostas prontas, erros comuns no atendimento e como organizar perguntas frequentes.
 
-Depois de ler, conheca o AtendeZap IA para criar sua conta, configurar seu atendimento e gerar respostas personalizadas:
+Depois de ler, conheça o AtendeZap IA para criar sua conta, configurar seu atendimento e gerar respostas personalizadas:
 ${pricingUrl}
 
 Se preferir criar sua conta agora:
@@ -165,18 +165,18 @@ AtendeZap IA`,
             <tr>
               <td style="padding:28px 28px 12px;">
                 <p style="margin:0 0 10px;color:#047857;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Guia gratuito</p>
-                <h1 style="margin:0;color:#0f172a;font-size:28px;line-height:1.2;">Seu guia gratuito esta aqui</h1>
+                <h1 style="margin:0;color:#0f172a;font-size:28px;line-height:1.2;">Seu guia gratuito está aqui</h1>
               </td>
             </tr>
             <tr>
               <td style="padding:0 28px 24px;color:#334155;font-size:16px;line-height:1.65;">
-                <p>Ola, ${safeFirstName}.</p>
-                <p>Voce acabou de dar o primeiro passo para responder clientes mais rapido no WhatsApp usando IA.</p>
-                <p>O guia traz exemplos praticos de respostas prontas, erros comuns no atendimento e formas simples de organizar perguntas frequentes.</p>
+                <p>Olá, ${safeFirstName}.</p>
+                <p>Você acabou de dar o primeiro passo para responder clientes mais rápido no WhatsApp usando IA.</p>
+                <p>O guia traz exemplos práticos de respostas prontas, erros comuns no atendimento e formas simples de organizar perguntas frequentes.</p>
                 <p style="margin:26px 0;">
                   <a href="${guideUrl}" style="display:inline-block;background:#059669;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;padding:12px 18px;">Acessar guia gratuito</a>
                 </p>
-                <p>Depois, conheca o AtendeZap IA para configurar seu atendimento e gerar respostas personalizadas para copiar e enviar no WhatsApp.</p>
+                <p>Depois, conheça o AtendeZap IA para configurar seu atendimento e gerar respostas personalizadas para copiar e enviar no WhatsApp.</p>
                 <p style="margin:22px 0;">
                   <a href="${pricingUrl}" style="display:inline-block;background:#0f172a;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;padding:12px 18px;">Conhecer o AtendeZap IA</a>
                 </p>

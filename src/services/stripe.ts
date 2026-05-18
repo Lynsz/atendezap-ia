@@ -17,7 +17,7 @@ let stripeClient: Stripe | null = null;
 export function getStripe() {
   const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
   if (!secretKey) {
-    throw new AppError("Pagamento indisponivel no momento. Configure STRIPE_SECRET_KEY no servidor.", 503);
+    throw new AppError("Stripe não está configurado neste ambiente.", 503);
   }
 
   if (!stripeClient) {
@@ -32,7 +32,7 @@ export function getStripe() {
 export function getStripeWebhookSecret() {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
   if (!webhookSecret) {
-    throw new AppError("Webhook Stripe nao configurado.", 500);
+    throw new AppError("Webhook Stripe não está configurado neste ambiente.", 500);
   }
   return webhookSecret;
 }
@@ -43,7 +43,7 @@ export function getAppUrl() {
 
 export function getStripePriceId(plan: SaasPlan) {
   if (!plan.stripePriceId) {
-    throw new AppError(`Preco Stripe nao configurado para o plano ${plan.name}.`, 503);
+    throw new AppError(`Preço Stripe não configurado para o plano ${plan.name}.`, 503);
   }
   return plan.stripePriceId;
 }
@@ -51,7 +51,7 @@ export function getStripePriceId(plan: SaasPlan) {
 export function getStripeCouponId(plan: SaasPlan, shouldApplyFirstMonthOffer: boolean) {
   if (!shouldApplyFirstMonthOffer) return null;
   if (!plan.stripeCouponId) {
-    throw new AppError("Cupom Stripe do primeiro mes do Plano Pro nao configurado.", 503);
+    throw new AppError("Cupom Stripe do primeiro mês do Plano Pro não configurado.", 503);
   }
   return plan.stripeCouponId;
 }

@@ -37,7 +37,7 @@ const flowSteps = [
   },
   {
     title: "Cadastre sua atividade",
-    description: "Informe servicos, precos, horarios e tom de voz no AtendeZap IA.",
+    description: "Informe serviços, preços, horários e tom de voz no AtendeZap IA.",
     icon: Store
   },
   {
@@ -48,14 +48,14 @@ const flowSteps = [
 ];
 
 const benefits = [
-  "Responda clientes mais rapido com ajuda da IA",
+  "Responda clientes mais rápido com ajuda da IA",
   "Crie respostas prontas para WhatsApp em poucos segundos",
   "Economize tempo no atendimento sem precisar contratar alguem agora",
-  "Organize melhor clientes e historico",
+  "Organize melhor clientes e histórico",
   "Adapte respostas prontas para cada conversa",
   "Use modelos por tipo de atendimento",
   "Mantenha um tom claro e consistente",
-  "Comece sozinho, sem configuracao complicada"
+  "Comece sozinho, sem configuração complicada"
 ];
 
 const audiences = [
@@ -77,13 +77,13 @@ const beforeItems = [
   "Demora para responder duvidas simples",
   "Mensagens improvisadas a cada atendimento",
   "Orcamentos enviados sem padrao",
-  "Historico e clientes espalhados"
+  "Histórico e clientes espalhados"
 ];
 
 const afterItems = [
   "Respostas prontas para revisar e enviar",
   "Atendimento com tom mais profissional",
-  "Clientes e historico mais organizados",
+  "Clientes e histórico mais organizados",
   "Modelos adaptados pela IA para cada contexto"
 ];
 
@@ -92,23 +92,23 @@ const plans = PLAN_IDS.map((planId) => SAAS_PLANS[planId]);
 const faqs = [
   [
     "Preciso conectar meu WhatsApp?",
-    "Nao nesta versao. Voce cola a pergunta do cliente, gera a resposta e copia para enviar no WhatsApp."
+    "Não nesta versão. Você cola a pergunta do cliente, gera a resposta e copia para enviar no WhatsApp."
   ],
   [
-    "O ebook e para qual tipo de profissional?",
-    "Para autonomos, prestadores de servico, lojas, restaurantes, clinicas, vendedores e qualquer pessoa que atende pelo WhatsApp."
+    "O ebook é para qual tipo de profissional?",
+    "Para autônomos, prestadores de serviço, lojas, restaurantes, clínicas, vendedores e qualquer pessoa que atende pelo WhatsApp."
   ],
   [
     "A IA inventa precos ou horarios?",
-    "Ela deve usar os dados cadastrados. Quanto mais completo o cadastro, melhor a resposta. Informacoes ausentes nao devem ser inventadas."
+    "Ela deve usar os dados cadastrados. Quanto mais completo o cadastro, melhor a resposta. Informações ausentes não devem ser inventadas."
   ],
   [
-    "O Pro por R$ 29 e uma oferta temporaria?",
-    "Nao. E uma oferta permanente para novos usuarios no primeiro mes. Depois, o plano custa R$ 97/mes."
+    "O Pro por R$ 29 é uma oferta temporária?",
+    "Não. É uma oferta permanente para novos usuários no primeiro mês. Depois, o plano custa R$ 97/mês."
   ],
   [
     "Preciso saber usar tecnologia?",
-    "Nao. A ideia e ser simples: cadastrar a atividade, colar a pergunta e copiar a resposta."
+    "Não. A ideia é ser simples: cadastrar a atividade, colar a pergunta e copiar a resposta."
   ]
 ];
 
@@ -123,8 +123,8 @@ export default function Home() {
               Responda no WhatsApp com mais rapidez usando IA
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-              O AtendeZap IA ajuda autonomos, prestadores de servico, lojas, delivery, estetica, assistencia tecnica,
-              restaurantes e pequenos negocios a criar respostas mais profissionais e economizar tempo no atendimento.
+              O AtendeZap IA ajuda autônomos, prestadores de serviço, lojas, delivery, estética, assistência técnica,
+              restaurantes e pequenos negócios a criar respostas mais profissionais e economizar tempo no atendimento.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button href="/ebook">
@@ -136,7 +136,7 @@ export default function Home() {
               </Button>
             </div>
             <p className="mt-5 inline-flex rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">
-              Comece sozinho: baixe o ebook, conheca o AtendeZap IA e escolha um plano mensal pela Stripe.
+              Comece sozinho: baixe o ebook, conheça o AtendeZap IA e escolha um plano mensal pela Stripe.
             </p>
           </div>
 
@@ -152,8 +152,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.06] p-4 text-sm leading-7 text-slate-200">
-                Oi, Ana! Consigo te ajudar sim. Posso te passar as opcoes e valores certinhos. Voce prefere receber o
-                orcamento por aqui ou quer me contar primeiro qual servico precisa?
+                Oi, Ana! Consigo te ajudar sim. Posso te passar as opções e valores certinhos. Você prefere receber o
+                orçamento por aqui ou quer me contar primeiro qual serviço precisa?
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 {["Pergunta", "IA", "Copiar"].map((item) => (
@@ -192,7 +192,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4">
           <div className="max-w-2xl">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Beneficios</p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">Mais clareza, velocidade e organizacao no atendimento</h2>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-4xl">Mais clareza, velocidade e organização no atendimento</h2>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {benefits.map((benefit) => (
@@ -252,7 +252,7 @@ export default function Home() {
             <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">Planos</p>
             <h2 className="mt-3 text-3xl font-black tracking-tight md:text-4xl">Comece simples e evolua quando precisar</h2>
             <p className="mt-4 text-sm leading-6 text-slate-300">
-              Escolha um plano e comece pelo WhatsApp. O Pro e o mais recomendado para quem atende, vende ou responde clientes todos os dias.
+              Escolha um plano e comece pelo WhatsApp. O Pro é o mais recomendado para quem atende, vende ou responde clientes todos os dias.
             </p>
           </div>
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
@@ -262,7 +262,7 @@ export default function Home() {
                 <h3 className="text-2xl font-black">{plan.name}</h3>
                 <p className="mt-4 text-3xl font-black">{plan.firstMonthPriceLabel || plan.monthlyPriceLabel}</p>
                 {plan.recurringPriceLabel ? <p className="mt-1 text-sm font-black text-emerald-200">{plan.recurringPriceLabel}</p> : null}
-                {plan.id === "pro" ? <p className="mt-2 text-xs font-bold text-slate-400">Primeiro mes por R$ 29 para novos usuarios.</p> : null}
+                {plan.id === "pro" ? <p className="mt-2 text-xs font-bold text-slate-400">Primeiro mês por R$ 29 para novos usuários.</p> : null}
                 <p className="mt-4 min-h-16 text-sm leading-6 text-slate-300">{plan.description}</p>
                 <Button href="/precos" className="mt-6 w-full justify-center bg-emerald-400 text-slate-950 hover:bg-emerald-300">
                   Ver planos
@@ -291,7 +291,7 @@ export default function Home() {
       <section className="bg-[#090d12] py-16 text-white">
         <div className="mx-auto max-w-6xl px-4 text-center">
           <Users className="mx-auto mb-5 h-9 w-9 text-emerald-300" />
-          <h2 className="mx-auto max-w-3xl text-3xl font-black tracking-tight md:text-5xl">Baixe o guia e veja o proximo passo com IA.</h2>
+          <h2 className="mx-auto max-w-3xl text-3xl font-black tracking-tight md:text-5xl">Baixe o guia e veja o próximo passo com IA.</h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300">
             Comece com respostas prontas e depois transforme essas mensagens em respostas personalizadas para seu atendimento.
           </p>

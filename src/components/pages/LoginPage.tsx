@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import type { FormEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LogIn, MessageCircle, UserPlus } from 'lucide-react';
 import { SUPABASE_CONNECTION_ERROR, useAuth } from '@/hooks/useAuth';
@@ -10,7 +10,7 @@ type AuthMode = 'login' | 'signup';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signIn, signUp, loading } = useAuth();
+  const { isAuthenticated, signIn, signUp, loading } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>('login');
   const [name, setName] = useState('');
@@ -22,6 +22,12 @@ export default function LoginPage() {
   const [successMessage, setSuccessMessage] = useState('');
 
   const isSignup = mode === 'signup';
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isAuthenticated, loading, router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -22,11 +22,11 @@ export async function requireAdmin(request: Request) {
   const authorization = request.headers.get("authorization");
 
   if (!authorization) {
-    throw new AppError("Sessao nao encontrada.", 401);
+    throw new AppError("Sessão não encontrada.", 401);
   }
 
   if (!url || !anonKey) {
-    throw new AppError("Supabase nao configurado no servidor.", 500);
+    throw new AppError("Supabase não configurado no servidor.", 500);
   }
 
   const authClient = createClient(url, anonKey, {
@@ -47,7 +47,7 @@ export async function requireAdmin(request: Request) {
   } = await authClient.auth.getUser();
 
   if (error || !user) {
-    throw new AppError("Sessao invalida.", 401);
+    throw new AppError("Sessão inválida.", 401);
   }
 
   if (!isAdminEmail(user.email)) {

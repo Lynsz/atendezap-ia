@@ -92,7 +92,7 @@ const periods: Array<{ value: PeriodFilter; label: string }> = [
 ];
 
 function formatDate(value?: string | null) {
-  if (!value) return "Nao informado";
+  if (!value) return "Não informado";
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "2-digit",
@@ -170,7 +170,7 @@ export default function AdminDashboardPage() {
 
       if (!token) {
         setAccessDenied(true);
-        setError("Faca login com um e-mail administrador para acessar esta area.");
+        setError("Faça login com um e-mail administrador para acessar esta área.");
         setLoading(false);
         return;
       }
@@ -189,13 +189,13 @@ export default function AdminDashboardPage() {
 
       if (!response.ok) {
         setAccessDenied(response.status === 401 || response.status === 403);
-        setError(payload.error || "Nao foi possivel carregar a area admin.");
+        setError(payload.error || "Não foi possível carregar a área admin.");
         return;
       }
 
       setData(payload);
     } catch {
-      setError("Nao foi possivel carregar a area admin agora.");
+      setError("Não foi possível carregar a área admin agora.");
     } finally {
       setLoading(false);
     }
@@ -228,7 +228,7 @@ export default function AdminDashboardPage() {
         <div className="rounded-lg border border-white/10 bg-[#101821] p-6 text-center shadow-2xl shadow-black/30">
           <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-white/10 border-t-emerald-400" />
           <h1 className="text-lg font-black">Carregando admin...</h1>
-          <p className="mt-2 text-sm text-slate-400">Verificando permissao e buscando dados do funil.</p>
+          <p className="mt-2 text-sm text-slate-400">Verificando permissão e buscando dados do funil.</p>
         </div>
       </main>
     );
@@ -240,7 +240,7 @@ export default function AdminDashboardPage() {
         <div className="max-w-md rounded-lg border border-red-400/30 bg-[#101821] p-6 text-center shadow-2xl shadow-black/30">
           <Lock className="mx-auto mb-4 h-10 w-10 text-red-200" />
           <h1 className="text-2xl font-black">Acesso restrito</h1>
-          <p className="mt-3 text-sm leading-6 text-slate-300">{error || "Esta area e exclusiva para administradores."}</p>
+          <p className="mt-3 text-sm leading-6 text-slate-300">{error || "Esta área é exclusiva para administradores."}</p>
         </div>
       </main>
     );
@@ -254,7 +254,7 @@ export default function AdminDashboardPage() {
             <p className="mb-2 text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Admin</p>
             <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Painel interno AtendeZap IA</h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-              Acompanhe leads capturados, campanhas, entregas do ebook, assinaturas e conversao aproximada.
+              Acompanhe leads capturados, campanhas, entregas do ebook, assinaturas e conversão aproximada.
             </p>
           </div>
           <button
@@ -384,7 +384,7 @@ export default function AdminDashboardPage() {
                   <article className="rounded-lg border border-white/10 bg-white/[0.04] p-4" key={subscription.id}>
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                       <div>
-                        <p className="font-black text-white">{subscription.email || "E-mail nao informado"}</p>
+                        <p className="font-black text-white">{subscription.email || "E-mail não informado"}</p>
                         <p className="mt-1 text-sm text-slate-400">{subscription.name || subscription.user_id}</p>
                       </div>
                       <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(subscription.status)}`}>{subscription.status || "sem status"}</span>
@@ -410,18 +410,18 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Conversao aproximada</p>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Conversão aproximada</p>
             <h2 className="mt-2 text-2xl font-black text-white">Resumo do funil</h2>
             <div className="mt-5 grid gap-3">
               <ConversionLine label="Leads totais" value={metrics?.totalLeads ?? 0} />
-              <ConversionLine label="Usuarios cadastrados" value={metrics?.totalUsers ?? 0} />
+              <ConversionLine label="Usuários cadastrados" value={metrics?.totalUsers ?? 0} />
               <ConversionLine label="Assinaturas ativas" value={metrics?.activeSubscriptions ?? 0} />
               <ConversionLine label="Lead -> cadastro" value={`${metrics?.leadToSignupRate ?? 0}%`} />
               <ConversionLine label="Cadastro -> assinatura" value={`${metrics?.signupToSubscriptionRate ?? 0}%`} />
               <ConversionLine label="Lead -> assinatura" value={`${metrics?.leadToSubscriptionRate ?? 0}%`} />
             </div>
             <p className="mt-5 rounded-md border border-amber-400/20 bg-amber-400/10 p-3 text-xs font-bold leading-5 text-amber-100">
-              {data?.notes.conversion || "Conversao aproximada por e-mail entre leads e usuarios."}
+              {data?.notes.conversion || "Conversão aproximada por e-mail entre leads e usuários."}
             </p>
             <div className="mt-5 grid gap-3 text-sm">
               <ConversionLine label="Ativas" value={subscriptionGroups.active.length} />

@@ -59,7 +59,7 @@ export function EbookLeadForm() {
       const result = (await response.json().catch(() => ({}))) as { redirectTo?: string; error?: string; message?: string };
 
       if (!response.ok) {
-        setError(result.error || result.message || "Nao foi possivel liberar o guia agora. Revise os dados e tente novamente.");
+        setError(result.error || result.message || "Não foi possível liberar o guia agora. Revise os dados e tente novamente.");
         trackEvent("lead_error", {
           source: payload.source,
           funnel: attribution.funnel || "ebook",
@@ -76,7 +76,7 @@ export function EbookLeadForm() {
       });
       window.location.href = result.redirectTo || "/ebook/obrigado";
     } catch {
-      setError("Nao foi possivel enviar seus dados agora. Tente novamente em instantes.");
+      setError("Não foi possível enviar seus dados agora. Tente novamente em instantes.");
       trackEvent("lead_error", {
         source: payload.source,
         funnel: attribution.funnel || "ebook",

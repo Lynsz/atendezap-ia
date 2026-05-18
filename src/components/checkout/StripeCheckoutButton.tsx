@@ -70,7 +70,7 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
       const result = (await response.json()) as CreateCheckoutResponse;
 
       if (!response.ok || !result.url) {
-        setFeedback(result.error || "Nao foi possivel iniciar o checkout agora.");
+        setFeedback(result.error || "Erro ao iniciar checkout. Verifique sua conexão e tente de novo.");
         trackEvent("checkout_error", {
           plan: planId,
           funnel,
@@ -85,7 +85,7 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
       });
       window.location.href = result.url;
     } catch {
-      setFeedback("Nao foi possivel iniciar o pagamento. Tente novamente em instantes.");
+      setFeedback("Erro ao iniciar checkout. Verifique sua conexão e tente de novo.");
       trackEvent("checkout_error", {
         plan: planId,
         funnel,

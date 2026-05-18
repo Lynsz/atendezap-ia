@@ -9,12 +9,12 @@ export function PricingPageContent() {
           Planos para responder melhor no WhatsApp com IA
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-300">
-          Escolha uma opcao mensal com cobranca recorrente pela Stripe para gerar respostas mais profissionais,
-          economizar tempo no atendimento e manter seus clientes mais organizados. Comece sozinho, sem configuracao
+          Escolha uma opção mensal com cobrança recorrente pela Stripe para gerar respostas mais profissionais,
+          economizar tempo no atendimento e manter seus clientes mais organizados. Comece sozinho, sem configuração
           complicada.
         </p>
         <p className="mx-auto mt-5 inline-flex rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-sm font-black text-emerald-100">
-          Plano Pro por R$ 29 no primeiro mes. Depois, R$ 97/mes.
+          Plano Pro por R$ 29 no primeiro mês. Depois, R$ 97/mês.
         </p>
       </section>
 
@@ -23,12 +23,12 @@ export function PricingPageContent() {
       <section className="mx-auto max-w-6xl px-4 pb-16 text-center">
         <div className="rounded-lg border border-emerald-300/20 bg-emerald-400/10 p-5">
           <p className="text-sm font-bold leading-6 text-emerald-100">
-            R$ 29 no primeiro mes para novos usuarios. Depois, R$ 97/mes. A Stripe fica responsavel pela cobranca
+            R$ 29 no primeiro mês para novos usuários. Depois, R$ 97/mês. A Stripe fica responsável pela cobrança
             recorrente; o dashboard libera recursos a partir do status salvo no Supabase.
           </p>
         </div>
         <p className="mx-auto mt-6 max-w-3xl text-sm leading-6 text-slate-400">
-          O AtendeZap IA nao e afiliado ao WhatsApp, Meta, Kiwify ou Stripe e nao promete resultado financeiro garantido.
+          O AtendeZap IA não é afiliado ao WhatsApp, Meta, Kiwify ou Stripe e não promete resultado financeiro garantido.
         </p>
       </section>
     </main>

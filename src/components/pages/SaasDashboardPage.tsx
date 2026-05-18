@@ -73,7 +73,7 @@ const emptyBusiness: BusinessDraft = {
   address: "",
   payment_methods: "",
   booking_or_payment_link: "",
-  brand_tone: "profissional, simpatico e objetivo",
+  brand_tone: "profissional, simpático e objetivo",
   onboarding_completed: false
 };
 
@@ -141,7 +141,7 @@ function formatDate(value: string) {
 }
 
 function formatShortDate(value?: string | null) {
-  if (!value) return "Nao informado";
+  if (!value) return "Não informado";
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "2-digit",
@@ -167,7 +167,7 @@ function toBusinessDraft(business: Business | null): BusinessDraft {
     address: business.address || "",
     payment_methods: business.payment_methods || "",
     booking_or_payment_link: business.booking_or_payment_link || "",
-    brand_tone: business.brand_tone || "profissional, simpatico e objetivo",
+    brand_tone: business.brand_tone || "profissional, simpático e objetivo",
     onboarding_completed: Boolean(business.onboarding_completed)
   };
 }
@@ -575,12 +575,12 @@ function SaasDashboardContent() {
       });
       const result = (await response.json()) as { url?: string; error?: string };
       if (!response.ok || !result.url) {
-        setError(result.error || "Nao foi possivel abrir o portal da assinatura.");
+        setError(result.error || "Não foi possível abrir o portal da assinatura.");
         return;
       }
       window.location.href = result.url;
     } catch {
-      setError("Nao foi possivel abrir o portal da assinatura agora.");
+      setError("Não foi possível abrir o portal da assinatura agora.");
     }
   }
 
@@ -985,7 +985,7 @@ function SaasDashboardContent() {
                   <div>
                     <p className="text-sm font-black text-white">Uso mensal</p>
                     <p className="mt-1 text-xs text-slate-400">
-                      Voce usou {monthlyUsage} de {responseLimit} respostas neste mes. Restam {monthlyRemaining}.
+                      Você usou {monthlyUsage} de {responseLimit} respostas neste mês. Restam {monthlyRemaining}.
                     </p>
                   </div>
                   <span className="text-sm font-black text-emerald-300">{usagePercent}%</span>
@@ -994,15 +994,15 @@ function SaasDashboardContent() {
                   <div className={`h-full rounded-full ${hasReachedMonthlyLimit ? "bg-red-400" : isNearMonthlyLimit ? "bg-amber-300" : "bg-emerald-400"}`} style={{ width: `${usagePercent}%` }} />
                 </div>
                 {hasReachedMonthlyLimit ? (
-                  <p className="mt-3 text-sm font-bold text-red-200">Voce atingiu o limite mensal do seu plano.</p>
+                  <p className="mt-3 text-sm font-bold text-red-200">Você atingiu o limite mensal do seu plano.</p>
                 ) : isNearMonthlyLimit ? (
-                  <p className="mt-3 text-sm font-bold text-amber-200">Voce usou {usagePercent}% do seu limite mensal. Faca upgrade para continuar respondendo clientes sem travar o atendimento.</p>
+                  <p className="mt-3 text-sm font-bold text-amber-200">Você usou {usagePercent}% do seu limite mensal. Faça upgrade para continuar respondendo clientes sem travar o atendimento.</p>
                 ) : null}
               </div>
 
               {!activeSubscription ? (
                 <div className="mt-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4 text-sm text-amber-100">
-                  <p className="font-black text-white">Sua assinatura nao esta ativa no momento.</p>
+                  <p className="font-black text-white">Sua assinatura não está ativa no momento.</p>
                   <p className="mt-2 leading-6">Escolha um plano para continuar usando o AtendeZap IA com mais limite e recursos.</p>
                 </div>
               ) : null}
@@ -1014,7 +1014,7 @@ function SaasDashboardContent() {
                 const isCurrentActivePlan = currentPlanId === plan.id && activeSubscription;
                 const checkoutLabel =
                   plan.id === "pro"
-                    ? "Assinar Pro por R$ 29 no primeiro mes"
+                    ? "Assinar Pro por R$ 29 no primeiro mês"
                     : `Assinar ${plan.name}`;
 
                 return (
@@ -1043,19 +1043,19 @@ function SaasDashboardContent() {
                     <div className="mt-4">
                       {plan.id === "pro" ? (
                         <>
-                          <p className="text-3xl font-black text-white">Primeiro mes por R$ 29</p>
+                          <p className="text-3xl font-black text-white">Primeiro mês por R$ 29</p>
                           <p className="mt-1 text-sm font-bold text-emerald-200">Primeiro mês por R$ 29 para novos usuários</p>
                           <p className="mt-1 text-xs text-slate-400">{plan.recurringPriceLabel || "Depois, continua no valor mensal normal."}</p>
                         </>
                       ) : (
                         <>
                           <p className="text-3xl font-black text-white">{plan.monthlyPriceLabel}</p>
-                          <p className="mt-1 text-xs text-slate-400">Cobranca mensal pela Stripe.</p>
+                          <p className="mt-1 text-xs text-slate-400">Cobrança mensal pela Stripe.</p>
                         </>
                       )}
                     </div>
                     <p className="mt-4 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-slate-200">
-                      Ate {plan.responseLimit.toLocaleString("pt-BR")} respostas com IA por mes
+                      Até {plan.responseLimit.toLocaleString("pt-BR")} respostas com IA por mês
                     </p>
                     <ul className="mt-4 grid gap-2 text-sm text-slate-300">
                       {plan.features.slice(0, 5).map((feature) => (
