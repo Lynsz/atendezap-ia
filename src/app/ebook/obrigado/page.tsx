@@ -28,7 +28,7 @@ export default function EbookThankYouPage() {
           <p className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-emerald-300">Guia gratuito liberado</p>
           <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Seu guia gratuito está pronto.</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300">
-            Agora veja como aplicar isso na prática com o AtendeZap IA.
+            Enviamos o guia para o seu e-mail. Você também pode acessar agora pelo botão abaixo e depois ver como aplicar isso na prática com o AtendeZap IA.
           </p>
         </div>
 
@@ -37,10 +37,10 @@ export default function EbookThankYouPage() {
             <FileText className="mb-4 h-6 w-6 text-emerald-300" />
             <h2 className="text-2xl font-black text-white">Acesse o ebook</h2>
             <p className="mt-3 text-sm leading-6 text-slate-300">
-              O guia mostra como melhorar o atendimento pelo WhatsApp com respostas mais rápidas, claras e profissionais.
+              O guia mostra como melhorar o atendimento pelo WhatsApp com respostas mais rápidas, claras e profissionais. Se o e-mail demorar, use o acesso imediato abaixo.
             </p>
             <Button href="/ebook/guia" className="mt-6 w-full justify-center bg-white text-slate-950 hover:bg-slate-100">
-              Abrir guia gratuito
+              Acessar guia gratuito
             </Button>
           </div>
 

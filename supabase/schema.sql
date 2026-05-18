@@ -136,6 +136,20 @@ create table if not exists public.ebook_leads (
   updated_at timestamptz default now()
 );
 
+create table if not exists public.lead_email_events (
+  id uuid primary key default gen_random_uuid(),
+  lead_id uuid references public.ebook_leads(id) on delete set null,
+  email text not null,
+  event_type text not null,
+  subject text not null,
+  status text not null default 'pending',
+  provider text default 'resend',
+  provider_message_id text,
+  sent_at timestamptz,
+  error text,
+  created_at timestamptz default now()
+);
+
 create table if not exists public.stripe_webhook_events (
   id uuid primary key default gen_random_uuid(),
   provider_event_id text not null,
@@ -204,6 +218,9 @@ create unique index if not exists subscriptions_user_id_unique_idx on public.sub
 create unique index if not exists ebook_leads_email_unique_idx on public.ebook_leads(email);
 create index if not exists ebook_leads_created_at_idx on public.ebook_leads(created_at desc);
 create index if not exists ebook_leads_utm_campaign_idx on public.ebook_leads(utm_campaign) where utm_campaign is not null;
+create index if not exists lead_email_events_lead_id_idx on public.lead_email_events(lead_id);
+create index if not exists lead_email_events_email_idx on public.lead_email_events(email);
+create index if not exists lead_email_events_created_at_idx on public.lead_email_events(created_at desc);
 create unique index if not exists stripe_webhook_events_provider_event_id_unique_idx on public.stripe_webhook_events(provider_event_id);
 create index if not exists subscriptions_provider_subscription_id_idx on public.subscriptions(provider_subscription_id);
 create index if not exists subscriptions_provider_customer_id_idx on public.subscriptions(provider_customer_id);
@@ -282,6 +299,7 @@ alter table public.customers enable row level security;
 alter table public.subscriptions enable row level security;
 alter table public.plans enable row level security;
 alter table public.ebook_leads enable row level security;
+alter table public.lead_email_events enable row level security;
 alter table public.stripe_webhook_events enable row level security;
 alter table public.purchasers enable row level security;
 alter table public.orders enable row level security;
@@ -309,6 +327,7 @@ drop policy if exists "subscriptions_update_own" on public.subscriptions;
 drop policy if exists "subscriptions_delete_own" on public.subscriptions;
 drop policy if exists "plans_select_public" on public.plans;
 drop policy if exists "ebook_leads_no_client_access" on public.ebook_leads;
+drop policy if exists "lead_email_events_no_client_access" on public.lead_email_events;
 drop policy if exists "stripe_webhook_events_no_client_access" on public.stripe_webhook_events;
 drop policy if exists "purchasers_no_client_access" on public.purchasers;
 drop policy if exists "orders_no_client_access" on public.orders;
@@ -341,6 +360,7 @@ create policy "subscriptions_select_own" on public.subscriptions for select to a
 create policy "plans_select_public" on public.plans for select to anon, authenticated using (true);
 -- Planos sao leitura publica para exibicao comercial. Escrita em plans nao e liberada para anon/authenticated.
 create policy "ebook_leads_no_client_access" on public.ebook_leads for all to anon, authenticated using (false) with check (false);
+create policy "lead_email_events_no_client_access" on public.lead_email_events for all to anon, authenticated using (false) with check (false);
 create policy "stripe_webhook_events_no_client_access" on public.stripe_webhook_events for all to anon, authenticated using (false) with check (false);
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
 create policy "orders_no_client_access" on public.orders for all to anon, authenticated using (false) with check (false);
@@ -355,6 +375,7 @@ grant select on public.subscriptions to authenticated;
 revoke all privileges on public.plans from anon, authenticated;
 grant select on public.plans to anon, authenticated;
 revoke all on public.ebook_leads from anon, authenticated;
+revoke all on public.lead_email_events from anon, authenticated;
 revoke all on public.stripe_webhook_events from anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;

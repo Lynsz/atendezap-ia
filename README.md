@@ -39,6 +39,7 @@ Stripe e o billing principal do SaaS. Kiwify fica apenas como canal opcional de 
 
 - `/`: landing page.
 - `/ebook`: captura do guia gratuito.
+- `/ebook/guia`: guia gratuito em HTML enviado por e-mail e acessível pela página de obrigado.
 - `/ebook/obrigado`: pagina de obrigado e oferta do Pro.
 - `/precos` e `/plans`: pagina de planos.
 - `/cadastro` e `/login`: autenticacao.
@@ -89,14 +90,19 @@ OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4o-mini
 RESEND_API_KEY=
 EMAIL_FROM=
+ADMIN_EMAILS=
 SUPPORT_EMAIL=
 ```
 
-`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `RESEND_API_KEY` e `KIWIFY_WEBHOOK_SECRET` sao somente servidor.
+`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `RESEND_API_KEY`, `ADMIN_EMAILS` e `KIWIFY_WEBHOOK_SECRET` sao somente servidor.
 
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_KIWIFY_*`, `NEXT_PUBLIC_GA_MEASUREMENT_ID` e `NEXT_PUBLIC_META_PIXEL_ID` podem ser publicas.
 
 O tracking de trafego pago e opcional. Veja `docs/tracking.md` para eventos, UTMs, GA4 e Meta Pixel.
+
+O envio do guia por e-mail usa Resend de forma opcional. Veja `docs/emails.md` para configurar `RESEND_API_KEY`, `EMAIL_FROM`, templates e logs em `lead_email_events`.
+
+O painel interno fica em `/admin` e usa `ADMIN_EMAILS` para liberar acesso. Veja `docs/admin.md`.
 
 ## Supabase
 

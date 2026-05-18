@@ -1,0 +1,480 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { BarChart3, Download, Filter, Lock, Mail, RefreshCw, Search, Users } from "lucide-react";
+import { supabase } from "@/lib/supabase/browser";
+
+type PeriodFilter = "today" | "7d" | "30d" | "all";
+
+type AdminLead = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  whatsapp: string | null;
+  business_type: string | null;
+  source: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+  created_at: string;
+  email_status: string;
+  email_sent_at: string | null;
+};
+
+type AdminSubscription = {
+  id: string;
+  user_id: string;
+  email: string | null;
+  name: string | null;
+  plan_name: string | null;
+  plan: string | null;
+  status: string | null;
+  provider_customer_id: string | null;
+  provider_subscription_id: string | null;
+  monthly_limit: number | null;
+  monthly_usage: number;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type AdminPayload = {
+  metrics: {
+    totalLeads: number;
+    leadsLast7Days: number;
+    leadsLast30Days: number;
+    totalUsers: number;
+    activeSubscriptions: number;
+    canceledSubscriptions: number;
+    mostUsedPlan: string;
+    emailSentSuccess: number;
+    emailSentFailed: number;
+    leadToSignupRate: number;
+    signupToSubscriptionRate: number;
+    leadToSubscriptionRate: number;
+  };
+  leads: AdminLead[];
+  subscriptions: AdminSubscription[];
+  filterOptions: {
+    businessTypes: string[];
+    utmSources: string[];
+    utmCampaigns: string[];
+  };
+  notes: {
+    conversion: string;
+  };
+};
+
+type Filters = {
+  search: string;
+  business_type: string;
+  utm_source: string;
+  utm_campaign: string;
+  period: PeriodFilter;
+};
+
+const initialFilters: Filters = {
+  search: "",
+  business_type: "",
+  utm_source: "",
+  utm_campaign: "",
+  period: "30d"
+};
+
+const periods: Array<{ value: PeriodFilter; label: string }> = [
+  { value: "today", label: "Hoje" },
+  { value: "7d", label: "Ultimos 7 dias" },
+  { value: "30d", label: "Ultimos 30 dias" },
+  { value: "all", label: "Todos" }
+];
+
+function formatDate(value?: string | null) {
+  if (!value) return "Nao informado";
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(value));
+}
+
+function statusClass(status?: string | null) {
+  const normalized = status?.toLowerCase();
+  if (normalized === "active" || normalized === "trial" || normalized === "trialing" || normalized === "sent") {
+    return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
+  }
+  if (normalized === "failed" || normalized === "canceled") {
+    return "border-red-400/30 bg-red-500/10 text-red-200";
+  }
+  if (normalized === "pending" || normalized === "past_due" || normalized === "skipped") {
+    return "border-amber-400/30 bg-amber-400/10 text-amber-100";
+  }
+  return "border-slate-400/20 bg-white/[0.04] text-slate-300";
+}
+
+function csvEscape(value: string | number | null | undefined) {
+  const text = value === null || value === undefined ? "" : String(value);
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+function exportLeadsCsv(leads: AdminLead[]) {
+  const headers = ["name", "email", "whatsapp", "business_type", "source", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "created_at"];
+  const rows = leads.map((lead) =>
+    [
+      lead.name,
+      lead.email,
+      lead.whatsapp,
+      lead.business_type,
+      lead.source,
+      lead.utm_source,
+      lead.utm_medium,
+      lead.utm_campaign,
+      lead.utm_content,
+      lead.utm_term,
+      lead.created_at
+    ]
+      .map(csvEscape)
+      .join(",")
+  );
+  const blob = new Blob([[headers.join(","), ...rows].join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `atendezap-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+export default function AdminDashboardPage() {
+  const [data, setData] = useState<AdminPayload | null>(null);
+  const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [appliedFilters, setAppliedFilters] = useState<Filters>(initialFilters);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [accessDenied, setAccessDenied] = useState(false);
+
+  const loadAdminData = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    setAccessDenied(false);
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        setAccessDenied(true);
+        setError("Faca login com um e-mail administrador para acessar esta area.");
+        setLoading(false);
+        return;
+      }
+
+      const params = new URLSearchParams();
+      Object.entries(appliedFilters).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+      });
+
+      const response = await fetch(`/api/admin/overview?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const payload = (await response.json().catch(() => ({}))) as AdminPayload & { error?: string };
+
+      if (!response.ok) {
+        setAccessDenied(response.status === 401 || response.status === 403);
+        setError(payload.error || "Nao foi possivel carregar a area admin.");
+        return;
+      }
+
+      setData(payload);
+    } catch {
+      setError("Nao foi possivel carregar a area admin agora.");
+    } finally {
+      setLoading(false);
+    }
+  }, [appliedFilters]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      void loadAdminData();
+    });
+  }, [loadAdminData]);
+
+  const metrics = data?.metrics;
+  const subscriptionGroups = useMemo(() => {
+    const subscriptions = data?.subscriptions || [];
+    return {
+      active: subscriptions.filter((subscription) => ["active", "trial", "trialing"].includes(subscription.status?.toLowerCase() || "")),
+      canceled: subscriptions.filter((subscription) => subscription.status?.toLowerCase() === "canceled"),
+      pending: subscriptions.filter((subscription) => ["pending", "past_due", "unpaid", "incomplete"].includes(subscription.status?.toLowerCase() || ""))
+    };
+  }, [data]);
+
+  function handleApplyFilters(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAppliedFilters(filters);
+  }
+
+  if (loading && !data) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#090d12] px-4 text-white">
+        <div className="rounded-lg border border-white/10 bg-[#101821] p-6 text-center shadow-2xl shadow-black/30">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-white/10 border-t-emerald-400" />
+          <h1 className="text-lg font-black">Carregando admin...</h1>
+          <p className="mt-2 text-sm text-slate-400">Verificando permissao e buscando dados do funil.</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (accessDenied) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#090d12] px-4 text-white">
+        <div className="max-w-md rounded-lg border border-red-400/30 bg-[#101821] p-6 text-center shadow-2xl shadow-black/30">
+          <Lock className="mx-auto mb-4 h-10 w-10 text-red-200" />
+          <h1 className="text-2xl font-black">Acesso restrito</h1>
+          <p className="mt-3 text-sm leading-6 text-slate-300">{error || "Esta area e exclusiva para administradores."}</p>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-[#090d12] px-4 py-8 text-slate-100">
+      <section className="mx-auto max-w-7xl">
+        <header className="mb-6 flex flex-col gap-4 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-2xl shadow-black/30 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Admin</p>
+            <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Painel interno AtendeZap IA</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
+              Acompanhe leads capturados, campanhas, entregas do ebook, assinaturas e conversao aproximada.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void loadAdminData()}
+            disabled={loading}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300 disabled:opacity-60"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Atualizar
+          </button>
+        </header>
+
+        {error ? <div className="mb-5 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">{error}</div> : null}
+
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <MetricCard label="Total de leads" value={metrics?.totalLeads ?? 0} icon={<Users className="h-5 w-5" />} />
+          <MetricCard label="Leads ultimos 7 dias" value={metrics?.leadsLast7Days ?? 0} icon={<BarChart3 className="h-5 w-5" />} />
+          <MetricCard label="Leads ultimos 30 dias" value={metrics?.leadsLast30Days ?? 0} icon={<BarChart3 className="h-5 w-5" />} />
+          <MetricCard label="Usuarios cadastrados" value={metrics?.totalUsers ?? 0} icon={<Users className="h-5 w-5" />} />
+          <MetricCard label="Assinaturas ativas" value={metrics?.activeSubscriptions ?? 0} icon={<BarChart3 className="h-5 w-5" />} />
+          <MetricCard label="Assinaturas canceladas" value={metrics?.canceledSubscriptions ?? 0} icon={<BarChart3 className="h-5 w-5" />} />
+          <MetricCard label="Plano mais usado" value={metrics?.mostUsedPlan || "Sem dados"} icon={<BarChart3 className="h-5 w-5" />} />
+          <MetricCard label="Ebooks enviados" value={metrics?.emailSentSuccess ?? 0} icon={<Mail className="h-5 w-5" />} />
+          <MetricCard label="Falha no envio" value={metrics?.emailSentFailed ?? 0} icon={<Mail className="h-5 w-5" />} />
+          <MetricCard label="Lead -> cadastro" value={`${metrics?.leadToSignupRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
+          <MetricCard label="Cadastro -> assinatura" value={`${metrics?.signupToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
+          <MetricCard label="Lead -> assinatura" value={`${metrics?.leadToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
+        </section>
+
+        <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+          <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Leads capturados</p>
+              <h2 className="mt-2 text-2xl font-black text-white">Origem das campanhas</h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => exportLeadsCsv(data?.leads || [])}
+              disabled={!data?.leads.length}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-black text-slate-950 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download className="h-4 w-4" />
+              Exportar CSV
+            </button>
+          </div>
+
+          <form onSubmit={handleApplyFilters} className="mb-5 grid gap-3 lg:grid-cols-[1.3fr_1fr_1fr_1fr_180px_auto]">
+            <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+              Buscar
+              <span className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                <input
+                  value={filters.search}
+                  onChange={(event) => setFilters((current) => ({ ...current, search: event.target.value }))}
+                  className="field-input pl-9"
+                  placeholder="Nome ou e-mail"
+                />
+              </span>
+            </label>
+            <FilterSelect label="Tipo" value={filters.business_type} onChange={(value) => setFilters((current) => ({ ...current, business_type: value }))} options={data?.filterOptions.businessTypes || []} />
+            <FilterSelect label="UTM source" value={filters.utm_source} onChange={(value) => setFilters((current) => ({ ...current, utm_source: value }))} options={data?.filterOptions.utmSources || []} />
+            <FilterSelect label="UTM campaign" value={filters.utm_campaign} onChange={(value) => setFilters((current) => ({ ...current, utm_campaign: value }))} options={data?.filterOptions.utmCampaigns || []} />
+            <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+              Periodo
+              <select value={filters.period} onChange={(event) => setFilters((current) => ({ ...current, period: event.target.value as PeriodFilter }))} className="field-input">
+                {periods.map((period) => (
+                  <option value={period.value} key={period.value}>
+                    {period.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300">
+              <Filter className="h-4 w-4" />
+              Filtrar
+            </button>
+          </form>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-[1100px] w-full border-separate border-spacing-0 text-left text-sm">
+              <thead className="text-xs uppercase tracking-wide text-slate-500">
+                <tr>
+                  {["Nome", "E-mail", "WhatsApp", "Tipo", "Source", "UTM source", "UTM campaign", "Cadastro", "Ebook"].map((header) => (
+                    <th className="border-b border-white/10 px-3 py-3 font-black" key={header}>
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {data?.leads.length ? (
+                  data.leads.map((lead) => (
+                    <tr className="border-b border-white/10" key={lead.id}>
+                      <td className="border-b border-white/10 px-3 py-3 font-bold text-white">{lead.name || "Sem nome"}</td>
+                      <td className="border-b border-white/10 px-3 py-3 text-slate-300">{lead.email || "Sem e-mail"}</td>
+                      <td className="border-b border-white/10 px-3 py-3 text-slate-300">{lead.whatsapp || "-"}</td>
+                      <td className="border-b border-white/10 px-3 py-3 text-slate-300">{lead.business_type || "-"}</td>
+                      <td className="border-b border-white/10 px-3 py-3 text-slate-300">{lead.source || "-"}</td>
+                      <td className="border-b border-white/10 px-3 py-3 text-slate-300">{lead.utm_source || "-"}</td>
+                      <td className="border-b border-white/10 px-3 py-3 text-slate-300">{lead.utm_campaign || "-"}</td>
+                      <td className="border-b border-white/10 px-3 py-3 text-slate-300">{formatDate(lead.created_at)}</td>
+                      <td className="border-b border-white/10 px-3 py-3">
+                        <span className={`rounded-full border px-2.5 py-1 text-xs font-black ${statusClass(lead.email_status)}`}>{lead.email_status}</span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="px-3 py-8 text-center text-slate-400" colSpan={9}>
+                      Nenhum lead encontrado para os filtros atuais.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="mt-6 grid gap-6 xl:grid-cols-[1fr_0.75fr]">
+          <div className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Assinaturas</p>
+            <h2 className="mt-2 text-2xl font-black text-white">Planos e status</h2>
+            <div className="mt-5 grid gap-3">
+              {data?.subscriptions.length ? (
+                data.subscriptions.map((subscription) => (
+                  <article className="rounded-lg border border-white/10 bg-white/[0.04] p-4" key={subscription.id}>
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                      <div>
+                        <p className="font-black text-white">{subscription.email || "E-mail nao informado"}</p>
+                        <p className="mt-1 text-sm text-slate-400">{subscription.name || subscription.user_id}</p>
+                      </div>
+                      <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(subscription.status)}`}>{subscription.status || "sem status"}</span>
+                    </div>
+                    <div className="mt-4 grid gap-3 text-sm text-slate-300 md:grid-cols-2 xl:grid-cols-3">
+                      <Info label="Plano" value={subscription.plan || subscription.plan_name || "-"} />
+                      <Info label="Limite mensal" value={subscription.monthly_limit ?? "-"} />
+                      <Info label="Uso atual" value={subscription.monthly_usage} />
+                      <Info label="Stripe customer" value={subscription.provider_customer_id || "-"} />
+                      <Info label="Stripe subscription" value={subscription.provider_subscription_id || "-"} />
+                      <Info label="Renovacao/fim" value={formatDate(subscription.current_period_end)} />
+                      <Info label="Criada em" value={formatDate(subscription.created_at)} />
+                      <Info label="Atualizada em" value={formatDate(subscription.updated_at)} />
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
+                  Nenhuma assinatura encontrada.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Conversao aproximada</p>
+            <h2 className="mt-2 text-2xl font-black text-white">Resumo do funil</h2>
+            <div className="mt-5 grid gap-3">
+              <ConversionLine label="Leads totais" value={metrics?.totalLeads ?? 0} />
+              <ConversionLine label="Usuarios cadastrados" value={metrics?.totalUsers ?? 0} />
+              <ConversionLine label="Assinaturas ativas" value={metrics?.activeSubscriptions ?? 0} />
+              <ConversionLine label="Lead -> cadastro" value={`${metrics?.leadToSignupRate ?? 0}%`} />
+              <ConversionLine label="Cadastro -> assinatura" value={`${metrics?.signupToSubscriptionRate ?? 0}%`} />
+              <ConversionLine label="Lead -> assinatura" value={`${metrics?.leadToSubscriptionRate ?? 0}%`} />
+            </div>
+            <p className="mt-5 rounded-md border border-amber-400/20 bg-amber-400/10 p-3 text-xs font-bold leading-5 text-amber-100">
+              {data?.notes.conversion || "Conversao aproximada por e-mail entre leads e usuarios."}
+            </p>
+            <div className="mt-5 grid gap-3 text-sm">
+              <ConversionLine label="Ativas" value={subscriptionGroups.active.length} />
+              <ConversionLine label="Canceladas" value={subscriptionGroups.canceled.length} />
+              <ConversionLine label="Pendentes" value={subscriptionGroups.pending.length} />
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  );
+}
+
+function MetricCard({ label, value, icon }: { label: string; value: string | number; icon: ReactNode }) {
+  return (
+    <article className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-emerald-400 text-slate-950">{icon}</div>
+      <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">{label}</p>
+      <p className="mt-2 text-3xl font-black text-white">{value}</p>
+    </article>
+  );
+}
+
+function FilterSelect({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
+  return (
+    <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+      {label}
+      <select value={value} onChange={(event) => onChange(event.target.value)} className="field-input">
+        <option value="">Todos</option>
+        {options.map((option) => (
+          <option value={option} key={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function Info({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-md bg-[#0b1118] p-3">
+      <p className="text-xs font-black uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-1 break-words font-bold text-slate-200">{value}</p>
+    </div>
+  );
+}
+
+function ConversionLine({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-md border border-white/10 bg-white/[0.04] px-4 py-3">
+      <span className="text-sm font-bold text-slate-300">{label}</span>
+      <span className="font-black text-white">{value}</span>
+    </div>
+  );
+}

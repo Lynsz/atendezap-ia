@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
+import { sendEbookDeliveryEmail } from "@/lib/email";
 import { ebookLeadSchema } from "@/lib/validators";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
@@ -31,26 +32,58 @@ async function parseLead(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const lead = await parseLead(request);
+    const normalizedEmail = lead.email.toLowerCase();
+    let leadId: string | null = null;
+    let supabase: ReturnType<typeof getSupabaseAdmin> | null = null;
 
     try {
-      const supabase = getSupabaseAdmin();
-      await supabase.from("ebook_leads").upsert(
-        {
-          name: lead.name,
-          email: lead.email.toLowerCase(),
-          whatsapp: lead.whatsapp || null,
-          business_type: lead.business_type,
-          source: lead.source,
-          utm_source: lead.utm_source || null,
-          utm_medium: lead.utm_medium || null,
-          utm_campaign: lead.utm_campaign || null,
-          utm_content: lead.utm_content || null,
-          utm_term: lead.utm_term || null
-        },
-        { onConflict: "email" }
-      );
+      supabase = getSupabaseAdmin();
+      const { data, error } = await supabase
+        .from("ebook_leads")
+        .upsert(
+          {
+            name: lead.name,
+            email: normalizedEmail,
+            whatsapp: lead.whatsapp || null,
+            business_type: lead.business_type,
+            source: lead.source,
+            utm_source: lead.utm_source || null,
+            utm_medium: lead.utm_medium || null,
+            utm_campaign: lead.utm_campaign || null,
+            utm_content: lead.utm_content || null,
+            utm_term: lead.utm_term || null
+          },
+          { onConflict: "email" }
+        )
+        .select("id")
+        .single();
+
+      if (error) throw error;
+      leadId = (data?.id as string | undefined) || null;
     } catch (error) {
       console.error("Falha ao salvar lead do ebook:", error instanceof Error ? error.message : "unknown");
+    }
+
+    const emailResult = await sendEbookDeliveryEmail({
+      name: lead.name,
+      email: normalizedEmail
+    });
+
+    try {
+      if (!supabase) supabase = getSupabaseAdmin();
+      await supabase.from("lead_email_events").insert({
+        lead_id: leadId,
+        email: normalizedEmail,
+        event_type: emailResult.eventType,
+        subject: emailResult.subject,
+        status: emailResult.status,
+        provider: emailResult.provider || "resend",
+        provider_message_id: emailResult.providerMessageId || null,
+        sent_at: emailResult.status === "sent" ? new Date().toISOString() : null,
+        error: emailResult.status === "failed" || emailResult.status === "skipped" ? emailResult.error || null : null
+      });
+    } catch (error) {
+      console.error("Falha ao registrar envio do ebook:", error instanceof Error ? error.message : "unknown");
     }
 
     await logEvent("ebook_lead_created", {
@@ -58,11 +91,20 @@ export async function POST(request: NextRequest) {
       source: lead.source,
       business_type: lead.business_type,
       utm_source: lead.utm_source,
-      utm_campaign: lead.utm_campaign
+      utm_campaign: lead.utm_campaign,
+      email_delivery_status: emailResult.status
     });
 
     if (request.headers.get("content-type")?.includes("application/json")) {
-      return Response.json({ ok: true, redirectTo: "/ebook/obrigado" });
+      return Response.json({
+        ok: true,
+        redirectTo: "/ebook/obrigado",
+        message:
+          emailResult.status === "sent"
+            ? "Guia enviado para o seu e-mail."
+            : "Lead cadastrado. Voce tambem pode acessar o guia na proxima pagina.",
+        emailStatus: emailResult.status
+      });
     }
 
     return NextResponse.redirect(new URL("/ebook/obrigado", request.url), { status: 303 });
