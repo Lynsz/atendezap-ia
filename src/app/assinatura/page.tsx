@@ -1,7 +1,12 @@
 import BillingPage from "@/components/pages/BillingPage";
 
 export const metadata = {
-  title: "AtendeZap IA - Minha Assinatura"
+  title: "Minha assinatura",
+  description: "Acompanhe plano, limite mensal, uso e portal de cobrança do AtendeZap IA.",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default function SubscriptionRoutePage() {

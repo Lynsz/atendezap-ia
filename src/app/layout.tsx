@@ -8,10 +8,47 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
 const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim();
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
-  title: "AtendeZap IA - Respostas com IA para WhatsApp",
-  description: "Responda no WhatsApp com mais rapidez usando IA, organize melhor seu atendimento e gere respostas mais profissionais."
+  metadataBase: new URL(appUrl),
+  applicationName: "AtendeZap IA",
+  title: {
+    default: "AtendeZap IA - Respostas com IA para WhatsApp",
+    template: "%s | AtendeZap IA"
+  },
+  description:
+    "AtendeZap IA ajuda autônomos, prestadores de serviço e pequenos negócios a responder clientes mais rápido no WhatsApp usando inteligência artificial.",
+  keywords: [
+    "AtendeZap IA",
+    "WhatsApp com IA",
+    "respostas para WhatsApp",
+    "atendimento ao cliente",
+    "pequenos negócios",
+    "prestadores de serviço"
+  ],
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "/",
+    siteName: "AtendeZap IA",
+    title: "AtendeZap IA - Respostas com IA para WhatsApp",
+    description:
+      "Responda clientes mais rápido no WhatsApp com ajuda da IA, organize seu atendimento e gere respostas mais profissionais."
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AtendeZap IA - Respostas com IA para WhatsApp",
+    description:
+      "IA para autônomos, prestadores de serviço e pequenos negócios responderem melhor pelo WhatsApp."
+  },
+  robots: {
+    index: true,
+    follow: true
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -49,16 +86,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         ) : null}
         <TrackingProvider />
         <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-            <Link href="/" className="text-lg font-extrabold tracking-tight text-brand-700">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:flex-nowrap sm:py-4">
+            <Link href="/" className="shrink-0 text-lg font-extrabold tracking-tight text-brand-700">
               AtendeZap IA
             </Link>
-            <nav className="flex items-center gap-3 text-sm font-bold text-slate-700 md:gap-5">
+            <nav className="flex flex-wrap items-center justify-end gap-2 text-sm font-bold text-slate-700 sm:gap-3 md:gap-5">
               <Link href="/#como-funciona" className="hidden hover:text-brand-700 sm:inline">
                 Como funciona
               </Link>
               <Link href="/#beneficios" className="hidden hover:text-brand-700 sm:inline">
-                Beneficios
+                Benefícios
               </Link>
               <Link href="/ebook" className="hover:text-brand-700">
                 Ebook
@@ -69,7 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/login" className="hover:text-brand-700">
                 Entrar
               </Link>
-              <Link href="/cadastro" className="rounded-md bg-brand-600 px-4 py-2 text-white shadow-sm hover:bg-brand-700">
+              <Link href="/cadastro" className="rounded-md bg-brand-600 px-3 py-2 text-white shadow-sm hover:bg-brand-700 sm:px-4">
                 Cadastro
               </Link>
             </nav>

@@ -15,6 +15,20 @@ import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { PLAN_IDS, SAAS_PLANS } from "@/config/plans";
 
+export const metadata = {
+  title: "AtendeZap IA - IA para responder clientes no WhatsApp",
+  description:
+    "AtendeZap IA ajuda autônomos, prestadores de serviço e pequenos negócios a responder clientes mais rápido no WhatsApp usando inteligência artificial.",
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    title: "AtendeZap IA - IA para responder clientes no WhatsApp",
+    description:
+      "Gere respostas profissionais para WhatsApp, organize seu atendimento e economize tempo com IA."
+  }
+};
+
 const flowSteps = [
   {
     title: "Baixe o guia gratuito",

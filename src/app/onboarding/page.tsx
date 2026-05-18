@@ -1,7 +1,12 @@
 import OnboardingPage from "@/components/pages/OnboardingPage";
 
 export const metadata = {
-  title: "AtendeZap IA - Onboarding"
+  title: "Configuração inicial",
+  description: "Configure seus dados de atendimento para gerar respostas melhores com o AtendeZap IA.",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default function OnboardingRoutePage() {

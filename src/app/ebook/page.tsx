@@ -1,13 +1,22 @@
 import { BookOpen, CheckCircle2, Download, MessageCircle, Sparkles, Timer, Users, Wand2 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { EbookLeadForm } from "@/components/ebook/EbookLeadForm";
 import { TrackOnMount } from "@/components/tracking/TrackOnMount";
 
 export const metadata = {
-  title: "Guia gratuito para WhatsApp com IA - AtendeZap IA",
+  title: "Guia gratuito para WhatsApp com IA",
   description:
-    "Baixe o guia gratuito e veja como autônomos, prestadores de serviço e pequenos negócios podem economizar tempo no atendimento usando inteligência artificial."
+    "Baixe o guia gratuito e veja como autônomos, prestadores de serviço e pequenos negócios podem economizar tempo no atendimento usando inteligência artificial.",
+  alternates: {
+    canonical: "/ebook"
+  },
+  openGraph: {
+    title: "Guia gratuito para WhatsApp com IA",
+    description:
+      "Aprenda a responder clientes mais rápido no WhatsApp com ajuda da inteligência artificial."
+  }
 };
 
 const benefits = [
@@ -70,6 +79,17 @@ export default function EbookPage() {
               Preencha seus dados para liberar o material e ver o próximo passo com o AtendeZap IA.
             </p>
             <EbookLeadForm />
+            <p className="mt-4 text-xs leading-5 text-slate-500">
+              Ao enviar, você concorda com os{" "}
+              <Link href="/termos" className="font-bold text-brand-700 hover:underline">
+                Termos de Uso
+              </Link>{" "}
+              e a{" "}
+              <Link href="/privacidade" className="font-bold text-brand-700 hover:underline">
+                Política de Privacidade
+              </Link>
+              .
+            </p>
           </Card>
         </div>
       </section>

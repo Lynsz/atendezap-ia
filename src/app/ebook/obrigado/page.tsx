@@ -1,11 +1,19 @@
 import { ArrowRight, CheckCircle2, FileText, MessageCircle, Sparkles, Wand2 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/button";
 import { TrackOnMount } from "@/components/tracking/TrackOnMount";
 import { TrackedLink } from "@/components/tracking/TrackedLink";
 
 export const metadata = {
-  title: "Guia gratuito liberado - AtendeZap IA",
-  description: "Seu guia gratuito está pronto. Veja como aplicar as respostas com IA no AtendeZap IA."
+  title: "Guia gratuito liberado",
+  description: "Seu guia gratuito está pronto. Veja como aplicar as respostas com IA no AtendeZap IA.",
+  alternates: {
+    canonical: "/ebook/obrigado"
+  },
+  robots: {
+    index: false,
+    follow: true
+  }
 };
 
 const productBenefits = [
@@ -89,6 +97,14 @@ export default function EbookThankYouPage() {
         <div className="mt-8 flex items-center justify-center gap-2 text-center text-sm text-slate-400">
           <MessageCircle className="h-4 w-4" />
           Para quem atende, vende ou responde clientes pelo WhatsApp.
+        </div>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-slate-500">
+          <Link href="/termos" className="hover:text-emerald-200">
+            Termos de Uso
+          </Link>
+          <Link href="/privacidade" className="hover:text-emerald-200">
+            Política de Privacidade
+          </Link>
         </div>
       </section>
     </main>
