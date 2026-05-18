@@ -82,13 +82,39 @@ export function unixToIso(value?: number | null) {
   return value ? new Date(value * 1000).toISOString() : null;
 }
 
-export function buildStripeCheckoutMetadata(userId: string, planId: PlanId, firstMonthOfferApplied: boolean) {
-  return {
-    user_id: userId,
-    plan_id: planId,
-    first_month_offer_applied: firstMonthOfferApplied ? "true" : "false",
-    acquisition_source: "stripe",
-    funnel_source: "pricing"
-  };
+export type StripeCheckoutAttribution = {
+  source?: string;
+  funnel?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_content?: string;
+  utm_term?: string;
+};
+
+function cleanMetadataValue(value?: string | null) {
+  return value?.trim().slice(0, 160) || "";
 }
 
+export function buildStripeCheckoutMetadata(
+  userId: string,
+  planId: PlanId,
+  firstMonthOfferApplied: boolean,
+  attribution: StripeCheckoutAttribution = {}
+) {
+  const metadata = {
+    user_id: userId,
+    plan_id: planId,
+    plan: planId,
+    first_month_offer_applied: firstMonthOfferApplied ? "true" : "false",
+    acquisition_source: cleanMetadataValue(attribution.source) || "stripe",
+    funnel_source: cleanMetadataValue(attribution.funnel) || "pricing",
+    utm_source: cleanMetadataValue(attribution.utm_source),
+    utm_medium: cleanMetadataValue(attribution.utm_medium),
+    utm_campaign: cleanMetadataValue(attribution.utm_campaign),
+    utm_content: cleanMetadataValue(attribution.utm_content),
+    utm_term: cleanMetadataValue(attribution.utm_term)
+  };
+
+  return Object.fromEntries(Object.entries(metadata).filter(([, value]) => value)) as Record<string, string>;
+}

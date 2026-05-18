@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { UserPlus, MessageCircle } from "lucide-react";
 import { SUPABASE_CONNECTION_ERROR, useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase/browser";
+import { getAttribution, trackEvent } from "@/lib/tracking";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -21,6 +22,12 @@ export default function SignupPage() {
     event.preventDefault();
     setError("");
     setFeedback("");
+    const attribution = getAttribution();
+    const plan = new URLSearchParams(window.location.search).get("plan") || undefined;
+    trackEvent("signup_started", {
+      plan,
+      funnel: attribution.funnel || "pricing"
+    });
 
     if (!name.trim() || !email.trim() || password.length < 6) {
       setError("Informe nome, e-mail e uma senha com pelo menos 6 caracteres.");
@@ -49,6 +56,10 @@ export default function SignupPage() {
         id: data.user.id,
         name,
         email
+      });
+      trackEvent("signup_completed", {
+        plan,
+        funnel: attribution.funnel || "pricing"
       });
     }
 

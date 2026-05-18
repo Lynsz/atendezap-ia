@@ -14,7 +14,14 @@ import {
 export const runtime = "nodejs";
 
 const createCheckoutSchema = z.object({
-  planId: z.string().trim()
+  planId: z.string().trim(),
+  source: z.string().trim().max(80).optional(),
+  funnel: z.string().trim().max(80).optional(),
+  utm_source: z.string().trim().max(160).optional(),
+  utm_medium: z.string().trim().max(160).optional(),
+  utm_campaign: z.string().trim().max(160).optional(),
+  utm_content: z.string().trim().max(160).optional(),
+  utm_term: z.string().trim().max(160).optional()
 });
 
 async function authenticateRequest(request: Request) {
@@ -84,7 +91,15 @@ export async function POST(request: Request) {
     const priceId = getStripePriceId(plan);
     const couponId = getStripeCouponId(plan, shouldApplyFirstMonthOffer);
     const appUrl = getAppUrl();
-    const metadata = buildStripeCheckoutMetadata(user.id, plan.id, shouldApplyFirstMonthOffer);
+    const metadata = buildStripeCheckoutMetadata(user.id, plan.id, shouldApplyFirstMonthOffer, {
+      source: body.source,
+      funnel: body.funnel,
+      utm_source: body.utm_source,
+      utm_medium: body.utm_medium,
+      utm_campaign: body.utm_campaign,
+      utm_content: body.utm_content,
+      utm_term: body.utm_term
+    });
 
     let customerId =
       currentSubscription?.provider === "stripe" ? (currentSubscription.provider_customer_id as string | null) || undefined : undefined;
@@ -130,8 +145,8 @@ export async function POST(request: Request) {
         provider_subscription_id: null,
         provider_price_id: priceId,
         stripe_checkout_session_id: checkoutSession.id,
-        acquisition_source: "stripe",
-        funnel_source: "pricing",
+        acquisition_source: metadata.acquisition_source || "stripe",
+        funnel_source: metadata.funnel_source || "pricing",
         monthly_limit: plan.responseLimit,
         price: plan.monthlyPrice,
         first_month_price: plan.firstMonthPrice ?? null,
@@ -146,6 +161,11 @@ export async function POST(request: Request) {
           checkout_session_id: checkoutSession.id,
           price_id: priceId,
           coupon_id: couponId,
+          utm_source: metadata.utm_source || null,
+          utm_medium: metadata.utm_medium || null,
+          utm_campaign: metadata.utm_campaign || null,
+          utm_content: metadata.utm_content || null,
+          utm_term: metadata.utm_term || null,
           offer_reserved_at: shouldApplyFirstMonthOffer ? now : null
         }
       },

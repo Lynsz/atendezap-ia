@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { type PlanId, SAAS_PLANS } from "@/config/plans";
+import { getAttribution, trackEvent } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/browser";
 
@@ -27,6 +28,12 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
   async function handleClick() {
     setFeedback("");
     if (disabled) return;
+    const attribution = getAttribution();
+    const funnel = attribution.funnel || (typeof window !== "undefined" && window.location.pathname.startsWith("/ebook") ? "ebook" : "pricing");
+    trackEvent("checkout_click", {
+      plan: planId,
+      funnel
+    });
     setLoading(true);
 
     try {
@@ -34,6 +41,10 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
       const token = data.session?.access_token;
 
       if (!token) {
+        trackEvent("signup_started", {
+          plan: planId,
+          funnel
+        });
         window.location.href = `/cadastro?plan=${planId}`;
         return;
       }
@@ -44,19 +55,42 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ planId })
+        body: JSON.stringify({
+          planId,
+          funnel,
+          source: attribution.source,
+          utm_source: attribution.utm_source,
+          utm_medium: attribution.utm_medium,
+          utm_campaign: attribution.utm_campaign,
+          utm_content: attribution.utm_content,
+          utm_term: attribution.utm_term
+        })
       });
 
       const result = (await response.json()) as CreateCheckoutResponse;
 
       if (!response.ok || !result.url) {
         setFeedback(result.error || "Nao foi possivel iniciar o checkout agora.");
+        trackEvent("checkout_error", {
+          plan: planId,
+          funnel,
+          reason: "api_error"
+        });
         return;
       }
 
+      trackEvent("checkout_started", {
+        plan: planId,
+        funnel
+      });
       window.location.href = result.url;
     } catch {
       setFeedback("Nao foi possivel iniciar o pagamento. Tente novamente em instantes.");
+      trackEvent("checkout_error", {
+        plan: planId,
+        funnel,
+        reason: "network_error"
+      });
     } finally {
       setLoading(false);
     }

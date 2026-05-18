@@ -1,5 +1,7 @@
 import { ArrowRight, CheckCircle2, FileText, MessageCircle, Sparkles, Wand2 } from "lucide-react";
 import { Button } from "@/components/button";
+import { TrackOnMount } from "@/components/tracking/TrackOnMount";
+import { TrackedLink } from "@/components/tracking/TrackedLink";
 
 export const metadata = {
   title: "Guia gratuito liberado - AtendeZap IA",
@@ -17,6 +19,7 @@ const productBenefits = [
 export default function EbookThankYouPage() {
   return (
     <main className="min-h-screen bg-[#090d12] px-4 py-16 text-slate-100">
+      <TrackOnMount eventName="thank_you_view" source="ebook_page" funnel="ebook" properties={{ page: "ebook_obrigado" }} />
       <section className="mx-auto max-w-5xl rounded-lg border border-white/10 bg-[#101821] p-6 shadow-2xl shadow-black/30 md:p-10">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-emerald-400 text-slate-950">
           <CheckCircle2 className="h-9 w-9" />
@@ -68,10 +71,15 @@ export default function EbookThankYouPage() {
             Depois, continue pelo valor mensal normal. A oferta é permanente para novos usuários, sem urgência falsa e sem limite de vagas.
           </p>
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button href="/precos" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300">
+            <TrackedLink
+              href="/precos"
+              eventName="thank_you_cta_click"
+              properties={{ cta: "conhecer_atendezap_ia", funnel: "ebook" }}
+              className="bg-emerald-400 text-slate-950 hover:bg-emerald-300 focus:ring-emerald-300"
+            >
               Conhecer o AtendeZap IA
               <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            </TrackedLink>
             <Button href="/cadastro" variant="ghost">
               Criar minha conta
             </Button>

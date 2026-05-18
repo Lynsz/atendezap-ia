@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -24,6 +24,7 @@ import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
+import { trackEvent } from "@/lib/tracking";
 import { generateCustomerResponse } from "@/services/ai";
 import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, Subscription } from "@/types/mvp";
 
@@ -236,6 +237,8 @@ function SaasDashboardContent() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [currentPlan, setCurrentPlan] = useState<Plan | null>(null);
   const [monthlyUsage, setMonthlyUsage] = useState(0);
+  const trackedActiveSubscriptionRef = useRef(false);
+  const trackedDashboardOnboardingRef = useRef(false);
 
   const supabase = useMemo(() => (isSupabaseBrowserConfigured() ? supabaseBrowserClient : null), []);
 
@@ -367,6 +370,10 @@ function SaasDashboardContent() {
     setBusiness(data as Business);
     setBusinessDraft(toBusinessDraft(data as Business));
     if (options?.completeOnboarding) {
+      trackEvent("onboarding_completed", {
+        source: "dashboard",
+        business_type: payload.business_type
+      });
       setTab("assistant");
       setQuestion(getExampleQuestions(payload.business_type)[0] || "Qual o valor do serviço?");
     }
@@ -596,6 +603,25 @@ function SaasDashboardContent() {
     : subscription?.status
       ? `Status: ${subscription.status}`
       : "Assinatura ainda não configurada";
+
+  useEffect(() => {
+    if (!trackedActiveSubscriptionRef.current && hasActiveSubscription(subscription?.status)) {
+      trackedActiveSubscriptionRef.current = true;
+      trackEvent("subscription_active", {
+        plan: subscription?.plan || subscription?.plan_name || "unknown",
+        provider: subscription?.provider || "unknown"
+      });
+    }
+  }, [subscription]);
+
+  useEffect(() => {
+    if (!loading && shouldShowOnboarding && !trackedDashboardOnboardingRef.current) {
+      trackedDashboardOnboardingRef.current = true;
+      trackEvent("onboarding_started", {
+        source: "dashboard"
+      });
+    }
+  }, [loading, shouldShowOnboarding]);
   const overviewCards = [
     {
       label: "Plano atual",

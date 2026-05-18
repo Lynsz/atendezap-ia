@@ -1,6 +1,7 @@
 import { CheckCircle2 } from "lucide-react";
 import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
 import { Badge } from "@/components/badge";
+import { TrackOnMount } from "@/components/tracking/TrackOnMount";
 import { PLAN_IDS, SAAS_PLANS } from "@/config/plans";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +10,7 @@ export function PricingSection() {
 
   return (
     <section className="bg-[#090d12] py-16 text-white">
+      <TrackOnMount eventName="pricing_view" properties={{ section: "pricing", plans: plans.length }} />
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
           <p className="mb-2 text-sm font-bold uppercase tracking-wide text-emerald-300">Planos mensais</p>

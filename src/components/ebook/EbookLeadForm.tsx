@@ -1,39 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Download } from "lucide-react";
+import { captureUtmsFromLocation, getAttribution, trackEvent } from "@/lib/tracking";
 
 const businessTypeOptions = ["Autônomo", "Prestador de serviço", "Loja", "Delivery", "Estética", "Restaurante", "Assistência técnica", "Outro"];
-
-type UtmState = {
-  utm_source: string;
-  utm_medium: string;
-  utm_campaign: string;
-  utm_content: string;
-  utm_term: string;
-};
-
-const emptyUtmState: UtmState = {
-  utm_source: "",
-  utm_medium: "",
-  utm_campaign: "",
-  utm_content: "",
-  utm_term: ""
-};
 
 export function EbookLeadForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    captureUtmsFromLocation({ source: "ebook_page", funnel: "ebook" });
+  }, []);
+
   function readUtms() {
-    if (typeof window === "undefined") return emptyUtmState;
-    const params = new URLSearchParams(window.location.search);
+    const attribution = getAttribution();
     return {
-      utm_source: params.get("utm_source") || "",
-      utm_medium: params.get("utm_medium") || "",
-      utm_campaign: params.get("utm_campaign") || "",
-      utm_content: params.get("utm_content") || "",
-      utm_term: params.get("utm_term") || ""
+      utm_source: attribution.utm_source || "",
+      utm_medium: attribution.utm_medium || "",
+      utm_campaign: attribution.utm_campaign || "",
+      utm_content: attribution.utm_content || "",
+      utm_term: attribution.utm_term || ""
     };
   }
 
@@ -43,14 +32,21 @@ export function EbookLeadForm() {
     setLoading(true);
 
     const formData = new FormData(event.currentTarget);
+    const attribution = getAttribution();
     const payload = {
       name: String(formData.get("name") || ""),
       email: String(formData.get("email") || ""),
       whatsapp: String(formData.get("whatsapp") || ""),
       business_type: String(formData.get("business_type") || "Autônomo"),
-      source: "ebook_page",
+      source: attribution.source || "ebook_page",
       ...readUtms()
     };
+
+    trackEvent("lead_submit", {
+      source: payload.source,
+      funnel: attribution.funnel || "ebook",
+      business_type: payload.business_type
+    });
 
     try {
       const response = await fetch("/api/ebook-lead", {
@@ -64,12 +60,29 @@ export function EbookLeadForm() {
 
       if (!response.ok) {
         setError(result.error || result.message || "Nao foi possivel liberar o guia agora. Revise os dados e tente novamente.");
+        trackEvent("lead_error", {
+          source: payload.source,
+          funnel: attribution.funnel || "ebook",
+          business_type: payload.business_type,
+          reason: "api_error"
+        });
         return;
       }
 
+      trackEvent("lead_success", {
+        source: payload.source,
+        funnel: attribution.funnel || "ebook",
+        business_type: payload.business_type
+      });
       window.location.href = result.redirectTo || "/ebook/obrigado";
     } catch {
       setError("Nao foi possivel enviar seus dados agora. Tente novamente em instantes.");
+      trackEvent("lead_error", {
+        source: payload.source,
+        funnel: attribution.funnel || "ebook",
+        business_type: payload.business_type,
+        reason: "network_error"
+      });
     } finally {
       setLoading(false);
     }

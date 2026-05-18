@@ -2,6 +2,7 @@ import { BookOpen, CheckCircle2, Download, MessageCircle, Sparkles, Timer, Users
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { EbookLeadForm } from "@/components/ebook/EbookLeadForm";
+import { TrackOnMount } from "@/components/tracking/TrackOnMount";
 
 export const metadata = {
   title: "Guia gratuito para WhatsApp com IA - AtendeZap IA",
@@ -37,6 +38,7 @@ const painPoints = [
 export default function EbookPage() {
   return (
     <main className="bg-slate-50">
+      <TrackOnMount eventName="ebook_view" source="ebook_page" funnel="ebook" properties={{ page: "ebook" }} />
       <section id="top" className="bg-[linear-gradient(135deg,#ffffff_0%,#f8fafc_55%,#ecfeff_100%)]">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1fr_0.9fr] lg:items-center">
           <div>

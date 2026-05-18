@@ -1,9 +1,10 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Wand2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/lib/tracking";
 import type { AITone, BusinessProfile, BusinessSegment, OnboardingStep, ServiceChannel } from "@/types/onboarding";
 import { generateAISystemPrompt, generateDefaultWelcomeMessage, getBusinessProfile, saveBusinessProfile } from "@/utils/onboardingStorage";
 
@@ -76,6 +77,10 @@ export default function OnboardingPage() {
   const prompt = useMemo(() => generateAISystemPrompt(profile), [profile]);
   const progress = `${(step / steps.length) * 100}%`;
 
+  useEffect(() => {
+    trackEvent("onboarding_started", { page: "onboarding" });
+  }, []);
+
   function updateProfile(update: Partial<BusinessProfile>) {
     setProfile((current) => ({ ...current, ...update, updatedAt: new Date().toISOString() }));
   }
@@ -139,6 +144,10 @@ export default function OnboardingPage() {
       ...profile,
       updatedAt: new Date().toISOString(),
       createdAt: profile.createdAt || new Date().toISOString()
+    });
+    trackEvent("onboarding_completed", {
+      segment: profile.segment,
+      channel_count: profile.channels.length
     });
     router.push("/dashboard");
   }
