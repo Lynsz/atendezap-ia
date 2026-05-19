@@ -13,13 +13,13 @@ Ele serve para acompanhar leads, campanhas, entregas do ebook, assinaturas e con
 A proteção usa a variável de ambiente:
 
 ```env
-ADMIN_EMAILS=kethelyncrb@gmail.com
+ADMIN_EMAILS=
 ```
 
 Para múltiplos admins, separe por vírgula:
 
 ```env
-ADMIN_EMAILS=admin1@email.com,admin2@email.com
+ADMIN_EMAILS=admin1@seudominio.com,admin2@seudominio.com
 ```
 
 O usuário precisa estar logado no Supabase e o e-mail da sessão precisa existir em `ADMIN_EMAILS`.

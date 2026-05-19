@@ -7,7 +7,7 @@ O AtendeZap IA usa e-mail transacional para entregar o guia gratuito e preparar 
 ```env
 RESEND_API_KEY=
 EMAIL_FROM=AtendeZap IA <noreply@seudominio.com>
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=
 ```
 
 - `RESEND_API_KEY`: chave secreta do Resend. Deve existir apenas no servidor.

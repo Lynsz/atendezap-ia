@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { AppError } from "@/lib/errors";
-import { type PlanId, type SaasPlan } from "@/config/plans";
+import { getSaasPlan, PLAN_IDS, type PlanId, type SaasPlan } from "@/config/plans";
 
 export type StripeSubscriptionStatus =
   | "active"
@@ -38,22 +38,60 @@ export function getStripeWebhookSecret() {
 }
 
 export function getAppUrl() {
-  return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  const configuredUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (configuredUrl) return configuredUrl.replace(/\/$/, "");
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  if (vercelUrl) return `https://${vercelUrl.replace(/\/$/, "")}`;
+
+  if (process.env.NODE_ENV !== "production") return "http://localhost:3000";
+
+  throw new AppError("URL publica do app nao configurada. Defina NEXT_PUBLIC_APP_URL na Vercel.", 500);
+}
+
+function envValue(...names: string[]) {
+  for (const name of names) {
+    const value = process.env[name]?.trim();
+    if (value) return value;
+  }
+  return "";
+}
+
+function getPlanStripePriceEnv(planId: PlanId) {
+  switch (planId) {
+    case "starter":
+      return envValue("STRIPE_PRICE_STARTER", "STRIPE_PRICE_STARTER_MONTHLY");
+    case "pro":
+      return envValue("STRIPE_PRICE_PRO", "STRIPE_PRICE_PRO_MONTHLY");
+    case "premium":
+      return envValue("STRIPE_PRICE_PREMIUM", "STRIPE_PRICE_PREMIUM_MONTHLY");
+    default:
+      return "";
+  }
 }
 
 export function getStripePriceId(plan: SaasPlan) {
-  if (!plan.stripePriceId) {
+  const priceId = getPlanStripePriceEnv(plan.id);
+  if (!priceId) {
     throw new AppError(`Preço Stripe não configurado para o plano ${plan.name}.`, 503);
   }
-  return plan.stripePriceId;
+  return priceId;
 }
 
 export function getStripeCouponId(plan: SaasPlan, shouldApplyFirstMonthOffer: boolean) {
   if (!shouldApplyFirstMonthOffer) return null;
-  if (!plan.stripeCouponId) {
+  if (plan.id !== "pro") return null;
+  const couponId = envValue("STRIPE_COUPON_PRO_FIRST_MONTH_29", "STRIPE_COUPON_PRO_FIRST_MONTH", "STRIPE_PRICE_PRO_FIRST_MONTH_29");
+  if (!couponId) {
     throw new AppError("Cupom Stripe do primeiro mês do Plano Pro não configurado.", 503);
   }
-  return plan.stripeCouponId;
+  return couponId;
+}
+
+export function getSaasPlanByStripePriceId(stripePriceId: string | null | undefined) {
+  if (!stripePriceId) return null;
+  const planId = PLAN_IDS.find((id) => getPlanStripePriceEnv(id) === stripePriceId);
+  return planId ? getSaasPlan(planId) : null;
 }
 
 export function mapStripeSubscriptionStatus(status?: StripeSubscriptionStatus | string | null) {

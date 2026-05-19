@@ -3,12 +3,12 @@
 Project URL:
 
 ```text
-https://cnxwomllglzifnewqslu.supabase.co
+https://SEU-PROJETO.supabase.co
 ```
 
 ## Status Da Aplicação
 
-Schema aplicado no projeto Supabase `cnxwomllglzifnewqslu`.
+Schema deve ser aplicado no projeto Supabase de producao.
 
 Verificado no banco:
 
@@ -27,7 +27,7 @@ O advisor de segurança pode avisar que a proteção contra senhas vazadas do Su
 Crie ou atualize `.env.local` na raiz do projeto:
 
 ```text
-NEXT_PUBLIC_SUPABASE_URL=https://cnxwomllglzifnewqslu.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 OPENAI_API_KEY=

@@ -76,7 +76,9 @@ function getPublicAppUrl() {
   const vercelUrl = process.env.VERCEL_URL?.trim();
   if (vercelUrl) return `https://${vercelUrl.replace(/\/$/, "")}`;
 
-  return "http://localhost:3000";
+  if (process.env.NODE_ENV !== "production") return "http://localhost:3000";
+
+  throw new Error("NEXT_PUBLIC_APP_URL nao configurada para montar links de e-mail.");
 }
 
 function escapeHtml(value: string) {

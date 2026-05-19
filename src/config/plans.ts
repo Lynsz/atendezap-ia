@@ -13,17 +13,7 @@ export type SaasPlan = {
   features: string[];
   badge: string;
   recommended?: boolean;
-  stripePriceId: string;
-  stripeCouponId?: string;
 };
-
-function envValue(...names: string[]) {
-  for (const name of names) {
-    const value = process.env[name]?.trim();
-    if (value) return value;
-  }
-  return "";
-}
 
 export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
   starter: {
@@ -34,7 +24,6 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     monthlyPriceLabel: "R$ 49/mês",
     responseLimit: 150,
     badge: "Entrada",
-    stripePriceId: envValue("STRIPE_PRICE_STARTER", "STRIPE_PRICE_STARTER_MONTHLY"),
     features: [
       "Até 150 respostas com IA por mês",
       "Cadastro do negócio, serviço ou atividade",
@@ -56,8 +45,6 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     responseLimit: 600,
     badge: "Mais recomendado",
     recommended: true,
-    stripePriceId: envValue("STRIPE_PRICE_PRO", "STRIPE_PRICE_PRO_MONTHLY"),
-    stripeCouponId: envValue("STRIPE_COUPON_PRO_FIRST_MONTH_29", "STRIPE_COUPON_PRO_FIRST_MONTH", "STRIPE_PRICE_PRO_FIRST_MONTH_29"),
     features: [
       "Até 600 respostas com IA por mês",
       "Tudo do Starter",
@@ -77,7 +64,6 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     monthlyPriceLabel: "R$ 197/mês",
     responseLimit: 2000,
     badge: "Alto volume",
-    stripePriceId: envValue("STRIPE_PRICE_PREMIUM", "STRIPE_PRICE_PREMIUM_MONTHLY"),
     features: [
       "Até 2.000 respostas com IA por mês",
       "Tudo do Pro",
@@ -95,11 +81,6 @@ export const PLAN_IDS = Object.keys(SAAS_PLANS) as PlanId[];
 export function getSaasPlan(planId: string | null | undefined) {
   if (!planId) return null;
   return SAAS_PLANS[planId as PlanId] ?? null;
-}
-
-export function getSaasPlanByStripePriceId(stripePriceId: string | null | undefined) {
-  if (!stripePriceId) return null;
-  return PLAN_IDS.map((planId) => SAAS_PLANS[planId]).find((plan) => plan.stripePriceId === stripePriceId) ?? null;
 }
 
 export function isPlanId(planId: string | null | undefined): planId is PlanId {

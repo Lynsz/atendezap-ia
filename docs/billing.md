@@ -41,7 +41,7 @@ O backend aplica o cupom apenas quando:
 ## Variaveis
 
 ```bash
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=
 
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=

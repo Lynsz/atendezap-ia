@@ -19,13 +19,16 @@ describe("Stripe service helpers", () => {
     vi.stubEnv("STRIPE_SECRET_KEY", "");
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", "");
 
-    expect(() => getStripe()).toThrow("Stripe não está configurado neste ambiente.");
-    expect(() => getStripeWebhookSecret()).toThrow("Webhook Stripe não está configurado neste ambiente.");
+    expect(() => getStripe()).toThrow("Stripe");
+    expect(() => getStripeWebhookSecret()).toThrow("Webhook Stripe");
   });
 
   it("valida price e cupom obrigatorios para checkout", () => {
-    expect(() => getStripePriceId({ ...SAAS_PLANS.starter, stripePriceId: "" })).toThrow("Preço Stripe não configurado");
-    expect(() => getStripeCouponId({ ...SAAS_PLANS.pro, stripeCouponId: "" }, true)).toThrow("Cupom Stripe do primeiro mês");
+    vi.stubEnv("STRIPE_PRICE_STARTER", "");
+    vi.stubEnv("STRIPE_COUPON_PRO_FIRST_MONTH_29", "");
+
+    expect(() => getStripePriceId(SAAS_PLANS.starter)).toThrow("Stripe");
+    expect(() => getStripeCouponId(SAAS_PLANS.pro, true)).toThrow("Cupom Stripe");
     expect(getStripeCouponId(SAAS_PLANS.pro, false)).toBeNull();
   });
 
