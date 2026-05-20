@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { sendEbookDeliveryEmail } from "@/lib/email";
+import { serverLog } from "@/lib/logger";
+import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 import { ebookLeadSchema } from "@/lib/validators";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
@@ -31,6 +33,14 @@ async function parseLead(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    assertRequestSize(request, 16_384);
+    const rate = await enforceRateLimit({
+      request,
+      route: "api:ebook-lead",
+      limit: 8,
+      windowMs: 10 * 60_000,
+      message: "Você enviou muitas solicitações rapidamente. Tente de novo em instantes."
+    });
     const lead = await parseLead(request);
     const normalizedEmail = lead.email.toLowerCase();
     let leadId: string | null = null;
@@ -94,6 +104,16 @@ export async function POST(request: NextRequest) {
       utm_campaign: lead.utm_campaign,
       email_delivery_status: emailResult.status
     });
+    serverLog({
+      event: "ebook_lead_created",
+      route: "/api/ebook-lead",
+      status: "ok",
+      metadata: {
+        ip: rate.ip,
+        email_domain: lead.email.split("@")[1],
+        email_delivery_status: emailResult.status
+      }
+    });
 
     if (request.headers.get("content-type")?.includes("application/json")) {
       return Response.json({
@@ -109,6 +129,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.redirect(new URL("/ebook/obrigado", request.url), { status: 303 });
   } catch (error) {
+    serverLog({ level: "warn", event: "ebook_lead_failed", route: "/api/ebook-lead", error });
     if (!request.headers.get("content-type")?.includes("application/json")) {
       return NextResponse.redirect(new URL("/ebook?erro=dados", request.url), { status: 303 });
     }

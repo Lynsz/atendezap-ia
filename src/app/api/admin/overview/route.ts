@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { AppError } from "@/lib/errors";
 import { requireAdmin } from "@/lib/admin";
+import { serverLog } from "@/lib/logger";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 type PeriodFilter = "today" | "7d" | "30d" | "all";
+
+const adminQuerySchema = z.object({
+  search: z.string().trim().max(120).regex(/^[\p{L}\p{N}\s@._+-]*$/u, "Busca invalida.").optional().default(""),
+  business_type: z.string().trim().max(80).optional().default(""),
+  utm_source: z.string().trim().max(160).optional().default(""),
+  utm_campaign: z.string().trim().max(160).optional().default(""),
+  period: z.enum(["today", "7d", "30d", "all"]).optional().default("30d")
+});
 
 type LeadRow = {
   id: string;
@@ -89,19 +100,33 @@ function jsonError(error: unknown) {
   if (error instanceof AppError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
-  console.error("Falha na API admin:", error instanceof Error ? error.message : "unknown");
+  if (error instanceof z.ZodError) {
+    return NextResponse.json({ error: "Filtros invalidos. Revise a busca e tente novamente." }, { status: 400 });
+  }
+  serverLog({ level: "error", event: "admin_overview_failed", route: "/api/admin/overview", error });
   return NextResponse.json({ error: "Não foi possível carregar os dados administrativos." }, { status: 500 });
 }
 
 export async function GET(request: Request) {
+  let userId: string | null = null;
   try {
-    const { supabase } = await requireAdmin(request);
+    await enforceRateLimit({ request, route: "api:admin-overview:ip", limit: 60, windowMs: 5 * 60_000 });
+    const { supabase, user } = await requireAdmin(request);
+    userId = user.id;
+    await enforceRateLimit({ request, route: "api:admin-overview:user", identifier: user.id, limit: 60, windowMs: 5 * 60_000 });
     const url = new URL(request.url);
-    const search = (url.searchParams.get("search") || "").trim();
-    const businessType = (url.searchParams.get("business_type") || "").trim();
-    const utmSource = (url.searchParams.get("utm_source") || "").trim();
-    const utmCampaign = (url.searchParams.get("utm_campaign") || "").trim();
-    const period = ((url.searchParams.get("period") || "30d") as PeriodFilter) || "30d";
+    const query = adminQuerySchema.parse({
+      search: url.searchParams.get("search") || "",
+      business_type: url.searchParams.get("business_type") || "",
+      utm_source: url.searchParams.get("utm_source") || "",
+      utm_campaign: url.searchParams.get("utm_campaign") || "",
+      period: url.searchParams.get("period") || "30d"
+    });
+    const search = query.search;
+    const businessType = query.business_type;
+    const utmSource = query.utm_source;
+    const utmCampaign = query.utm_campaign;
+    const period = query.period as PeriodFilter;
     const periodStart = getPeriodStart(period);
 
     const [
@@ -217,6 +242,7 @@ export async function GET(request: Request) {
     const totalLeads = totalLeadsResult.count || 0;
     const totalUsers = profiles.length;
     const activeSubscriptionCount = activeSubscriptions.length;
+    serverLog({ event: "admin_overview_loaded", route: "/api/admin/overview", userId, status: "ok", metadata: { period, leads: hydratedLeads.length } });
 
     return NextResponse.json({
       metrics: {
@@ -245,6 +271,7 @@ export async function GET(request: Request) {
       }
     });
   } catch (error) {
+    serverLog({ level: "warn", event: "admin_overview_failed", route: "/api/admin/overview", userId, error });
     return jsonError(error);
   }
 }

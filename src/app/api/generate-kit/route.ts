@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
 import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
+import { serverLog } from "@/lib/logger";
 import { generateKitWithOpenAI } from "@/lib/openai";
-import { checkRateLimit, clientIp } from "@/lib/rate-limit";
+import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 import { sendKitReadyEmail } from "@/lib/resend";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { hashForLog } from "@/lib/tokens";
@@ -25,13 +26,10 @@ export async function POST(request: NextRequest) {
   let failureLogged = false;
 
   try {
+    assertRequestSize(request, 32_768);
     const body = await parseBody(request);
     tokenHash = hashForLog(body.token);
-    const rateKey = `${clientIp(request.headers)}:${tokenHash}`;
-
-    if (!checkRateLimit(rateKey, 3, 10 * 60_000)) {
-      throw new AppError("Muitas tentativas. Aguarde alguns minutos e tente novamente.", 429);
-    }
+    await enforceRateLimit({ request, route: "api:generate-kit", identifier: tokenHash, limit: 3, windowMs: 10 * 60_000 });
 
     const supabase = getSupabaseAdmin();
     const { data: order, error: orderError } = await supabase
@@ -131,6 +129,7 @@ export async function POST(request: NextRequest) {
       order_id: order.id,
       kit_id: kit.id
     });
+    serverLog({ event: "kit_generation_succeeded", route: "/api/generate-kit", status: "ok", metadata: { order_id: order.id, kit_id: kit.id } });
 
     return Response.json({ ok: true, kitId: kit.id });
   } catch (error) {
@@ -142,6 +141,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    serverLog({ level: "warn", event: "kit_generation_failed", route: "/api/generate-kit", error, metadata: { order_id: orderId, token_hash: tokenHash } });
     return errorResponse(error);
   }
 }

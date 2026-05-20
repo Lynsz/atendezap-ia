@@ -4,40 +4,44 @@ export const responseTypes = ["atendimento", "venda", "orcamento", "cliente_inde
 
 export const customerStatuses = ["novo", "em_atendimento", "orcamento_enviado", "aguardando_resposta", "venda_concluida", "perdido"] as const;
 
+const optionalText = (max: number, message: string, fallback = "") => z.string().trim().max(max, message).optional().default(fallback);
+
 export const businessSchema = z.object({
-  business_name: z.string().trim().min(2, "Informe o nome do negocio."),
-  business_area: z.string().trim().optional().default(""),
-  business_type: z.string().trim().optional().default(""),
-  location: z.string().trim().optional().default(""),
-  description: z.string().trim().optional().default(""),
-  products_services: z.string().trim().optional().default(""),
-  common_questions: z.string().trim().optional().default(""),
-  important_info: z.string().trim().optional().default(""),
-  prices: z.string().trim().optional().default(""),
-  opening_hours: z.string().trim().optional().default(""),
-  main_channel: z.string().trim().optional().default("WhatsApp"),
-  response_goal: z.string().trim().optional().default(""),
-  address: z.string().trim().optional().default(""),
-  payment_methods: z.string().trim().optional().default(""),
-  booking_or_payment_link: z.string().trim().optional().default(""),
-  brand_tone: z.string().trim().optional().default("profissional"),
+  business_name: z.string().trim().min(2, "Informe o nome do negocio.").max(160, "Nome do negocio muito longo."),
+  business_area: optionalText(120, "Area muito longa."),
+  business_type: optionalText(120, "Tipo de negocio muito longo."),
+  location: optionalText(160, "Localizacao muito longa."),
+  description: optionalText(1200, "Descricao muito longa."),
+  products_services: optionalText(1600, "Produtos ou servicos muito longos."),
+  common_questions: optionalText(1600, "Perguntas comuns muito longas."),
+  important_info: optionalText(1600, "Informacoes importantes muito longas."),
+  prices: optionalText(1000, "Informacoes de preco muito longas."),
+  opening_hours: optionalText(300, "Horario de atendimento muito longo."),
+  main_channel: optionalText(80, "Canal principal muito longo.", "WhatsApp"),
+  response_goal: optionalText(180, "Objetivo de resposta muito longo."),
+  address: optionalText(300, "Endereco muito longo."),
+  payment_methods: optionalText(300, "Formas de pagamento muito longas."),
+  booking_or_payment_link: z.string().trim().url("Informe um link valido.").max(300).optional().or(z.literal("")).default(""),
+  brand_tone: optionalText(120, "Tom de voz muito longo.", "profissional"),
   onboarding_completed: z.boolean().optional().default(false)
 });
 
-export const generateResponseSchema = z.object({
-  customerQuestion: z.string().trim().min(3, "Cole a pergunta do cliente."),
-  responseType: z.enum(responseTypes),
-  businessData: businessSchema.extend({
-    id: z.string().uuid().optional()
-  }),
-  businessId: z.string().uuid().optional()
-});
+export const generateResponseSchema = z
+  .object({
+    customerQuestion: z.string().trim().min(3, "Cole a pergunta do cliente.").max(1200, "Pergunta muito longa. Reduza o texto e tente novamente."),
+    responseType: z.enum(responseTypes),
+    businessData: businessSchema.extend({
+      id: z.string().uuid().optional()
+    }),
+    businessId: z.string().uuid().optional()
+  })
+  .strict();
 
 export const customerSchema = z.object({
-  name: z.string().trim().min(2, "Informe o nome do cliente."),
-  phone: z.string().trim().optional().default(""),
+  name: z.string().trim().min(2, "Informe o nome do cliente.").max(160, "Nome do cliente muito longo."),
+  phone: z.string().trim().max(40, "Telefone muito longo.").optional().default(""),
   status: z.enum(customerStatuses),
-  notes: z.string().trim().optional().default("")
+  notes: z.string().trim().max(1000, "Observacoes muito longas.").optional().default("")
 });
 
 export type GenerateResponseInput = z.infer<typeof generateResponseSchema>;

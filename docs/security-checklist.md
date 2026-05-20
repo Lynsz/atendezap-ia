@@ -1,0 +1,24 @@
+# Checklist de seguranca pre-lancamento
+
+- [ ] `.env` e `.env.local` nao estao versionados.
+- [ ] Chaves privadas ficam somente no servidor.
+- [ ] `OPENAI_API_KEY` nao aparece em Client Components.
+- [ ] `SUPABASE_SERVICE_ROLE_KEY` nao aparece no navegador.
+- [ ] `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` nao usam `NEXT_PUBLIC_`.
+- [ ] Webhook Stripe valida assinatura.
+- [ ] Webhook Kiwify valida segredo quando `KIWIFY_WEBHOOK_SECRET` existe.
+- [ ] Admin bloqueia usuario comum no client e na API.
+- [ ] `ADMIN_EMAILS` esta configurado com e-mails corretos.
+- [ ] APIs autenticadas validam token Supabase.
+- [ ] APIs publicas validam payload.
+- [ ] Rate limit esta ativo nas rotas sensiveis.
+- [ ] Upstash Redis esta configurado em producao ou risco do fallback em memoria foi aceito.
+- [ ] Leads nao salvam payloads excessivos.
+- [ ] Dados de usuario sao filtrados por `user_id`.
+- [ ] RLS do Supabase esta ativo nas tabelas expostas.
+- [ ] Logs nao contem senha, token, cookie, chave secreta ou conteudo sensivel completo.
+- [ ] Sentry esta configurado, ou o deploy foi validado sem Sentry.
+- [ ] `npm run lint` passa.
+- [ ] `npm run typecheck` passa.
+- [ ] `npm run build` passa.
+- [ ] `npm run test` passa.

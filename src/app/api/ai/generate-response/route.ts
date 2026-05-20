@@ -1,8 +1,11 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { generateCustomerResponseWithAi } from "@/lib/ai-response";
+import { AppError } from "@/lib/errors";
+import { serverLog } from "@/lib/logger";
 import { generateResponseSchema } from "@/lib/mvp-validators";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
+import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -12,22 +15,29 @@ function getCurrentMonthStart() {
 }
 
 export async function POST(request: Request) {
+  let userId: string | null = null;
+
   try {
+    assertRequestSize(request, 65_536);
+    await enforceRateLimit({
+      request,
+      route: "api:ai-generate-response:ip",
+      limit: 20,
+      windowMs: 5 * 60_000,
+      message: "Você enviou muitas solicitações rapidamente. Tente de novo em instantes."
+    });
+
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!url || !anonKey) {
+      serverLog({ level: "error", event: "ai_generate_missing_supabase_config", route: "/api/ai/generate-response" });
       return NextResponse.json({ error: "Supabase não configurado no servidor. Revise as variáveis de ambiente." }, { status: 500 });
     }
 
     const authorization = request.headers.get("authorization");
     if (!authorization) {
       return NextResponse.json({ error: "Sessão não encontrada. Faça login novamente." }, { status: 401 });
-    }
-
-    const payload = generateResponseSchema.safeParse(await request.json());
-    if (!payload.success) {
-      return NextResponse.json({ error: payload.error.issues[0]?.message || "Dados inválidos." }, { status: 400 });
     }
 
     const supabase = createClient(url, anonKey, {
@@ -51,6 +61,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Sessão inválida. Faça login novamente." }, { status: 401 });
     }
 
+    userId = user.id;
+    await enforceRateLimit({
+      request,
+      route: "api:ai-generate-response:user",
+      identifier: user.id,
+      limit: 8,
+      windowMs: 60_000,
+      message: "Você enviou muitas solicitações rapidamente. Tente de novo em instantes."
+    });
+
+    const payload = generateResponseSchema.safeParse(await request.json());
+    if (!payload.success) {
+      return NextResponse.json({ error: payload.error.issues[0]?.message || "Dados inválidos." }, { status: 400 });
+    }
+
     const { data: subscription } = await supabase
       .from("subscriptions")
       .select("plan_name, plan, status")
@@ -68,6 +93,7 @@ export async function POST(request: Request) {
       .gte("created_at", monthStart);
 
     if (countError) {
+      serverLog({ level: "warn", event: "ai_usage_count_failed", route: "/api/ai/generate-response", userId: user.id, error: countError });
       return NextResponse.json({ error: "Não foi possível verificar seu uso mensal agora. Tente novamente em instantes." }, { status: 500 });
     }
 
@@ -121,6 +147,7 @@ export async function POST(request: Request) {
       .single();
 
     if (insertError || !savedResponse) {
+      serverLog({ level: "error", event: "ai_response_save_failed", route: "/api/ai/generate-response", userId: user.id, error: insertError });
       return NextResponse.json(
         {
           error: "Resposta gerada, mas não conseguimos salvar no histórico. Tente novamente antes de usar em produção.",
@@ -132,6 +159,7 @@ export async function POST(request: Request) {
     }
 
     const nextUsed = used + 1;
+    serverLog({ event: "ai_response_generated", route: "/api/ai/generate-response", userId: user.id, status: "ok", metadata: { response_type: payload.data.responseType, mode } });
     return NextResponse.json({
       generatedAnswer,
       mode,
@@ -143,7 +171,11 @@ export async function POST(request: Request) {
         remaining: Math.max(limit - nextUsed, 0)
       }
     });
-  } catch {
+  } catch (error) {
+    serverLog({ level: "warn", event: "ai_response_failed", route: "/api/ai/generate-response", userId, error });
+    if (error instanceof AppError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     return NextResponse.json({ error: "Não foi possível gerar a resposta agora. Tente novamente em instantes." }, { status: 500 });
   }
 }

@@ -2,6 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getSaasPlan, isPlanId } from "@/config/plans";
 import { AppError, errorResponse } from "@/lib/errors";
+import { serverLog } from "@/lib/logger";
+import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import {
   buildStripeCheckoutMetadata,
@@ -14,7 +16,7 @@ import {
 export const runtime = "nodejs";
 
 const createCheckoutSchema = z.object({
-  planId: z.string().trim(),
+  planId: z.string().trim().max(40),
   source: z.string().trim().max(80).optional(),
   funnel: z.string().trim().max(80).optional(),
   utm_source: z.string().trim().max(160).optional(),
@@ -22,7 +24,7 @@ const createCheckoutSchema = z.object({
   utm_campaign: z.string().trim().max(160).optional(),
   utm_content: z.string().trim().max(160).optional(),
   utm_term: z.string().trim().max(160).optional()
-});
+}).strict();
 
 async function authenticateRequest(request: Request) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -62,8 +64,13 @@ async function authenticateRequest(request: Request) {
 }
 
 export async function POST(request: Request) {
+  let userId: string | null = null;
   try {
+    assertRequestSize(request, 8_192);
+    await enforceRateLimit({ request, route: "api:stripe-checkout:ip", limit: 20, windowMs: 10 * 60_000 });
     const user = await authenticateRequest(request);
+    userId = user.id;
+    await enforceRateLimit({ request, route: "api:stripe-checkout:user", identifier: user.id, limit: 6, windowMs: 5 * 60_000 });
     const body = createCheckoutSchema.parse(await request.json());
 
     if (!isPlanId(body.planId)) {
@@ -176,6 +183,14 @@ export async function POST(request: Request) {
       throw new AppError("Checkout criado na Stripe, mas não foi possível salvar a assinatura no Supabase.", 500);
     }
 
+    serverLog({
+      event: "stripe_checkout_created",
+      route: "/api/stripe/create-checkout-session",
+      userId: user.id,
+      status: "ok",
+      metadata: { plan: plan.id, first_month_offer: shouldApplyFirstMonthOffer }
+    });
+
     return Response.json({
       ok: true,
       provider: "stripe",
@@ -184,6 +199,7 @@ export async function POST(request: Request) {
       firstMonthPriceApplied: shouldApplyFirstMonthOffer
     });
   } catch (error) {
+    serverLog({ level: "warn", event: "stripe_checkout_failed", route: "/api/stripe/create-checkout-session", userId, error });
     return errorResponse(error);
   }
 }

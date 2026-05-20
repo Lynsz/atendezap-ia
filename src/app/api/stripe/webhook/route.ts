@@ -1,6 +1,8 @@
 import Stripe from "stripe";
 import { getSaasPlan } from "@/config/plans";
 import { AppError, errorResponse } from "@/lib/errors";
+import { serverLog } from "@/lib/logger";
+import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { getSaasPlanByStripePriceId, getStripe, getStripeWebhookSecret, mapStripeSubscriptionStatus, unixToIso } from "@/services/stripe";
 
@@ -134,6 +136,8 @@ async function updatePaymentStatusFromInvoice(invoice: Stripe.Invoice, eventId: 
 
 export async function POST(request: Request) {
   try {
+    assertRequestSize(request, 256_000);
+    await enforceRateLimit({ request, route: "api:stripe-webhook", limit: 240, windowMs: 60_000 });
     const stripe = getStripe();
     const signature = request.headers.get("stripe-signature");
     if (!signature) {
@@ -173,8 +177,10 @@ export async function POST(request: Request) {
         break;
     }
 
+    serverLog({ event: "stripe_webhook_processed", route: "/api/stripe/webhook", status: "ok", metadata: { event_type: event.type } });
     return Response.json({ ok: true, event: event.type });
   } catch (error) {
+    serverLog({ level: "warn", event: "stripe_webhook_failed", route: "/api/stripe/webhook", error });
     return errorResponse(error);
   }
 }

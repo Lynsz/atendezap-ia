@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
+import { serverLog } from "@/lib/logger";
+import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -30,6 +32,8 @@ async function parseWebhookJson(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    assertRequestSize(request, 64_000);
+    await enforceRateLimit({ request, route: "api:kiwify-webhook", limit: 60, windowMs: 60_000 });
     const secretValidated = validateWebhookSecret(request);
     const payload = await parseWebhookJson(request);
 
@@ -42,6 +46,7 @@ export async function POST(request: NextRequest) {
       event: typeof payload.event === "string" ? payload.event : null,
       status: typeof payload.status === "string" ? payload.status : null
     });
+    serverLog({ event: "kiwify_webhook_received", route: "/api/kiwify/webhook", status: "ok", metadata: { secret_validated: secretValidated } });
 
     return Response.json({
       ok: true,
@@ -51,6 +56,7 @@ export async function POST(request: NextRequest) {
       message: "Webhook Kiwify recebido como evento de aquisição. A assinatura recorrente do SaaS deve ser liberada pelo webhook da Stripe."
     });
   } catch (error) {
+    serverLog({ level: "warn", event: "kiwify_webhook_failed", route: "/api/kiwify/webhook", error });
     return errorResponse(error);
   }
 }

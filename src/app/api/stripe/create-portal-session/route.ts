@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { AppError, errorResponse } from "@/lib/errors";
+import { serverLog } from "@/lib/logger";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { getAppUrl, getStripe } from "@/services/stripe";
 
@@ -43,8 +45,12 @@ async function authenticateRequest(request: Request) {
 }
 
 export async function POST(request: Request) {
+  let userId: string | null = null;
   try {
+    await enforceRateLimit({ request, route: "api:stripe-portal:ip", limit: 20, windowMs: 10 * 60_000 });
     const user = await authenticateRequest(request);
+    userId = user.id;
+    await enforceRateLimit({ request, route: "api:stripe-portal:user", identifier: user.id, limit: 10, windowMs: 5 * 60_000 });
     const supabase = getSupabaseAdmin();
     const { data: subscription } = await supabase
       .from("subscriptions")
@@ -65,8 +71,10 @@ export async function POST(request: Request) {
       return_url: `${getAppUrl()}/dashboard`
     });
 
+    serverLog({ event: "stripe_portal_created", route: "/api/stripe/create-portal-session", userId: user.id, status: "ok" });
     return Response.json({ ok: true, url: portalSession.url });
   } catch (error) {
+    serverLog({ level: "warn", event: "stripe_portal_failed", route: "/api/stripe/create-portal-session", userId, error });
     return errorResponse(error);
   }
 }
