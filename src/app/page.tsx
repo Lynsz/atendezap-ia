@@ -127,6 +127,10 @@ export default function Home() {
               restaurantes e pequenos negócios a criar respostas mais profissionais e economizar tempo no atendimento.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button href="/demo" className="bg-emerald-500 hover:bg-emerald-600">
+                Testar grátis
+                <Sparkles className="ml-2 h-4 w-4" />
+              </Button>
               <Button href="/ebook">
                 Baixar guia gratuito
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -155,6 +159,9 @@ export default function Home() {
                 Oi, Ana! Consigo te ajudar sim. Posso te passar as opções e valores certinhos. Você prefere receber o
                 orçamento por aqui ou quer me contar primeiro qual serviço precisa?
               </div>
+              <Button href="/demo" className="mt-4 w-full justify-center bg-emerald-400 text-slate-950 hover:bg-emerald-300">
+                Testar uma resposta agora
+              </Button>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 {["Pergunta", "IA", "Copiar"].map((item) => (
                   <div className="rounded-md border border-white/10 bg-white/[0.05] px-3 py-2 text-center text-xs font-black text-slate-300" key={item}>

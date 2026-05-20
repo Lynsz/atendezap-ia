@@ -13,6 +13,13 @@ export type TrackingEventName =
   | "lead_error"
   | "thank_you_view"
   | "thank_you_cta_click"
+  | "demo_view"
+  | "demo_example_click"
+  | "demo_generate_click"
+  | "demo_response_success"
+  | "demo_response_error"
+  | "demo_signup_cta_click"
+  | "demo_pricing_cta_click"
   | "pricing_view"
   | "checkout_click"
   | "checkout_started"
@@ -58,7 +65,9 @@ type StoredAttribution = UtmPayload & {
 const metaEventMap: Partial<Record<TrackingEventName, string>> = {
   page_view: "PageView",
   ebook_view: "ViewContent",
+  demo_view: "ViewContent",
   lead_success: "Lead",
+  demo_response_success: "Lead",
   checkout_started: "InitiateCheckout",
   signup_completed: "CompleteRegistration",
   subscription_active: "Subscribe"

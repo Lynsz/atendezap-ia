@@ -151,6 +151,9 @@ export default function EbookPage() {
               <p className="mt-3 text-sm leading-6 text-slate-700">
                 Depois de baixar o guia, você pode usar o AtendeZap IA para configurar seu atendimento, gerar respostas com IA, salvar histórico e controlar seu uso mensal.
               </p>
+              <Button href="/demo" className="mt-5 bg-emerald-600 text-white hover:bg-emerald-700">
+                Gerar uma resposta de exemplo
+              </Button>
             </div>
           </div>
         </div>
@@ -175,6 +178,9 @@ export default function EbookPage() {
             </Button>
             <Button href="/precos" variant="ghost">
               Conhecer o AtendeZap IA
+            </Button>
+            <Button href="/demo" variant="ghost">
+              Testar o AtendeZap IA agora
             </Button>
           </div>
           <div className="mt-8 flex items-center justify-center gap-2 text-sm text-slate-400">

@@ -38,6 +38,7 @@ Stripe e o billing principal do SaaS. Kiwify fica apenas como canal opcional de 
 ## Rotas Principais
 
 - `/`: landing page.
+- `/demo`: demonstracao publica e limitada de geracao de respostas.
 - `/ebook`: captura do guia gratuito.
 - `/ebook/guia`: guia gratuito em HTML enviado por e-mail e acessível pela página de obrigado.
 - `/ebook/obrigado`: pagina de obrigado e oferta do Pro.
@@ -195,6 +196,7 @@ Confirme no Supabase:
 ## Documentacao
 
 - `docs/billing.md`: arquitetura Kiwify + Stripe.
+- `docs/demo.md`: demonstracao publica, limites, tracking e fallback sem OpenAI.
 - `docs/kiwify-setup.md`: funil de aquisicao.
 - `docs/smoke-test.md`: checklist manual.
 - `docs/troubleshooting.md`: erros comuns.

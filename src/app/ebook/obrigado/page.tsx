@@ -80,6 +80,15 @@ export default function EbookThankYouPage() {
           </p>
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <TrackedLink
+              href="/demo"
+              eventName="thank_you_cta_click"
+              properties={{ cta: "testar_demo", funnel: "ebook" }}
+              className="bg-white text-slate-950 hover:bg-slate-100 focus:ring-white"
+            >
+              Testar o AtendeZap IA agora
+              <Sparkles className="ml-2 h-4 w-4" />
+            </TrackedLink>
+            <TrackedLink
               href="/precos"
               eventName="thank_you_cta_click"
               properties={{ cta: "conhecer_atendezap_ia", funnel: "ebook" }}

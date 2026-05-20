@@ -100,6 +100,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/ebook" className="hover:text-brand-700">
                 Ebook
               </Link>
+              <Link href="/demo" className="hover:text-brand-700">
+                Demo
+              </Link>
               <Link href="/precos" className="hover:text-brand-700">
                 Preços
               </Link>
