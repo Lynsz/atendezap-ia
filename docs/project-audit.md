@@ -40,8 +40,8 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 - `/dashboard`: dashboard SaaS real, protegido no componente e usando Supabase.
 - `/admin`: protegido no servidor via API por token + `ADMIN_EMAILS`.
-- `/assinatura`: protegido, mas ainda usa estado local simulado para parte da assinatura.
-- `/onboarding`: rota legada em localStorage, nao e o onboarding real do SaaS.
+- `/assinatura`: protegido e corrigido para usar assinatura real em Supabase/Stripe.
+- `/onboarding`: mantem a rota existente, mas redireciona para `/dashboard`, onde fica o onboarding real em Supabase.
 - `/app`, `/app/[...slug]`, `/atendezap`, `/leads`, `/scripts`, `/automacoes`, `/base-conhecimento`, `/configuracoes`, `/integracoes/*`, `/sistema/backend`: superficies legadas/demo ainda existentes.
 
 ### APIs
@@ -81,8 +81,8 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 - Auth: cadastro, login e logout existem; fluxo precisa de teste real em Supabase com confirmacao de e-mail ligada/desligada.
 - Dashboard: a superficie principal funciona, mas concentra muita regra em um componente grande e ainda convive com modulos legados.
-- Onboarding: o onboarding real do SaaS fica no dashboard e salva em `businesses`; a rota `/onboarding` separada ainda e legada/localStorage.
-- Assinatura: dashboard reflete Supabase/Stripe, mas `/assinatura` ainda mostra assinatura local simulada e pode confundir usuario.
+- Onboarding: o onboarding real do SaaS fica no dashboard e salva em `businesses`; `/onboarding` agora redireciona para essa superficie.
+- Assinatura: dashboard e `/assinatura` refletem Supabase/Stripe, mas ainda falta teste ponta a ponta real com Stripe em modo test.
 - Supabase: RLS esta documentado/aplicado no SQL, mas falta teste automatizado provando isolamento entre usuarios.
 - Tracking: eventos principais existem e no-op sem GA4/Meta Pixel, mas falta validacao com ferramentas reais em producao.
 - Admin: metricas, filtros e CSV existem, mas nao ha endpoint dedicado de exportacao server-side nem teste automatizado de permissao.
@@ -92,8 +92,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 ## Quebrado ou ausente
 
-- `/onboarding` nao representa o fluxo SaaS real: usa `src/utils/onboardingStorage.ts` e localStorage, nao Supabase.
-- `/assinatura` mistura protecao real com estado local simulado de billing; para SaaS em producao, o usuario deve ver a assinatura Stripe/Supabase real.
+- Rotas legadas fora do fluxo principal ainda usam localStorage e podem confundir o escopo de producao.
 - Existem dois helpers Supabase browser (`src/lib/supabase.ts` e `src/lib/supabase/browser.ts`), ambos lancam erro quando env publica falta; isso aumenta chance de comportamento divergente.
 - Nao ha middleware para proteger rotas privadas antes do render client-side; a protecao ocorre em componentes/API.
 - Nao ha testes e2e para cadastro -> onboarding -> gerar resposta -> checkout -> webhook -> dashboard ativo.
@@ -104,8 +103,6 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 ## Prioridade maxima
 
-- Decidir e corrigir a rota `/onboarding`: redirecionar para `/dashboard` ou reimplementar a pagina usando Supabase e `ProtectedRoute`.
-- Corrigir `/assinatura` para usar assinatura real do Supabase/Stripe ou redirecionar para a aba de billing do dashboard.
 - Rodar um teste ponta a ponta em Supabase/Stripe test mode: cadastro, onboarding, geracao, checkout, webhook e portal.
 - Validar em producao/preview que `NEXT_PUBLIC_APP_URL` monta redirects corretos de Stripe e links de e-mail.
 - Criar testes automatizados minimos para API de checkout, webhook Stripe e isolamento de dados.
@@ -113,7 +110,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 ## Bugs criticos
 
 - Nenhum erro de build, lint ou API publica basica foi encontrado no ambiente local.
-- Risco critico de produto: `/assinatura` e `/onboarding` podem passar percepcao falsa de estado real por usarem localStorage/fluxo legado.
+- Risco critico de produto removido das rotas `/assinatura` e `/onboarding`; ainda existem superficies legadas fora do fluxo principal.
 
 ## Bugs medios
 
@@ -125,8 +122,6 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 ## Para chegar em 80/100
 
-- Unificar `/onboarding` com o fluxo Supabase real.
-- Unificar `/assinatura` com billing real do dashboard/Stripe.
 - Adicionar suite e2e curta para rotas publicas, auth basico e dashboard.
 - Adicionar testes unitarios/API para checkout, portal e webhook com mocks.
 - Validar manualmente Stripe test mode com webhook local ou Vercel preview.
@@ -169,8 +164,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 ## Proximos passos recomendados
 
-1. Corrigir `/onboarding` e `/assinatura` para remover estado local das superficies de producao.
-2. Rodar teste manual completo em Supabase + Stripe test mode.
-3. Adicionar testes de checkout/webhook e um e2e curto do fluxo principal.
-4. Revisar rotas legadas e decidir quais ficam escondidas, redirecionadas ou documentadas como demo.
-5. Fazer deploy preview na Vercel e executar `docs/post-deploy-test.md`.
+1. Rodar teste manual completo em Supabase + Stripe test mode.
+2. Adicionar testes de checkout/webhook e um e2e curto do fluxo principal.
+3. Revisar rotas legadas e decidir quais ficam escondidas, redirecionadas ou documentadas como demo.
+4. Fazer deploy preview na Vercel e executar `docs/post-deploy-test.md`.

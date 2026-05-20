@@ -1,4 +1,4 @@
-import OnboardingPage from "@/components/pages/OnboardingPage";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Configuração inicial",
@@ -10,5 +10,5 @@ export const metadata = {
 };
 
 export default function OnboardingRoutePage() {
-  return <OnboardingPage />;
+  redirect("/dashboard");
 }
