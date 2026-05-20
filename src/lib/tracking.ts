@@ -7,6 +7,15 @@ export type UtmPayload = Partial<Record<UtmKey, string>>;
 
 export type TrackingEventName =
   | "page_view"
+  | "landing_view"
+  | "hero_cta_click"
+  | "demo_cta_click"
+  | "ebook_cta_click"
+  | "pricing_cta_click"
+  | "plan_compare_view"
+  | "faq_open"
+  | "objection_section_view"
+  | "final_cta_click"
   | "ebook_view"
   | "lead_submit"
   | "lead_success"

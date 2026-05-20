@@ -19,7 +19,7 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
   starter: {
     id: "starter",
     name: "Starter",
-    description: "Plano de entrada para começar a responder melhor pelo WhatsApp.",
+    description: "Para começar com IA no atendimento, com limite mensal menor e uso leve.",
     monthlyPrice: 49,
     monthlyPriceLabel: "R$ 49/mês",
     responseLimit: 150,
@@ -36,7 +36,7 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
   pro: {
     id: "pro",
     name: "Pro",
-    description: "Plano recomendado para quem atende, vende ou responde clientes pelo WhatsApp todos os dias.",
+    description: "Melhor custo-benefício para quem atende clientes todos os dias e precisa de mais respostas mensais.",
     monthlyPrice: 97,
     monthlyPriceLabel: "R$ 97/mês",
     firstMonthPrice: 29,
@@ -59,7 +59,7 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
   premium: {
     id: "premium",
     name: "Premium",
-    description: "Plano completo para maior volume de atendimento e mais recursos.",
+    description: "Para quem tem volume maior e precisa de mais limite mensal para atendimentos frequentes.",
     monthlyPrice: 197,
     monthlyPriceLabel: "R$ 197/mês",
     responseLimit: 2000,

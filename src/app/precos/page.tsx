@@ -1,16 +1,16 @@
 import { PricingPageContent } from "@/components/pricing/PricingPageContent";
 
 export const metadata = {
-  title: "Planos e preços",
+  title: "AtendeZap IA — Respostas com IA para WhatsApp",
   description:
-    "Compare os planos Starter, Pro e Premium do AtendeZap IA. O Plano Pro tem primeiro mês por R$ 29 para novos usuários.",
+    "Crie respostas rápidas e profissionais para clientes no WhatsApp com ajuda da IA. Ideal para autônomos, prestadores de serviço e pequenos negócios.",
   alternates: {
     canonical: "/precos"
   },
   openGraph: {
-    title: "Planos do AtendeZap IA",
+    title: "AtendeZap IA — Planos para respostas com IA no WhatsApp",
     description:
-      "Escolha um plano mensal para gerar respostas com IA para atendimento pelo WhatsApp."
+      "Compare Starter, Pro e Premium para criar respostas rápidas e profissionais para clientes no WhatsApp com ajuda da IA."
   }
 };
 

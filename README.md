@@ -37,7 +37,7 @@ Stripe e o billing principal do SaaS. Kiwify fica apenas como canal opcional de 
 
 ## Rotas Principais
 
-- `/`: landing page.
+- `/`: landing page com hero, problemas, como funciona, beneficios, demo, ebook, planos, comparacao, objecoes e FAQ.
 - `/demo`: demonstracao publica e limitada de geracao de respostas.
 - `/ebook`: captura do guia gratuito.
 - `/ebook/guia`: guia gratuito em HTML enviado por e-mail e acessível pela página de obrigado.
@@ -99,7 +99,7 @@ SUPPORT_EMAIL=
 
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_KIWIFY_*`, `NEXT_PUBLIC_GA_MEASUREMENT_ID` e `NEXT_PUBLIC_META_PIXEL_ID` podem ser publicas.
 
-O tracking de trafego pago e opcional. Veja `docs/tracking.md` para eventos, UTMs, GA4 e Meta Pixel.
+O tracking de trafego pago e opcional. Veja `docs/tracking.md` para eventos, UTMs, GA4 e Meta Pixel. Veja tambem `docs/conversion.md` para CTAs e eventos da landing/pricing.
 
 O envio do guia por e-mail usa Resend de forma opcional. Veja `docs/emails.md` para configurar `RESEND_API_KEY`, `EMAIL_FROM`, templates e logs em `lead_email_events`.
 
@@ -196,6 +196,7 @@ Confirme no Supabase:
 ## Documentacao
 
 - `docs/billing.md`: arquitetura Kiwify + Stripe.
+- `docs/conversion.md`: promessa central, CTAs, secoes da landing/pricing e eventos de conversao.
 - `docs/demo.md`: demonstracao publica, limites, tracking e fallback sem OpenAI.
 - `docs/kiwify-setup.md`: funil de aquisicao.
 - `docs/smoke-test.md`: checklist manual.
