@@ -8,11 +8,17 @@ import { SUPABASE_CONNECTION_ERROR, useAuth } from '@/hooks/useAuth';
 
 type AuthMode = 'login' | 'signup';
 
+function getSafeRedirectTo(value: string | null) {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/dashboard';
+  if (value.startsWith('/login')) return '/dashboard';
+  return value;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, signIn, signUp, loading } = useAuth();
-  const redirectTo = searchParams.get('redirectTo') || '/dashboard';
+  const redirectTo = getSafeRedirectTo(searchParams.get('redirectTo'));
 
   const [mode, setMode] = useState<AuthMode>('login');
   const [name, setName] = useState('');

@@ -2,9 +2,9 @@
 
 ## Nota geral
 
-83/100
+85/100
 
-O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs e deploy estao bem encaminhados. A etapa atual adicionou Playwright para smoke e2e publico, funil do ebook, demo e protecao sem login, alem de ampliar testes Vitest de admin, isolamento multiusuario, validacao de APIs e webhook Stripe. Ainda falta validar checkout real com Stripe CLI + Supabase test mode, testar RLS contra Supabase real e evoluir para SSR cookies se a protecao de pagina precisar ser 100% server-side.
+O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs e deploy estao bem encaminhados. A etapa atual deixou o staging na Vercel documentado, revisou envs, criou checklists por integracao e ajustou o redirect de login para aceitar apenas caminhos internos. Ainda falta executar o deploy staging real, validar checkout com Stripe test mode, testar RLS contra Supabase real e evoluir para SSR cookies se a protecao de pagina precisar ser 100% server-side.
 
 ## Mapa tecnico
 
@@ -87,6 +87,11 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Playwright foi adicionado com `npm run test:e2e` para validar paginas publicas, `/api/health`, funil do ebook com UTMs, demo publica e bloqueio de rotas/APIs privadas sem login.
 - Testes Vitest cobrem normalizacao/autorizacao admin, payloads invalidos de lead/demo/IA, isolamento por `user_id` na API/telas SaaS e webhook Stripe para assinatura invalida, evento sem `user_id`, Pro promocional, cancelamento e pagamento falho.
 - `docs/testing.md` documenta como rodar unitarios/e2e, como testar sem Stripe/OpenAI/Resend reais e como validar webhook com Stripe CLI.
+- `docs/staging-deploy.md` documenta o deploy staging na Vercel, separando local, staging e producao.
+- `docs/post-deploy-checklist.md` cobre validacao manual pos-deploy para publico, auth, dashboard, Stripe, admin, tracking e mobile.
+- `docs/stripe-staging.md`, `docs/supabase-staging.md`, `docs/resend-staging.md` e `docs/openai-staging.md` detalham configuracao real das integracoes em staging.
+- `.env.example` lista as variaveis esperadas sem segredos reais, incluindo `NEXT_PUBLIC_APP_ENV`, Supabase, Stripe, OpenAI, Resend, tracking, Upstash, Sentry e admin.
+- Login sanitiza `redirectTo` e so redireciona para caminhos internos, evitando URL externa em ambiente staging/producao.
 
 ## Parcial
 
@@ -100,7 +105,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Admin: metricas, filtros e CSV existem; helpers e bloqueio sem sessao tem testes, mas nao ha endpoint dedicado de exportacao server-side nem teste e2e com sessao admin real.
 - SEO: metadados basicos existem; falta imagem OG padrao configurada se o ativo final existir.
 - Resend: entrega do ebook esta pronta, mas sequencia de nutricao e descadastro ainda nao estao implementados.
-- Deploy: docs estao boas, mas falta evidencia de deploy real com envs de producao.
+- Deploy: staging esta documentado e pronto para execucao, mas ainda falta evidencia de deploy real com envs configuradas.
 
 ## Quebrado ou ausente
 
@@ -110,13 +115,13 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Nao ha teste automatizado de RLS contra Supabase real; a cobertura atual usa mocks e regressao de filtros por `user_id`.
 - Nao ha teste automatizado de webhook Stripe com assinatura real gerada pela Stripe CLI; ha cobertura com mocks para assinatura invalida, atualizacao, cancelamento e pagamento falho.
 - Fluxos legados/localStorage continuam acessiveis e podem confundir o escopo de producao.
-- Variaveis `OPENAI_MODEL` e `NEXT_PUBLIC_APP_ENV` eram usadas/listadas em docs/codigo, mas faltavam no `.env.example`; corrigido nesta auditoria.
+- Nao ha evidencia ainda de validacao manual completa em Vercel staging com Supabase, Stripe, Resend, OpenAI, tracking e admin reais.
 
 ## Prioridade maxima
 
+- Fazer deploy staging na Vercel seguindo `docs/staging-deploy.md`.
 - Rodar um teste ponta a ponta em Supabase/Stripe test mode: cadastro, onboarding, geracao, checkout, webhook e portal.
-- Validar em producao/preview que `NEXT_PUBLIC_APP_URL` monta redirects corretos de Stripe e links de e-mail.
-- Criar testes automatizados de isolamento de dados/RLS e, se necessario, um teste de webhook com payload assinado.
+- Validar em staging que `NEXT_PUBLIC_APP_URL` monta redirects corretos de Stripe e links de e-mail.
 
 ## Bugs criticos
 
@@ -134,6 +139,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 ## Para consolidar acima de 80/100
 
+- Executar `docs/post-deploy-checklist.md` completo em staging.
 - Evoluir a suite e2e curta para fluxos autenticados com Supabase test mode: cadastro, dashboard, assinatura e admin real.
 - Planejar migracao para Supabase SSR cookies se for necessario validar paginas privadas diretamente no middleware com token real.
 - Validar manualmente Stripe test mode com webhook local ou Vercel preview.
@@ -169,17 +175,18 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 ## Pendencias externas
 
-- Stripe: criar produtos, prices, cupom Pro, webhook e testar eventos em modo test/live seguindo `docs/stripe-test.md`.
-- Supabase: aplicar migrations, incluindo `0007_stripe_subscription_aliases.sql`, validar RLS e configurar URLs de Auth.
-- Vercel: preencher envs, dominio, `NEXT_PUBLIC_APP_URL`, build e health check.
-- Resend: validar dominio/remetente e testar entrega real.
-- GA4: configurar Measurement ID e validar eventos.
-- Meta Pixel: configurar Pixel ID e validar eventos.
+- Vercel: criar projeto staging, preencher envs, definir `NEXT_PUBLIC_APP_URL`, rodar deploy e health check.
+- Supabase: aplicar migrations no projeto staging, validar RLS, Auth URLs e isolamento com dois usuarios.
+- Stripe: criar produtos, prices, cupom Pro, webhook staging e testar eventos em modo test seguindo `docs/stripe-staging.md`.
+- Resend: validar dominio/remetente e testar entrega real seguindo `docs/resend-staging.md`.
+- OpenAI: configurar chave/modelo de staging, testar dashboard/demo e monitorar custos seguindo `docs/openai-staging.md`.
+- GA4: configurar Measurement ID e validar eventos em staging.
+- Meta Pixel: configurar Pixel ID e validar eventos em staging.
 - Sentry: configurar DSN/token e revisar alertas.
 
 ## Proximos passos recomendados
 
-1. Rodar teste manual completo em Supabase + Stripe test mode seguindo `docs/stripe-test.md`.
-2. Adicionar um e2e curto do fluxo principal: cadastro, onboarding, gerar resposta, checkout e dashboard ativo.
-3. Revisar rotas legadas e decidir quais ficam escondidas, redirecionadas ou documentadas como demo.
-4. Fazer deploy preview na Vercel e executar `docs/post-deploy-test.md`.
+1. Criar o projeto staging na Vercel e configurar envs seguindo `docs/staging-deploy.md`.
+2. Aplicar Supabase staging e configurar Stripe test mode/webhook staging.
+3. Executar `docs/post-deploy-checklist.md` completo.
+4. Depois do staging verde, decidir promocao para producao ou ajustes finais de rotas legadas.

@@ -1,6 +1,6 @@
 # Deploy na Vercel
 
-Guia de deploy do AtendeZap IA em producao. Nao coloque valores reais neste arquivo; configure os valores no painel da Vercel.
+Guia de deploy do AtendeZap IA em producao. Para primeiro teste real, use antes `docs/staging-deploy.md`. Nao coloque valores reais neste arquivo; configure os valores no painel da Vercel.
 
 ## 1. Criar projeto na Vercel
 
@@ -20,9 +20,11 @@ Configure as variaveis em Production, Preview e Development quando fizer sentido
 
 ```text
 NEXT_PUBLIC_APP_URL=
+NEXT_PUBLIC_APP_ENV=
 ```
 
 Use o dominio final, sem barra no fim. Essa URL monta redirects do Stripe, links de e-mail e metadados SEO.
+Use `NEXT_PUBLIC_APP_ENV=production` em producao e `staging` em previews de teste.
 
 ### Supabase
 
@@ -38,6 +40,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 ```text
 OPENAI_API_KEY=
+OPENAI_MODEL=
 ```
 
 Somente servidor. A geracao de respostas e kits deve continuar em rotas API ou libs chamadas pelo backend.
@@ -75,6 +78,17 @@ NEXT_PUBLIC_META_PIXEL_ID=
 ```
 
 Sao IDs publicos opcionais. Se ficarem vazios, os scripts nao carregam.
+
+### Rate limit e monitoramento
+
+```text
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+NEXT_PUBLIC_SENTRY_DSN=
+SENTRY_AUTH_TOKEN=
+```
+
+Upstash e Sentry sao opcionais. Se Upstash ficar vazio, o app usa fallback local/memoria para rate limit. `SENTRY_AUTH_TOKEN` fica somente no servidor/build.
 
 ### Admin
 
@@ -206,4 +220,4 @@ npm run test
 11. Acesse admin e exporte CSV.
 12. Teste mobile.
 
-Use tambem o checklist em `docs/post-deploy-test.md`.
+Use tambem `docs/post-deploy-checklist.md` e `docs/post-deploy-test.md`.
