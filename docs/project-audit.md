@@ -2,9 +2,9 @@
 
 ## Nota geral
 
-86/100
+87/100
 
-O projeto esta em release candidate tecnico para staging avancado: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs, testes e deploy estao encaminhados. A etapa atual criou `docs/release-candidate.md`, `docs/controlled-launch-checklist.md` e reforcou o isolamento do dashboard filtrando exclusao/edicao de clientes e historico por `user_id`. Ainda falta executar o deploy staging real, validar checkout com Stripe test mode, testar RLS contra Supabase real e evoluir para SSR cookies se a protecao de pagina precisar ser 100% server-side.
+O projeto esta em release candidate operacional para producao controlada: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs, testes, staging e playbooks de operacao estao encaminhados. A etapa atual criou documentacao de checklist final de producao, plano de lancamento controlado, monitoramento, suporte minimo, rollback e rotina dos primeiros 7 dias. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e evoluir para SSR cookies se a protecao de pagina precisar ser 100% server-side.
 
 ## Mapa tecnico
 
@@ -95,6 +95,12 @@ O projeto esta em release candidate tecnico para staging avancado: funil publico
 - `docs/release-candidate.md` resume status, bloqueadores, pendencias externas e criterios para publicar.
 - `docs/controlled-launch-checklist.md` define o roteiro para liberar para poucos usuarios antes de anuncios.
 - Dashboard reforcado: exclusao de historico, exclusao de clientes e edicao de clientes agora filtram por `user_id` autenticado alem de depender da RLS.
+- `docs/production-launch-checklist.md` cobre a validacao final antes do deploy real.
+- `docs/controlled-launch-plan.md` define fases de teste interno, primeiros usuarios, ajustes e anuncios pequenos.
+- `docs/monitoring.md` documenta onde acompanhar Vercel, Supabase, Stripe, Resend, OpenAI, GA4 e Meta Pixel.
+- `docs/support.md` documenta respostas para suporte minimo de conta, pagamento, cancelamento, ebook e IA.
+- `docs/rollback-plan.md` documenta reversao para falhas de deploy, Stripe, Supabase, OpenAI e anuncios.
+- `docs/first-7-days-checklist.md` documenta a rotina diaria inicial.
 
 ## Parcial
 
@@ -108,7 +114,8 @@ O projeto esta em release candidate tecnico para staging avancado: funil publico
 - Admin: metricas, filtros e CSV existem; helpers e bloqueio sem sessao tem testes, mas nao ha endpoint dedicado de exportacao server-side nem teste e2e com sessao admin real.
 - SEO: metadados basicos existem; falta imagem OG padrao configurada se o ativo final existir.
 - Resend: entrega do ebook esta pronta, mas sequencia de nutricao e descadastro ainda nao estao implementados.
-- Release candidate: pronto para staging avancado; producao controlada depende da execucao do checklist real com integracoes externas.
+- Release candidate: pronto para staging avancado e producao controlada com poucos usuarios; liberacao depende da execucao do checklist real com integracoes externas.
+- Monitoramento: playbook manual criado; alertas automaticos ainda dependem de Sentry/Vercel/Stripe/GA4/Meta configurados.
 
 ## Quebrado ou ausente
 
@@ -119,13 +126,14 @@ O projeto esta em release candidate tecnico para staging avancado: funil publico
 - Nao ha teste automatizado de webhook Stripe com assinatura real gerada pela Stripe CLI; ha cobertura com mocks para assinatura invalida, atualizacao, cancelamento e pagamento falho.
 - Fluxos legados/localStorage continuam acessiveis e podem confundir o escopo de producao.
 - Nao ha evidencia ainda de validacao manual completa em Vercel staging com Supabase, Stripe, Resend, OpenAI, tracking e admin reais.
-- Nao esta pronto para anuncios pagos ate checkout real, webhook live/test, pixels e e-mail serem validados no ambiente final.
+- Nao esta pronto para anuncios pagos ate checkout real, webhook live/test, pixels, e-mail e rotina operacional dos primeiros usuarios serem validados no ambiente final.
 
 ## Prioridade maxima
 
 - Fazer deploy staging na Vercel seguindo `docs/staging-deploy.md`.
 - Rodar um teste ponta a ponta em Supabase/Stripe test mode: cadastro, onboarding, geracao, checkout, webhook e portal.
 - Validar em staging que `NEXT_PUBLIC_APP_URL` monta redirects corretos de Stripe e links de e-mail.
+- Executar `docs/production-launch-checklist.md` antes de liberar usuarios reais.
 
 ## Bugs criticos
 
@@ -133,6 +141,7 @@ O projeto esta em release candidate tecnico para staging avancado: funil publico
 - Risco critico de produto removido das rotas `/assinatura` e `/onboarding`; ainda existem superficies legadas fora do fluxo principal.
 - Nenhum bug critico de Stripe ficou aberto no codigo revisado; o risco restante e externo: configurar produtos, prices, cupom, webhook secret e aplicar migrations no Supabase correto.
 - Bloqueador corrigido nesta etapa: mutacoes de clientes/historico no dashboard agora incluem filtro explicito por `user_id`.
+- Nenhum novo bloqueador de codigo foi identificado na revisao operacional; mensagens criticas usam erros controlados e devem ser validadas no fluxo real.
 
 ## Bugs medios
 
@@ -173,6 +182,7 @@ O projeto esta em release candidate tecnico para staging avancado: funil publico
 - Admin com paginacao server-side, exportacao auditavel e mascaramento de dados sensiveis.
 - Politica de retencao/exclusao de dados e descadastro de e-mails.
 - Playbook de incidentes, backups Supabase e restore testado.
+- Alertas automaticos para falhas de checkout, webhook, e-mail e IA.
 
 ## Comandos executados
 
@@ -182,6 +192,7 @@ O projeto esta em release candidate tecnico para staging avancado: funil publico
 - `npm run build`
 - `npm test`
 - `npm run test:e2e`
+- Revisao operacional de mensagens de erro criticas, fallback de integracoes e admin inicial.
 - `npm install --dry-run`
 - Smoke test browser em `/`, `/ebook`, `/ebook/obrigado`, `/ebook/guia`, `/demo`, `/precos`, `/termos`, `/privacidade` e 404.
 - Smoke mobile em `/`, `/ebook`, `/ebook/obrigado`, `/demo`, `/precos`, `/login`, `/cadastro`, `/dashboard`, `/onboarding`, `/assinatura`, `/admin`, `/termos`, `/privacidade`.
@@ -198,10 +209,11 @@ O projeto esta em release candidate tecnico para staging avancado: funil publico
 - GA4: configurar Measurement ID e validar eventos em staging.
 - Meta Pixel: configurar Pixel ID e validar eventos em staging.
 - Sentry: configurar DSN/token e revisar alertas.
+- Operacao: executar monitoramento diario, suporte minimo e rotina dos primeiros 7 dias durante producao controlada.
 
 ## Proximos passos recomendados
 
-1. Criar o projeto staging na Vercel e configurar envs seguindo `docs/staging-deploy.md`.
-2. Aplicar Supabase staging e configurar Stripe test mode/webhook staging.
-3. Executar `docs/post-deploy-checklist.md` completo.
-4. Depois do staging verde, decidir promocao para producao ou ajustes finais de rotas legadas.
+1. Executar `docs/production-launch-checklist.md` no ambiente final.
+2. Liberar producao controlada seguindo `docs/controlled-launch-plan.md`.
+3. Monitorar diariamente com `docs/monitoring.md` e `docs/first-7-days-checklist.md`.
+4. Manter `docs/rollback-plan.md` pronto antes de iniciar anuncios.

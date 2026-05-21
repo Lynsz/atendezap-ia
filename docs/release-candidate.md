@@ -2,9 +2,9 @@
 
 ## Status geral
 
-- Nota estimada atual: 86/100.
+- Nota estimada atual: 87/100.
 - Pronto para staging: sim, desde que as variaveis externas sejam configuradas na Vercel.
-- Pronto para producao controlada: condicional. O codigo local, build e testes automatizados estao prontos; falta validar staging real com Supabase, Stripe test mode, Resend, OpenAI, tracking e admin.
+- Pronto para producao controlada: sim, de forma condicional e para poucos usuarios, apos executar `docs/production-launch-checklist.md` no ambiente final. O codigo local, build e testes automatizados estao prontos; a liberacao depende de validacao real com Supabase, Stripe, Resend, OpenAI, tracking e admin.
 - Pronto para anuncios pagos: nao. Antes de anuncios, precisa checkout real validado, pixel/GA4 validados, e-mail validado e suporte minimo confirmado.
 
 ## Fluxos obrigatorios validados
@@ -23,6 +23,7 @@
 - Admin: API exige usuario autenticado e e-mail em `ADMIN_EMAILS`.
 - Tracking: GA4/Meta sao opcionais; UTMs sao preservadas e enviadas em lead/checkout.
 - E-mail: Resend e opcional; sem chave, lead continua o funil com status controlado.
+- Operacao: checklist final de producao, plano de lancamento controlado, monitoramento, suporte minimo, rollback e rotina dos primeiros 7 dias documentados.
 
 ## Bloqueadores de producao
 
@@ -33,6 +34,7 @@
 - Validar Resend com remetente real ou registrar explicitamente status `skipped` antes de liberar usuarios.
 - Validar OpenAI com limite de custo e modelo configurado.
 - Validar admin com usuario admin e usuario comum.
+- Executar rotina operacional de producao controlada: monitoramento diario, suporte minimo e rollback documentado.
 
 ## Pendencias nao bloqueantes
 
@@ -43,6 +45,7 @@
 - Teste automatizado de webhook com assinatura real da Stripe CLI.
 - Melhorar atomicidade do limite mensal em geracoes simultaneas.
 - Sequencia de nutricao/descadastro de e-mails.
+- Alertas automaticos ainda nao configurados; monitoramento inicial sera manual.
 
 ## Pendencias externas
 
@@ -53,6 +56,7 @@
 - OpenAI: chave, modelo, limite de custo e monitoramento.
 - GA4: Measurement ID e DebugView.
 - Meta Pixel: Pixel ID e Events Manager.
+- Operacao: responsavel por monitoramento diario, suporte e rollback durante os primeiros 7 dias.
 
 ## Criterio para publicar
 
@@ -63,3 +67,4 @@
 - Lead, cadastro, dashboard, IA, checkout, webhook, portal, admin e tracking validados em staging.
 - Plano Pro confirmado como primeiro mes por R$ 29 para novos usuarios e recorrencia normal depois.
 - Mobile validado em home, ebook, demo, login, cadastro, dashboard, assinatura e admin.
+- `docs/production-launch-checklist.md`, `docs/monitoring.md`, `docs/support.md`, `docs/rollback-plan.md` e `docs/first-7-days-checklist.md` executaveis pelo responsavel do lancamento.
