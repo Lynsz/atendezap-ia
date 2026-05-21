@@ -15,6 +15,8 @@ describe("isolamento multiusuario nas telas SaaS", () => {
     }
     expect(source.match(/\.eq\("user_id", user\.id\)/g)?.length ?? 0).toBeGreaterThanOrEqual(6);
     expect(source).toContain('.update(payload).eq("id", existingBusiness.id).eq("user_id", user.id)');
+    expect(source).toContain('.delete().eq("id", itemId).eq("user_id", user.id)');
+    expect(source).toContain('.update(updates).eq("id", item.id).eq("user_id", user.id)');
     expect(source).toContain("user_id: user.id");
   });
 

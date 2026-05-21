@@ -1,0 +1,65 @@
+# Release Candidate — AtendeZap IA
+
+## Status geral
+
+- Nota estimada atual: 86/100.
+- Pronto para staging: sim, desde que as variaveis externas sejam configuradas na Vercel.
+- Pronto para producao controlada: condicional. O codigo local, build e testes automatizados estao prontos; falta validar staging real com Supabase, Stripe test mode, Resend, OpenAI, tracking e admin.
+- Pronto para anuncios pagos: nao. Antes de anuncios, precisa checkout real validado, pixel/GA4 validados, e-mail validado e suporte minimo confirmado.
+
+## Fluxos obrigatorios validados
+
+- Landing page: coberta por e2e publico e smoke local.
+- Ebook: coberto por e2e com UTMs e envio mockado; precisa confirmar gravacao real no Supabase staging.
+- Demo: coberta por e2e e aceita fallback sem OpenAI.
+- Cadastro/login: implementado com Supabase; precisa teste real em staging.
+- Dashboard: usa Supabase real, filtra dados por `user_id` e exige login.
+- Onboarding: ocorre no dashboard e salva em `businesses`.
+- Geracao de resposta: rota server-side autenticada, validada, com limite mensal.
+- Assinatura: `/assinatura` usa Supabase e Stripe real.
+- Checkout: valida plano, exige auth, cria metadata com `user_id`, `plan`, price e UTMs.
+- Webhook: valida assinatura Stripe e atualiza `subscriptions`.
+- Portal Stripe: exige auth e customer Stripe salvo.
+- Admin: API exige usuario autenticado e e-mail em `ADMIN_EMAILS`.
+- Tracking: GA4/Meta sao opcionais; UTMs sao preservadas e enviadas em lead/checkout.
+- E-mail: Resend e opcional; sem chave, lead continua o funil com status controlado.
+
+## Bloqueadores de producao
+
+- Executar deploy staging na Vercel com `NEXT_PUBLIC_APP_URL` do ambiente.
+- Aplicar Supabase staging e validar RLS com dois usuarios reais.
+- Validar cadastro/login/dashboard com Supabase staging.
+- Validar Stripe test mode de ponta a ponta: checkout, webhook assinado, plano ativo, portal e cancelamento.
+- Validar Resend com remetente real ou registrar explicitamente status `skipped` antes de liberar usuarios.
+- Validar OpenAI com limite de custo e modelo configurado.
+- Validar admin com usuario admin e usuario comum.
+
+## Pendencias nao bloqueantes
+
+- Migrar auth para Supabase SSR cookies para protecao server-side completa de paginas.
+- Reduzir ou esconder superficies legadas que ainda usam localStorage fora do fluxo vendavel.
+- Recuperacao de senha.
+- Teste automatizado autenticado completo com Supabase real.
+- Teste automatizado de webhook com assinatura real da Stripe CLI.
+- Melhorar atomicidade do limite mensal em geracoes simultaneas.
+- Sequencia de nutricao/descadastro de e-mails.
+
+## Pendencias externas
+
+- Stripe: produtos Starter, Pro e Premium em test/live, prices, cupom Pro primeiro mes, webhook e portal.
+- Supabase: migrations aplicadas, RLS revisado, Auth URLs e Redirect URLs configuradas.
+- Vercel: projeto, dominio, envs por ambiente e logs.
+- Resend: dominio/remetente verificado, API key e teste de entrega.
+- OpenAI: chave, modelo, limite de custo e monitoramento.
+- GA4: Measurement ID e DebugView.
+- Meta Pixel: Pixel ID e Events Manager.
+
+## Criterio para publicar
+
+- `npm run lint`, `npm run typecheck`, `npm run build`, `npm test` e `npm run test:e2e` verdes.
+- `docs/post-deploy-checklist.md` executado em staging.
+- Nenhum 500 em rotas principais.
+- Nenhum segredo exposto em bundle, logs ou HTML.
+- Lead, cadastro, dashboard, IA, checkout, webhook, portal, admin e tracking validados em staging.
+- Plano Pro confirmado como primeiro mes por R$ 29 para novos usuarios e recorrencia normal depois.
+- Mobile validado em home, ebook, demo, login, cadastro, dashboard, assinatura e admin.

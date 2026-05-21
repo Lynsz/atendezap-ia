@@ -480,7 +480,16 @@ function SaasDashboardContent() {
 
   async function handleDeleteHistory(itemId: string) {
     if (!supabase) return;
-    const { error: deleteError } = await supabase.from("generated_responses").delete().eq("id", itemId);
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setError("Sessão não encontrada. Faça login novamente.");
+      router.replace("/login");
+      return;
+    }
+
+    const { error: deleteError } = await supabase.from("generated_responses").delete().eq("id", itemId).eq("user_id", user.id);
     if (deleteError) {
       setError("Não conseguimos excluir a resposta.");
       return;
@@ -493,7 +502,16 @@ function SaasDashboardContent() {
       setError("Supabase indisponível. Revise o ambiente e tente novamente.");
       return;
     }
-    const { error: deleteError } = await supabase.from("customers").delete().eq("id", itemId);
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setError("Sessão não encontrada. Faça login novamente.");
+      router.replace("/login");
+      return;
+    }
+
+    const { error: deleteError } = await supabase.from("customers").delete().eq("id", itemId).eq("user_id", user.id);
     if (deleteError) {
       setError("Não conseguimos excluir o cliente.");
       return;
@@ -546,9 +564,18 @@ function SaasDashboardContent() {
       setError("Supabase indisponível. Revise o ambiente e tente novamente.");
       return;
     }
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setError("Sessão não encontrada. Faça login novamente.");
+      router.replace("/login");
+      return;
+    }
+
     const next = { ...item, ...updates, updated_at: new Date().toISOString() };
     setCustomers((current) => current.map((customer) => (customer.id === item.id ? next : customer)));
-    const { error: updateError } = await supabase.from("customers").update(updates).eq("id", item.id);
+    const { error: updateError } = await supabase.from("customers").update(updates).eq("id", item.id).eq("user_id", user.id);
     if (updateError) setError("Não conseguimos atualizar o cliente.");
   }
 

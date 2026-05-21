@@ -2,9 +2,9 @@
 
 ## Nota geral
 
-85/100
+86/100
 
-O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs e deploy estao bem encaminhados. A etapa atual deixou o staging na Vercel documentado, revisou envs, criou checklists por integracao e ajustou o redirect de login para aceitar apenas caminhos internos. Ainda falta executar o deploy staging real, validar checkout com Stripe test mode, testar RLS contra Supabase real e evoluir para SSR cookies se a protecao de pagina precisar ser 100% server-side.
+O projeto esta em release candidate tecnico para staging avancado: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs, testes e deploy estao encaminhados. A etapa atual criou `docs/release-candidate.md`, `docs/controlled-launch-checklist.md` e reforcou o isolamento do dashboard filtrando exclusao/edicao de clientes e historico por `user_id`. Ainda falta executar o deploy staging real, validar checkout com Stripe test mode, testar RLS contra Supabase real e evoluir para SSR cookies se a protecao de pagina precisar ser 100% server-side.
 
 ## Mapa tecnico
 
@@ -92,6 +92,9 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - `docs/stripe-staging.md`, `docs/supabase-staging.md`, `docs/resend-staging.md` e `docs/openai-staging.md` detalham configuracao real das integracoes em staging.
 - `.env.example` lista as variaveis esperadas sem segredos reais, incluindo `NEXT_PUBLIC_APP_ENV`, Supabase, Stripe, OpenAI, Resend, tracking, Upstash, Sentry e admin.
 - Login sanitiza `redirectTo` e so redireciona para caminhos internos, evitando URL externa em ambiente staging/producao.
+- `docs/release-candidate.md` resume status, bloqueadores, pendencias externas e criterios para publicar.
+- `docs/controlled-launch-checklist.md` define o roteiro para liberar para poucos usuarios antes de anuncios.
+- Dashboard reforcado: exclusao de historico, exclusao de clientes e edicao de clientes agora filtram por `user_id` autenticado alem de depender da RLS.
 
 ## Parcial
 
@@ -105,7 +108,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Admin: metricas, filtros e CSV existem; helpers e bloqueio sem sessao tem testes, mas nao ha endpoint dedicado de exportacao server-side nem teste e2e com sessao admin real.
 - SEO: metadados basicos existem; falta imagem OG padrao configurada se o ativo final existir.
 - Resend: entrega do ebook esta pronta, mas sequencia de nutricao e descadastro ainda nao estao implementados.
-- Deploy: staging esta documentado e pronto para execucao, mas ainda falta evidencia de deploy real com envs configuradas.
+- Release candidate: pronto para staging avancado; producao controlada depende da execucao do checklist real com integracoes externas.
 
 ## Quebrado ou ausente
 
@@ -116,6 +119,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Nao ha teste automatizado de webhook Stripe com assinatura real gerada pela Stripe CLI; ha cobertura com mocks para assinatura invalida, atualizacao, cancelamento e pagamento falho.
 - Fluxos legados/localStorage continuam acessiveis e podem confundir o escopo de producao.
 - Nao ha evidencia ainda de validacao manual completa em Vercel staging com Supabase, Stripe, Resend, OpenAI, tracking e admin reais.
+- Nao esta pronto para anuncios pagos ate checkout real, webhook live/test, pixels e e-mail serem validados no ambiente final.
 
 ## Prioridade maxima
 
@@ -128,6 +132,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Nenhum erro de build, lint ou API publica basica foi encontrado no ambiente local.
 - Risco critico de produto removido das rotas `/assinatura` e `/onboarding`; ainda existem superficies legadas fora do fluxo principal.
 - Nenhum bug critico de Stripe ficou aberto no codigo revisado; o risco restante e externo: configurar produtos, prices, cupom, webhook secret e aplicar migrations no Supabase correto.
+- Bloqueador corrigido nesta etapa: mutacoes de clientes/historico no dashboard agora incluem filtro explicito por `user_id`.
 
 ## Bugs medios
 
@@ -146,6 +151,16 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Aplicar `supabase/migrations/0007_stripe_subscription_aliases.sql` no ambiente de teste.
 - Validar Resend com remetente real e confirmar `lead_email_events`.
 - Marcar claramente ou esconder rotas legadas que nao fazem parte do SaaS vendavel.
+
+## Para chegar em 90/100
+
+- Deploy staging real na Vercel com `NEXT_PUBLIC_APP_URL` correto.
+- Supabase staging validado com RLS e dois usuarios.
+- Stripe test mode validado com checkout, webhook assinado, portal e cancelamento.
+- Resend e OpenAI validados em staging.
+- Admin validado com usuario admin e usuario comum.
+- Mobile revisado manualmente no ambiente Vercel.
+- Decisao de produto sobre esconder ou documentar rotas legadas autenticadas com demo/localStorage.
 
 ## Para chegar em 100/100
 
