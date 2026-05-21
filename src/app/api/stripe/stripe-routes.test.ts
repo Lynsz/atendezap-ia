@@ -294,4 +294,121 @@ describe("Stripe API routes", () => {
       { onConflict: "user_id" }
     );
   });
+
+  it("processa webhook sem user_id sem quebrar quando nao ha assinatura salva", async () => {
+    mocks.constructEvent.mockReturnValue({
+      id: "evt_missing_user",
+      type: "customer.subscription.updated",
+      data: {
+        object: {
+          id: "sub_missing_user",
+          status: "active",
+          customer: "cus_missing_user",
+          metadata: {},
+          items: { data: [{ price: { id: "price_unknown" } }] },
+          cancel_at_period_end: false
+        }
+      }
+    });
+
+    const { POST } = await import("./webhook/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": "valid" },
+        body: "{}"
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.event).toBe("customer.subscription.updated");
+    expect(mocks.upsertSubscription).not.toHaveBeenCalled();
+  });
+
+  it("marca assinatura como cancelada em subscription.deleted", async () => {
+    mocks.constructEvent.mockReturnValue({
+      id: "evt_subscription_deleted",
+      type: "customer.subscription.deleted",
+      data: {
+        object: {
+          id: "sub_deleted",
+          status: "canceled",
+          customer: "cus_test",
+          metadata: { user_id: "11111111-1111-4111-8111-111111111111" },
+          items: { data: [{ price: { id: "price_premium" } }] },
+          cancel_at_period_end: false,
+          current_period_start: 1_700_000_000,
+          current_period_end: 1_702_592_000
+        }
+      }
+    });
+
+    const { POST } = await import("./webhook/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": "valid" },
+        body: "{}"
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.upsertSubscription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user_id: "11111111-1111-4111-8111-111111111111",
+        plan: "premium",
+        status: "canceled",
+        subscription_status: "canceled"
+      }),
+      { onConflict: "user_id" }
+    );
+  });
+
+  it("marca invoice.payment_failed como falha controlada", async () => {
+    mocks.constructEvent.mockReturnValue({
+      id: "evt_invoice_failed",
+      type: "invoice.payment_failed",
+      data: {
+        object: {
+          subscription: "sub_failed",
+          payment_intent: "pi_failed"
+        }
+      }
+    });
+    mocks.subscriptionRetrieve.mockResolvedValue({
+      id: "sub_failed",
+      status: "past_due",
+      customer: "cus_test",
+      metadata: { user_id: "11111111-1111-4111-8111-111111111111" },
+      items: { data: [{ price: { id: "price_starter" } }] },
+      cancel_at_period_end: false
+    });
+
+    const { POST } = await import("./webhook/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": "valid" },
+        body: "{}"
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.upsertSubscription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        plan: "starter",
+        status: "past_due",
+        last_payment_status: "failed"
+      }),
+      { onConflict: "user_id" }
+    );
+    expect(mocks.updateSubscription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        provider_payment_id: "pi_failed",
+        last_payment_status: "failed"
+      })
+    );
+  });
 });

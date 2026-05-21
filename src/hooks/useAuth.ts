@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
+import { writeAuthSessionHint } from '@/lib/auth/session-hint';
 import { supabase, supabaseEnv } from '@/lib/supabase';
 
 export const SUPABASE_CONNECTION_ERROR =
@@ -67,10 +68,12 @@ export function useAuth() {
 
         setSession(data.session ?? null);
         setUser(data.session?.user ?? null);
+        writeAuthSessionHint(Boolean(data.session?.user));
       } catch {
         if (mounted) {
           setSession(null);
           setUser(null);
+          writeAuthSessionHint(false);
         }
       } finally {
         if (mounted) {
@@ -86,6 +89,7 @@ export function useAuth() {
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
+      writeAuthSessionHint(Boolean(nextSession?.user));
       setLoading(false);
     });
 
@@ -172,6 +176,7 @@ export function useAuth() {
         return { error: error.message };
       }
 
+      writeAuthSessionHint(false);
       return { error: null };
     } catch (error) {
       return {

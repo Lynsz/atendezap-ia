@@ -13,8 +13,10 @@ export function getSupabasePublicDiagnostic() {
   };
 }
 
+export const supabaseEnv = getSupabasePublicDiagnostic();
+
 if (typeof window !== "undefined") {
-  console.info("[Supabase diagnostic]", getSupabasePublicDiagnostic());
+  console.info("[Supabase diagnostic]", supabaseEnv);
 }
 
 if (!supabaseUrl) {

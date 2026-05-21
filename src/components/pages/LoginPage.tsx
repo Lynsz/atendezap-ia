@@ -2,7 +2,7 @@
 
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { LogIn, MessageCircle, UserPlus } from 'lucide-react';
 import { SUPABASE_CONNECTION_ERROR, useAuth } from '@/hooks/useAuth';
 
@@ -10,7 +10,9 @@ type AuthMode = 'login' | 'signup';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, signIn, signUp, loading } = useAuth();
+  const redirectTo = searchParams.get('redirectTo') || '/dashboard';
 
   const [mode, setMode] = useState<AuthMode>('login');
   const [name, setName] = useState('');
@@ -25,9 +27,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      router.replace('/dashboard');
+      router.replace(redirectTo);
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, redirectTo, router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -92,7 +94,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.replace('/dashboard');
+      router.replace(redirectTo);
     } finally {
       setSubmitting(false);
     }

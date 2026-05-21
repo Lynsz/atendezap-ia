@@ -74,6 +74,16 @@ describe("Stripe service helpers", () => {
     expect(getSaasPlanByStripePriceId("price_unknown")).toBeNull();
   });
 
+  it("mapeia todos os planos de checkout configurados", () => {
+    vi.stubEnv("STRIPE_PRICE_STARTER", "price_starter");
+    vi.stubEnv("STRIPE_PRICE_PRO", "price_pro");
+    vi.stubEnv("STRIPE_PRICE_PREMIUM", "price_premium");
+
+    expect(getStripePriceId(SAAS_PLANS.starter)).toBe("price_starter");
+    expect(getStripePriceId(SAAS_PLANS.pro)).toBe("price_pro");
+    expect(getStripePriceId(SAAS_PLANS.premium)).toBe("price_premium");
+  });
+
   it("usa o price recorrente normal do Pro no checkout mesmo com price promocional configurado", () => {
     vi.stubEnv("STRIPE_PRICE_PRO", "price_pro_recurring");
     vi.stubEnv("STRIPE_PRICE_PRO_FIRST_MONTH_29", "price_pro_29");

@@ -2,6 +2,21 @@
 
 Use este roteiro antes do deploy real e antes de ligar tráfego pago. Marque cada item em ambiente local, preview e produção.
 
+## Testes automatizados minimos
+
+- [ ] Rodar `npm run test` e confirmar suite Vitest verde.
+- [ ] Rodar `npm run test:e2e` e confirmar paginas publicas verdes.
+- [ ] Confirmar e2e do funil do ebook: UTMs, envio mockado, obrigado, CTA para guia e CTA para AtendeZap IA.
+- [ ] Confirmar e2e da demo: tipo de atuacao, tom de voz, pergunta pronta, resposta/fallback e CTAs.
+- [ ] Confirmar e2e de autenticacao: `/dashboard`, `/assinatura` e `/admin` redirecionam usuario sem login.
+- [ ] Confirmar e2e de APIs privadas/admin sem sessao: `401` ou `403`.
+- [ ] Confirmar testes de admin: `ADMIN_EMAILS` com um e varios e-mails, espacos, caixa alta/baixa, usuario comum e e-mail vazio.
+- [ ] Confirmar testes de webhook Stripe: assinatura invalida, plano Starter, Pro, Pro promocional, Premium, cancelamento e falha de pagamento.
+- [ ] Confirmar testes de isolamento multiusuario: consultas usam `user_id` da sessao e nao `user_id` enviado pelo client.
+- [ ] Confirmar testes de validacao de APIs: lead, checkout, demo e geracao de IA com payload invalido.
+- [ ] Rodar smoke mobile manual apos o e2e desktop, principalmente `/`, `/ebook`, `/demo`, `/login`, `/cadastro`, `/dashboard`, `/assinatura` e `/admin`.
+- [ ] Rodar teste manual pos-deploy seguindo `docs/post-deploy-test.md`.
+
 ## Fluxo público
 
 - [ ] Abrir `/demo` e confirmar headline, seletores, exemplos prontos e CTAs.

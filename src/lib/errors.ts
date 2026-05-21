@@ -21,7 +21,7 @@ export function errorResponse(error: unknown) {
         error: "Dados inválidos. Revise as informações preenchidas e tente novamente.",
         details: error.flatten().fieldErrors
       },
-      { status: 422 }
+      { status: 400 }
     );
   }
 

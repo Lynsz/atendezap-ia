@@ -61,18 +61,65 @@ Nunca logue senhas, tokens, cookies, service role, chaves secretas, cartao ou pa
 
 O admin depende de duas camadas:
 
-1. A interface `/admin` exige login no client.
-2. A API `/api/admin/overview` valida token Supabase, consulta o usuario e bloqueia quem nao estiver em `ADMIN_EMAILS`.
+1. O middleware exige um cookie nao sensivel de sessao presente antes de liberar `/admin`.
+2. A interface `/admin` exige login no client.
+3. A API `/api/admin/overview` valida token Supabase, consulta o usuario e bloqueia quem nao estiver em `ADMIN_EMAILS`.
 
 `ADMIN_EMAILS` aceita multiplos e-mails separados por virgula. Usuario comum nao deve receber leads, assinaturas ou metricas.
+
+## Middleware e rotas
+
+`middleware.ts` classifica rotas publicas, privadas e admin usando `src/lib/auth/routes.ts`.
+
+Rotas publicas principais:
+
+- `/`
+- `/ebook`
+- `/ebook/obrigado`
+- `/demo`
+- `/login`
+- `/cadastro`
+- `/termos`
+- `/privacidade`
+- `/api/health`
+- `/api/stripe/webhook`
+
+Rotas privadas principais:
+
+- `/dashboard`
+- `/assinatura`
+- `/onboarding`
+- `/api/ai/generate-response`
+- `/api/generate-response`
+- `/api/stripe/create-checkout-session`
+- `/api/stripe/create-portal-session`
+
+Rotas admin:
+
+- `/admin`
+- `/api/admin/*`
+
+O projeto ainda usa Supabase Auth no browser para a sessao principal. Por isso o middleware usa apenas `atendezap_auth_hint`, um cookie nao sensivel escrito pelo client quando ha usuario logado. Esse cookie melhora o bloqueio antes do render, mas nao substitui autorizacao real. APIs privadas, APIs admin e RLS continuam sendo a protecao autoritativa.
 
 ## Supabase
 
 - `SUPABASE_SERVICE_ROLE_KEY` deve existir apenas no servidor.
 - Client Components usam apenas `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Client browser canonico: `src/lib/supabase/browser.ts`.
+- Compatibilidade para imports antigos: `src/lib/supabase.ts` reexporta o client browser canonico.
+- Service role/admin client: `src/lib/supabase/server.ts`, usado apenas por Server Components, route handlers e helpers server-only.
+- Auth server helper: `src/lib/auth/server.ts`, para validar token Supabase recebido em `Authorization`.
 - Tabelas de usuario devem manter RLS ativo.
 - Rotas administrativas usam service role apenas depois de `requireAdmin`.
 - Rotas de usuario autenticado filtram por `user_id`.
+
+Para novas APIs privadas:
+
+1. Exigir token Supabase com `requireUser` ou validação equivalente.
+2. Usar `user.id` autenticado, nunca `user_id` vindo do payload.
+3. Filtrar queries por `user_id`.
+4. Retornar `401` sem sessao e `403` sem permissao.
+5. Nao usar service role antes de validar permissao.
 
 ## Stripe
 

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import LoginPage from "@/components/pages/LoginPage";
 
 export const metadata = {
@@ -10,5 +11,9 @@ export const metadata = {
 };
 
 export default function LoginRoutePage() {
-  return <LoginPage />;
+  return (
+    <Suspense fallback={null}>
+      <LoginPage />
+    </Suspense>
+  );
 }

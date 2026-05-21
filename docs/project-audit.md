@@ -2,17 +2,17 @@
 
 ## Nota geral
 
-78/100
+83/100
 
-O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs e deploy estao bem encaminhados. A etapa Stripe test mode reforcou checkout, portal, webhook, schema e testes automatizados. Ainda nao considero 80+ porque falta validar um checkout real com Stripe CLI + Supabase test mode e ainda existem superficies legadas fora do fluxo vendavel.
+O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs e deploy estao bem encaminhados. A etapa atual adicionou Playwright para smoke e2e publico, funil do ebook, demo e protecao sem login, alem de ampliar testes Vitest de admin, isolamento multiusuario, validacao de APIs e webhook Stripe. Ainda falta validar checkout real com Stripe CLI + Supabase test mode, testar RLS contra Supabase real e evoluir para SSR cookies se a protecao de pagina precisar ser 100% server-side.
 
 ## Mapa tecnico
 
 - Framework: Next.js 16 com App Router em `src/app`.
 - Pages Router: nao identificado.
-- Middleware: nao identificado.
+- Middleware: `middleware.ts` classifica rotas publicas, privadas e admin e bloqueia acesso sem hint de sessao.
 - Server actions: nao identificadas; o backend usa route handlers em `src/app/api`.
-- Supabase: cliente browser em `src/lib/supabase/browser.ts`, cliente legado em `src/lib/supabase.ts` e service role em `src/lib/supabase/server.ts`.
+- Supabase: client browser canonico em `src/lib/supabase/browser.ts`, compatibilidade em `src/lib/supabase.ts`, service role em `src/lib/supabase/server.ts` e auth server helper em `src/lib/auth/server.ts`.
 - Stripe: checkout, portal e webhook em `src/app/api/stripe/*`, helpers em `src/services/stripe.ts`.
 - OpenAI: respostas do SaaS em `src/lib/ai-response.ts` e demo publica em `src/app/api/demo/generate-response/route.ts`; chave fica no servidor.
 - Resend: entrega do ebook em `src/lib/email.ts` e e-mails legados de kit em `src/lib/resend.ts`.
@@ -80,16 +80,24 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - `.env`, `.env.local`, `.next`, `node_modules` e tsbuildinfo estao ignorados no Git.
 - `docs/deploy-vercel.md`, `docs/production-checklist.md`, `docs/tracking.md`, `docs/billing.md`, `docs/emails.md`, `docs/admin.md` e checklists existem.
 - `/api/health` retorna `200`.
+- Middleware preserva rotas publicas e webhooks, protege rotas privadas antes do render e redireciona para `/login?redirectTo=...`.
+- `ADMIN_EMAILS` foi isolado em helper testavel com normalizacao de espacos e caixa baixa.
+- `SECURITY.md` documenta rotas publicas, privadas, admin, padrao Supabase e limite do cookie `atendezap_auth_hint`.
+- `docs/e2e-plan.md` documenta fluxos principal, admin e seguranca para a proxima etapa.
+- Playwright foi adicionado com `npm run test:e2e` para validar paginas publicas, `/api/health`, funil do ebook com UTMs, demo publica e bloqueio de rotas/APIs privadas sem login.
+- Testes Vitest cobrem normalizacao/autorizacao admin, payloads invalidos de lead/demo/IA, isolamento por `user_id` na API/telas SaaS e webhook Stripe para assinatura invalida, evento sem `user_id`, Pro promocional, cancelamento e pagamento falho.
+- `docs/testing.md` documenta como rodar unitarios/e2e, como testar sem Stripe/OpenAI/Resend reais e como validar webhook com Stripe CLI.
 
 ## Parcial
 
 - Auth: cadastro, login e logout existem; fluxo precisa de teste real em Supabase com confirmacao de e-mail ligada/desligada.
+- Middleware: melhora o bloqueio de paginas antes do render, mas ainda usa cookie nao sensivel de hint porque a sessao atual do Supabase fica no browser/localStorage.
 - Dashboard: a superficie principal funciona, mas concentra muita regra em um componente grande e ainda convive com modulos legados.
 - Onboarding: o onboarding real do SaaS fica no dashboard e salva em `businesses`; `/onboarding` agora redireciona para essa superficie.
 - Assinatura: dashboard e `/assinatura` refletem Supabase/Stripe, com testes automatizados de checkout/portal/webhook; ainda falta teste ponta a ponta real com Stripe em modo test.
-- Supabase: RLS esta documentado/aplicado no SQL, mas falta teste automatizado provando isolamento entre usuarios.
+- Supabase: RLS esta documentado/aplicado no SQL e ha testes de regressao para filtros por `user_id`; ainda falta teste contra Supabase real com dois usuarios.
 - Tracking: eventos principais existem e no-op sem GA4/Meta Pixel, mas falta validacao com ferramentas reais em producao.
-- Admin: metricas, filtros e CSV existem, mas nao ha endpoint dedicado de exportacao server-side nem teste automatizado de permissao.
+- Admin: metricas, filtros e CSV existem; helpers e bloqueio sem sessao tem testes, mas nao ha endpoint dedicado de exportacao server-side nem teste e2e com sessao admin real.
 - SEO: metadados basicos existem; falta imagem OG padrao configurada se o ativo final existir.
 - Resend: entrega do ebook esta pronta, mas sequencia de nutricao e descadastro ainda nao estao implementados.
 - Deploy: docs estao boas, mas falta evidencia de deploy real com envs de producao.
@@ -97,11 +105,10 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 ## Quebrado ou ausente
 
 - Rotas legadas fora do fluxo principal ainda usam localStorage e podem confundir o escopo de producao.
-- Existem dois helpers Supabase browser (`src/lib/supabase.ts` e `src/lib/supabase/browser.ts`), ambos lancam erro quando env publica falta; isso aumenta chance de comportamento divergente.
-- Nao ha middleware para proteger rotas privadas antes do render client-side; a protecao ocorre em componentes/API.
-- Nao ha testes e2e para cadastro -> onboarding -> gerar resposta -> checkout -> webhook -> dashboard ativo.
-- Nao ha testes automatizados de RLS ou acesso cruzado entre usuarios.
-- Nao ha teste automatizado de webhook Stripe com assinatura real gerada pela Stripe CLI; ha cobertura com mocks para assinatura invalida e atualizacao de subscription.
+- Protecao de pagina ainda nao e autenticação server-side real por cookie Supabase SSR; o middleware atual e uma barreira de UX/compatibilidade e as APIs/RLS continuam autoritativas.
+- Nao ha testes e2e autenticados para cadastro -> onboarding -> gerar resposta -> checkout -> webhook -> dashboard ativo.
+- Nao ha teste automatizado de RLS contra Supabase real; a cobertura atual usa mocks e regressao de filtros por `user_id`.
+- Nao ha teste automatizado de webhook Stripe com assinatura real gerada pela Stripe CLI; ha cobertura com mocks para assinatura invalida, atualizacao, cancelamento e pagamento falho.
 - Fluxos legados/localStorage continuam acessiveis e podem confundir o escopo de producao.
 - Variaveis `OPENAI_MODEL` e `NEXT_PUBLIC_APP_ENV` eram usadas/listadas em docs/codigo, mas faltavam no `.env.example`; corrigido nesta auditoria.
 
@@ -121,13 +128,14 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 - Duplicacao de cliente Supabase browser.
 - Rotas legadas visiveis no app ainda falam em localStorage/mock/Supabase planejado.
-- Admin nao tem teste automatizado de bloqueio por usuario comum.
+- Admin tem teste de normalizacao de `ADMIN_EMAILS`, mas ainda falta teste de rota completa com usuario comum e token real.
 - Falta fluxo de recuperacao de senha.
 - Falta teste automatizado de limite mensal concorrente; duas geracoes simultaneas podem passar pelo mesmo contador antes do insert.
 
-## Para chegar em 80/100
+## Para consolidar acima de 80/100
 
-- Adicionar suite e2e curta para rotas publicas, auth basico e dashboard.
+- Evoluir a suite e2e curta para fluxos autenticados com Supabase test mode: cadastro, dashboard, assinatura e admin real.
+- Planejar migracao para Supabase SSR cookies se for necessario validar paginas privadas diretamente no middleware com token real.
 - Validar manualmente Stripe test mode com webhook local ou Vercel preview.
 - Aplicar `supabase/migrations/0007_stripe_subscription_aliases.sql` no ambiente de teste.
 - Validar Resend com remetente real e confirmar `lead_email_events`.
@@ -152,6 +160,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - `npm run typecheck`
 - `npm run build`
 - `npm test`
+- `npm run test:e2e`
 - `npm install --dry-run`
 - Smoke test browser em `/`, `/ebook`, `/ebook/obrigado`, `/ebook/guia`, `/demo`, `/precos`, `/termos`, `/privacidade` e 404.
 - Smoke mobile em `/`, `/ebook`, `/ebook/obrigado`, `/demo`, `/precos`, `/login`, `/cadastro`, `/dashboard`, `/onboarding`, `/assinatura`, `/admin`, `/termos`, `/privacidade`.
