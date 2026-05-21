@@ -72,7 +72,8 @@ function BillingContent() {
   const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
   const usagePercent = monthlyLimit > 0 ? Math.min(100, Math.round((monthlyUsage / monthlyLimit) * 100)) : 0;
   const activeSubscription = isActiveStatus(subscription?.status);
-  const canManageStripeSubscription = subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id);
+  const canManageStripeSubscription =
+    subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id || subscription.stripe_customer_id);
 
   const planCards = useMemo(() => PLAN_IDS.map((planId) => SAAS_PLANS[planId]), []);
 

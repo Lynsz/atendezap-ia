@@ -6,6 +6,7 @@ import {
   getStripeCouponId,
   getStripePriceId,
   getStripeWebhookSecret,
+  getSaasPlanByStripePriceId,
   mapStripeSubscriptionStatus,
   unixToIso
 } from "@/services/stripe";
@@ -35,6 +36,7 @@ describe("Stripe service helpers", () => {
   it("sanitiza metadata de checkout e preserva UTMs", () => {
     const metadata = buildStripeCheckoutMetadata("user_123", "pro", true, {
       source: "  ads  ",
+      price_id: "price_pro",
       funnel: "ebook",
       utm_source: "meta",
       utm_medium: "cpc",
@@ -47,6 +49,7 @@ describe("Stripe service helpers", () => {
       user_id: "user_123",
       plan_id: "pro",
       plan: "pro",
+      price_id: "price_pro",
       first_month_offer_applied: "true",
       acquisition_source: "ads",
       funnel_source: "ebook",
@@ -56,6 +59,26 @@ describe("Stripe service helpers", () => {
       utm_content: "criativo_a",
       utm_term: "whatsapp ia"
     });
+  });
+
+  it("mapeia price IDs Stripe para planos, incluindo o price promocional do Pro", () => {
+    vi.stubEnv("STRIPE_PRICE_STARTER", "price_starter");
+    vi.stubEnv("STRIPE_PRICE_PRO", "price_pro");
+    vi.stubEnv("STRIPE_PRICE_PRO_FIRST_MONTH_29", "price_pro_29");
+    vi.stubEnv("STRIPE_PRICE_PREMIUM", "price_premium");
+
+    expect(getSaasPlanByStripePriceId("price_starter")?.id).toBe("starter");
+    expect(getSaasPlanByStripePriceId("price_pro")?.id).toBe("pro");
+    expect(getSaasPlanByStripePriceId("price_pro_29")?.id).toBe("pro");
+    expect(getSaasPlanByStripePriceId("price_premium")?.id).toBe("premium");
+    expect(getSaasPlanByStripePriceId("price_unknown")).toBeNull();
+  });
+
+  it("usa o price recorrente normal do Pro no checkout mesmo com price promocional configurado", () => {
+    vi.stubEnv("STRIPE_PRICE_PRO", "price_pro_recurring");
+    vi.stubEnv("STRIPE_PRICE_PRO_FIRST_MONTH_29", "price_pro_29");
+
+    expect(getStripePriceId(SAAS_PLANS.pro)).toBe("price_pro_recurring");
   });
 
   it("mapeia status Stripe para status internos", () => {

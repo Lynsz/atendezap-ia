@@ -58,7 +58,7 @@ NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL=
 
 `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` sao somente servidor. Nunca use prefixo `NEXT_PUBLIC_` nessas chaves.
 
-O codigo tambem aceita os aliases antigos `STRIPE_PRICE_*_MONTHLY` e `STRIPE_COUPON_PRO_FIRST_MONTH`. Se voce preferir o nome sugerido `STRIPE_PRICE_PRO_FIRST_MONTH_29`, ele sera tratado como o ID do cupom de primeiro mes.
+O codigo tambem aceita os aliases antigos `STRIPE_PRICE_*_MONTHLY` e `STRIPE_COUPON_PRO_FIRST_MONTH`. `STRIPE_PRICE_PRO_FIRST_MONTH_29` continua aceito como compatibilidade: o checkout tenta usa-lo como cupom quando nenhum `STRIPE_COUPON_PRO_FIRST_MONTH_29` existir, e o webhook mapeia esse price como plano Pro quando ele aparecer em eventos antigos.
 
 ## Stripe
 
@@ -107,10 +107,11 @@ Se as variaveis da Stripe estiverem vazias, o build continua funcionando. O erro
 
 ## Supabase
 
-Migration segura:
+Migrations seguras:
 
 ```text
 supabase/migrations/0003_stripe_billing.sql
+supabase/migrations/0007_stripe_subscription_aliases.sql
 ```
 
 Ela adiciona campos em `subscriptions` sem apagar dados:
@@ -118,6 +119,9 @@ Ela adiciona campos em `subscriptions` sem apagar dados:
 - `provider`
 - `provider_customer_id`
 - `provider_subscription_id`
+- `stripe_customer_id`
+- `stripe_subscription_id`
+- `subscription_status`
 - `provider_price_id`
 - `provider_payment_id`
 - `stripe_checkout_session_id`
@@ -129,6 +133,7 @@ Ela adiciona campos em `subscriptions` sem apagar dados:
 - `funnel_source`
 - `last_payment_status`
 - `metadata`
+- `usage_count`
 
 Tambem cria `stripe_webhook_events` com `provider_event_id` unico para idempotencia.
 

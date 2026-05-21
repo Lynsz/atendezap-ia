@@ -593,7 +593,8 @@ function SaasDashboardContent() {
   const currentPlanId = normalizePlanId(subscriptionPlanName);
   const usagePercent = monthlyLimit > 0 ? Math.min(100, Math.round((monthlyUsage / monthlyLimit) * 100)) : 0;
   const isNearMonthlyLimit = usagePercent >= 80 && !hasReachedMonthlyLimit;
-  const canManageStripeSubscription = subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id);
+  const canManageStripeSubscription =
+    subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id || subscription.stripe_customer_id);
   const isFreeOrTrial = !subscriptionPlanName || subscriptionPlanName.toLowerCase() === "free" || subscription?.status?.toLowerCase() === "trial";
   const shouldShowOnboarding = !business?.onboarding_completed;
   const exampleQuestions = getExampleQuestions(businessDraft.business_type);

@@ -2,9 +2,9 @@
 
 ## Nota geral
 
-74/100
+78/100
 
-O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs e deploy estao bem encaminhados. Ainda nao considero 80+ porque existem rotas legadas com estado local, fluxos criticos sem teste ponta a ponta real, e algumas partes dependem de configuracao externa ainda nao comprovada em ambiente de producao.
+O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs e deploy estao bem encaminhados. A etapa Stripe test mode reforcou checkout, portal, webhook, schema e testes automatizados. Ainda nao considero 80+ porque falta validar um checkout real com Stripe CLI + Supabase test mode e ainda existem superficies legadas fora do fluxo vendavel.
 
 ## Mapa tecnico
 
@@ -70,7 +70,11 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Dashboard SaaS le usuario, negocio, historico, clientes, assinatura, uso mensal e planos via Supabase.
 - Geracao de resposta exige auth, valida entrada, usa contexto do negocio, salva historico e bloqueia pelo limite mensal.
 - Stripe checkout exige auth, valida plano, usa price IDs/cupom via env, envia metadata com `user_id`, `plan` e UTMs.
-- Stripe webhook valida assinatura e trata `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded` e `invoice.payment_failed`.
+- Stripe checkout envia `user_id`, `plan`, `price_id` e UTMs na metadata, cria/reutiliza customer e grava assinatura pendente no Supabase.
+- Stripe portal exige auth, busca customer no Supabase e retorna erro controlado quando o usuario ainda nao tem customer.
+- Stripe webhook valida assinatura, registra idempotencia e trata `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded` e `invoice.payment_failed`.
+- Stripe webhook resolve usuario por metadata, `client_reference_id`, subscription salva ou customer Stripe, e mapeia `STRIPE_PRICE_PRO_FIRST_MONTH_29` como plano Pro.
+- Supabase agora tem migration segura para `stripe_customer_id`, `stripe_subscription_id`, `subscription_status` e `usage_count`, com backfill a partir de `provider_*`/`status`.
 - Admin server-side exige usuario autenticado e e-mail listado em `ADMIN_EMAILS`.
 - Schema Supabase tem tabelas esperadas, RLS e policies por `auth.uid()` para dados de usuario.
 - `.env`, `.env.local`, `.next`, `node_modules` e tsbuildinfo estao ignorados no Git.
@@ -82,7 +86,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Auth: cadastro, login e logout existem; fluxo precisa de teste real em Supabase com confirmacao de e-mail ligada/desligada.
 - Dashboard: a superficie principal funciona, mas concentra muita regra em um componente grande e ainda convive com modulos legados.
 - Onboarding: o onboarding real do SaaS fica no dashboard e salva em `businesses`; `/onboarding` agora redireciona para essa superficie.
-- Assinatura: dashboard e `/assinatura` refletem Supabase/Stripe, mas ainda falta teste ponta a ponta real com Stripe em modo test.
+- Assinatura: dashboard e `/assinatura` refletem Supabase/Stripe, com testes automatizados de checkout/portal/webhook; ainda falta teste ponta a ponta real com Stripe em modo test.
 - Supabase: RLS esta documentado/aplicado no SQL, mas falta teste automatizado provando isolamento entre usuarios.
 - Tracking: eventos principais existem e no-op sem GA4/Meta Pixel, mas falta validacao com ferramentas reais em producao.
 - Admin: metricas, filtros e CSV existem, mas nao ha endpoint dedicado de exportacao server-side nem teste automatizado de permissao.
@@ -97,7 +101,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Nao ha middleware para proteger rotas privadas antes do render client-side; a protecao ocorre em componentes/API.
 - Nao ha testes e2e para cadastro -> onboarding -> gerar resposta -> checkout -> webhook -> dashboard ativo.
 - Nao ha testes automatizados de RLS ou acesso cruzado entre usuarios.
-- Nao ha teste automatizado de webhook Stripe com eventos reais assinados.
+- Nao ha teste automatizado de webhook Stripe com assinatura real gerada pela Stripe CLI; ha cobertura com mocks para assinatura invalida e atualizacao de subscription.
 - Fluxos legados/localStorage continuam acessiveis e podem confundir o escopo de producao.
 - Variaveis `OPENAI_MODEL` e `NEXT_PUBLIC_APP_ENV` eram usadas/listadas em docs/codigo, mas faltavam no `.env.example`; corrigido nesta auditoria.
 
@@ -105,12 +109,13 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 - Rodar um teste ponta a ponta em Supabase/Stripe test mode: cadastro, onboarding, geracao, checkout, webhook e portal.
 - Validar em producao/preview que `NEXT_PUBLIC_APP_URL` monta redirects corretos de Stripe e links de e-mail.
-- Criar testes automatizados minimos para API de checkout, webhook Stripe e isolamento de dados.
+- Criar testes automatizados de isolamento de dados/RLS e, se necessario, um teste de webhook com payload assinado.
 
 ## Bugs criticos
 
 - Nenhum erro de build, lint ou API publica basica foi encontrado no ambiente local.
 - Risco critico de produto removido das rotas `/assinatura` e `/onboarding`; ainda existem superficies legadas fora do fluxo principal.
+- Nenhum bug critico de Stripe ficou aberto no codigo revisado; o risco restante e externo: configurar produtos, prices, cupom, webhook secret e aplicar migrations no Supabase correto.
 
 ## Bugs medios
 
@@ -123,8 +128,8 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 ## Para chegar em 80/100
 
 - Adicionar suite e2e curta para rotas publicas, auth basico e dashboard.
-- Adicionar testes unitarios/API para checkout, portal e webhook com mocks.
 - Validar manualmente Stripe test mode com webhook local ou Vercel preview.
+- Aplicar `supabase/migrations/0007_stripe_subscription_aliases.sql` no ambiente de teste.
 - Validar Resend com remetente real e confirmar `lead_email_events`.
 - Marcar claramente ou esconder rotas legadas que nao fazem parte do SaaS vendavel.
 
@@ -151,11 +156,12 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 - Smoke test browser em `/`, `/ebook`, `/ebook/obrigado`, `/ebook/guia`, `/demo`, `/precos`, `/termos`, `/privacidade` e 404.
 - Smoke mobile em `/`, `/ebook`, `/ebook/obrigado`, `/demo`, `/precos`, `/login`, `/cadastro`, `/dashboard`, `/onboarding`, `/assinatura`, `/admin`, `/termos`, `/privacidade`.
 - Smoke API em `/api/health`, `/api/ai/generate-response`, `/api/stripe/create-checkout-session`, `/api/admin/overview`.
+- Testes automatizados de Stripe para checkout, portal, webhook invalido e mapeamento do Pro promocional.
 
 ## Pendencias externas
 
-- Stripe: criar produtos, prices, cupom Pro, webhook e testar eventos em modo test/live.
-- Supabase: aplicar migrations, validar RLS e configurar URLs de Auth.
+- Stripe: criar produtos, prices, cupom Pro, webhook e testar eventos em modo test/live seguindo `docs/stripe-test.md`.
+- Supabase: aplicar migrations, incluindo `0007_stripe_subscription_aliases.sql`, validar RLS e configurar URLs de Auth.
 - Vercel: preencher envs, dominio, `NEXT_PUBLIC_APP_URL`, build e health check.
 - Resend: validar dominio/remetente e testar entrega real.
 - GA4: configurar Measurement ID e validar eventos.
@@ -164,7 +170,7 @@ O projeto esta acima de um prototipo simples: o funil publico, auth, dashboard S
 
 ## Proximos passos recomendados
 
-1. Rodar teste manual completo em Supabase + Stripe test mode.
-2. Adicionar testes de checkout/webhook e um e2e curto do fluxo principal.
+1. Rodar teste manual completo em Supabase + Stripe test mode seguindo `docs/stripe-test.md`.
+2. Adicionar um e2e curto do fluxo principal: cadastro, onboarding, gerar resposta, checkout e dashboard ativo.
 3. Revisar rotas legadas e decidir quais ficam escondidas, redirecionadas ou documentadas como demo.
 4. Fazer deploy preview na Vercel e executar `docs/post-deploy-test.md`.

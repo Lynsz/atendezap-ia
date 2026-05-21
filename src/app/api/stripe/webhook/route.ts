@@ -22,6 +22,43 @@ function getStringId(value: string | { id: string } | null | undefined) {
   return typeof value === "string" ? value : value.id;
 }
 
+async function findStoredUserId(subscription: Stripe.Subscription) {
+  const supabase = getSupabaseAdmin();
+  const customerId = getStringId(subscription.customer);
+
+  const { data: bySubscription } = await supabase
+    .from("subscriptions")
+    .select("user_id")
+    .eq("provider", "stripe")
+    .eq("provider_subscription_id", subscription.id)
+    .limit(1)
+    .maybeSingle();
+
+  if (bySubscription?.user_id) return bySubscription.user_id as string;
+
+  if (!customerId) return null;
+
+  const { data: byProviderCustomer } = await supabase
+    .from("subscriptions")
+    .select("user_id")
+    .eq("provider", "stripe")
+    .eq("provider_customer_id", customerId)
+    .limit(1)
+    .maybeSingle();
+
+  if (byProviderCustomer?.user_id) return byProviderCustomer.user_id as string;
+
+  const { data: byStripeCustomer } = await supabase
+    .from("subscriptions")
+    .select("user_id")
+    .eq("provider", "stripe")
+    .eq("stripe_customer_id", customerId)
+    .limit(1)
+    .maybeSingle();
+
+  return byStripeCustomer?.user_id ? (byStripeCustomer.user_id as string) : null;
+}
+
 async function markEventProcessed(event: Stripe.Event) {
   const supabase = getSupabaseAdmin();
   const { error } = await supabase.from("stripe_webhook_events").insert({
@@ -39,12 +76,17 @@ async function markEventProcessed(event: Stripe.Event) {
   return true;
 }
 
-async function updateSubscriptionFromStripe(subscription: Stripe.Subscription, eventId: string, lastPaymentStatus?: string | null) {
+async function updateSubscriptionFromStripe(
+  subscription: Stripe.Subscription,
+  eventId: string,
+  lastPaymentStatus?: string | null,
+  userIdFallback?: string | null
+) {
   const supabase = getSupabaseAdmin();
   const periodSubscription = subscription as StripeSubscriptionWithPeriod;
   const priceId = getSubscriptionPriceId(subscription);
-  const plan = getSaasPlan(subscription.metadata.plan_id) || getSaasPlanByStripePriceId(priceId);
-  const userId = subscription.metadata.user_id;
+  const plan = getSaasPlan(subscription.metadata.plan_id || subscription.metadata.plan) || getSaasPlanByStripePriceId(priceId);
+  const userId = subscription.metadata.user_id || userIdFallback || (await findStoredUserId(subscription));
 
   if (!userId || !plan) {
     console.warn("Stripe webhook sem user_id ou plano reconhecido.", {
@@ -67,6 +109,9 @@ async function updateSubscriptionFromStripe(subscription: Stripe.Subscription, e
       provider: "stripe",
       provider_customer_id: getStringId(subscription.customer),
       provider_subscription_id: subscription.id,
+      stripe_customer_id: getStringId(subscription.customer),
+      stripe_subscription_id: subscription.id,
+      subscription_status: subscription.status,
       provider_price_id: priceId,
       stripe_event_id: eventId,
       monthly_limit: plan.responseLimit,
@@ -99,7 +144,8 @@ async function updateSubscriptionFromCheckoutSession(session: Stripe.Checkout.Se
   if (!session.subscription || typeof session.subscription !== "string") return;
 
   const subscription = await getStripe().subscriptions.retrieve(session.subscription);
-  await updateSubscriptionFromStripe(subscription, eventId, session.payment_status || null);
+  const sessionUserId = session.metadata?.user_id || session.client_reference_id || null;
+  await updateSubscriptionFromStripe(subscription, eventId, session.payment_status || null, sessionUserId);
 
   const supabase = getSupabaseAdmin();
   await supabase
@@ -108,6 +154,8 @@ async function updateSubscriptionFromCheckoutSession(session: Stripe.Checkout.Se
       stripe_checkout_session_id: session.id,
       stripe_event_id: eventId,
       provider_customer_id: getStringId(session.customer),
+      stripe_customer_id: getStringId(session.customer),
+      stripe_subscription_id: subscription.id,
       last_payment_status: session.payment_status || "checkout_completed"
     })
     .eq("provider", "stripe")
@@ -128,6 +176,7 @@ async function updatePaymentStatusFromInvoice(invoice: Stripe.Invoice, eventId: 
     .update({
       provider_payment_id: paymentId,
       stripe_event_id: eventId,
+      subscription_status: stripeSubscription.status,
       last_payment_status: paymentStatus
     })
     .eq("provider", "stripe")

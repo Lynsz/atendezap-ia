@@ -54,14 +54,15 @@ export async function POST(request: Request) {
     const supabase = getSupabaseAdmin();
     const { data: subscription } = await supabase
       .from("subscriptions")
-      .select("provider, provider_customer_id")
+      .select("provider, provider_customer_id, stripe_customer_id")
       .eq("user_id", user.id)
       .eq("provider", "stripe")
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    const customerId = subscription?.provider_customer_id as string | null | undefined;
+    const customerId =
+      (subscription?.provider_customer_id as string | null | undefined) || (subscription?.stripe_customer_id as string | null | undefined);
     if (!customerId) {
       throw new AppError("Nenhuma assinatura Stripe encontrada para este usuário.", 404);
     }

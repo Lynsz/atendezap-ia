@@ -67,6 +67,9 @@ create table if not exists public.subscriptions (
   provider text,
   provider_customer_id text,
   provider_subscription_id text,
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  subscription_status text,
   provider_price_id text,
   provider_payment_id text,
   stripe_checkout_session_id text,
@@ -78,6 +81,7 @@ create table if not exists public.subscriptions (
   last_payment_status text,
   metadata jsonb default '{}'::jsonb,
   status text default 'trial',
+  usage_count integer not null default 0,
   current_period_start timestamptz,
   current_period_end timestamptz,
   created_at timestamptz default now(),
@@ -105,6 +109,9 @@ alter table public.subscriptions add column if not exists first_month_price_appl
 alter table public.subscriptions add column if not exists provider text;
 alter table public.subscriptions add column if not exists provider_customer_id text;
 alter table public.subscriptions add column if not exists provider_subscription_id text;
+alter table public.subscriptions add column if not exists stripe_customer_id text;
+alter table public.subscriptions add column if not exists stripe_subscription_id text;
+alter table public.subscriptions add column if not exists subscription_status text;
 alter table public.subscriptions add column if not exists provider_price_id text;
 alter table public.subscriptions add column if not exists provider_payment_id text;
 alter table public.subscriptions add column if not exists stripe_checkout_session_id text;
@@ -115,6 +122,7 @@ alter table public.subscriptions add column if not exists promo_code text;
 alter table public.subscriptions add column if not exists cancel_at_period_end boolean default false;
 alter table public.subscriptions add column if not exists last_payment_status text;
 alter table public.subscriptions add column if not exists metadata jsonb default '{}'::jsonb;
+alter table public.subscriptions add column if not exists usage_count integer not null default 0;
 alter table public.subscriptions add column if not exists current_period_start timestamptz;
 alter table public.plans add column if not exists first_month_price numeric;
 alter table public.plans add column if not exists is_first_month_offer boolean default false;
@@ -225,6 +233,9 @@ create unique index if not exists stripe_webhook_events_provider_event_id_unique
 create index if not exists subscriptions_provider_subscription_id_idx on public.subscriptions(provider_subscription_id);
 create index if not exists subscriptions_provider_customer_id_idx on public.subscriptions(provider_customer_id);
 create index if not exists subscriptions_provider_price_id_idx on public.subscriptions(provider_price_id);
+create index if not exists subscriptions_stripe_customer_id_idx on public.subscriptions(stripe_customer_id);
+create index if not exists subscriptions_stripe_subscription_id_idx on public.subscriptions(stripe_subscription_id);
+create index if not exists subscriptions_subscription_status_idx on public.subscriptions(subscription_status);
 create index if not exists purchasers_email_idx on public.purchasers(email);
 create unique index if not exists purchasers_email_unique_idx on public.purchasers(email);
 create index if not exists orders_customer_id_idx on public.orders(customer_id);

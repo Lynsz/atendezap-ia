@@ -64,6 +64,11 @@ export type Subscription = {
   provider: string | null;
   provider_customer_id?: string | null;
   provider_subscription_id?: string | null;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
+  subscription_status?: string | null;
+  monthly_limit?: number | null;
+  usage_count?: number | null;
   cancel_at_period_end?: boolean | null;
   current_period_start?: string | null;
   current_period_end: string | null;

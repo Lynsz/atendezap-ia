@@ -57,7 +57,7 @@ function envValue(...names: string[]) {
   return "";
 }
 
-function getPlanStripePriceEnv(planId: PlanId) {
+function getCheckoutStripePriceId(planId: PlanId) {
   switch (planId) {
     case "starter":
       return envValue("STRIPE_PRICE_STARTER", "STRIPE_PRICE_STARTER_MONTHLY");
@@ -70,8 +70,14 @@ function getPlanStripePriceEnv(planId: PlanId) {
   }
 }
 
+export function getStripePlanPriceIds(planId: PlanId) {
+  const checkoutPriceId = getCheckoutStripePriceId(planId);
+  const compatibilityPriceIds = planId === "pro" ? [envValue("STRIPE_PRICE_PRO_FIRST_MONTH_29")] : [];
+  return [checkoutPriceId, ...compatibilityPriceIds].filter(Boolean);
+}
+
 export function getStripePriceId(plan: SaasPlan) {
-  const priceId = getPlanStripePriceEnv(plan.id);
+  const priceId = getCheckoutStripePriceId(plan.id);
   if (!priceId) {
     throw new AppError(`Preço Stripe não configurado para o plano ${plan.name}.`, 503);
   }
@@ -90,7 +96,7 @@ export function getStripeCouponId(plan: SaasPlan, shouldApplyFirstMonthOffer: bo
 
 export function getSaasPlanByStripePriceId(stripePriceId: string | null | undefined) {
   if (!stripePriceId) return null;
-  const planId = PLAN_IDS.find((id) => getPlanStripePriceEnv(id) === stripePriceId);
+  const planId = PLAN_IDS.find((id) => getStripePlanPriceIds(id).includes(stripePriceId));
   return planId ? getSaasPlan(planId) : null;
 }
 
@@ -121,6 +127,7 @@ export function unixToIso(value?: number | null) {
 }
 
 export type StripeCheckoutAttribution = {
+  price_id?: string;
   source?: string;
   funnel?: string;
   utm_source?: string;
@@ -144,6 +151,7 @@ export function buildStripeCheckoutMetadata(
     user_id: userId,
     plan_id: planId,
     plan: planId,
+    price_id: cleanMetadataValue(attribution.price_id),
     first_month_offer_applied: firstMonthOfferApplied ? "true" : "false",
     acquisition_source: cleanMetadataValue(attribution.source) || "stripe",
     funnel_source: cleanMetadataValue(attribution.funnel) || "pricing",

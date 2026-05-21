@@ -71,6 +71,18 @@ create table if not exists public.plans (
   created_at timestamptz default now()
 );
 
+alter table public.subscriptions add column if not exists plan text default 'free';
+alter table public.subscriptions add column if not exists monthly_limit integer default 30;
+alter table public.subscriptions add column if not exists price numeric;
+alter table public.subscriptions add column if not exists provider text;
+alter table public.subscriptions add column if not exists provider_customer_id text;
+alter table public.subscriptions add column if not exists provider_subscription_id text;
+alter table public.subscriptions add column if not exists stripe_customer_id text;
+alter table public.subscriptions add column if not exists stripe_subscription_id text;
+alter table public.subscriptions add column if not exists subscription_status text;
+alter table public.subscriptions add column if not exists provider_price_id text;
+alter table public.subscriptions add column if not exists usage_count integer not null default 0;
+
 create table if not exists public.purchasers (
   id uuid primary key default gen_random_uuid(),
   email text not null,
@@ -127,6 +139,9 @@ create index if not exists generated_responses_business_id_idx on public.generat
 create index if not exists customers_user_id_idx on public.customers(user_id);
 create index if not exists subscriptions_user_id_idx on public.subscriptions(user_id);
 create unique index if not exists subscriptions_user_id_unique_idx on public.subscriptions(user_id);
+create index if not exists subscriptions_stripe_customer_id_idx on public.subscriptions(stripe_customer_id);
+create index if not exists subscriptions_stripe_subscription_id_idx on public.subscriptions(stripe_subscription_id);
+create index if not exists subscriptions_subscription_status_idx on public.subscriptions(subscription_status);
 create index if not exists purchasers_email_idx on public.purchasers(email);
 create unique index if not exists purchasers_email_unique_idx on public.purchasers(email);
 create index if not exists orders_customer_id_idx on public.orders(customer_id);

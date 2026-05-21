@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     const supabase = getSupabaseAdmin();
     const { data: currentSubscription } = await supabase
       .from("subscriptions")
-      .select("id, provider, provider_customer_id, first_month_offer_used_at, first_month_price_applied")
+      .select("id, provider, provider_customer_id, stripe_customer_id, first_month_offer_used_at, first_month_price_applied")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -99,6 +99,7 @@ export async function POST(request: Request) {
     const couponId = getStripeCouponId(plan, shouldApplyFirstMonthOffer);
     const appUrl = getAppUrl();
     const metadata = buildStripeCheckoutMetadata(user.id, plan.id, shouldApplyFirstMonthOffer, {
+      price_id: priceId,
       source: body.source,
       funnel: body.funnel,
       utm_source: body.utm_source,
@@ -109,7 +110,9 @@ export async function POST(request: Request) {
     });
 
     let customerId =
-      currentSubscription?.provider === "stripe" ? (currentSubscription.provider_customer_id as string | null) || undefined : undefined;
+      currentSubscription?.provider === "stripe"
+        ? (currentSubscription.provider_customer_id as string | null) || (currentSubscription.stripe_customer_id as string | null) || undefined
+        : undefined;
 
     if (!customerId) {
       const customer = await stripe.customers.create({
@@ -150,11 +153,15 @@ export async function POST(request: Request) {
         provider: "stripe",
         provider_customer_id: customerId,
         provider_subscription_id: null,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: null,
+        subscription_status: "pending",
         provider_price_id: priceId,
         stripe_checkout_session_id: checkoutSession.id,
         acquisition_source: metadata.acquisition_source || "stripe",
         funnel_source: metadata.funnel_source || "pricing",
         monthly_limit: plan.responseLimit,
+        usage_count: 0,
         price: plan.monthlyPrice,
         first_month_price: plan.firstMonthPrice ?? null,
         is_first_month_offer: Boolean(plan.firstMonthPrice),
