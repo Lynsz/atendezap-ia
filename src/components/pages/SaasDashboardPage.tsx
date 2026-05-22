@@ -11,6 +11,7 @@ import {
   CreditCard,
   LogOut,
   MessageCircle,
+  MessageSquare,
   Plus,
   RefreshCw,
   Save,
@@ -706,10 +707,24 @@ function SaasDashboardContent() {
               </p>
               <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Assistente IA para WhatsApp</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-                Olá, {userName}. Cadastre seu negócio, cole a pergunta do cliente e gere uma resposta profissional.
+                Olá, {userName}. Cadastre seu negócio, cole a pergunta do cliente e gere uma resposta profissional. A IA sugere o texto; você copia, ajusta e envia pelo WhatsApp.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent("support_cta_click", {
+                    source: "dashboard_header",
+                    destination: "feedback"
+                  });
+                  router.push("/feedback");
+                }}
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 text-sm font-bold text-slate-200 hover:bg-white/10"
+              >
+                <MessageSquare className="h-4 w-4" />
+                Enviar feedback
+              </button>
               {canManageStripeSubscription ? (
                 <button type="button" onClick={manageStripeSubscription} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-emerald-300 px-4 text-sm font-black text-slate-950 hover:bg-emerald-200">
                   <CreditCard className="h-4 w-4" />
@@ -730,7 +745,7 @@ function SaasDashboardContent() {
               <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-emerald-300">Configuração inicial</p>
               <h2 className="text-2xl font-black text-white md:text-4xl">Vamos configurar sua IA em poucos minutos</h2>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-                Essas informações ajudam o AtendeZap IA a criar respostas melhores para seus clientes. Você poderá editar isso depois.
+                Essas informações ajudam o AtendeZap IA a criar respostas melhores para seus clientes. Você poderá editar tudo depois. A IA não envia mensagens automaticamente: ela gera uma sugestão para você copiar, ajustar e enviar no WhatsApp.
               </p>
             </div>
 
@@ -872,7 +887,7 @@ function SaasDashboardContent() {
         {!business ? (
           <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-5 text-sm font-bold text-amber-100">
             <p className="text-base text-white">Nenhum negócio cadastrado ainda.</p>
-            <p className="mt-2 font-medium text-amber-100/90">Cadastre os dados do seu negócio para a IA personalizar as respostas.</p>
+            <p className="mt-2 font-medium text-amber-100/90">Configure seu atendimento para a IA gerar respostas melhores. Você pode editar esses dados depois.</p>
             <button type="button" onClick={() => setTab("business")} className="mt-4 rounded-md bg-amber-300 px-4 py-2 text-xs font-black text-slate-950 hover:bg-amber-200">
               Cadastrar negócio
             </button>
@@ -885,9 +900,9 @@ function SaasDashboardContent() {
         ) : null}
         {isFreeOrTrial ? (
           <div className="mb-5 flex flex-col gap-3 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm text-emerald-100 md:flex-row md:items-center md:justify-between">
-            <p>
-              Respostas usadas neste mês: <strong>{monthlyUsage} / {responseLimit}</strong>. Faça upgrade para aumentar seu limite.
-            </p>
+              <p>
+                Respostas usadas neste mês: <strong>{monthlyUsage} / {responseLimit}</strong>. Se precisar responder mais clientes, escolha um plano com limite maior.
+              </p>
             <button type="button" onClick={() => router.push("/plans")} className="rounded-md bg-emerald-300 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-200">
               Ver planos
             </button>
@@ -895,7 +910,7 @@ function SaasDashboardContent() {
         ) : null}
         {hasReachedMonthlyLimit ? (
           <div className="mb-5 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">
-            Você atingiu o limite de respostas do seu plano neste mês. Faça upgrade para continuar usando.
+            Você atingiu o limite de respostas do seu plano neste mês. Escolha um plano maior para continuar gerando respostas.
           </div>
         ) : null}
 
@@ -1119,7 +1134,7 @@ function SaasDashboardContent() {
           <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
             <form onSubmit={handleGenerateResponse} className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
               <h2 className="text-xl font-black text-white">Responder cliente</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-400">Cole a mensagem recebida no WhatsApp e escolha o objetivo da resposta.</p>
+              <p className="mt-2 text-sm leading-6 text-slate-400">Cole a mensagem recebida no WhatsApp e escolha o objetivo. A IA gera uma sugestão para você revisar, copiar e enviar manualmente.</p>
               <label className="mt-5 grid gap-2 text-sm font-bold text-slate-300">
                 Pergunta do cliente
                 <textarea value={question} onChange={(event) => setQuestion(event.target.value)} className="field-input min-h-40 resize-none py-3" placeholder="Ex.: Oi, quanto custa e tem horário hoje?" />
@@ -1165,7 +1180,7 @@ function SaasDashboardContent() {
                 <div className="flex min-h-72 flex-col items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm leading-6 text-slate-400">
                   <MessageCircle className="mb-4 h-8 w-8 text-slate-500" />
                   <p className="font-bold text-slate-200">A resposta pronta para copiar aparecerá aqui.</p>
-                  <p className="mt-2 max-w-sm">Cole uma pergunta real do cliente e escolha o objetivo da mensagem.</p>
+                  <p className="mt-2 max-w-sm">Cole uma pergunta real do cliente e escolha o objetivo da mensagem. Depois revise, copie e envie pelo WhatsApp.</p>
                 </div>
               )}
             </article>
@@ -1175,7 +1190,7 @@ function SaasDashboardContent() {
         {tab === "business" ? (
           <form onSubmit={handleSaveBusiness} className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
             <h2 className="text-xl font-black text-white">Configuração da IA</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Atualize o contexto do seu atendimento. As próximas respostas geradas pela IA vão usar essas informações.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-400">Atualize o contexto do seu atendimento. As próximas respostas geradas pela IA vão usar essas informações, e você pode ajustar tudo depois.</p>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {([
                 ["business_name", "Nome do negócio ou nome profissional"],
@@ -1258,7 +1273,7 @@ function SaasDashboardContent() {
                 <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
                   <Clipboard className="mx-auto mb-4 h-8 w-8 text-slate-500" />
                   <p className="font-bold text-slate-200">Nenhuma resposta gerada ainda.</p>
-                  <p className="mt-2">Gere sua primeira resposta para ver o histórico salvo aqui.</p>
+                  <p className="mt-2">Você ainda não gerou respostas. Comece digitando uma pergunta comum de cliente.</p>
                   <button type="button" onClick={() => setTab("assistant")} className="mt-4 rounded-md bg-emerald-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
                     Gerar resposta
                   </button>

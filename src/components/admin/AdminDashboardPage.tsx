@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
-import { BarChart3, Download, Filter, Lock, Mail, RefreshCw, Search, Users } from "lucide-react";
+import { BarChart3, CheckCircle2, Download, Filter, Lock, Mail, MessageSquare, RefreshCw, Search, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase/browser";
 
 type PeriodFilter = "today" | "7d" | "30d" | "all";
@@ -41,6 +41,18 @@ type AdminSubscription = {
   updated_at: string;
 };
 
+type AdminFeedback = {
+  id: string;
+  user_id: string | null;
+  name: string | null;
+  email: string | null;
+  type: string;
+  message: string;
+  page: string | null;
+  status: string;
+  created_at: string;
+};
+
 type AdminPayload = {
   metrics: {
     totalLeads: number;
@@ -58,6 +70,7 @@ type AdminPayload = {
   };
   leads: AdminLead[];
   subscriptions: AdminSubscription[];
+  feedback: AdminFeedback[];
   filterOptions: {
     businessTypes: string[];
     utmSources: string[];
@@ -116,6 +129,31 @@ function statusClass(status?: string | null) {
   return "border-slate-400/20 bg-white/[0.04] text-slate-300";
 }
 
+function feedbackTypeLabel(type: string) {
+  const labels: Record<string, string> = {
+    bug: "Bug",
+    duvida: "Dúvida",
+    sugestao: "Sugestão",
+    elogio: "Elogio",
+    dificuldade_uso: "Dificuldade de uso"
+  };
+  return labels[type] || type;
+}
+
+function feedbackStatusLabel(status: string) {
+  const labels: Record<string, string> = {
+    new: "Novo",
+    reviewing: "Em análise",
+    resolved: "Resolvido",
+    ignored: "Ignorado"
+  };
+  return labels[status] || status;
+}
+
+function summarizeMessage(message: string) {
+  return message.length > 180 ? `${message.slice(0, 180)}...` : message;
+}
+
 function csvEscape(value: string | number | null | undefined) {
   const text = value === null || value === undefined ? "" : String(value);
   return `"${text.replace(/"/g, '""')}"`;
@@ -158,6 +196,7 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [accessDenied, setAccessDenied] = useState(false);
+  const [updatingFeedbackId, setUpdatingFeedbackId] = useState("");
 
   const loadAdminData = useCallback(async () => {
     setLoading(true);
@@ -222,6 +261,50 @@ export default function AdminDashboardPage() {
     setAppliedFilters(filters);
   }
 
+  async function updateFeedbackStatus(feedbackId: string, status: "reviewing" | "resolved") {
+    setUpdatingFeedbackId(feedbackId);
+    setError("");
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        setAccessDenied(true);
+        setError("Faça login com um e-mail administrador para atualizar feedbacks.");
+        return;
+      }
+
+      const response = await fetch("/api/feedback", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ id: feedbackId, status })
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string };
+
+      if (!response.ok) {
+        setError(result.error || "Não foi possível atualizar o feedback.");
+        return;
+      }
+
+      setData((current) =>
+        current
+          ? {
+              ...current,
+              feedback: current.feedback.map((item) => (item.id === feedbackId ? { ...item, status } : item))
+            }
+          : current
+      );
+    } catch {
+      setError("Não foi possível atualizar o feedback agora.");
+    } finally {
+      setUpdatingFeedbackId("");
+    }
+  }
+
   if (loading && !data) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#090d12] px-4 text-white">
@@ -280,9 +363,69 @@ export default function AdminDashboardPage() {
           <MetricCard label="Plano mais usado" value={metrics?.mostUsedPlan || "Sem dados"} icon={<BarChart3 className="h-5 w-5" />} />
           <MetricCard label="Ebooks enviados" value={metrics?.emailSentSuccess ?? 0} icon={<Mail className="h-5 w-5" />} />
           <MetricCard label="Falha no envio" value={metrics?.emailSentFailed ?? 0} icon={<Mail className="h-5 w-5" />} />
+          <MetricCard label="Feedbacks recentes" value={data?.feedback?.length ?? 0} icon={<MessageSquare className="h-5 w-5" />} />
           <MetricCard label="Lead -> cadastro" value={`${metrics?.leadToSignupRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
           <MetricCard label="Cadastro -> assinatura" value={`${metrics?.signupToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
           <MetricCard label="Lead -> assinatura" value={`${metrics?.leadToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
+        </section>
+
+        <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+          <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Feedbacks recentes</p>
+              <h2 className="mt-2 text-2xl font-black text-white">Primeiros usuários</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">Use esta lista para priorizar bugs, dúvidas e dificuldades de uso da produção controlada.</p>
+            </div>
+          </div>
+
+          <div className="grid gap-3">
+            {data?.feedback?.length ? (
+              data.feedback.map((item) => (
+                <article className="rounded-lg border border-white/10 bg-white/[0.04] p-4" key={item.id}>
+                  <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-black text-emerald-200">{feedbackTypeLabel(item.type)}</span>
+                        <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(item.status)}`}>{feedbackStatusLabel(item.status)}</span>
+                      </div>
+                      <p className="mt-3 text-sm font-black text-white">{item.email || item.name || "Contato não informado"}</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-300">{summarizeMessage(item.message)}</p>
+                      <div className="mt-3 flex flex-wrap gap-3 text-xs font-bold text-slate-500">
+                        <span>Página: {item.page || "-"}</span>
+                        <span>Data: {formatDate(item.created_at)}</span>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 flex-col gap-2 sm:flex-row lg:flex-col">
+                      <button
+                        type="button"
+                        onClick={() => void updateFeedbackStatus(item.id, "reviewing")}
+                        disabled={updatingFeedbackId === item.id || item.status === "reviewing"}
+                        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/[0.06] px-3 text-xs font-black text-slate-100 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" />
+                        Em análise
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void updateFeedbackStatus(item.id, "resolved")}
+                        disabled={updatingFeedbackId === item.id || item.status === "resolved"}
+                        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-emerald-400 px-3 text-xs font-black text-slate-950 hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        Resolvido
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
+                <MessageSquare className="mx-auto mb-4 h-8 w-8 text-slate-500" />
+                <p className="font-bold text-slate-200">Nenhum feedback recebido ainda.</p>
+                <p className="mt-2">Quando os primeiros usuários enviarem comentários, eles aparecerão aqui.</p>
+              </div>
+            )}
+          </div>
         </section>
 
         <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">

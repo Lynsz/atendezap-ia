@@ -2,15 +2,15 @@
 
 ## Nota atual estimada
 
-89/100.
+91/100.
 
 ## Status
 
-Pronto para producao controlada.
+Pronto para producao controlada com primeiros usuarios.
 
 ## Resumo executivo
 
-O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com poucos usuarios reais, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. A validacao local de release passou em lint, typecheck, build, testes unitarios e e2e. Nao foi identificado bloqueador de codigo nas rotas principais, protecoes ou CTAs revisados.
+O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 usuarios reais, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. Alem da validacao local de release, agora existe um canal simples de feedback, lista no admin, roteiro de entrevista, mensagens de suporte e triagem rapida de bugs.
 
 Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de validar Stripe, Supabase, Resend, OpenAI, tracking e dominio no ambiente real.
 
@@ -31,6 +31,7 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - Resend: ebook pode salvar lead mesmo se envio estiver indisponivel; entrega real depende de chave/remetente.
 - OpenAI: chave fica no backend; demo e geracao usam fallback/erro controlado.
 - Admin: `/admin` e `/api/admin/overview` ficam protegidos; API admin exige usuario admin.
+- Feedback: `/feedback` permite envio publico ou autenticado; `/api/feedback` valida, aplica rate limit e salva no Supabase; admin visualiza feedbacks recentes e pode marcar como em analise ou resolvido.
 - Tracking: GA4/Meta sao opcionais e UTMs sao preservadas no funil.
 - Mobile: e2e cobre paginas publicas; revisao final nao encontrou bloqueio visual critico no codigo/CSS.
 - Seguranca: middleware preserva webhooks publicos, bloqueia superficies privadas sem hint de sessao e APIs privadas retornam 401 sem sessao.
@@ -53,6 +54,7 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - Confirmar `NEXT_PUBLIC_APP_URL` com HTTPS e dominio final antes de checkout/e-mails.
 - Validar Resend com remetente real ou decidir liberar sem e-mail automatico do ebook com status operacional documentado.
 - Validar admin com usuario admin e usuario comum no Supabase real.
+- Aplicar a migration `supabase/migrations/0008_user_feedback.sql` no Supabase real antes de liberar o canal de feedback.
 
 ## Pendencias nao bloqueantes
 
@@ -63,11 +65,12 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - Automatizar webhook Stripe com assinatura real da Stripe CLI.
 - Melhorar atomicidade do limite mensal em geracoes simultaneas.
 - Configurar alertas automaticos de Sentry/Vercel/Stripe/GA4/Meta.
+- Evoluir feedback para notificacao automatica se o volume crescer.
 
 ## Recomendacao final
 
-Pode liberar para os primeiros usuarios, em producao controlada, depois de executar o smoke test final no ambiente real com variaveis externas configuradas.
+Pode liberar para os primeiros usuarios, em producao controlada, depois de executar o smoke test final no ambiente real com variaveis externas configuradas e a migration de feedback aplicada.
 
 Pode rodar anuncio pequeno somente depois de validar checkout, webhook Stripe, tracking, Resend, OpenAI e suporte minimo no ambiente final. Antes disso, a recomendacao e liberar para teste interno e 3 a 5 primeiros usuarios por convite.
 
-Nao ha correcao de codigo bloqueante identificada nesta etapa. O proximo passo e deploy/staging real, execucao do checklist final e monitoramento dos primeiros usuarios.
+Nao ha correcao de codigo bloqueante identificada nesta etapa. O proximo passo e deploy/staging real, execucao do checklist final, convite para 3 a 5 usuarios e acompanhamento diario dos feedbacks no admin.

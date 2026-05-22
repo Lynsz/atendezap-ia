@@ -158,6 +158,21 @@ create table if not exists public.lead_email_events (
   created_at timestamptz default now()
 );
 
+create table if not exists public.user_feedback (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  name text,
+  email text,
+  type text not null,
+  message text not null,
+  page text,
+  status text not null default 'new',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  constraint user_feedback_type_check check (type in ('bug', 'duvida', 'sugestao', 'elogio', 'dificuldade_uso')),
+  constraint user_feedback_status_check check (status in ('new', 'reviewing', 'resolved', 'ignored'))
+);
+
 create table if not exists public.stripe_webhook_events (
   id uuid primary key default gen_random_uuid(),
   provider_event_id text not null,
@@ -229,6 +244,10 @@ create index if not exists ebook_leads_utm_campaign_idx on public.ebook_leads(ut
 create index if not exists lead_email_events_lead_id_idx on public.lead_email_events(lead_id);
 create index if not exists lead_email_events_email_idx on public.lead_email_events(email);
 create index if not exists lead_email_events_created_at_idx on public.lead_email_events(created_at desc);
+create index if not exists user_feedback_user_id_idx on public.user_feedback(user_id);
+create index if not exists user_feedback_status_idx on public.user_feedback(status);
+create index if not exists user_feedback_type_idx on public.user_feedback(type);
+create index if not exists user_feedback_created_at_idx on public.user_feedback(created_at desc);
 create unique index if not exists stripe_webhook_events_provider_event_id_unique_idx on public.stripe_webhook_events(provider_event_id);
 create index if not exists subscriptions_provider_subscription_id_idx on public.subscriptions(provider_subscription_id);
 create index if not exists subscriptions_provider_customer_id_idx on public.subscriptions(provider_customer_id);
@@ -278,6 +297,11 @@ create trigger set_ebook_leads_updated_at
   before update on public.ebook_leads
   for each row execute function public.set_updated_at();
 
+drop trigger if exists set_user_feedback_updated_at on public.user_feedback;
+create trigger set_user_feedback_updated_at
+  before update on public.user_feedback
+  for each row execute function public.set_updated_at();
+
 create or replace function public.handle_new_user()
 returns trigger
 set search_path = ''
@@ -311,6 +335,7 @@ alter table public.subscriptions enable row level security;
 alter table public.plans enable row level security;
 alter table public.ebook_leads enable row level security;
 alter table public.lead_email_events enable row level security;
+alter table public.user_feedback enable row level security;
 alter table public.stripe_webhook_events enable row level security;
 alter table public.purchasers enable row level security;
 alter table public.orders enable row level security;
@@ -339,6 +364,8 @@ drop policy if exists "subscriptions_delete_own" on public.subscriptions;
 drop policy if exists "plans_select_public" on public.plans;
 drop policy if exists "ebook_leads_no_client_access" on public.ebook_leads;
 drop policy if exists "lead_email_events_no_client_access" on public.lead_email_events;
+drop policy if exists "user_feedback_insert_public" on public.user_feedback;
+drop policy if exists "user_feedback_select_own" on public.user_feedback;
 drop policy if exists "stripe_webhook_events_no_client_access" on public.stripe_webhook_events;
 drop policy if exists "purchasers_no_client_access" on public.purchasers;
 drop policy if exists "orders_no_client_access" on public.orders;
@@ -372,6 +399,8 @@ create policy "plans_select_public" on public.plans for select to anon, authenti
 -- Planos sao leitura publica para exibicao comercial. Escrita em plans nao e liberada para anon/authenticated.
 create policy "ebook_leads_no_client_access" on public.ebook_leads for all to anon, authenticated using (false) with check (false);
 create policy "lead_email_events_no_client_access" on public.lead_email_events for all to anon, authenticated using (false) with check (false);
+create policy "user_feedback_insert_public" on public.user_feedback for insert to anon, authenticated with check (user_id is null or (select auth.uid()) = user_id);
+create policy "user_feedback_select_own" on public.user_feedback for select to authenticated using ((select auth.uid()) = user_id);
 create policy "stripe_webhook_events_no_client_access" on public.stripe_webhook_events for all to anon, authenticated using (false) with check (false);
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
 create policy "orders_no_client_access" on public.orders for all to anon, authenticated using (false) with check (false);
@@ -387,6 +416,9 @@ revoke all privileges on public.plans from anon, authenticated;
 grant select on public.plans to anon, authenticated;
 revoke all on public.ebook_leads from anon, authenticated;
 revoke all on public.lead_email_events from anon, authenticated;
+revoke all on public.user_feedback from anon, authenticated;
+grant insert on public.user_feedback to anon, authenticated;
+grant select on public.user_feedback to authenticated;
 revoke all on public.stripe_webhook_events from anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;

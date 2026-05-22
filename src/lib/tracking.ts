@@ -37,7 +37,12 @@ export type TrackingEventName =
   | "signup_completed"
   | "onboarding_started"
   | "onboarding_completed"
-  | "subscription_active";
+  | "subscription_active"
+  | "feedback_page_view"
+  | "feedback_submit"
+  | "feedback_success"
+  | "feedback_error"
+  | "support_cta_click";
 
 export type TrackingProperties = Record<string, string | number | boolean | null | undefined>;
 

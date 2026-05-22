@@ -6,6 +6,7 @@ const publicPages = [
   { path: "/ebook/obrigado", text: /guia gratuito/i, cta: /Acessar guia gratuito/i },
   { path: "/ebook/guia", text: /WhatsApp/i, cta: /AtendeZap IA|precos|demo/i },
   { path: "/demo", text: /Demonstracao gratuita|Teste como o AtendeZap IA/i, cta: /Gerar resposta de exemplo/i },
+  { path: "/feedback", text: /Ajude a melhorar|Enviar feedback/i, cta: /Enviar feedback/i },
   { path: "/login", text: /Entrar|login|e-mail/i, cta: /Entrar|acessar/i },
   { path: "/cadastro", text: /Criar|cadastro|conta/i, cta: /Criar|Comecar/i },
   { path: "/termos", text: /Termos/i, cta: /AtendeZap IA|WhatsApp/i },

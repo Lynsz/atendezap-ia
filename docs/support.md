@@ -2,6 +2,8 @@
 
 Este guia cobre os casos mais comuns no lancamento controlado. Nunca envie chaves, tokens ou payloads sensiveis para usuarios.
 
+Use `docs/support-messages.md` para respostas prontas e encaminhe usuarios para `/feedback` quando houver bug, duvida, sugestao ou dificuldade de uso que precise ser registrada.
+
 ## Cliente nao conseguiu criar conta
 
 - Confirmar se o e-mail foi digitado corretamente.

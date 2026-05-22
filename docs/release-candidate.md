@@ -2,7 +2,7 @@
 
 ## Status geral
 
-- Nota estimada atual: 89/100.
+- Nota estimada atual: 91/100.
 - Pronto para staging: sim, desde que as variaveis externas sejam configuradas na Vercel.
 - Candidato aprovado para producao controlada: sim, para poucos usuarios, apos executar `docs/final-smoke-test.md` e `docs/production-launch-checklist.md` no ambiente final. O codigo local, build e testes automatizados estao prontos; a liberacao depende de validacao real com Supabase, Stripe, Resend, OpenAI, tracking e admin.
 - Pronto para anuncios pagos pequenos: ainda condicional. Pode iniciar apenas depois de checkout real, webhook, pixel/GA4, e-mail, OpenAI e suporte minimo estarem validados no ambiente final.
@@ -24,6 +24,7 @@
 - Tracking: GA4/Meta sao opcionais; UTMs sao preservadas e enviadas em lead/checkout.
 - E-mail: Resend e opcional; sem chave, lead continua o funil com status controlado.
 - Operacao: checklist final de producao, plano de lancamento controlado, monitoramento, suporte minimo, rollback e rotina dos primeiros 7 dias documentados.
+- Feedback: `/feedback`, `/api/feedback`, tabela `user_feedback`, listagem no admin e docs de primeiros usuarios/triagem/suporte criados para a producao controlada.
 
 ## Bloqueadores de producao
 
@@ -46,11 +47,13 @@
 - Melhorar atomicidade do limite mensal em geracoes simultaneas.
 - Sequencia de nutricao/descadastro de e-mails.
 - Alertas automaticos ainda nao configurados; monitoramento inicial sera manual.
+- Feedback ainda depende da migration `0008_user_feedback.sql` aplicada no Supabase real e acompanhamento manual no admin.
 
 ## Pendencias externas
 
 - Stripe: produtos Starter, Pro e Premium em test/live, prices, cupom Pro primeiro mes, webhook e portal.
 - Supabase: migrations aplicadas, RLS revisado, Auth URLs e Redirect URLs configuradas.
+- Feedback: migration `0008_user_feedback.sql` aplicada e envio publico/autenticado validado.
 - Vercel: projeto, dominio, envs por ambiente e logs.
 - Resend: dominio/remetente verificado, API key e teste de entrega.
 - OpenAI: chave, modelo, limite de custo e monitoramento.

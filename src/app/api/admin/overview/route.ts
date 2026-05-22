@@ -63,6 +63,18 @@ type SubscriptionRow = {
   updated_at: string;
 };
 
+type FeedbackRow = {
+  id: string;
+  user_id: string | null;
+  name: string | null;
+  email: string | null;
+  type: string;
+  message: string;
+  page: string | null;
+  status: string;
+  created_at: string;
+};
+
 function getPeriodStart(period: PeriodFilter) {
   const now = new Date();
   if (period === "today") {
@@ -138,7 +150,8 @@ export async function GET(request: Request) {
       sentEmailEventsResult,
       failedEmailEventsResult,
       allLeadEmailsResult,
-      monthlyUsageResult
+      monthlyUsageResult,
+      feedbackResult
     ] = await Promise.all([
       supabase.from("ebook_leads").select("id", { count: "exact", head: true }),
       supabase.from("ebook_leads").select("id", { count: "exact", head: true }).gte("created_at", getPeriodStart("7d") || ""),
@@ -152,11 +165,13 @@ export async function GET(request: Request) {
       supabase.from("lead_email_events").select("id", { count: "exact", head: true }).eq("status", "sent"),
       supabase.from("lead_email_events").select("id", { count: "exact", head: true }).eq("status", "failed"),
       supabase.from("ebook_leads").select("email"),
-      supabase.from("generated_responses").select("user_id, created_at").gte("created_at", getCurrentMonthStart()).limit(5000)
+      supabase.from("generated_responses").select("user_id, created_at").gte("created_at", getCurrentMonthStart()).limit(5000),
+      supabase.from("user_feedback").select("id, user_id, name, email, type, message, page, status, created_at").order("created_at", { ascending: false }).limit(50)
     ]);
 
     const profiles = (profilesResult.data || []) as ProfileRow[];
     const subscriptions = (subscriptionsResult.data || []) as SubscriptionRow[];
+    const feedback = (feedbackResult.data || []) as FeedbackRow[];
     const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
     const leadEmails = new Set(((allLeadEmailsResult.data || []) as Array<{ email: string | null }>).map((lead) => lead.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -261,6 +276,7 @@ export async function GET(request: Request) {
       },
       leads: hydratedLeads,
       subscriptions: subscriptionsWithProfiles,
+      feedback,
       filterOptions: {
         businessTypes: [...new Set(leads.map((lead) => lead.business_type).filter(Boolean))],
         utmSources: [...new Set(leads.map((lead) => lead.utm_source).filter(Boolean))],

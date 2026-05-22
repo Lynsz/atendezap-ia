@@ -18,6 +18,8 @@ Este plano reduz risco antes de investir em anuncios pagos. Avance de fase apena
 - Pedir feedback sobre clareza da landing.
 - Pedir feedback sobre onboarding.
 - Pedir feedback sobre qualidade das respostas.
+- Pedir para registrar bugs, duvidas e sugestoes em `/feedback`.
+- Revisar feedbacks recentes no admin diariamente.
 - Observar erros no dashboard.
 - Observar duvidas frequentes.
 
@@ -25,6 +27,7 @@ Este plano reduz risco antes de investir em anuncios pagos. Avance de fase apena
 
 - Corrigir bugs criticos.
 - Melhorar mensagens confusas.
+- Classificar feedbacks com `docs/bug-triage.md`.
 - Revisar planos se necessario.
 - Revisar copy da landing.
 - Revisar e-mail do ebook.

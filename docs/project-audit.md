@@ -2,9 +2,9 @@
 
 ## Nota geral
 
-89/100
+91/100
 
-O projeto esta em release candidate aprovado para producao controlada: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao final local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio e admin no ambiente final.
+O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin e feedback no ambiente final.
 
 ## Mapa tecnico
 
@@ -35,6 +35,7 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - `/privacidade`: politica de privacidade.
 - `not-found.tsx`: pagina 404.
 - `/suporte`: suporte.
+- `/feedback`: feedback publico/controlado para primeiros usuarios.
 
 ### Protegidas ou semi-protegidas
 
@@ -56,6 +57,7 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - `/api/stripe/webhook`
 - `/api/admin/overview`
 - `/api/support`
+- `/api/feedback`
 - `/api/kiwify/webhook`
 - `/api/generate-kit`
 - `/api/download/[kitId]`
@@ -76,6 +78,7 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - Stripe webhook resolve usuario por metadata, `client_reference_id`, subscription salva ou customer Stripe, e mapeia `STRIPE_PRICE_PRO_FIRST_MONTH_29` como plano Pro.
 - Supabase agora tem migration segura para `stripe_customer_id`, `stripe_subscription_id`, `subscription_status` e `usage_count`, com backfill a partir de `provider_*`/`status`.
 - Admin server-side exige usuario autenticado e e-mail listado em `ADMIN_EMAILS`.
+- Feedback de primeiros usuarios foi adicionado em `/feedback`, com API server-side, validacao, rate limit, associacao opcional a usuario autenticado, tabela `user_feedback` e listagem simples no admin.
 - Schema Supabase tem tabelas esperadas, RLS e policies por `auth.uid()` para dados de usuario.
 - `.env`, `.env.local`, `.next`, `node_modules` e tsbuildinfo estao ignorados no Git.
 - `docs/deploy-vercel.md`, `docs/production-checklist.md`, `docs/tracking.md`, `docs/billing.md`, `docs/emails.md`, `docs/admin.md` e checklists existem.
@@ -99,6 +102,7 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - `docs/controlled-launch-plan.md` define fases de teste interno, primeiros usuarios, ajustes e anuncios pequenos.
 - `docs/monitoring.md` documenta onde acompanhar Vercel, Supabase, Stripe, Resend, OpenAI, GA4 e Meta Pixel.
 - `docs/support.md` documenta respostas para suporte minimo de conta, pagamento, cancelamento, ebook e IA.
+- `docs/first-users-feedback.md`, `docs/bug-triage.md` e `docs/support-messages.md` documentam roteiro com primeiros usuarios, classificacao rapida de bugs e respostas prontas de suporte.
 - `docs/rollback-plan.md` documenta reversao para falhas de deploy, Stripe, Supabase, OpenAI e anuncios.
 - `docs/first-7-days-checklist.md` documenta a rotina diaria inicial.
 
@@ -110,6 +114,7 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - Onboarding: o onboarding real do SaaS fica no dashboard e salva em `businesses`; `/onboarding` agora redireciona para essa superficie.
 - Assinatura: dashboard e `/assinatura` refletem Supabase/Stripe, com testes automatizados de checkout/portal/webhook; ainda falta teste ponta a ponta real com Stripe em modo test.
 - Supabase: RLS esta documentado/aplicado no SQL e ha testes de regressao para filtros por `user_id`; ainda falta teste contra Supabase real com dois usuarios.
+- Feedback: implementado para producao controlada, mas depende da migration `0008_user_feedback.sql` aplicada no Supabase real antes de convidar usuarios.
 - Tracking: eventos principais existem e no-op sem GA4/Meta Pixel, mas falta validacao com ferramentas reais em producao.
 - Admin: metricas, filtros e CSV existem; helpers e bloqueio sem sessao tem testes, mas nao ha endpoint dedicado de exportacao server-side nem teste e2e com sessao admin real.
 - SEO: metadados basicos existem; falta imagem OG padrao configurada se o ativo final existir.
@@ -126,6 +131,7 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - Nao ha teste automatizado de webhook Stripe com assinatura real gerada pela Stripe CLI; ha cobertura com mocks para assinatura invalida, atualizacao, cancelamento e pagamento falho.
 - Fluxos legados/localStorage continuam acessiveis e podem confundir o escopo de producao.
 - Nao ha evidencia ainda de validacao manual completa em Vercel staging com Supabase, Stripe, Resend, OpenAI, tracking e admin reais.
+- Nao ha evidencia ainda de validacao manual do novo fluxo de feedback em Supabase staging/producao.
 - Nao esta pronto para anuncios pagos ate checkout real, webhook live/test, pixels, e-mail e rotina operacional dos primeiros usuarios serem validados no ambiente final.
 
 ## Prioridade maxima
@@ -158,6 +164,7 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - Planejar migracao para Supabase SSR cookies se for necessario validar paginas privadas diretamente no middleware com token real.
 - Validar manualmente Stripe test mode com webhook local ou Vercel preview.
 - Aplicar `supabase/migrations/0007_stripe_subscription_aliases.sql` no ambiente de teste.
+- Aplicar `supabase/migrations/0008_user_feedback.sql` no ambiente de teste/producao controlada.
 - Validar Resend com remetente real e confirmar `lead_email_events`.
 - Marcar claramente ou esconder rotas legadas que nao fazem parte do SaaS vendavel.
 
@@ -183,6 +190,7 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - Politica de retencao/exclusao de dados e descadastro de e-mails.
 - Playbook de incidentes, backups Supabase e restore testado.
 - Alertas automaticos para falhas de checkout, webhook, e-mail e IA.
+- Alertas automaticos para novos feedbacks P0/P1.
 
 ## Comandos executados
 
@@ -198,11 +206,13 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 - Smoke mobile em `/`, `/ebook`, `/ebook/obrigado`, `/demo`, `/precos`, `/login`, `/cadastro`, `/dashboard`, `/onboarding`, `/assinatura`, `/admin`, `/termos`, `/privacidade`.
 - Smoke API em `/api/health`, `/api/ai/generate-response`, `/api/stripe/create-checkout-session`, `/api/admin/overview`.
 - Testes automatizados de Stripe para checkout, portal, webhook invalido e mapeamento do Pro promocional.
+- Testes automatizados da API de feedback para payload invalido, feedback publico, feedback autenticado e atualizacao admin.
 
 ## Pendencias externas
 
 - Vercel: criar projeto staging, preencher envs, definir `NEXT_PUBLIC_APP_URL`, rodar deploy e health check.
 - Supabase: aplicar migrations no projeto staging, validar RLS, Auth URLs e isolamento com dois usuarios.
+- Supabase: aplicar migration de feedback e validar criacao publica/autenticada e leitura no admin.
 - Stripe: criar produtos, prices, cupom Pro, webhook staging e testar eventos em modo test seguindo `docs/stripe-staging.md`.
 - Resend: validar dominio/remetente e testar entrega real seguindo `docs/resend-staging.md`.
 - OpenAI: configurar chave/modelo de staging, testar dashboard/demo e monitorar custos seguindo `docs/openai-staging.md`.
@@ -221,9 +231,16 @@ O projeto esta em release candidate aprovado para producao controlada: funil pub
 ## Validacao final de prontidao - 2026-05-22
 
 - Status final: pronto para producao controlada com primeiros usuarios, condicionado a smoke test no ambiente real com integracoes externas configuradas.
-- Nota estimada nova: 89/100.
+- Nota estimada nova: 91/100.
 - Bloqueadores atuais: nenhum bloqueador de codigo identificado; a liberacao real depende de Supabase, Stripe, Resend, OpenAI, Vercel, dominio, GA4/Meta e admin validados no ambiente final.
 - Pendencias nao bloqueantes: SSR cookies para auth de pagina, reducao de superficies legadas, recuperacao de senha, e2e autenticado real, webhook Stripe com assinatura real automatizada, atomicidade do limite mensal e alertas automaticos.
 - Pode liberar primeiros usuarios: sim, em producao controlada, apos executar `docs/final-smoke-test.md` e `docs/post-deploy-checklist.md`.
 - Pode iniciar anuncios pequenos: ainda nao antes de validar checkout, webhook, tracking, e-mail, OpenAI e suporte minimo no ambiente final; depois dessa validacao, pode iniciar com orcamento baixo.
 - Proximo passo recomendado: fazer deploy staging/producao controlada na Vercel, preencher envs sem segredos no codigo, executar smoke final completo e liberar 3 a 5 usuarios por convite antes de anuncios.
+
+## Preparacao para primeiros usuarios - 2026-05-22
+
+- Estrutura criada: rota `/feedback`, API `/api/feedback`, migration `0008_user_feedback.sql`, eventos de tracking de feedback e listagem simples no admin.
+- Suporte inicial: `docs/support-messages.md` com respostas prontas, `docs/first-users-feedback.md` com roteiro de entrevista e `docs/bug-triage.md` com classificacao P0/P1/P2/P3.
+- UX revisada: dashboard explica que a IA gera sugestoes para copiar, ajustar e enviar manualmente pelo WhatsApp; estados vazios e mensagens de limite/assinatura orientam o proximo passo.
+- Recomendacao atualizada: liberar 3 a 5 usuarios reais por convite apos aplicar migrations no Supabase real e validar o smoke test final.

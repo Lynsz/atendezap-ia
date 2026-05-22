@@ -56,3 +56,12 @@ Verificar diariamente nos primeiros dias:
 - Uso da OpenAI.
 - Custos.
 - Reclamacoes ou duvidas.
+- Novos feedbacks em `/admin`, principalmente tipo `bug` ou `dificuldade_uso`.
+
+## Feedback dos primeiros usuarios
+
+- Verificar a secao "Feedbacks recentes" no admin diariamente durante a producao controlada.
+- Marcar feedback como `reviewing` quando entrar em analise.
+- Classificar impacto usando `docs/bug-triage.md`.
+- Marcar como `resolved` apenas depois de validar a correcao no ambiente real.
+- Pausar novos convites se aparecer P0 ou P1 recorrente.

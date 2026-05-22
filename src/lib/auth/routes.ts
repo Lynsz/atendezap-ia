@@ -8,6 +8,7 @@ const PUBLIC_PAGE_ROUTES = new Set([
   "/ebook",
   "/ebook/guia",
   "/ebook/obrigado",
+  "/feedback",
   "/login",
   "/obrigado",
   "/plans",
@@ -23,6 +24,7 @@ const PUBLIC_API_ROUTES = new Set([
   "/api/health",
   "/api/demo/generate-response",
   "/api/ebook-lead",
+  "/api/feedback",
   "/api/kiwify/webhook",
   "/api/stripe/webhook",
   "/api/support"
