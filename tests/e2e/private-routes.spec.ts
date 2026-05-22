@@ -21,6 +21,7 @@ test.describe("protecao sem login", () => {
     { path: "/api/stripe/create-checkout-session", method: "post" as const, body: { planId: "starter" } },
     { path: "/api/stripe/create-portal-session", method: "post" as const, body: {} },
     { path: "/api/admin/overview", method: "get" as const },
+    { path: "/api/admin/metrics", method: "get" as const },
     { path: "/api/admin/leads", method: "get" as const },
     { path: "/api/admin/subscriptions", method: "get" as const },
     { path: "/api/admin/export-leads", method: "get" as const }
@@ -34,7 +35,7 @@ test.describe("protecao sem login", () => {
           : await request.get(api.path);
 
       expect([401, 403, 404]).toContain(response.status());
-      if (api.path === "/api/admin/overview" || !api.path.startsWith("/api/admin/")) {
+      if (api.path === "/api/admin/overview" || api.path === "/api/admin/metrics" || !api.path.startsWith("/api/admin/")) {
         expect([401, 403]).toContain(response.status());
       }
     });

@@ -34,6 +34,29 @@ Use este roteiro com 3 a 5 pessoas antes de iniciar anuncios. O objetivo e desco
 - Se entende que a IA nao envia mensagem direto no WhatsApp.
 - Se encontra o canal de feedback quando precisa reportar algo.
 
+## Metricas para acompanhar durante os testes
+
+- Leads capturados no periodo.
+- Taxa lead -> cadastro.
+- Taxa cadastro -> onboarding concluido.
+- Taxa onboarding -> primeira resposta.
+- Usuarios ativados.
+- Respostas geradas nos ultimos 7 dias.
+- Feedbacks de dificuldade de uso.
+- Feedbacks nao resolvidos.
+- Checkouts iniciados.
+- Assinaturas ativas.
+
+## Referencias iniciais de validacao
+
+Estas metas nao sao promessa nem criterio absoluto; servem como referencia para decidir se vale convidar mais pessoas.
+
+- 70% dos usuarios convidados conseguem criar conta.
+- 60% concluem onboarding.
+- 50% geram pelo menos uma resposta.
+- Menos de 30% relatam dificuldade grave.
+- Pelo menos 1 pessoa demonstra intencao real de pagar.
+
 ## Sinais para pausar liberacao
 
 - Mais de uma pessoa nao consegue criar conta.

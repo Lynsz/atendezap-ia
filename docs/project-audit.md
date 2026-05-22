@@ -2,9 +2,9 @@
 
 ## Nota geral
 
-91/100
+92/100
 
-O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin e feedback no ambiente final.
+O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, metricas internas, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin, feedback e metricas no ambiente final.
 
 ## Mapa tecnico
 
@@ -56,6 +56,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - `/api/stripe/create-portal-session`
 - `/api/stripe/webhook`
 - `/api/admin/overview`
+- `/api/admin/metrics`
 - `/api/support`
 - `/api/feedback`
 - `/api/kiwify/webhook`
@@ -79,6 +80,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Supabase agora tem migration segura para `stripe_customer_id`, `stripe_subscription_id`, `subscription_status` e `usage_count`, com backfill a partir de `provider_*`/`status`.
 - Admin server-side exige usuario autenticado e e-mail listado em `ADMIN_EMAILS`.
 - Feedback de primeiros usuarios foi adicionado em `/feedback`, com API server-side, validacao, rate limit, associacao opcional a usuario autenticado, tabela `user_feedback` e listagem simples no admin.
+- Metricas internas foram adicionadas em `/api/admin/metrics` e no admin: funil, ativacao, uso inicial, feedback e assinaturas em formato agregado.
 - Schema Supabase tem tabelas esperadas, RLS e policies por `auth.uid()` para dados de usuario.
 - `.env`, `.env.local`, `.next`, `node_modules` e tsbuildinfo estao ignorados no Git.
 - `docs/deploy-vercel.md`, `docs/production-checklist.md`, `docs/tracking.md`, `docs/billing.md`, `docs/emails.md`, `docs/admin.md` e checklists existem.
@@ -103,6 +105,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - `docs/monitoring.md` documenta onde acompanhar Vercel, Supabase, Stripe, Resend, OpenAI, GA4 e Meta Pixel.
 - `docs/support.md` documenta respostas para suporte minimo de conta, pagamento, cancelamento, ebook e IA.
 - `docs/first-users-feedback.md`, `docs/bug-triage.md` e `docs/support-messages.md` documentam roteiro com primeiros usuarios, classificacao rapida de bugs e respostas prontas de suporte.
+- `docs/product-metrics.md` documenta calculo, interpretacao e limitacoes das metricas internas.
 - `docs/rollback-plan.md` documenta reversao para falhas de deploy, Stripe, Supabase, OpenAI e anuncios.
 - `docs/first-7-days-checklist.md` documenta a rotina diaria inicial.
 
@@ -116,6 +119,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Supabase: RLS esta documentado/aplicado no SQL e ha testes de regressao para filtros por `user_id`; ainda falta teste contra Supabase real com dois usuarios.
 - Feedback: implementado para producao controlada, mas depende da migration `0008_user_feedback.sql` aplicada no Supabase real antes de convidar usuarios.
 - Tracking: eventos principais existem e no-op sem GA4/Meta Pixel, mas falta validacao com ferramentas reais em producao.
+- Metricas: admin mostra agregados internos confiaveis para primeiros usuarios; visitantes anonimos ainda dependem de GA4/Meta Pixel.
 - Admin: metricas, filtros e CSV existem; helpers e bloqueio sem sessao tem testes, mas nao ha endpoint dedicado de exportacao server-side nem teste e2e com sessao admin real.
 - SEO: metadados basicos existem; falta imagem OG padrao configurada se o ativo final existir.
 - Resend: entrega do ebook esta pronta, mas sequencia de nutricao e descadastro ainda nao estao implementados.
@@ -132,6 +136,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Fluxos legados/localStorage continuam acessiveis e podem confundir o escopo de producao.
 - Nao ha evidencia ainda de validacao manual completa em Vercel staging com Supabase, Stripe, Resend, OpenAI, tracking e admin reais.
 - Nao ha evidencia ainda de validacao manual do novo fluxo de feedback em Supabase staging/producao.
+- Nao ha evidencia ainda de validacao manual das metricas internas contra dados reais de staging/producao.
 - Nao esta pronto para anuncios pagos ate checkout real, webhook live/test, pixels, e-mail e rotina operacional dos primeiros usuarios serem validados no ambiente final.
 
 ## Prioridade maxima
@@ -191,6 +196,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Playbook de incidentes, backups Supabase e restore testado.
 - Alertas automaticos para falhas de checkout, webhook, e-mail e IA.
 - Alertas automaticos para novos feedbacks P0/P1.
+- Views ou queries agregadas para metricas se o volume superar a fase de primeiros usuarios.
 
 ## Comandos executados
 
@@ -207,12 +213,14 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Smoke API em `/api/health`, `/api/ai/generate-response`, `/api/stripe/create-checkout-session`, `/api/admin/overview`.
 - Testes automatizados de Stripe para checkout, portal, webhook invalido e mapeamento do Pro promocional.
 - Testes automatizados da API de feedback para payload invalido, feedback publico, feedback autenticado e atualizacao admin.
+- Testes automatizados da API de metricas para agregados e bloqueio de usuario comum.
 
 ## Pendencias externas
 
 - Vercel: criar projeto staging, preencher envs, definir `NEXT_PUBLIC_APP_URL`, rodar deploy e health check.
 - Supabase: aplicar migrations no projeto staging, validar RLS, Auth URLs e isolamento com dois usuarios.
 - Supabase: aplicar migration de feedback e validar criacao publica/autenticada e leitura no admin.
+- Admin: validar `/api/admin/metrics` com usuario admin e usuario comum no ambiente real.
 - Stripe: criar produtos, prices, cupom Pro, webhook staging e testar eventos em modo test seguindo `docs/stripe-staging.md`.
 - Resend: validar dominio/remetente e testar entrega real seguindo `docs/resend-staging.md`.
 - OpenAI: configurar chave/modelo de staging, testar dashboard/demo e monitorar custos seguindo `docs/openai-staging.md`.
@@ -231,7 +239,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 ## Validacao final de prontidao - 2026-05-22
 
 - Status final: pronto para producao controlada com primeiros usuarios, condicionado a smoke test no ambiente real com integracoes externas configuradas.
-- Nota estimada nova: 91/100.
+- Nota estimada nova: 92/100.
 - Bloqueadores atuais: nenhum bloqueador de codigo identificado; a liberacao real depende de Supabase, Stripe, Resend, OpenAI, Vercel, dominio, GA4/Meta e admin validados no ambiente final.
 - Pendencias nao bloqueantes: SSR cookies para auth de pagina, reducao de superficies legadas, recuperacao de senha, e2e autenticado real, webhook Stripe com assinatura real automatizada, atomicidade do limite mensal e alertas automaticos.
 - Pode liberar primeiros usuarios: sim, em producao controlada, apos executar `docs/final-smoke-test.md` e `docs/post-deploy-checklist.md`.
@@ -244,3 +252,10 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Suporte inicial: `docs/support-messages.md` com respostas prontas, `docs/first-users-feedback.md` com roteiro de entrevista e `docs/bug-triage.md` com classificacao P0/P1/P2/P3.
 - UX revisada: dashboard explica que a IA gera sugestoes para copiar, ajustar e enviar manualmente pelo WhatsApp; estados vazios e mensagens de limite/assinatura orientam o proximo passo.
 - Recomendacao atualizada: liberar 3 a 5 usuarios reais por convite apos aplicar migrations no Supabase real e validar o smoke test final.
+
+## Metricas internas de produto - 2026-05-22
+
+- Estrutura criada: rota protegida `/api/admin/metrics`, secao "Metricas do produto" no admin e documentacao `docs/product-metrics.md`.
+- Metricas disponiveis: lead -> cadastro, cadastro -> onboarding, onboarding -> primeira resposta, cadastro -> assinatura ativa, usuarios ativados, uso por periodo, feedbacks por tipo/status e checkout iniciado aproximado.
+- Limitacoes documentadas: lead -> cadastro por e-mail, checkout iniciado por dados de `subscriptions`, visitantes anonimos via GA4/Meta e calculo em memoria adequado apenas para fase inicial.
+- Recomendacao atualizada: acompanhar metricas e feedback diariamente antes de investir em trafego pago maior.

@@ -2,7 +2,7 @@
 
 ## Nota atual estimada
 
-91/100.
+92/100.
 
 ## Status
 
@@ -32,6 +32,7 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - OpenAI: chave fica no backend; demo e geracao usam fallback/erro controlado.
 - Admin: `/admin` e `/api/admin/overview` ficam protegidos; API admin exige usuario admin.
 - Feedback: `/feedback` permite envio publico ou autenticado; `/api/feedback` valida, aplica rate limit e salva no Supabase; admin visualiza feedbacks recentes e pode marcar como em analise ou resolvido.
+- Metricas internas: `/api/admin/metrics` calcula ativacao, funil, uso inicial, feedback e assinaturas de forma agregada; admin exibe cards e secoes simples sem expor listas pessoais.
 - Tracking: GA4/Meta sao opcionais e UTMs sao preservadas no funil.
 - Mobile: e2e cobre paginas publicas; revisao final nao encontrou bloqueio visual critico no codigo/CSS.
 - Seguranca: middleware preserva webhooks publicos, bloqueia superficies privadas sem hint de sessao e APIs privadas retornam 401 sem sessao.
@@ -66,6 +67,7 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - Melhorar atomicidade do limite mensal em geracoes simultaneas.
 - Configurar alertas automaticos de Sentry/Vercel/Stripe/GA4/Meta.
 - Evoluir feedback para notificacao automatica se o volume crescer.
+- Evoluir metricas para queries agregadas/views se o volume crescer; hoje o calculo em memoria e suficiente para poucos usuarios.
 
 ## Recomendacao final
 
@@ -73,4 +75,4 @@ Pode liberar para os primeiros usuarios, em producao controlada, depois de execu
 
 Pode rodar anuncio pequeno somente depois de validar checkout, webhook Stripe, tracking, Resend, OpenAI e suporte minimo no ambiente final. Antes disso, a recomendacao e liberar para teste interno e 3 a 5 primeiros usuarios por convite.
 
-Nao ha correcao de codigo bloqueante identificada nesta etapa. O proximo passo e deploy/staging real, execucao do checklist final, convite para 3 a 5 usuarios e acompanhamento diario dos feedbacks no admin.
+Nao ha correcao de codigo bloqueante identificada nesta etapa. O proximo passo e deploy/staging real, execucao do checklist final, convite para 3 a 5 usuarios e acompanhamento diario de feedback e metricas de ativacao no admin.

@@ -1,0 +1,96 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AppError } from "@/lib/errors";
+
+const mocks = vi.hoisted(() => ({
+  requireAdmin: vi.fn()
+}));
+
+vi.mock("@/lib/admin", () => ({
+  requireAdmin: mocks.requireAdmin
+}));
+
+vi.mock("@/lib/rate-limit", () => ({
+  enforceRateLimit: vi.fn()
+}));
+
+vi.mock("@/lib/logger", () => ({
+  serverLog: vi.fn()
+}));
+
+function createMetricsSupabase() {
+  const rows: Record<string, unknown[]> = {
+    ebook_leads: [
+      { email: "cliente@example.com", created_at: new Date().toISOString() },
+      { email: "lead@example.com", created_at: new Date().toISOString() }
+    ],
+    profiles: [
+      { id: "user_1", email: "cliente@example.com", created_at: new Date(Date.now() - 60 * 60 * 1000).toISOString() },
+      { id: "user_2", email: "outro@example.com", created_at: new Date().toISOString() }
+    ],
+    businesses: [
+      { user_id: "user_1", onboarding_completed: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+    ],
+    generated_responses: [
+      { user_id: "user_1", created_at: new Date().toISOString() },
+      { user_id: "user_1", created_at: new Date().toISOString() }
+    ],
+    subscriptions: [
+      { user_id: "user_1", status: "active", stripe_checkout_session_id: "cs_test", created_at: new Date().toISOString() }
+    ],
+    user_feedback: [
+      { type: "bug", status: "new", created_at: new Date().toISOString() },
+      { type: "elogio", status: "resolved", created_at: new Date().toISOString() }
+    ]
+  };
+
+  return {
+    from: vi.fn((table: string) => ({
+      select: vi.fn(() => ({
+        limit: vi.fn(() => ({ data: rows[table] || [], error: null }))
+      }))
+    }))
+  };
+}
+
+describe("GET /api/admin/metrics", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    mocks.requireAdmin.mockReset().mockResolvedValue({
+      user: { id: "admin-id" },
+      supabase: createMetricsSupabase()
+    });
+  });
+
+  it("retorna metricas agregadas sem listas pessoais", async () => {
+    const { GET } = await import("./route");
+    const response = await GET(
+      new Request("https://app.example.test/api/admin/metrics?period=7d", {
+        headers: { Authorization: "Bearer token" }
+      })
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.funnel.totalLeads).toBe(2);
+    expect(body.funnel.totalUsers).toBe(2);
+    expect(body.funnel.activatedUsers).toBe(1);
+    expect(body.funnel.activationRate).toBe(50);
+    expect(body.usage.totalResponses).toBe(2);
+    expect(body.feedback.byType.bug).toBe(1);
+    expect(body.leads).toBeUndefined();
+    expect(body.profiles).toBeUndefined();
+  });
+
+  it("bloqueia usuario comum via requireAdmin", async () => {
+    mocks.requireAdmin.mockRejectedValueOnce(new AppError("Acesso restrito a administradores.", 403));
+
+    const { GET } = await import("./route");
+    const response = await GET(
+      new Request("https://app.example.test/api/admin/metrics", {
+        headers: { Authorization: "Bearer token" }
+      })
+    );
+
+    expect(response.status).toBe(403);
+  });
+});

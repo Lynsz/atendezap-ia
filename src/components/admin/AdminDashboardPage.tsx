@@ -81,6 +81,58 @@ type AdminPayload = {
   };
 };
 
+type ProductMetricsPayload = {
+  period: { value: PeriodFilter; label: string; start: string | null };
+  funnel: {
+    totalLeads: number;
+    periodLeads: number;
+    totalUsers: number;
+    completedOnboardingUsers: number;
+    usersWithFirstResponse: number;
+    activatedUsers: number;
+    checkoutStartedUsers: number;
+    activeSubscriptions: number;
+    leadToSignupRate: number;
+    signupToOnboardingRate: number;
+    onboardingToFirstResponseRate: number;
+    signupToActiveSubscriptionRate: number;
+    activationRate: number;
+  };
+  activation: {
+    definition: string;
+    activatedUsers: number;
+    activationRate: number;
+    averageHoursToActivation: number | null;
+  };
+  usage: {
+    totalResponses: number;
+    averageResponsesPerUser: number;
+    responsesToday: number;
+    responsesLast7Days: number;
+    responsesLast30Days: number;
+    activeUsersLast7Days: number;
+    activeUsersLast30Days: number;
+  };
+  feedback: {
+    totalFeedbacks: number;
+    periodFeedbacks: number;
+    newFeedbacks: number;
+    unresolvedFeedbacks: number;
+    byType: {
+      bug: number;
+      duvida: number;
+      sugestao: number;
+      elogio: number;
+      dificuldade_uso: number;
+    };
+  };
+  notes: {
+    leadToSignup: string;
+    checkoutStarted: string;
+    timeToActivation: string;
+  };
+};
+
 type Filters = {
   search: string;
   business_type: string;
@@ -191,6 +243,7 @@ function exportLeadsCsv(leads: AdminLead[]) {
 
 export default function AdminDashboardPage() {
   const [data, setData] = useState<AdminPayload | null>(null);
+  const [productMetrics, setProductMetrics] = useState<ProductMetricsPayload | null>(null);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(initialFilters);
   const [loading, setLoading] = useState(true);
@@ -219,12 +272,20 @@ export default function AdminDashboardPage() {
         if (value) params.set(key, value);
       });
 
-      const response = await fetch(`/api/admin/overview?${params.toString()}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const [response, metricsResponse] = await Promise.all([
+        fetch(`/api/admin/overview?${params.toString()}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }),
+        fetch(`/api/admin/metrics?period=${appliedFilters.period}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+      ]);
       const payload = (await response.json().catch(() => ({}))) as AdminPayload & { error?: string };
+      const metricsPayload = (await metricsResponse.json().catch(() => ({}))) as ProductMetricsPayload & { error?: string };
 
       if (!response.ok) {
         setAccessDenied(response.status === 401 || response.status === 403);
@@ -232,7 +293,14 @@ export default function AdminDashboardPage() {
         return;
       }
 
+      if (!metricsResponse.ok) {
+        setAccessDenied(metricsResponse.status === 401 || metricsResponse.status === 403);
+        setError(metricsPayload.error || "NÃ£o foi possÃ­vel carregar as mÃ©tricas do produto.");
+        return;
+      }
+
       setData(payload);
+      setProductMetrics(metricsPayload);
     } catch {
       setError("Não foi possível carregar a área admin agora.");
     } finally {
@@ -368,6 +436,86 @@ export default function AdminDashboardPage() {
           <MetricCard label="Cadastro -> assinatura" value={`${metrics?.signupToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
           <MetricCard label="Lead -> assinatura" value={`${metrics?.leadToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
         </section>
+
+        {productMetrics ? (
+          <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">MÃ©tricas do produto</p>
+                <h2 className="mt-2 text-2xl font-black text-white">AtivaÃ§Ã£o e conversÃ£o inicial</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  NÃºmeros agregados para entender se os primeiros usuÃ¡rios avanÃ§am no funil e usam o produto de verdade. PerÃ­odo aplicado: {productMetrics.period.label}.
+                </p>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-slate-300">
+                Sem dados pessoais
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Leads no perÃ­odo" value={productMetrics.funnel.periodLeads} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Onboarding concluÃ­do" value={productMetrics.funnel.completedOnboardingUsers} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Primeira resposta" value={productMetrics.funnel.usersWithFirstResponse} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="UsuÃ¡rios ativados" value={productMetrics.activation.activatedUsers} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Taxa de ativaÃ§Ã£o" value={`${productMetrics.activation.activationRate}%`} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Checkout iniciado" value={productMetrics.funnel.checkoutStartedUsers} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Assinantes ativos" value={productMetrics.funnel.activeSubscriptions} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard
+                label="Tempo atÃ© ativaÃ§Ã£o"
+                value={productMetrics.activation.averageHoursToActivation === null ? "Sem amostra" : `${productMetrics.activation.averageHoursToActivation}h`}
+                icon={<BarChart3 className="h-5 w-5" />}
+              />
+            </div>
+
+            <div className="mt-5 grid gap-5 xl:grid-cols-3">
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Funil</h3>
+                <div className="mt-4 grid gap-3">
+                  <ConversionLine label="Lead -> cadastro" value={`${productMetrics.funnel.leadToSignupRate}%`} />
+                  <ConversionLine label="Cadastro -> onboarding" value={`${productMetrics.funnel.signupToOnboardingRate}%`} />
+                  <ConversionLine label="Onboarding -> primeira resposta" value={`${productMetrics.funnel.onboardingToFirstResponseRate}%`} />
+                  <ConversionLine label="Cadastro -> assinatura ativa" value={`${productMetrics.funnel.signupToActiveSubscriptionRate}%`} />
+                </div>
+                <p className="mt-4 rounded-md border border-amber-400/20 bg-amber-400/10 p-3 text-xs font-bold leading-5 text-amber-100">
+                  {productMetrics.notes.leadToSignup}
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Uso</h3>
+                <div className="mt-4 grid gap-3">
+                  <ConversionLine label="Respostas hoje" value={productMetrics.usage.responsesToday} />
+                  <ConversionLine label="Respostas 7 dias" value={productMetrics.usage.responsesLast7Days} />
+                  <ConversionLine label="Respostas 30 dias" value={productMetrics.usage.responsesLast30Days} />
+                  <ConversionLine label="Total de respostas" value={productMetrics.usage.totalResponses} />
+                  <ConversionLine label="MÃ©dia por usuÃ¡rio" value={productMetrics.usage.averageResponsesPerUser} />
+                  <ConversionLine label="UsuÃ¡rios ativos 7 dias" value={productMetrics.usage.activeUsersLast7Days} />
+                  <ConversionLine label="UsuÃ¡rios ativos 30 dias" value={productMetrics.usage.activeUsersLast30Days} />
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Feedback</h3>
+                <div className="mt-4 grid gap-3">
+                  <ConversionLine label="Feedbacks no perÃ­odo" value={productMetrics.feedback.periodFeedbacks} />
+                  <ConversionLine label="Novos" value={productMetrics.feedback.newFeedbacks} />
+                  <ConversionLine label="NÃ£o resolvidos" value={productMetrics.feedback.unresolvedFeedbacks} />
+                  <ConversionLine label="Bug" value={productMetrics.feedback.byType.bug} />
+                  <ConversionLine label="DÃºvida" value={productMetrics.feedback.byType.duvida} />
+                  <ConversionLine label="SugestÃ£o" value={productMetrics.feedback.byType.sugestao} />
+                  <ConversionLine label="Elogio" value={productMetrics.feedback.byType.elogio} />
+                  <ConversionLine label="Dificuldade de uso" value={productMetrics.feedback.byType.dificuldade_uso} />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 text-xs font-bold leading-5 text-slate-400 lg:grid-cols-2">
+              <p className="rounded-md border border-white/10 bg-[#0b1118] p-3">{productMetrics.activation.definition}</p>
+              <p className="rounded-md border border-white/10 bg-[#0b1118] p-3">{productMetrics.notes.checkoutStarted}</p>
+              <p className="rounded-md border border-white/10 bg-[#0b1118] p-3 lg:col-span-2">{productMetrics.notes.timeToActivation}</p>
+            </div>
+          </section>
+        ) : null}
 
         <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
           <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
