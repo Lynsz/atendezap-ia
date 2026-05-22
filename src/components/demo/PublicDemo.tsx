@@ -118,6 +118,10 @@ export function PublicDemo() {
     trackEvent("demo_pricing_cta_click", { cta: "demo_pricing" });
   }
 
+  function trackEbookCta() {
+    trackEvent("ebook_cta_click", { cta: "demo_ebook", source: "demo" });
+  }
+
   return (
     <section className="bg-[#090d12] py-16 text-white">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
@@ -233,7 +237,7 @@ export function PublicDemo() {
                       onClick={trackSignupCta}
                       className="inline-flex min-h-11 items-center justify-center rounded-md bg-emerald-400 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2"
                     >
-                      Criar conta
+                      Criar minha conta
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                     <Link
@@ -242,6 +246,13 @@ export function PublicDemo() {
                       className="inline-flex min-h-11 items-center justify-center rounded-md bg-white px-5 py-2.5 text-sm font-bold text-ink transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
                     >
                       Ver planos
+                    </Link>
+                    <Link
+                      href="/ebook"
+                      onClick={trackEbookCta}
+                      className="inline-flex min-h-11 items-center justify-center rounded-md border border-white/10 bg-white/10 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2"
+                    >
+                      Baixar guia gratuito
                     </Link>
                   </div>
                 </div>

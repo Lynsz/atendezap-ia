@@ -12,6 +12,8 @@ type PeriodFilter = "today" | "7d" | "30d" | "all";
 type LeadMetricRow = {
   email: string | null;
   created_at: string;
+  utm_source: string | null;
+  utm_campaign: string | null;
 };
 
 type ProfileMetricRow = {
@@ -35,6 +37,9 @@ type ResponseMetricRow = {
 type SubscriptionMetricRow = {
   user_id: string | null;
   status: string | null;
+  acquisition_source?: string | null;
+  funnel_source?: string | null;
+  metadata?: Record<string, unknown> | null;
   stripe_checkout_session_id?: string | null;
   provider_subscription_id?: string | null;
   stripe_subscription_id?: string | null;
@@ -95,6 +100,29 @@ function average(values: number[]) {
   return Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(1));
 }
 
+function cleanCampaignValue(value?: string | null) {
+  const normalized = value?.trim();
+  return normalized || "sem_utm";
+}
+
+function topBreakdown(rows: Array<{ label: string }>, limit = 8) {
+  return Object.entries(
+    rows.reduce<Record<string, number>>((accumulator, row) => {
+      accumulator[row.label] = (accumulator[row.label] || 0) + 1;
+      return accumulator;
+    }, {})
+  )
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+    .slice(0, limit);
+}
+
+function getSubscriptionCampaign(subscription: SubscriptionMetricRow) {
+  const metadata = subscription.metadata || {};
+  const campaign = typeof metadata.utm_campaign === "string" ? metadata.utm_campaign : null;
+  return cleanCampaignValue(campaign || subscription.funnel_source || subscription.acquisition_source);
+}
+
 function jsonError(error: unknown) {
   if (error instanceof AppError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
@@ -132,11 +160,11 @@ export async function GET(request: Request) {
     const thirtyDaysStart = daysAgo(30);
 
     const [leadsResult, profilesResult, businessesResult, responsesResult, subscriptionsResult, feedbackResult] = await Promise.all([
-      supabase.from("ebook_leads").select("email, created_at").limit(10000),
+      supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign").limit(10000),
       supabase.from("profiles").select("id, email, created_at").limit(10000),
       supabase.from("businesses").select("user_id, onboarding_completed, created_at, updated_at").limit(10000),
       supabase.from("generated_responses").select("user_id, created_at").limit(20000),
-      supabase.from("subscriptions").select("user_id, status, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
+      supabase.from("subscriptions").select("user_id, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
       supabase.from("user_feedback").select("type, status, created_at").limit(10000)
     ]);
 
@@ -205,6 +233,20 @@ export async function GET(request: Request) {
     const activatedUsers = activatedUserIds.length;
     const totalResponses = responses.length;
     const responseUserCount = Object.keys(responseCountsByUser).length;
+    const leadEmailsByCampaign = leads.reduce<Record<string, Set<string>>>((accumulator, lead) => {
+      const campaign = cleanCampaignValue(lead.utm_campaign);
+      if (!accumulator[campaign]) accumulator[campaign] = new Set<string>();
+      if (lead.email) accumulator[campaign].add(lead.email.toLowerCase());
+      return accumulator;
+    }, {});
+    const leadSignupByCampaign = Object.entries(leadEmailsByCampaign)
+      .map(([campaign, emails]) => ({
+        campaign,
+        leads: emails.size,
+        signups: [...emails].filter((email) => profileEmails.has(email)).length
+      }))
+      .sort((a, b) => b.leads - a.leads || a.campaign.localeCompare(b.campaign))
+      .slice(0, 8);
 
     serverLog({ event: "admin_metrics_loaded", route: "/api/admin/metrics", userId, status: "ok", metadata: { period } });
 
@@ -251,9 +293,22 @@ export async function GET(request: Request) {
         unresolvedFeedbacks: feedback.filter((item) => isUnresolvedFeedback(item.status)).length,
         byType: feedbackByType
       },
+      campaign: {
+        leadsByUtmSource: topBreakdown(leads.map((lead) => ({ label: cleanCampaignValue(lead.utm_source) }))),
+        leadsByUtmCampaign: topBreakdown(leads.map((lead) => ({ label: cleanCampaignValue(lead.utm_campaign) }))),
+        signupsByUtmCampaign: leadSignupByCampaign,
+        activeSubscriptionsByCampaign: topBreakdown(activeSubscriptions.map((subscription) => ({ label: getSubscriptionCampaign(subscription) }))),
+        checkoutStartedByCampaign: topBreakdown(
+          subscriptions
+            .filter((subscription) => subscription.stripe_checkout_session_id || subscription.provider_subscription_id || subscription.stripe_subscription_id || subscription.status?.toLowerCase() === "pending")
+            .map((subscription) => ({ label: getSubscriptionCampaign(subscription) }))
+        )
+      },
       notes: {
         leadToSignup: "Taxa aproximada por e-mail entre ebook_leads e profiles.",
         checkoutStarted: "Checkout iniciado e aproximado por subscription pendente ou com ids Stripe salvos.",
+        campaign:
+          "Metricas por campanha usam UTMs dos leads e metadata/funnel salvo em subscriptions. Cadastros por campanha sao aproximados por e-mail.",
         timeToActivation:
           activationHours.length > 0
             ? "Tempo aproximado entre criacao do profile e primeira resposta gerada por usuarios ativados."

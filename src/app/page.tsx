@@ -47,28 +47,44 @@ export default function Home() {
             <p className="mt-4 max-w-2xl text-base font-bold leading-7 text-slate-700">
               O AtendeZap IA ajuda quem atende pelo WhatsApp a criar respostas rápidas, profissionais e personalizadas com inteligência artificial.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <TrackedLink
-                href="/cadastro"
-                eventName="hero_cta_click"
-                properties={{ section: "hero", destination: "signup" }}
-                className="bg-emerald-500 text-slate-950 hover:bg-emerald-400 focus:ring-emerald-500"
-              >
-                Começar agora
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </TrackedLink>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <TrackedLink
                 href="/demo"
                 eventName="demo_cta_click"
                 properties={{ section: "hero", destination: "demo" }}
-                className="bg-white text-ink ring-1 ring-slate-200 hover:bg-slate-50 focus:ring-brand-500"
+                className="bg-emerald-500 text-slate-950 hover:bg-emerald-400 focus:ring-emerald-500"
               >
                 Testar demo grátis
                 <Sparkles className="ml-2 h-4 w-4" />
               </TrackedLink>
+              <TrackedLink
+                href="/ebook"
+                eventName="ebook_cta_click"
+                properties={{ section: "hero", destination: "ebook" }}
+                className="bg-white text-ink ring-1 ring-slate-200 hover:bg-slate-50 focus:ring-brand-500"
+              >
+                Baixar guia gratuito
+              </TrackedLink>
+              <TrackedLink
+                href="/precos"
+                eventName="hero_cta_click"
+                properties={{ section: "hero", destination: "pricing" }}
+                className="bg-white text-ink ring-1 ring-slate-200 hover:bg-slate-50 focus:ring-brand-500"
+              >
+                Ver planos
+              </TrackedLink>
+              <TrackedLink
+                href="/cadastro"
+                eventName="hero_cta_click"
+                properties={{ section: "hero", destination: "signup" }}
+                className="bg-slate-950 text-white hover:bg-slate-800 focus:ring-slate-900"
+              >
+                Criar minha conta
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </TrackedLink>
             </div>
             <p className="mt-5 inline-flex rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">
-              Feito para autônomos, prestadores de serviço e pequenos negócios.
+              Feito para autônomos, prestadores de serviço, pequenos negócios e pessoas que vendem ou atendem pelo WhatsApp.
             </p>
           </div>
 

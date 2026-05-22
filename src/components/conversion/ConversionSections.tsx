@@ -153,6 +153,16 @@ export const conversionFaqItems: FaqItem[] = [
     question: "Meus dados ficam protegidos?",
     answer:
       "As integrações sensíveis ficam no backend, sem expor chaves no navegador. O produto também evita registrar dados sensíveis completos em logs."
+  },
+  {
+    question: "Posso testar antes?",
+    answer:
+      "Sim. A demo gratuita permite gerar uma resposta de exemplo antes de criar conta ou escolher um plano."
+  },
+  {
+    question: "Preciso saber tecnologia?",
+    answer:
+      "Não. Você configura seu atendimento com informações simples, gera a resposta, revisa e copia para enviar pelo WhatsApp."
   }
 ];
 

@@ -457,6 +457,7 @@ function SaasDashboardContent() {
 
     setGenerating(true);
     try {
+      const isFirstGeneratedResponse = history.length === 0;
       const { generatedAnswer: answer, savedResponse, usage } = await generateCustomerResponse({
         customerQuestion: question,
         responseType,
@@ -470,6 +471,12 @@ function SaasDashboardContent() {
       setMonthlyUsage(usage.used);
       if (savedResponse) {
         setHistory((current) => [savedResponse, ...current]);
+        if (isFirstGeneratedResponse) {
+          trackEvent("first_response_generated", {
+            source: "dashboard",
+            response_type: responseType
+          });
+        }
       }
       showFeedback("Resposta salva no histórico.");
     } catch (generationError) {

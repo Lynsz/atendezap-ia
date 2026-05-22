@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const publicPages = [
   { path: "/", text: /AtendeZap IA/i, cta: /Baixar|Comecar|Criar|Teste/i },
+  { path: "/atendimento-whatsapp-ia", text: /AtendeZap IA|WhatsApp/i, cta: /Testar demo gratis|Ver planos|Baixar guia gratuito/i },
   { path: "/ebook", text: /guia gratuito/i, cta: /Baixar guia gratuito/i },
   { path: "/ebook/obrigado", text: /guia gratuito/i, cta: /Acessar guia gratuito/i },
   { path: "/ebook/guia", text: /WhatsApp/i, cta: /AtendeZap IA|precos|demo/i },

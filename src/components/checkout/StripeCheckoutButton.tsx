@@ -30,6 +30,10 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
     if (disabled) return;
     const attribution = getAttribution();
     const funnel = attribution.funnel || (typeof window !== "undefined" && window.location.pathname.startsWith("/ebook") ? "ebook" : "pricing");
+    trackEvent("plan_click", {
+      plan: planId,
+      funnel
+    });
     trackEvent("pricing_cta_click", {
       plan: planId,
       funnel

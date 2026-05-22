@@ -40,6 +40,6 @@ test("funil do ebook preserva UTMs e redireciona para obrigado", async ({ page }
   expect(String(payload.business_type)).toContain("Prestador");
 
   await expect(page.getByRole("link", { name: /Acessar guia gratuito/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Testar o AtendeZap IA agora/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Conhecer o AtendeZap IA/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Testar demo grátis/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Conhecer planos/i })).toBeVisible();
 });

@@ -2,7 +2,7 @@
 
 ## Nota atual estimada
 
-92/100.
+93/100.
 
 ## Status
 
@@ -10,13 +10,14 @@ Pronto para producao controlada com primeiros usuarios.
 
 ## Resumo executivo
 
-O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 usuarios reais, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. Alem da validacao local de release, agora existe um canal simples de feedback, lista no admin, roteiro de entrevista, mensagens de suporte e triagem rapida de bugs.
+O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 usuarios reais e para uma campanha pequena de validacao com orcamento baixo, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. Alem da validacao local de release, agora existe um canal simples de feedback, lista no admin, roteiro de entrevista, mensagens de suporte, triagem rapida de bugs, metricas internas e pagina direta para campanha.
 
-Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de validar Stripe, Supabase, Resend, OpenAI, tracking e dominio no ambiente real.
+Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de validar Stripe, Supabase, Resend, OpenAI, tracking, dominio, admin e suporte no ambiente real.
 
 ## O que esta validado
 
 - Landing: rota `/` carrega no build/e2e, CTAs principais apontam para `/cadastro`, `/demo` e `/ebook`.
+- Campanha: `/atendimento-whatsapp-ia` criada para trafego pago direto, com CTA para demo, ebook, planos e Pro.
 - Ebook: `/ebook`, `/ebook/obrigado` e `/ebook/guia` existem, preservam UTMs e usam erro amigavel no formulario.
 - Demo: `/demo` tem e2e, validacao server-side e fallback controlado sem OpenAI.
 - Cadastro/login: `/cadastro` e `/login` carregam; fluxo real ainda depende de Supabase configurado.
@@ -32,7 +33,7 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - OpenAI: chave fica no backend; demo e geracao usam fallback/erro controlado.
 - Admin: `/admin` e `/api/admin/overview` ficam protegidos; API admin exige usuario admin.
 - Feedback: `/feedback` permite envio publico ou autenticado; `/api/feedback` valida, aplica rate limit e salva no Supabase; admin visualiza feedbacks recentes e pode marcar como em analise ou resolvido.
-- Metricas internas: `/api/admin/metrics` calcula ativacao, funil, uso inicial, feedback e assinaturas de forma agregada; admin exibe cards e secoes simples sem expor listas pessoais.
+- Metricas internas: `/api/admin/metrics` calcula ativacao, funil, uso inicial, feedback, assinaturas e UTMs/campanhas de forma agregada; admin exibe cards e secoes simples sem expor listas pessoais.
 - Tracking: GA4/Meta sao opcionais e UTMs sao preservadas no funil.
 - Mobile: e2e cobre paginas publicas; revisao final nao encontrou bloqueio visual critico no codigo/CSS.
 - Seguranca: middleware preserva webhooks publicos, bloqueia superficies privadas sem hint de sessao e APIs privadas retornam 401 sem sessao.
@@ -47,6 +48,14 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - GA4: `NEXT_PUBLIC_GA_MEASUREMENT_ID` e validacao no DebugView.
 - Meta Pixel: `NEXT_PUBLIC_META_PIXEL_ID` e validacao no Events Manager.
 - OpenAI billing: chave, modelo, limite de custo e monitoramento de uso.
+
+## Prontidao para anuncios pequenos
+
+Pronto para orcamento baixo, com ressalvas.
+
+O produto tem landing revisada, pagina especifica de campanha, demo publica, ebook, pricing, CTAs coerentes, preservacao de UTMs, eventos de tracking no-op safe e metricas internas no admin para acompanhar lead, cadastro, onboarding, primeira resposta, checkout, assinatura e feedback.
+
+As ressalvas sao externas e operacionais: antes de ligar anuncios, executar `docs/pre-ads-checklist.md`, validar GA4/Meta Pixel, Stripe checkout/webhook/portal, Supabase, Resend, OpenAI, dominio e admin no ambiente real. Nao aumentar investimento enquanto checkout, lead, cadastro, IA ou tracking estiverem instaveis.
 
 ## Bloqueadores
 
@@ -73,6 +82,6 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 
 Pode liberar para os primeiros usuarios, em producao controlada, depois de executar o smoke test final no ambiente real com variaveis externas configuradas e a migration de feedback aplicada.
 
-Pode rodar anuncio pequeno somente depois de validar checkout, webhook Stripe, tracking, Resend, OpenAI e suporte minimo no ambiente final. Antes disso, a recomendacao e liberar para teste interno e 3 a 5 primeiros usuarios por convite.
+Pode rodar anuncio pequeno com orcamento baixo depois de validar checkout, webhook Stripe, tracking, Resend, OpenAI e suporte minimo no ambiente final. Antes disso, a recomendacao e liberar para teste interno e 3 a 5 primeiros usuarios por convite.
 
 Nao ha correcao de codigo bloqueante identificada nesta etapa. O proximo passo e deploy/staging real, execucao do checklist final, convite para 3 a 5 usuarios e acompanhamento diario de feedback e metricas de ativacao no admin.

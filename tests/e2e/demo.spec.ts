@@ -14,7 +14,8 @@ test("demo publica gera resposta ou fallback controlado", async ({ page }) => {
   await page.getByRole("button", { name: /Gerar resposta de exemplo/i }).click();
 
   await expect(page.locator("article").filter({ hasText: /Resposta gerada/i })).toContainText(/Oi|Ola|Claro|entrega|resposta/i);
-  await expect(page.getByRole("link", { name: /Criar conta/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Criar minha conta/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Ver planos/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Baixar guia gratuito/i })).toBeVisible();
   await expect(page.locator("body")).not.toContainText(/Application error|Unhandled Runtime Error/i);
 });

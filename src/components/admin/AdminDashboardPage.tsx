@@ -126,9 +126,17 @@ type ProductMetricsPayload = {
       dificuldade_uso: number;
     };
   };
+  campaign: {
+    leadsByUtmSource: Array<{ label: string; count: number }>;
+    leadsByUtmCampaign: Array<{ label: string; count: number }>;
+    signupsByUtmCampaign: Array<{ campaign: string; leads: number; signups: number }>;
+    activeSubscriptionsByCampaign: Array<{ label: string; count: number }>;
+    checkoutStartedByCampaign: Array<{ label: string; count: number }>;
+  };
   notes: {
     leadToSignup: string;
     checkoutStarted: string;
+    campaign: string;
     timeToActivation: string;
   };
 };
@@ -467,7 +475,7 @@ export default function AdminDashboardPage() {
               />
             </div>
 
-            <div className="mt-5 grid gap-5 xl:grid-cols-3">
+            <div className="mt-5 grid gap-5 xl:grid-cols-4">
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                 <h3 className="text-lg font-black text-white">Funil</h3>
                 <div className="mt-4 grid gap-3">
@@ -507,11 +515,27 @@ export default function AdminDashboardPage() {
                   <ConversionLine label="Dificuldade de uso" value={productMetrics.feedback.byType.dificuldade_uso} />
                 </div>
               </div>
+
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Campanhas</h3>
+                <div className="mt-4 grid gap-3">
+                  {(productMetrics.campaign.leadsByUtmSource.length ? productMetrics.campaign.leadsByUtmSource : [{ label: "sem_utm", count: 0 }]).slice(0, 4).map((item) => (
+                    <ConversionLine key={`source-${item.label}`} label={`Source: ${item.label}`} value={item.count} />
+                  ))}
+                  {(productMetrics.campaign.leadsByUtmCampaign.length ? productMetrics.campaign.leadsByUtmCampaign : [{ label: "sem_utm", count: 0 }]).slice(0, 4).map((item) => (
+                    <ConversionLine key={`campaign-${item.label}`} label={`Campanha: ${item.label}`} value={item.count} />
+                  ))}
+                  {(productMetrics.campaign.checkoutStartedByCampaign.length ? productMetrics.campaign.checkoutStartedByCampaign : [{ label: "sem_dados", count: 0 }]).slice(0, 3).map((item) => (
+                    <ConversionLine key={`checkout-${item.label}`} label={`Checkout: ${item.label}`} value={item.count} />
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="mt-5 grid gap-3 text-xs font-bold leading-5 text-slate-400 lg:grid-cols-2">
               <p className="rounded-md border border-white/10 bg-[#0b1118] p-3">{productMetrics.activation.definition}</p>
               <p className="rounded-md border border-white/10 bg-[#0b1118] p-3">{productMetrics.notes.checkoutStarted}</p>
+              <p className="rounded-md border border-white/10 bg-[#0b1118] p-3">{productMetrics.notes.campaign}</p>
               <p className="rounded-md border border-white/10 bg-[#0b1118] p-3 lg:col-span-2">{productMetrics.notes.timeToActivation}</p>
             </div>
           </section>

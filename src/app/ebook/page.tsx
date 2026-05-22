@@ -176,11 +176,11 @@ export default function EbookPage() {
               <Sparkles className="mr-2 h-4 w-4" />
               Baixar guia gratuito
             </Button>
-            <Button href="/precos" variant="ghost">
-              Conhecer o AtendeZap IA
+            <Button href="/cadastro" variant="ghost">
+              Criar minha conta
             </Button>
             <Button href="/demo" variant="ghost">
-              Testar o AtendeZap IA agora
+              Testar o AtendeZap IA
             </Button>
           </div>
           <div className="mt-8 flex items-center justify-center gap-2 text-sm text-slate-400">

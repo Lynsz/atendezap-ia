@@ -85,16 +85,16 @@ export default function EbookThankYouPage() {
               properties={{ cta: "testar_demo", funnel: "ebook" }}
               className="bg-white text-slate-950 hover:bg-slate-100 focus:ring-white"
             >
-              Testar o AtendeZap IA agora
+              Testar demo grátis
               <Sparkles className="ml-2 h-4 w-4" />
             </TrackedLink>
             <TrackedLink
               href="/precos"
-              eventName="thank_you_cta_click"
-              properties={{ cta: "conhecer_atendezap_ia", funnel: "ebook" }}
+              eventName="pricing_cta_click"
+              properties={{ cta: "conhecer_planos", funnel: "ebook" }}
               className="bg-emerald-400 text-slate-950 hover:bg-emerald-300 focus:ring-emerald-300"
             >
-              Conhecer o AtendeZap IA
+              Conhecer planos
               <ArrowRight className="ml-2 h-4 w-4" />
             </TrackedLink>
             <Button href="/cadastro" variant="ghost">

@@ -70,6 +70,16 @@ Metricas:
 - Feedbacks nao resolvidos.
 - Feedbacks por tipo: bug, duvida, sugestao, elogio e dificuldade de uso.
 
+### Campanhas e UTMs
+
+- Leads por `utm_source`.
+- Leads por `utm_campaign`.
+- Cadastros aproximados por `utm_campaign`, cruzando e-mail de lead com e-mail de profile.
+- Checkouts iniciados por campanha, quando `subscriptions` tiver metadata, `funnel_source` ou `acquisition_source`.
+- Assinaturas ativas por campanha, quando a origem foi preservada no checkout/subscription.
+
+Essas metricas ajudam a avaliar uma campanha pequena, mas nao substituem GA4/Meta Pixel para visitantes anonimos.
+
 ## Filtros
 
 O admin usa os filtros:
@@ -86,6 +96,8 @@ O filtro afeta os cards de periodo, como leads no periodo e feedbacks no periodo
 - Taxa lead -> cadastro e aproximada por e-mail entre `ebook_leads` e `profiles`.
 - Checkout iniciado e aproximado por assinatura pendente ou por ids Stripe salvos em `subscriptions`.
 - Visitantes anonimos que nao viram lead ainda dependem de GA4/Meta Pixel; o banco local nao mede visitante unico.
+- Custo por lead, custo por cadastro e custo por checkout iniciado dependem do gasto informado na plataforma de anuncios; o admin nao recebe custo de midia automaticamente.
+- Assinaturas por campanha dependem da preservacao de UTMs no checkout e no webhook Stripe.
 - Tempo ate ativacao depende de profile criado e primeira resposta gerada; pode ficar sem amostra no inicio.
 - A API calcula agregados em memoria, suficiente para primeiros usuarios. Se o volume crescer, revisar para queries agregadas, views ou tabelas materializadas.
 
@@ -97,6 +109,8 @@ O filtro afeta os cards de periodo, como leads no periodo e feedbacks no periodo
 - Feedbacks de dificuldade de uso.
 - Assinaturas iniciadas.
 - Assinaturas ativas.
+- Leads por `utm_source` e `utm_campaign`.
+- Custo por lead e custo por checkout iniciado calculados fora do app com o gasto da campanha.
 
 ## Como interpretar
 
