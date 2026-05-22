@@ -2,10 +2,10 @@
 
 ## Status geral
 
-- Nota estimada atual: 87/100.
+- Nota estimada atual: 89/100.
 - Pronto para staging: sim, desde que as variaveis externas sejam configuradas na Vercel.
-- Pronto para producao controlada: sim, de forma condicional e para poucos usuarios, apos executar `docs/production-launch-checklist.md` no ambiente final. O codigo local, build e testes automatizados estao prontos; a liberacao depende de validacao real com Supabase, Stripe, Resend, OpenAI, tracking e admin.
-- Pronto para anuncios pagos: nao. Antes de anuncios, precisa checkout real validado, pixel/GA4 validados, e-mail validado e suporte minimo confirmado.
+- Candidato aprovado para producao controlada: sim, para poucos usuarios, apos executar `docs/final-smoke-test.md` e `docs/production-launch-checklist.md` no ambiente final. O codigo local, build e testes automatizados estao prontos; a liberacao depende de validacao real com Supabase, Stripe, Resend, OpenAI, tracking e admin.
+- Pronto para anuncios pagos pequenos: ainda condicional. Pode iniciar apenas depois de checkout real, webhook, pixel/GA4, e-mail, OpenAI e suporte minimo estarem validados no ambiente final.
 
 ## Fluxos obrigatorios validados
 
@@ -68,3 +68,11 @@
 - Plano Pro confirmado como primeiro mes por R$ 29 para novos usuarios e recorrencia normal depois.
 - Mobile validado em home, ebook, demo, login, cadastro, dashboard, assinatura e admin.
 - `docs/production-launch-checklist.md`, `docs/monitoring.md`, `docs/support.md`, `docs/rollback-plan.md` e `docs/first-7-days-checklist.md` executaveis pelo responsavel do lancamento.
+
+## Validacao final do release candidate - 2026-05-22
+
+- Status do release candidate: aprovado como candidato para producao controlada.
+- Evidencia local: `npm run lint`, `npm run typecheck`, `npm run build`, `npm test` e `npm run test:e2e` passaram.
+- Pendencias externas: Vercel com `NEXT_PUBLIC_APP_URL`, Supabase real com migrations/RLS/Auth, Stripe test/live com webhook assinado, Resend com remetente real, OpenAI com billing/modelo, GA4, Meta Pixel, Sentry e dominio.
+- Riscos conhecidos: auth de pagina ainda usa hint no middleware, superficies legadas continuam acessiveis, limite mensal pode ter concorrencia em chamadas simultaneas e nao ha e2e autenticado real contra Supabase/Stripe.
+- Recomendacao final: liberar 3 a 5 primeiros usuarios por convite apos smoke final em staging/producao controlada; iniciar anuncios pequenos somente depois de comprovar checkout, webhook, tracking, e-mail e suporte no ambiente final.

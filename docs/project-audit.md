@@ -2,9 +2,9 @@
 
 ## Nota geral
 
-87/100
+89/100
 
-O projeto esta em release candidate operacional para producao controlada: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs, testes, staging e playbooks de operacao estao encaminhados. A etapa atual criou documentacao de checklist final de producao, plano de lancamento controlado, monitoramento, suporte minimo, rollback e rotina dos primeiros 7 dias. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e evoluir para SSR cookies se a protecao de pagina precisar ser 100% server-side.
+O projeto esta em release candidate aprovado para producao controlada: funil publico, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao final local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio e admin no ambiente final.
 
 ## Mapa tecnico
 
@@ -217,3 +217,13 @@ O projeto esta em release candidate operacional para producao controlada: funil 
 2. Liberar producao controlada seguindo `docs/controlled-launch-plan.md`.
 3. Monitorar diariamente com `docs/monitoring.md` e `docs/first-7-days-checklist.md`.
 4. Manter `docs/rollback-plan.md` pronto antes de iniciar anuncios.
+
+## Validacao final de prontidao - 2026-05-22
+
+- Status final: pronto para producao controlada com primeiros usuarios, condicionado a smoke test no ambiente real com integracoes externas configuradas.
+- Nota estimada nova: 89/100.
+- Bloqueadores atuais: nenhum bloqueador de codigo identificado; a liberacao real depende de Supabase, Stripe, Resend, OpenAI, Vercel, dominio, GA4/Meta e admin validados no ambiente final.
+- Pendencias nao bloqueantes: SSR cookies para auth de pagina, reducao de superficies legadas, recuperacao de senha, e2e autenticado real, webhook Stripe com assinatura real automatizada, atomicidade do limite mensal e alertas automaticos.
+- Pode liberar primeiros usuarios: sim, em producao controlada, apos executar `docs/final-smoke-test.md` e `docs/post-deploy-checklist.md`.
+- Pode iniciar anuncios pequenos: ainda nao antes de validar checkout, webhook, tracking, e-mail, OpenAI e suporte minimo no ambiente final; depois dessa validacao, pode iniciar com orcamento baixo.
+- Proximo passo recomendado: fazer deploy staging/producao controlada na Vercel, preencher envs sem segredos no codigo, executar smoke final completo e liberar 3 a 5 usuarios por convite antes de anuncios.
