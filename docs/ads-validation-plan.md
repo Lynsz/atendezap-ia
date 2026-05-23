@@ -136,3 +136,15 @@ Mesmo com bons sinais, aumentar aos poucos. Esta etapa e de validacao comercial,
 7. Pausar campanha se surgir bloqueador P0.
 
 Use tambem `docs/campaign-daily-checklist.md` para registrar a rotina diaria e `docs/campaign-analysis.md` para interpretar a decisao pos-campanha.
+
+## Rotina pos-campanha
+
+Ao final da primeira campanha pequena:
+
+- Preencher `docs/post-campaign-diagnosis.md`.
+- Classificar melhorias com `docs/improvement-prioritization.md`.
+- Registrar a decisao semanal em `docs/weekly-growth-review.md`.
+- Manter ideias maiores em `docs/product-growth-backlog.md`.
+- Planejar apenas experimentos manuais descritos em `docs/growth-experiments.md`.
+
+Recomendacao: antes de aumentar investimento, corrigir o maior gargalo P0/P1 encontrado em lead -> cadastro, onboarding, primeira resposta, checkout ou assinatura.

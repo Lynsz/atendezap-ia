@@ -166,6 +166,10 @@ create table if not exists public.user_feedback (
   type text not null,
   message text not null,
   page text,
+  source text,
+  context text,
+  campaign text,
+  user_agent text,
   status text not null default 'new',
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
@@ -247,6 +251,8 @@ create index if not exists lead_email_events_created_at_idx on public.lead_email
 create index if not exists user_feedback_user_id_idx on public.user_feedback(user_id);
 create index if not exists user_feedback_status_idx on public.user_feedback(status);
 create index if not exists user_feedback_type_idx on public.user_feedback(type);
+create index if not exists user_feedback_context_idx on public.user_feedback(context);
+create index if not exists user_feedback_source_idx on public.user_feedback(source);
 create index if not exists user_feedback_created_at_idx on public.user_feedback(created_at desc);
 create unique index if not exists stripe_webhook_events_provider_event_id_unique_idx on public.stripe_webhook_events(provider_event_id);
 create index if not exists subscriptions_provider_subscription_id_idx on public.subscriptions(provider_subscription_id);

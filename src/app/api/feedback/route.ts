@@ -16,7 +16,10 @@ const feedbackSchema = z.object({
   email: z.string().trim().email("Informe um e-mail valido.").max(180, "E-mail muito longo.").optional().or(z.literal("")).default(""),
   type: z.enum(feedbackTypes, { required_error: "Escolha o tipo de feedback." }),
   message: z.string().trim().min(8, "Descreva o feedback com um pouco mais de detalhe.").max(2000, "Mensagem muito longa. Use ate 2000 caracteres."),
-  page: z.string().trim().max(180, "Pagina muito longa.").optional().default("")
+  page: z.string().trim().max(180, "Pagina muito longa.").optional().default(""),
+  source: z.string().trim().max(80, "Origem muito longa.").optional().default("feedback_form"),
+  context: z.string().trim().max(80, "Contexto muito longo.").optional().default(""),
+  campaign: z.string().trim().max(160, "Campanha muito longa.").optional().default("")
 });
 
 const feedbackStatusSchema = z.object({
@@ -74,6 +77,7 @@ export async function POST(request: Request) {
     }
 
     const supabase = getSupabaseAdmin();
+    const userAgent = request.headers.get("user-agent")?.slice(0, 500) || null;
     const { data, error } = await supabase
       .from("user_feedback")
       .insert({
@@ -83,6 +87,10 @@ export async function POST(request: Request) {
         type: payload.type,
         message: payload.message,
         page: payload.page || null,
+        source: payload.source || "feedback_form",
+        context: payload.context || null,
+        campaign: payload.campaign || null,
+        user_agent: userAgent,
         status: "new"
       })
       .select("id")
@@ -92,7 +100,13 @@ export async function POST(request: Request) {
       throw new AppError("Nao foi possivel salvar seu feedback agora. Tente novamente em instantes.", 500);
     }
 
-    serverLog({ event: "feedback_created", route: "/api/feedback", userId, status: "ok", metadata: { type: payload.type, page: payload.page || "not_informed" } });
+    serverLog({
+      event: "feedback_created",
+      route: "/api/feedback",
+      userId,
+      status: "ok",
+      metadata: { type: payload.type, page: payload.page || "not_informed", context: payload.context || "not_informed" }
+    });
     return Response.json({
       ok: true,
       id: data?.id,

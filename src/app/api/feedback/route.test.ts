@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   createClient: vi.fn(),
   getSupabaseAdmin: vi.fn(),
   requireAdmin: vi.fn(),
+  insertFeedbackPayload: vi.fn(),
   insertFeedback: vi.fn(),
   updateFeedback: vi.fn()
 }));
@@ -31,7 +32,7 @@ vi.mock("@/lib/admin", () => ({
 
 function createInsertQuery() {
   return {
-    insert: vi.fn(() => ({
+    insert: mocks.insertFeedbackPayload.mockImplementation(() => ({
       select: vi.fn(() => ({
         single: mocks.insertFeedback
       }))
@@ -46,6 +47,7 @@ describe("POST /api/feedback", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-key";
     mocks.createClient.mockReset();
+    mocks.insertFeedbackPayload.mockReset();
     mocks.getSupabaseAdmin.mockReset().mockReturnValue({
       from: vi.fn(() => createInsertQuery())
     });
@@ -57,7 +59,7 @@ describe("POST /api/feedback", () => {
     const response = await POST(
       new Request("https://app.example.test/api/feedback", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "User-Agent": "vitest" },
         body: JSON.stringify({
           email: "cliente@example.com",
           type: "bug",
@@ -74,7 +76,7 @@ describe("POST /api/feedback", () => {
     const response = await POST(
       new Request("https://app.example.test/api/feedback", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "User-Agent": "vitest" },
         body: JSON.stringify({
           type: "dificuldade_uso",
           message: "Nao entendi como configurar o atendimento."
@@ -93,13 +95,16 @@ describe("POST /api/feedback", () => {
     const response = await POST(
       new Request("https://app.example.test/api/feedback", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "User-Agent": "vitest" },
         body: JSON.stringify({
           name: "Cliente Teste",
           email: "Cliente@Example.com",
           type: "sugestao",
           message: "Seria bom explicar melhor o limite mensal.",
-          page: "dashboard"
+          page: "dashboard",
+          source: "feedback_page",
+          context: "dashboard",
+          campaign: "campanha-maio"
         })
       })
     );
@@ -109,6 +114,15 @@ describe("POST /api/feedback", () => {
     expect(response.status).toBe(200);
     expect(body.ok).toBe(true);
     expect(mocks.insertFeedback).toHaveBeenCalled();
+    expect(mocks.insertFeedbackPayload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: "dashboard",
+        source: "feedback_page",
+        context: "dashboard",
+        campaign: "campanha-maio",
+        user_agent: expect.any(String)
+      })
+    );
   });
 
   it("associa user_id quando ha sessao", async () => {

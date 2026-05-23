@@ -2,9 +2,11 @@
 
 ## Nota geral
 
-94/100
+95/100
 
 O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios e uma campanha pequena de validacao: funil publico, pagina direta de campanha, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, metricas internas, relatorio de campanha, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin, feedback e metricas no ambiente final.
+
+O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de priorizacao, revisao semanal, backlog de crescimento, experimentos pequenos e bloco simples de gargalo no admin para orientar melhorias com dados reais.
 
 ## Mapa tecnico
 
@@ -84,6 +86,8 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Feedback de primeiros usuarios foi adicionado em `/feedback`, com API server-side, validacao, rate limit, associacao opcional a usuario autenticado, tabela `user_feedback` e listagem simples no admin.
 - Metricas internas foram adicionadas em `/api/admin/metrics` e no admin: funil, ativacao, uso inicial, feedback e assinaturas em formato agregado.
 - Relatorio de campanha foi adicionado em `/api/admin/campaign-report` e no admin: filtros por periodo, `utm_source` e `utm_campaign`, leads por UTM, cadastros, onboardings, ativacao, demo, primeira resposta, checkout, assinaturas, feedbacks, taxas de conversao, interpretacao simples e exportacao CSV agregada.
+- Admin agora mostra "Possivel gargalo atual" com regra deterministica baseada em lead, cadastro, onboarding, primeira resposta, checkout e assinatura.
+- Feedback agora registra contexto/origem/campanha opcionais para identificar se a dificuldade veio de cadastro, onboarding, demo, ebook, dashboard ou assinatura.
 - Preparacao para anuncios pequenos adicionada: pagina `/atendimento-whatsapp-ia`, CTAs revisados na landing/demo/ebook/obrigado, FAQ comercial ampliada, evento `campaign_view`, evento `plan_click`, evento `first_response_generated` e metricas por UTM/campanha no admin.
 - `docs/ads-validation-plan.md` e `docs/pre-ads-checklist.md` documentam objetivo, rotas, eventos, metricas, criterio de pausa e checklist antes de ligar anuncios.
 - Schema Supabase tem tabelas esperadas, RLS e policies por `auth.uid()` para dados de usuario.
@@ -287,3 +291,10 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Limitacoes restantes: visitantes e custo dependem de GA4/Meta/plataforma de anuncios; demo usada depende da tabela interna `events`; cadastro por campanha e aproximado por e-mail; checkout iniciado e aproximado por `subscriptions`.
 - Recomendacao atualizada: pronto para campanha pequena somente apos validar ambiente real e usar o relatorio diariamente para decidir continuar, ajustar ou pausar. Nao pronto para escalar anuncios.
 - Nota estimada nova: 94/100.
+
+## Ciclo de melhoria pos-campanha - 2026-05-23
+
+- Documentos criados: `docs/post-campaign-diagnosis.md`, `docs/improvement-prioritization.md`, `docs/weekly-growth-review.md`, `docs/product-growth-backlog.md` e `docs/growth-experiments.md`.
+- Processo: revisar dados reais do funil, classificar gargalos por impacto/frequencia/esforco/risco, corrigir P0/P1 antes de aumentar anuncios e registrar a decisao semanalmente.
+- Recomendacao de proximos ajustes: priorizar o gargalo que aparecer entre lead -> cadastro, cadastro -> onboarding, onboarding -> primeira resposta, primeira resposta -> checkout ou checkout -> assinatura.
+- Nota estimada nova: 95/100.

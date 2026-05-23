@@ -7,6 +7,7 @@ import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "
 import { trackEvent } from "@/lib/tracking";
 
 type FeedbackType = "bug" | "duvida" | "sugestao" | "elogio" | "dificuldade_uso";
+type FeedbackContext = "cadastro_login" | "onboarding" | "gerar_resposta" | "assinatura_pagamento" | "demo" | "ebook" | "dashboard" | "outro";
 
 const feedbackTypeOptions: Array<{ value: FeedbackType; label: string }> = [
   { value: "bug", label: "Bug" },
@@ -16,6 +17,17 @@ const feedbackTypeOptions: Array<{ value: FeedbackType; label: string }> = [
   { value: "dificuldade_uso", label: "Dificuldade de uso" }
 ];
 
+const feedbackContextOptions: Array<{ value: FeedbackContext; label: string }> = [
+  { value: "cadastro_login", label: "Cadastro/login" },
+  { value: "onboarding", label: "Onboarding" },
+  { value: "gerar_resposta", label: "Gerar resposta" },
+  { value: "assinatura_pagamento", label: "Assinatura/pagamento" },
+  { value: "demo", label: "Demo" },
+  { value: "ebook", label: "Ebook" },
+  { value: "dashboard", label: "Dashboard" },
+  { value: "outro", label: "Outro" }
+];
+
 export function FeedbackForm() {
   const supabase = useMemo(() => (isSupabaseBrowserConfigured() ? supabaseBrowserClient : null), []);
   const [loadingUser, setLoadingUser] = useState(true);
@@ -23,6 +35,7 @@ export function FeedbackForm() {
   const [userEmail, setUserEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [type, setType] = useState<FeedbackType>("dificuldade_uso");
+  const [context, setContext] = useState<FeedbackContext>("dashboard");
   const [message, setMessage] = useState("");
   const [page, setPage] = useState(() => (typeof window !== "undefined" && window.location.pathname !== "/feedback" ? window.location.pathname : ""));
   const [name, setName] = useState("");
@@ -65,11 +78,13 @@ export function FeedbackForm() {
 
     trackEvent("feedback_submit", {
       feedback_type: type,
+      feedback_context: context,
       authenticated: Boolean(userEmail)
     });
 
     try {
       const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+      const campaign = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("utm_campaign") || "" : "";
       const response = await fetch("/api/feedback", {
         method: "POST",
         headers: {
@@ -81,7 +96,10 @@ export function FeedbackForm() {
           email: userEmail || email,
           type,
           message,
-          page
+          page,
+          source: "feedback_page",
+          context,
+          campaign
         })
       });
       const result = (await response.json().catch(() => ({}))) as { message?: string; error?: string };
@@ -90,6 +108,7 @@ export function FeedbackForm() {
         setError(result.error || "Não foi possível enviar seu feedback agora. Tente novamente em instantes.");
         trackEvent("feedback_error", {
           feedback_type: type,
+          feedback_context: context,
           reason: "api_error"
         });
         return;
@@ -100,12 +119,14 @@ export function FeedbackForm() {
       setPage("");
       trackEvent("feedback_success", {
         feedback_type: type,
+        feedback_context: context,
         authenticated: Boolean(userEmail)
       });
     } catch {
       setError("Não foi possível enviar seu feedback agora. Verifique sua conexão e tente novamente.");
       trackEvent("feedback_error", {
         feedback_type: type,
+        feedback_context: context,
         reason: "network_error"
       });
     } finally {
@@ -170,10 +191,21 @@ export function FeedbackForm() {
           </select>
         </label>
         <label className="grid gap-2 text-sm font-bold text-slate-300">
-          Página ou área, opcional
-          <input value={page} onChange={(event) => setPage(event.target.value)} className="field-input" maxLength={180} placeholder="Ex.: dashboard, assinatura, demo" />
+          Onde você teve dificuldade?
+          <select value={context} onChange={(event) => setContext(event.target.value as FeedbackContext)} className="field-input" required>
+            {feedbackContextOptions.map((option) => (
+              <option value={option.value} key={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </label>
       </div>
+
+      <label className="mt-4 grid gap-2 text-sm font-bold text-slate-300">
+        Página ou área, opcional
+        <input value={page} onChange={(event) => setPage(event.target.value)} className="field-input" maxLength={180} placeholder="Ex.: dashboard, assinatura, demo" />
+      </label>
 
       <label className="mt-4 grid gap-2 text-sm font-bold text-slate-300">
         Mensagem

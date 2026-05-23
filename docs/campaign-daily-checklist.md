@@ -45,3 +45,7 @@ Pausar quando lead, IA, checkout, webhook, assinatura ou acesso quebram.
 - Bugs:
 - Decisao do dia:
 - Ajuste proposto:
+
+## Fechamento semanal
+
+No fim da semana, consolidar os dias em `docs/weekly-growth-review.md` e decidir uma melhoria priorizada com `docs/improvement-prioritization.md`.

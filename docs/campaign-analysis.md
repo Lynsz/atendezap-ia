@@ -126,3 +126,17 @@ Quando:
 - Custo sobe sem nenhum sinal de interesse.
 
 Acao: pausar a campanha, corrigir o bloqueador e repetir smoke test antes de religar.
+
+## Diagnostico pos-campanha
+
+Depois da campanha pequena, consolidar a leitura em `docs/post-campaign-diagnosis.md` e usar `docs/improvement-prioritization.md` para classificar a primeira melhoria.
+
+Processo recomendado:
+
+1. Conferir visitantes e custo na plataforma de anuncios/GA4/Meta.
+2. Conferir no admin leads, cadastros, onboarding, primeira resposta, checkout, assinaturas e feedbacks.
+3. Ler o bloco "Possivel gargalo atual" no admin como triagem inicial, sem tratar isso como decisao automatica.
+4. Validar a evidencia manualmente com feedbacks, suporte e eventos Stripe.
+5. Escolher uma melhoria pequena P0 ou P1 antes de aumentar anuncios.
+
+Se a amostra ainda for baixa, registrar "dados insuficientes" e manter o orcamento baixo ate haver sinal real.

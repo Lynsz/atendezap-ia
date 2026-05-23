@@ -49,6 +49,9 @@ type AdminFeedback = {
   type: string;
   message: string;
   page: string | null;
+  source: string | null;
+  context: string | null;
+  campaign: string | null;
   status: string;
   created_at: string;
 };
@@ -330,6 +333,48 @@ function exportCampaignReportCsv(report: CampaignReportPayload) {
   URL.revokeObjectURL(url);
 }
 
+function getLikelyBottleneck(report: CampaignReportPayload | null, metrics: ProductMetricsPayload | null) {
+  const funnel = report
+    ? {
+        leads: report.metrics.totalLeads,
+        signups: report.metrics.totalSignups,
+        onboarding: report.metrics.onboardingCompleted,
+        firstResponses: report.metrics.firstResponseGenerated,
+        checkouts: report.metrics.checkoutStarted,
+        subscriptions: report.metrics.activeSubscriptions
+      }
+    : metrics
+      ? {
+          leads: metrics.funnel.periodLeads || metrics.funnel.totalLeads,
+          signups: metrics.funnel.totalUsers,
+          onboarding: metrics.funnel.completedOnboardingUsers,
+          firstResponses: metrics.funnel.usersWithFirstResponse,
+          checkouts: metrics.funnel.checkoutStartedUsers,
+          subscriptions: metrics.funnel.activeSubscriptions
+        }
+      : null;
+
+  if (!funnel || (funnel.leads < 5 && funnel.signups < 3)) {
+    return "Ainda não há dados suficientes para conclusão.";
+  }
+  if (funnel.leads >= 5 && funnel.signups < Math.max(1, Math.ceil(funnel.leads * 0.15))) {
+    return "Gargalo provável: transição do lead para cadastro.";
+  }
+  if (funnel.signups >= 3 && funnel.onboarding < Math.max(1, Math.ceil(funnel.signups * 0.4))) {
+    return "Gargalo provável: onboarding.";
+  }
+  if (funnel.onboarding >= 3 && funnel.firstResponses < Math.max(1, Math.ceil(funnel.onboarding * 0.5))) {
+    return "Gargalo provável: primeira experiência no dashboard.";
+  }
+  if (funnel.firstResponses >= 3 && funnel.checkouts === 0) {
+    return "Gargalo provável: oferta, preço ou CTA.";
+  }
+  if (funnel.checkouts >= 2 && funnel.subscriptions === 0) {
+    return "Gargalo provável: checkout, preço ou confiança.";
+  }
+  return "Ainda não há dados suficientes para conclusão.";
+}
+
 export default function AdminDashboardPage() {
   const [data, setData] = useState<AdminPayload | null>(null);
   const [productMetrics, setProductMetrics] = useState<ProductMetricsPayload | null>(null);
@@ -418,6 +463,7 @@ export default function AdminDashboardPage() {
   }, [loadAdminData]);
 
   const metrics = data?.metrics;
+  const likelyBottleneck = useMemo(() => getLikelyBottleneck(campaignReport, productMetrics), [campaignReport, productMetrics]);
   const subscriptionGroups = useMemo(() => {
     const subscriptions = data?.subscriptions || [];
     return {
@@ -523,6 +569,14 @@ export default function AdminDashboardPage() {
         </header>
 
         {error ? <div className="mb-5 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">{error}</div> : null}
+
+        <section className="mb-6 rounded-lg border border-amber-300/20 bg-amber-400/10 p-5 shadow-xl shadow-black/20">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-100">Possível gargalo atual</p>
+          <h2 className="mt-2 text-2xl font-black text-white">{likelyBottleneck}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-amber-50/80">
+            Regra simples baseada em leads, cadastros, onboarding, primeira resposta, checkout e assinatura. Use como triagem inicial antes de decidir a próxima melhoria.
+          </p>
+        </section>
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Total de leads" value={metrics?.totalLeads ?? 0} icon={<Users className="h-5 w-5" />} />
@@ -765,6 +819,9 @@ export default function AdminDashboardPage() {
                       <p className="mt-2 text-sm leading-6 text-slate-300">{summarizeMessage(item.message)}</p>
                       <div className="mt-3 flex flex-wrap gap-3 text-xs font-bold text-slate-500">
                         <span>Página: {item.page || "-"}</span>
+                        <span>Contexto: {item.context || "-"}</span>
+                        <span>Origem: {item.source || "-"}</span>
+                        <span>Campanha: {item.campaign || "-"}</span>
                         <span>Data: {formatDate(item.created_at)}</span>
                       </div>
                     </div>

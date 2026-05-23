@@ -2,7 +2,7 @@
 
 ## Nota atual estimada
 
-94/100.
+95/100.
 
 ## Status
 
@@ -55,6 +55,8 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 Pronto para orcamento baixo, com ressalvas.
 
 O produto tem landing revisada, pagina especifica de campanha, demo publica, ebook, pricing, CTAs coerentes, preservacao de UTMs, eventos de tracking no-op safe, metricas internas e relatorio de campanha no admin para acompanhar lead, cadastro, onboarding, primeira resposta, checkout, assinatura e feedback.
+
+Agora tambem existe um processo pos-campanha para transformar dados reais em prioridade de melhoria: diagnostico, matriz P0/P1/P2/P3, checklist semanal, backlog comercial/produto e experimentos manuais pequenos.
 
 As ressalvas sao externas e operacionais: antes de ligar anuncios, executar `docs/pre-ads-checklist.md`, validar GA4/Meta Pixel, Stripe checkout/webhook/portal, Supabase, Resend, OpenAI, dominio e admin no ambiente real. Nao aumentar investimento enquanto checkout, lead, cadastro, IA ou tracking estiverem instaveis.
 
@@ -115,3 +117,19 @@ Pendencias restantes:
 Recomendacao atualizada:
 
 Pode iniciar campanha pequena apenas apos executar `docs/pre-ads-checklist.md` no ambiente real. Aumentar orcamento somente se o relatorio mostrar leads, cadastros, onboarding, primeira resposta e algum sinal de compra sem bloqueadores tecnicos.
+
+## Ciclo de melhoria pos-campanha - 2026-05-23
+
+Estrutura adicionada:
+
+- `docs/post-campaign-diagnosis.md`.
+- `docs/improvement-prioritization.md`.
+- `docs/weekly-growth-review.md`.
+- `docs/product-growth-backlog.md`.
+- `docs/growth-experiments.md`.
+- Bloco "Possivel gargalo atual" no admin com regras simples e sem IA.
+- Feedback com contexto/origem/campanha opcionais para identificar onde a dificuldade surgiu.
+
+Recomendacao atualizada:
+
+Depois da campanha inicial, nao aumentar anuncios por intuicao. Usar o admin, feedbacks e a revisao semanal para escolher uma correcao pequena P0/P1 antes de qualquer novo aumento de orcamento.

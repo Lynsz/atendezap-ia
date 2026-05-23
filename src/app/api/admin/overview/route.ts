@@ -71,6 +71,9 @@ type FeedbackRow = {
   type: string;
   message: string;
   page: string | null;
+  source: string | null;
+  context: string | null;
+  campaign: string | null;
   status: string;
   created_at: string;
 };
@@ -166,7 +169,7 @@ export async function GET(request: Request) {
       supabase.from("lead_email_events").select("id", { count: "exact", head: true }).eq("status", "failed"),
       supabase.from("ebook_leads").select("email"),
       supabase.from("generated_responses").select("user_id, created_at").gte("created_at", getCurrentMonthStart()).limit(5000),
-      supabase.from("user_feedback").select("id, user_id, name, email, type, message, page, status, created_at").order("created_at", { ascending: false }).limit(50)
+      supabase.from("user_feedback").select("id, user_id, name, email, type, message, page, source, context, campaign, status, created_at").order("created_at", { ascending: false }).limit(50)
     ]);
 
     const profiles = (profilesResult.data || []) as ProfileRow[];
