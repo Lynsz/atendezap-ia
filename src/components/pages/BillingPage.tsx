@@ -301,7 +301,7 @@ function BillingContent() {
           <div className="grid gap-4 lg:grid-cols-3">
             {planCards.map((plan) => {
               const isCurrentActivePlan = currentPlanId === plan.id && activeSubscription;
-              const label = isCurrentActivePlan ? "Plano atual" : plan.id === "pro" ? "Começar por R$ 29" : `Assinar ${plan.name}`;
+              const label = isCurrentActivePlan ? "Plano atual" : plan.id === "pro" ? "Assinar Pro por R$ 29 no primeiro mês" : `Assinar ${plan.name}`;
 
               return (
                 <article

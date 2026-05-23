@@ -2,7 +2,7 @@
 
 ## Nota atual estimada
 
-95/100.
+96/100.
 
 ## Status
 
@@ -25,9 +25,9 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - Onboarding: `/onboarding` redireciona para `/dashboard`, preservando o onboarding real no dashboard.
 - Geracao de resposta: API autenticada, validada, server-side, com limite mensal e mensagens controladas.
 - Assinatura: `/assinatura` e protegida e usa assinatura real via Supabase/Stripe.
-- Stripe checkout: API protegida sem sessao, valida plano e usa variaveis de price IDs.
+- Stripe checkout: API protegida sem sessao, valida plano, usa variaveis de price IDs, aplica cupom de primeiro mes no Pro quando elegivel e retorna para `/assinatura`.
 - Stripe webhook: rota publica para middleware, valida assinatura Stripe e trata eventos principais.
-- Portal Stripe: API protegida sem sessao e retorna erro controlado quando nao ha customer.
+- Portal Stripe: API protegida sem sessao, retorna erro controlado quando nao ha customer e usa `/assinatura` como return URL.
 - Supabase: service role fica em codigo server-side; client usa apenas URL e anon key publicas.
 - Resend: ebook pode salvar lead mesmo se envio estiver indisponivel; entrega real depende de chave/remetente.
 - OpenAI: chave fica no backend; demo e geracao usam fallback/erro controlado.
@@ -49,6 +49,7 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - GA4: `NEXT_PUBLIC_GA_MEASUREMENT_ID` e validacao no DebugView.
 - Meta Pixel: `NEXT_PUBLIC_META_PIXEL_ID` e validacao no Events Manager.
 - OpenAI billing: chave, modelo, limite de custo e monitoramento de uso.
+- Stripe: configurar produtos, prices, cupom `STRIPE_PRO_FIRST_MONTH_COUPON_ID`, webhook e portal em test/live.
 
 ## Prontidao para anuncios pequenos
 
@@ -133,3 +134,15 @@ Estrutura adicionada:
 Recomendacao atualizada:
 
 Depois da campanha inicial, nao aumentar anuncios por intuicao. Usar o admin, feedbacks e a revisao semanal para escolher uma correcao pequena P0/P1 antes de qualquer novo aumento de orcamento.
+
+## Stripe billing completo - 2026-05-23
+
+Estrategia escolhida para o Pro: cupom Stripe.
+
+- O checkout usa `STRIPE_PRICE_PRO` como price recorrente mensal.
+- O primeiro mes por R$ 29 usa cupom `duration=once` em `STRIPE_PRO_FIRST_MONTH_COUPON_ID`.
+- `STRIPE_PRICE_PRO_FIRST_MONTH_29` permanece apenas para compatibilidade de mapeamento de webhook e resolve como `plan = "pro"`.
+- Checkout, Portal e webhook foram revisados para Starter, Pro e Premium.
+- `docs/stripe-setup.md` documenta produtos, prices, variaveis, webhook, Stripe CLI e teste manual.
+
+Status atualizado: pronto para teste real em Stripe test mode quando as variaveis externas, products, prices, coupon, webhook e Customer Portal estiverem configurados no ambiente final.

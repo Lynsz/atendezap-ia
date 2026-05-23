@@ -26,7 +26,7 @@ describe("Stripe service helpers", () => {
 
   it("valida price e cupom obrigatorios para checkout", () => {
     vi.stubEnv("STRIPE_PRICE_STARTER", "");
-    vi.stubEnv("STRIPE_COUPON_PRO_FIRST_MONTH_29", "");
+    vi.stubEnv("STRIPE_PRO_FIRST_MONTH_COUPON_ID", "");
 
     expect(() => getStripePriceId(SAAS_PLANS.starter)).toThrow("Stripe");
     expect(() => getStripeCouponId(SAAS_PLANS.pro, true)).toThrow("Cupom Stripe");
@@ -91,9 +91,17 @@ describe("Stripe service helpers", () => {
     expect(getStripePriceId(SAAS_PLANS.pro)).toBe("price_pro_recurring");
   });
 
+  it("usa cupom dedicado para o primeiro mes do Pro", () => {
+    vi.stubEnv("STRIPE_PRO_FIRST_MONTH_COUPON_ID", "coupon_pro_29");
+    vi.stubEnv("STRIPE_PRICE_PRO_FIRST_MONTH_29", "price_pro_29");
+
+    expect(getStripeCouponId(SAAS_PLANS.pro, true)).toBe("coupon_pro_29");
+    expect(getStripeCouponId(SAAS_PLANS.pro, false)).toBeNull();
+  });
+
   it("mapeia status Stripe para status internos", () => {
     expect(mapStripeSubscriptionStatus("active")).toBe("active");
-    expect(mapStripeSubscriptionStatus("trialing")).toBe("trial");
+    expect(mapStripeSubscriptionStatus("trialing")).toBe("trialing");
     expect(mapStripeSubscriptionStatus("past_due")).toBe("past_due");
     expect(mapStripeSubscriptionStatus("unpaid")).toBe("past_due");
     expect(mapStripeSubscriptionStatus("canceled")).toBe("canceled");

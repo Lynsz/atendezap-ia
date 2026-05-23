@@ -4,6 +4,9 @@ export type SaasPlan = {
   id: PlanId;
   name: string;
   description: string;
+  priceEnv: string;
+  promoPriceEnv?: string;
+  firstMonthCouponEnv?: string;
   monthlyPrice: number;
   monthlyPriceLabel: string;
   firstMonthPrice?: number;
@@ -20,6 +23,7 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     id: "starter",
     name: "Starter",
     description: "Para começar com IA no atendimento, com limite mensal menor e uso leve.",
+    priceEnv: "STRIPE_PRICE_STARTER",
     monthlyPrice: 49,
     monthlyPriceLabel: "R$ 49/mês",
     responseLimit: 150,
@@ -37,6 +41,9 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     id: "pro",
     name: "Pro",
     description: "Melhor custo-benefício para quem atende clientes todos os dias e precisa de mais respostas mensais.",
+    priceEnv: "STRIPE_PRICE_PRO",
+    promoPriceEnv: "STRIPE_PRICE_PRO_FIRST_MONTH_29",
+    firstMonthCouponEnv: "STRIPE_PRO_FIRST_MONTH_COUPON_ID",
     monthlyPrice: 97,
     monthlyPriceLabel: "R$ 97/mês",
     firstMonthPrice: 29,
@@ -60,6 +67,7 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     id: "premium",
     name: "Premium",
     description: "Para quem tem volume maior e precisa de mais limite mensal para atendimentos frequentes.",
+    priceEnv: "STRIPE_PRICE_PREMIUM",
     monthlyPrice: 197,
     monthlyPriceLabel: "R$ 197/mês",
     responseLimit: 2000,

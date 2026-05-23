@@ -2,7 +2,7 @@
 
 ## Nota geral
 
-95/100
+96/100
 
 O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios e uma campanha pequena de validacao: funil publico, pagina direta de campanha, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, metricas internas, relatorio de campanha, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin, feedback e metricas no ambiente final.
 
@@ -76,11 +76,11 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Falha de envio do ebook por Resend nao quebra o cadastro do lead; status e registrado em `lead_email_events` quando Supabase esta configurado.
 - Dashboard SaaS le usuario, negocio, historico, clientes, assinatura, uso mensal e planos via Supabase.
 - Geracao de resposta exige auth, valida entrada, usa contexto do negocio, salva historico e bloqueia pelo limite mensal.
-- Stripe checkout exige auth, valida plano, usa price IDs/cupom via env, envia metadata com `user_id`, `plan` e UTMs.
+- Stripe checkout exige auth, valida plano, usa price IDs/cupom via env, envia metadata com `user_id`, `plan` e UTMs e retorna para `/assinatura`.
 - Stripe checkout envia `user_id`, `plan`, `price_id` e UTMs na metadata, cria/reutiliza customer e grava assinatura pendente no Supabase.
 - Stripe portal exige auth, busca customer no Supabase e retorna erro controlado quando o usuario ainda nao tem customer.
 - Stripe webhook valida assinatura, registra idempotencia e trata `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded` e `invoice.payment_failed`.
-- Stripe webhook resolve usuario por metadata, `client_reference_id`, subscription salva ou customer Stripe, e mapeia `STRIPE_PRICE_PRO_FIRST_MONTH_29` como plano Pro.
+- Stripe webhook resolve usuario por metadata, `client_reference_id`, subscription salva ou customer Stripe, e mapeia `STRIPE_PRICE_PRO_FIRST_MONTH_29` como plano Pro para compatibilidade.
 - Supabase agora tem migration segura para `stripe_customer_id`, `stripe_subscription_id`, `subscription_status` e `usage_count`, com backfill a partir de `provider_*`/`status`.
 - Admin server-side exige usuario autenticado e e-mail listado em `ADMIN_EMAILS`.
 - Feedback de primeiros usuarios foi adicionado em `/feedback`, com API server-side, validacao, rate limit, associacao opcional a usuario autenticado, tabela `user_feedback` e listagem simples no admin.
@@ -222,7 +222,7 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Smoke test browser em `/`, `/ebook`, `/ebook/obrigado`, `/ebook/guia`, `/demo`, `/precos`, `/termos`, `/privacidade` e 404.
 - Smoke mobile em `/`, `/ebook`, `/ebook/obrigado`, `/demo`, `/precos`, `/login`, `/cadastro`, `/dashboard`, `/onboarding`, `/assinatura`, `/admin`, `/termos`, `/privacidade`.
 - Smoke API em `/api/health`, `/api/ai/generate-response`, `/api/stripe/create-checkout-session`, `/api/admin/overview`.
-- Testes automatizados de Stripe para checkout, portal, webhook invalido e mapeamento do Pro promocional.
+- Testes automatizados de Stripe para checkout sem login, plano invalido, Starter, Pro com cupom, Premium, portal, webhook invalido, mapeamento do Pro promocional, cancelamento e pagamento falho.
 - Testes automatizados da API de feedback para payload invalido, feedback publico, feedback autenticado e atualizacao admin.
 - Testes automatizados da API de metricas para agregados e bloqueio de usuario comum.
 
@@ -298,3 +298,13 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Processo: revisar dados reais do funil, classificar gargalos por impacto/frequencia/esforco/risco, corrigir P0/P1 antes de aumentar anuncios e registrar a decisao semanalmente.
 - Recomendacao de proximos ajustes: priorizar o gargalo que aparecer entre lead -> cadastro, cadastro -> onboarding, onboarding -> primeira resposta, primeira resposta -> checkout ou checkout -> assinatura.
 - Nota estimada nova: 95/100.
+
+## Stripe billing completo - 2026-05-23
+
+- Estrategia Pro: `STRIPE_PRICE_PRO` recorrente + cupom `duration=once` em `STRIPE_PRO_FIRST_MONTH_COUPON_ID`.
+- `STRIPE_PRICE_PRO_FIRST_MONTH_29` nao e usado pelo checkout novo; fica como compatibilidade para mapear eventos antigos/promocionais para `plan = "pro"`.
+- Checkout usa `/assinatura?checkout=success` e `/assinatura?checkout=cancel`.
+- Customer Portal retorna para `/assinatura`.
+- Documentacao criada: `docs/stripe-setup.md`.
+- Status: pronto para teste real com Stripe test mode apos configurar products, prices, coupon, webhook, portal e envs no ambiente final.
+- Nota estimada nova: 96/100.

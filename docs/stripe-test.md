@@ -17,7 +17,7 @@ STRIPE_PRICE_STARTER=price_...
 STRIPE_PRICE_PRO=price_...
 STRIPE_PRICE_PREMIUM=price_...
 STRIPE_PRICE_PRO_FIRST_MONTH_29=price_...
-STRIPE_COUPON_PRO_FIRST_MONTH_29=coupon_...
+STRIPE_PRO_FIRST_MONTH_COUPON_ID=coupon_...
 ```
 
 `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, prices e cupom ficam somente no servidor. `STRIPE_PRICE_PRO_FIRST_MONTH_29` tambem e aceito pelo webhook como price do plano Pro para compatibilidade.
@@ -29,7 +29,7 @@ No Stripe Dashboard em modo test:
 - Produto Starter com price mensal recorrente e ID em `STRIPE_PRICE_STARTER`.
 - Produto Pro com price mensal recorrente e ID em `STRIPE_PRICE_PRO`.
 - Produto Premium com price mensal recorrente e ID em `STRIPE_PRICE_PREMIUM`.
-- Para o primeiro mes do Pro por R$ 29, use preferencialmente um coupon com `duration=once` e ID em `STRIPE_COUPON_PRO_FIRST_MONTH_29`.
+- Para o primeiro mes do Pro por R$ 29, use um coupon com `duration=once` e ID em `STRIPE_PRO_FIRST_MONTH_COUPON_ID`.
 
 O checkout usa o price recorrente normal do Pro e aplica o coupon uma vez. Assim o segundo mes volta automaticamente para o valor normal.
 
@@ -48,7 +48,7 @@ Copie o `whsec_...` exibido pelo Stripe CLI para `STRIPE_WEBHOOK_SECRET` e reini
 2. Acesse `/precos`, `/dashboard` ou `/assinatura`.
 3. Clique em assinar/trocar plano.
 4. Complete o pagamento com cartao test da Stripe.
-5. Volte para `/dashboard?checkout=success`.
+5. Volte para `/assinatura?checkout=success`.
 6. Confira no Supabase a linha em `subscriptions`:
    - `provider = stripe`
    - `provider_customer_id` e `stripe_customer_id` preenchidos
@@ -75,7 +75,7 @@ Eventos gerados por `stripe trigger` podem não carregar o mesmo `metadata.user_
 
 ## Cancelamento e falha de pagamento
 
-- Cancele a assinatura pelo Customer Portal aberto em `/assinatura` ou `/dashboard`.
+- Cancele a assinatura pelo Customer Portal aberto em `/assinatura`.
 - Confirme que o webhook `customer.subscription.updated` ou `customer.subscription.deleted` atualiza `status`, `subscription_status`, `cancel_at_period_end` e periodos.
 - Para falha de pagamento, use os cartoes de teste da Stripe e confirme `invoice.payment_failed`, `last_payment_status = failed` e assinatura sem exclusao de dados.
 

@@ -14,6 +14,18 @@ function getCurrentMonthStart() {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
 }
 
+function isUsableSubscriptionStatus(status?: string | null) {
+  const normalized = status?.trim().toLowerCase();
+  return normalized === "active" || normalized === "trialing" || normalized === "trial";
+}
+
+function inactiveSubscriptionMessage(status?: string | null, hasPlan?: boolean) {
+  const normalized = status?.trim().toLowerCase();
+  if (!hasPlan || normalized === "free") return "Escolha um plano para continuar usando.";
+  if (normalized === "past_due" || normalized === "unpaid") return "Atualize o pagamento para continuar usando o AtendeZap IA.";
+  return "Sua assinatura não está ativa no momento.";
+}
+
 export async function POST(request: Request) {
   let userId: string | null = null;
 
@@ -78,13 +90,20 @@ export async function POST(request: Request) {
 
     const { data: subscription } = await supabase
       .from("subscriptions")
-      .select("plan_name, plan, status")
+      .select("plan_name, plan, status, subscription_status, monthly_limit")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    const limit = getPlanResponseLimit(subscription?.plan || subscription?.plan_name, subscription?.status);
+    const planName = subscription?.plan || subscription?.plan_name;
+    const subscriptionStatus = subscription?.subscription_status || subscription?.status;
+    const hasPaidPlan = Boolean(planName && planName !== "free");
+    if (!isUsableSubscriptionStatus(subscriptionStatus)) {
+      return NextResponse.json({ error: inactiveSubscriptionMessage(subscriptionStatus, hasPaidPlan) }, { status: 403 });
+    }
+
+    const limit = subscription?.monthly_limit || getPlanResponseLimit(planName, subscriptionStatus);
     const monthStart = getCurrentMonthStart();
     const { count, error: countError } = await supabase
       .from("generated_responses")

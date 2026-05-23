@@ -58,21 +58,15 @@ function envValue(...names: string[]) {
 }
 
 function getCheckoutStripePriceId(planId: PlanId) {
-  switch (planId) {
-    case "starter":
-      return envValue("STRIPE_PRICE_STARTER", "STRIPE_PRICE_STARTER_MONTHLY");
-    case "pro":
-      return envValue("STRIPE_PRICE_PRO", "STRIPE_PRICE_PRO_MONTHLY");
-    case "premium":
-      return envValue("STRIPE_PRICE_PREMIUM", "STRIPE_PRICE_PREMIUM_MONTHLY");
-    default:
-      return "";
-  }
+  const plan = getSaasPlan(planId);
+  if (!plan) return "";
+  return envValue(plan.priceEnv, `${plan.priceEnv}_MONTHLY`);
 }
 
 export function getStripePlanPriceIds(planId: PlanId) {
   const checkoutPriceId = getCheckoutStripePriceId(planId);
-  const compatibilityPriceIds = planId === "pro" ? [envValue("STRIPE_PRICE_PRO_FIRST_MONTH_29")] : [];
+  const plan = getSaasPlan(planId);
+  const compatibilityPriceIds = plan?.promoPriceEnv ? [envValue(plan.promoPriceEnv)] : [];
   return [checkoutPriceId, ...compatibilityPriceIds].filter(Boolean);
 }
 
@@ -87,7 +81,7 @@ export function getStripePriceId(plan: SaasPlan) {
 export function getStripeCouponId(plan: SaasPlan, shouldApplyFirstMonthOffer: boolean) {
   if (!shouldApplyFirstMonthOffer) return null;
   if (plan.id !== "pro") return null;
-  const couponId = envValue("STRIPE_COUPON_PRO_FIRST_MONTH_29", "STRIPE_COUPON_PRO_FIRST_MONTH", "STRIPE_PRICE_PRO_FIRST_MONTH_29");
+  const couponId = envValue(plan.firstMonthCouponEnv || "STRIPE_PRO_FIRST_MONTH_COUPON_ID", "STRIPE_COUPON_PRO_FIRST_MONTH_29", "STRIPE_COUPON_PRO_FIRST_MONTH");
   if (!couponId) {
     throw new AppError("Cupom Stripe do primeiro mês do Plano Pro não configurado.", 503);
   }
@@ -105,7 +99,7 @@ export function mapStripeSubscriptionStatus(status?: StripeSubscriptionStatus | 
     case "active":
       return "active";
     case "trialing":
-      return "trial";
+      return "trialing";
     case "past_due":
     case "unpaid":
       return "past_due";

@@ -16,7 +16,8 @@ import {
 export const runtime = "nodejs";
 
 const createCheckoutSchema = z.object({
-  planId: z.string().trim().max(40),
+  planId: z.string().trim().max(40).optional(),
+  plan: z.string().trim().max(40).optional(),
   source: z.string().trim().max(80).optional(),
   funnel: z.string().trim().max(80).optional(),
   utm_source: z.string().trim().max(160).optional(),
@@ -72,12 +73,13 @@ export async function POST(request: Request) {
     userId = user.id;
     await enforceRateLimit({ request, route: "api:stripe-checkout:user", identifier: user.id, limit: 6, windowMs: 5 * 60_000 });
     const body = createCheckoutSchema.parse(await request.json());
+    const requestedPlan = body.plan || body.planId;
 
-    if (!isPlanId(body.planId)) {
+    if (!isPlanId(requestedPlan)) {
       throw new AppError("Plano invalido.", 400);
     }
 
-    const plan = getSaasPlan(body.planId);
+    const plan = getSaasPlan(requestedPlan);
     if (!plan) {
       throw new AppError("Plano não encontrado.", 404);
     }
@@ -135,8 +137,8 @@ export async function POST(request: Request) {
       // A partir do segundo mês, a Stripe cobra automaticamente o valor normal.
       discounts: couponId ? [{ coupon: couponId }] : undefined,
       allow_promotion_codes: false,
-      success_url: `${appUrl}/dashboard?checkout=success`,
-      cancel_url: `${appUrl}/precos?checkout=cancelado`,
+      success_url: `${appUrl}/assinatura?checkout=success`,
+      cancel_url: `${appUrl}/assinatura?checkout=cancel`,
       metadata,
       subscription_data: {
         metadata

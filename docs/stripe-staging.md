@@ -11,7 +11,7 @@ Use sempre Stripe test mode no ambiente staging. Nao misture `sk_live_`, prices 
 5. Crie um price mensal recorrente normal para Pro e copie para `STRIPE_PRICE_PRO`.
 6. Crie produto Premium.
 7. Crie um price mensal recorrente para Premium e copie para `STRIPE_PRICE_PREMIUM`.
-8. Para o Pro por R$ 29 no primeiro mes, crie um coupon com `duration=once` que ajusta somente a primeira fatura e copie para `STRIPE_COUPON_PRO_FIRST_MONTH_29`.
+8. Para o Pro por R$ 29 no primeiro mes, crie um coupon com `duration=once` que ajusta somente a primeira fatura e copie para `STRIPE_PRO_FIRST_MONTH_COUPON_ID`.
 9. Se existir um price promocional legado para o Pro, copie para `STRIPE_PRICE_PRO_FIRST_MONTH_29` para compatibilidade de webhook.
 
 ## Variaveis na Vercel staging
@@ -24,7 +24,7 @@ STRIPE_PRICE_STARTER=
 STRIPE_PRICE_PRO=
 STRIPE_PRICE_PREMIUM=
 STRIPE_PRICE_PRO_FIRST_MONTH_29=
-STRIPE_COUPON_PRO_FIRST_MONTH_29=
+STRIPE_PRO_FIRST_MONTH_COUPON_ID=
 ```
 
 ## Webhook staging
@@ -53,7 +53,7 @@ https://SEU-STAGING.vercel.app/api/stripe/webhook
 2. Acesse `/precos`, `/dashboard` ou `/assinatura`.
 3. Inicie checkout Starter, Pro e Premium em testes separados.
 4. Use cartao de teste aprovado da Stripe.
-5. Confirme retorno para `/dashboard?checkout=success`.
+5. Confirme retorno para `/assinatura?checkout=success`.
 6. Confira `subscriptions` no Supabase:
    - `provider = stripe`
    - `plan = starter`, `pro` ou `premium`

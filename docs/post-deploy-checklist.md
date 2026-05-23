@@ -41,7 +41,7 @@ Use este checklist depois de cada deploy Preview/Staging na Vercel. Marque manua
 - [ ] Iniciar checkout Premium.
 - [ ] Confirmar Pro com primeiro mes por R$ 29 para novo usuario.
 - [ ] Concluir pagamento teste com cartao de teste Stripe.
-- [ ] Confirmar retorno para `/dashboard?checkout=success`.
+- [ ] Confirmar retorno para `/assinatura?checkout=success`.
 - [ ] Confirmar webhook recebido no Stripe Dashboard.
 - [ ] Confirmar evento registrado em `stripe_webhook_events`.
 - [ ] Confirmar assinatura no Supabase em `subscriptions`.

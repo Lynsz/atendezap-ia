@@ -115,7 +115,7 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
           recommended ? "bg-emerald-400 text-slate-950 hover:bg-emerald-300" : "bg-white text-slate-950 hover:bg-slate-100"
         )}
       >
-        {loading ? "Iniciando..." : label || (plan.id === "pro" ? "Começar por R$ 29" : `Assinar ${plan.name}`)}
+        {loading ? "Iniciando..." : label || (plan.id === "pro" ? "Assinar Pro por R$ 29 no primeiro mês" : `Assinar ${plan.name}`)}
         <ArrowRight className="h-4 w-4" />
       </button>
       {feedback ? <p className="mt-3 text-xs font-bold leading-5 text-amber-200">{feedback}</p> : null}

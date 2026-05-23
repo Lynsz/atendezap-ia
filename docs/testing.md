@@ -29,7 +29,7 @@ Para testes reais de integracao, use `.env.local` com:
 - `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_PRICE_STARTER`
 - `STRIPE_PRICE_PRO`
-- `STRIPE_COUPON_PRO_FIRST_MONTH_29`
+- `STRIPE_PRO_FIRST_MONTH_COUPON_ID`
 - `STRIPE_PRICE_PREMIUM`
 - `OPENAI_API_KEY`, opcional para testar geracao real.
 - `RESEND_API_KEY` e `EMAIL_FROM`, opcionais para testar entrega real do ebook.

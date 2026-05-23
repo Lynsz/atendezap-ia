@@ -18,9 +18,9 @@ Use este checklist depois do primeiro deploy de producao ou preview validado.
 | Uso mensal | `/dashboard` | Ver painel de uso. | Uso e limite mensal aparecem corretos. | Pendente |
 | Planos | `/precos` | Abrir planos. | Starter, Pro e Premium aparecem. | Pendente |
 | Checkout | `/precos` | Iniciar plano em modo test. | Abre Stripe Checkout. | Pendente |
-| Pagamento | Stripe test | Simular pagamento aprovado. | Checkout finaliza e volta para `/dashboard?checkout=success`. | Pendente |
+| Pagamento | Stripe test | Simular pagamento aprovado. | Checkout finaliza e volta para `/assinatura?checkout=success`. | Pendente |
 | Webhook Stripe | Stripe/Supabase | Conferir webhook e tabela de assinaturas. | Evento processado e plano ativo. | Pendente |
-| Portal Stripe | Dashboard/assinatura | Abrir gerenciamento de assinatura. | Portal abre e retorna para `/dashboard`. | Pendente |
+| Portal Stripe | Dashboard/assinatura | Abrir gerenciamento de assinatura. | Portal abre e retorna para `/assinatura`. | Pendente |
 | Admin | `/admin` | Acessar com e-mail autorizado. | Admin carrega leads, assinaturas e metricas. | Pendente |
 | Admin bloqueado | `/admin` | Acessar com e-mail nao autorizado. | Acesso negado de forma clara. | Pendente |
 | Exportar CSV | `/admin` | Usar exportacao. | CSV baixa com dados esperados. | Pendente |

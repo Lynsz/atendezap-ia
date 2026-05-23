@@ -13,7 +13,7 @@ export function getPlanResponseLimit(planName?: string | null, status?: string |
   const normalizedPlan = planName?.trim().toLowerCase() || "";
   const normalizedStatus = status?.trim().toLowerCase() || "";
 
-  if (normalizedStatus === "trial") return PLAN_RESPONSE_LIMITS.trial;
-  if (normalizedStatus && normalizedStatus !== "active") return PLAN_RESPONSE_LIMITS.free;
+  if ((normalizedStatus === "trial" || normalizedStatus === "trialing") && (!normalizedPlan || normalizedPlan === "free")) return PLAN_RESPONSE_LIMITS.trial;
+  if (normalizedStatus && !["active", "trial", "trialing"].includes(normalizedStatus)) return PLAN_RESPONSE_LIMITS.free;
   return PLAN_RESPONSE_LIMITS[normalizedPlan] ?? PLAN_RESPONSE_LIMITS.free;
 }

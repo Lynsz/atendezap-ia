@@ -55,10 +55,10 @@ STRIPE_PRICE_STARTER=
 STRIPE_PRICE_PRO=
 STRIPE_PRICE_PREMIUM=
 STRIPE_PRICE_PRO_FIRST_MONTH_29=
-STRIPE_COUPON_PRO_FIRST_MONTH_29=
+STRIPE_PRO_FIRST_MONTH_COUPON_ID=
 ```
 
-`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` e publica. As demais variaveis ficam somente no servidor. O codigo aceita `STRIPE_PRICE_PRO_FIRST_MONTH_29` como alias historico, mas o fluxo atual espera um cupom de primeiro mes em `STRIPE_COUPON_PRO_FIRST_MONTH_29`.
+`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` e publica. As demais variaveis ficam somente no servidor. O checkout do Pro usa `STRIPE_PRICE_PRO` com cupom em `STRIPE_PRO_FIRST_MONTH_COUPON_ID`; `STRIPE_PRICE_PRO_FIRST_MONTH_29` fica apenas para mapear webhooks antigos/promocionais como plano Pro.
 
 ### Resend
 
@@ -137,7 +137,7 @@ NEXT_PUBLIC_KIWIFY_PREMIUM_URL=
    - `STRIPE_PRICE_STARTER`
    - `STRIPE_PRICE_PRO`
    - `STRIPE_PRICE_PREMIUM`
-3. Para o Pro com primeiro mes por R$ 29, crie um cupom `duration=once` que reduza a primeira fatura para R$ 29 e copie para `STRIPE_COUPON_PRO_FIRST_MONTH_29`.
+3. Para o Pro com primeiro mes por R$ 29, crie um cupom `duration=once` que reduza a primeira fatura para R$ 29 e copie para `STRIPE_PRO_FIRST_MONTH_COUPON_ID`.
 4. Configure `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` e `STRIPE_SECRET_KEY` no mesmo modo, test ou live.
 5. Configure o webhook em:
 
@@ -214,7 +214,7 @@ npm run test
 5. Abra planos e inicie checkout.
 6. Simule pagamento em modo test.
 7. Confirme webhook recebido e plano ativo no Supabase.
-8. Abra customer portal e volte para `/dashboard`.
+8. Abra customer portal e volte para `/assinatura`.
 9. Envie lead no ebook.
 10. Confirme lead, UTMs, e-mail e evento de tracking.
 11. Acesse admin e exporte CSV.

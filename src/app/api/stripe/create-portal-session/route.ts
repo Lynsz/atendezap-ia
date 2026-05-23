@@ -69,7 +69,7 @@ export async function POST(request: Request) {
 
     const portalSession = await getStripe().billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${getAppUrl()}/dashboard`
+      return_url: `${getAppUrl()}/assinatura`
     });
 
     serverLog({ event: "stripe_portal_created", route: "/api/stripe/create-portal-session", userId: user.id, status: "ok" });

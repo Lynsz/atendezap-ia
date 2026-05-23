@@ -6,7 +6,7 @@ Use este checklist antes de publicar o AtendeZap IA, iniciar anúncios pagos ou 
 
 - [ ] Criar produtos Starter, Pro e Premium.
 - [ ] Criar price IDs mensais e preencher `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PRO` e `STRIPE_PRICE_PREMIUM`.
-- [ ] Configurar a oferta do Pro para novos usuários com `STRIPE_PRICE_PRO_FIRST_MONTH_29` ou `STRIPE_COUPON_PRO_FIRST_MONTH_29`, conforme o fluxo usado.
+- [ ] Configurar a oferta do Pro para novos usuários com cupom `duration=once` em `STRIPE_PRO_FIRST_MONTH_COUPON_ID`; manter `STRIPE_PRICE_PRO_FIRST_MONTH_29` apenas se houver price promocional legado para mapear como Pro.
 - [ ] Configurar `STRIPE_SECRET_KEY` e `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`.
 - [ ] Configurar webhook de assinatura e preencher `STRIPE_WEBHOOK_SECRET`.
 - [ ] Testar checkout para cada plano.

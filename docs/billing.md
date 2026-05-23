@@ -49,7 +49,8 @@ STRIPE_WEBHOOK_SECRET=
 STRIPE_PRICE_STARTER=
 STRIPE_PRICE_PRO=
 STRIPE_PRICE_PREMIUM=
-STRIPE_COUPON_PRO_FIRST_MONTH_29=
+STRIPE_PRICE_PRO_FIRST_MONTH_29=
+STRIPE_PRO_FIRST_MONTH_COUPON_ID=
 
 KIWIFY_WEBHOOK_SECRET=
 NEXT_PUBLIC_KIWIFY_EBOOK_URL=
@@ -58,7 +59,7 @@ NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL=
 
 `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` sao somente servidor. Nunca use prefixo `NEXT_PUBLIC_` nessas chaves.
 
-O codigo tambem aceita os aliases antigos `STRIPE_PRICE_*_MONTHLY` e `STRIPE_COUPON_PRO_FIRST_MONTH`. `STRIPE_PRICE_PRO_FIRST_MONTH_29` continua aceito como compatibilidade: o checkout tenta usa-lo como cupom quando nenhum `STRIPE_COUPON_PRO_FIRST_MONTH_29` existir, e o webhook mapeia esse price como plano Pro quando ele aparecer em eventos antigos.
+O codigo tambem aceita os aliases antigos `STRIPE_PRICE_*_MONTHLY`, `STRIPE_COUPON_PRO_FIRST_MONTH_29` e `STRIPE_COUPON_PRO_FIRST_MONTH`. `STRIPE_PRICE_PRO_FIRST_MONTH_29` continua aceito apenas como compatibilidade de mapeamento: se esse price aparecer em um webhook antigo/promocional, ele e tratado internamente como plano Pro. O checkout novo usa `STRIPE_PRICE_PRO` mais o cupom `STRIPE_PRO_FIRST_MONTH_COUPON_ID`.
 
 ## Stripe
 
@@ -79,7 +80,7 @@ O codigo tambem aceita os aliases antigos `STRIPE_PRICE_*_MONTHLY` e `STRIPE_COU
 4. Criar cupom do Pro:
    - duration: once
    - desconto suficiente para a primeira fatura do Pro virar R$ 29
-   - salvar em `STRIPE_COUPON_PRO_FIRST_MONTH_29`
+   - salvar em `STRIPE_PRO_FIRST_MONTH_COUPON_ID`
 5. Ativar Customer Portal no Dashboard da Stripe.
 6. Configurar webhook apontando para:
 
@@ -98,7 +99,7 @@ Eventos minimos:
 
 ## Rotas
 
-- `POST /api/stripe/create-checkout-session`: cria Customer quando necessario e inicia Stripe Checkout em `mode="subscription"`.
+- `POST /api/stripe/create-checkout-session`: cria Customer quando necessario e inicia Stripe Checkout em `mode="subscription"`, com sucesso/cancelamento voltando para `/assinatura`.
 - `POST /api/stripe/create-portal-session`: cria sessao do Customer Portal para usuario autenticado.
 - `POST /api/stripe/webhook`: valida assinatura, registra idempotencia e atualiza `subscriptions`.
 - `POST /api/kiwify/webhook`: registra aquisicao/funil, sem liberar assinatura recorrente.

@@ -139,6 +139,7 @@ describe("Stripe API routes", () => {
     process.env.STRIPE_PRICE_PRO = "price_pro";
     process.env.STRIPE_PRICE_PRO_FIRST_MONTH_29 = "price_pro_29";
     process.env.STRIPE_PRICE_PREMIUM = "price_premium";
+    process.env.STRIPE_PRO_FIRST_MONTH_COUPON_ID = "coupon_pro_29";
 
     mocks.currentSubscription = null;
     mocks.createClient.mockReset().mockReturnValue(createAuthClient());
@@ -172,13 +173,27 @@ describe("Stripe API routes", () => {
     expect(mocks.checkoutCreate).not.toHaveBeenCalled();
   });
 
-  it("cria checkout session para plano valido com metadata segura", async () => {
+  it("retorna 401 quando checkout nao tem usuario logado", async () => {
+    const { POST } = await import("./create-checkout-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: "starter" })
+      })
+    );
+
+    expect(response.status).toBe(401);
+    expect(mocks.checkoutCreate).not.toHaveBeenCalled();
+  });
+
+  it("cria checkout session para plano starter com metadata segura", async () => {
     const { POST } = await import("./create-checkout-session/route");
     const response = await POST(
       new Request("https://app.example.com/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
-        body: JSON.stringify({ planId: "starter", source: "pricing", utm_source: "meta" })
+        body: JSON.stringify({ plan: "starter", source: "pricing", utm_source: "meta" })
       })
     );
 
@@ -192,8 +207,8 @@ describe("Stripe API routes", () => {
         customer: "cus_test",
         client_reference_id: "11111111-1111-4111-8111-111111111111",
         line_items: [{ price: "price_starter", quantity: 1 }],
-        success_url: "https://app.example.com/dashboard?checkout=success",
-        cancel_url: "https://app.example.com/precos?checkout=cancelado",
+        success_url: "https://app.example.com/assinatura?checkout=success",
+        cancel_url: "https://app.example.com/assinatura?checkout=cancel",
         metadata: expect.objectContaining({
           user_id: "11111111-1111-4111-8111-111111111111",
           plan: "starter",
@@ -212,6 +227,49 @@ describe("Stripe API routes", () => {
     );
   });
 
+  it("cria checkout do Pro com price recorrente e cupom de primeiro mes", async () => {
+    const { POST } = await import("./create-checkout-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
+        body: JSON.stringify({ plan: "pro" })
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.checkoutCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: "price_pro", quantity: 1 }],
+        discounts: [{ coupon: "coupon_pro_29" }],
+        metadata: expect.objectContaining({
+          plan: "pro",
+          price_id: "price_pro",
+          first_month_offer_applied: "true"
+        })
+      })
+    );
+  });
+
+  it("cria checkout Premium com price premium", async () => {
+    const { POST } = await import("./create-checkout-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
+        body: JSON.stringify({ plan: "premium" })
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.checkoutCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: "price_premium", quantity: 1 }],
+        discounts: undefined
+      })
+    );
+  });
+
   it("retorna erro controlado quando portal nao encontra customer Stripe", async () => {
     const { POST } = await import("./create-portal-session/route");
     const response = await POST(
@@ -226,6 +284,28 @@ describe("Stripe API routes", () => {
     expect(response.status).toBe(404);
     expect(body.error).toContain("Nenhuma assinatura Stripe");
     expect(mocks.portalCreate).not.toHaveBeenCalled();
+  });
+
+  it("cria portal Stripe com retorno para assinatura quando existe customer", async () => {
+    mocks.currentSubscription = {
+      provider: "stripe",
+      provider_customer_id: "cus_test",
+      stripe_customer_id: "cus_test"
+    };
+
+    const { POST } = await import("./create-portal-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-portal-session", {
+        method: "POST",
+        headers: { Authorization: "Bearer token" }
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.portalCreate).toHaveBeenCalledWith({
+      customer: "cus_test",
+      return_url: "https://app.example.com/assinatura"
+    });
   });
 
   it("rejeita webhook com assinatura invalida", async () => {

@@ -61,7 +61,7 @@ NEXT_PUBLIC_APP_ENV=production
 | `STRIPE_PRICE_PRO` | Servidor | Pagamento | Price recorrente Pro em Stripe test mode. |
 | `STRIPE_PRICE_PREMIUM` | Servidor | Pagamento | Price recorrente Premium em Stripe test mode. |
 | `STRIPE_PRICE_PRO_FIRST_MONTH_29` | Servidor | Pagamento | Price promocional legado/compatibilidade para mapear Pro. |
-| `STRIPE_COUPON_PRO_FIRST_MONTH_29` | Servidor | Pagamento | Cupom recomendado para cobrar R$ 29 apenas no primeiro mes do Pro. |
+| `STRIPE_PRO_FIRST_MONTH_COUPON_ID` | Servidor | Pagamento | Cupom recomendado para cobrar R$ 29 apenas no primeiro mes do Pro. |
 | `RESEND_API_KEY` | Servidor | E-mail | Envio do ebook e e-mails transacionais. |
 | `EMAIL_FROM` | Servidor | E-mail | Remetente verificado no Resend. |
 | `SUPPORT_EMAIL` | Servidor | Opcional | E-mail exibido em suporte/termos/privacidade. |

@@ -2,7 +2,7 @@
 
 ## Status geral
 
-- Nota estimada atual: 91/100.
+- Nota estimada atual: 96/100.
 - Pronto para staging: sim, desde que as variaveis externas sejam configuradas na Vercel.
 - Candidato aprovado para producao controlada: sim, para poucos usuarios, apos executar `docs/final-smoke-test.md` e `docs/production-launch-checklist.md` no ambiente final. O codigo local, build e testes automatizados estao prontos; a liberacao depende de validacao real com Supabase, Stripe, Resend, OpenAI, tracking e admin.
 - Pronto para anuncios pagos pequenos: ainda condicional. Pode iniciar apenas depois de checkout real, webhook, pixel/GA4, e-mail, OpenAI e suporte minimo estarem validados no ambiente final.
@@ -17,7 +17,7 @@
 - Onboarding: ocorre no dashboard e salva em `businesses`.
 - Geracao de resposta: rota server-side autenticada, validada, com limite mensal.
 - Assinatura: `/assinatura` usa Supabase e Stripe real.
-- Checkout: valida plano, exige auth, cria metadata com `user_id`, `plan`, price e UTMs.
+- Checkout: valida plano, exige auth, usa Price mensal por plano, aplica cupom `duration=once` no Pro quando elegivel, cria metadata com `user_id`, `plan`, price e UTMs, e retorna para `/assinatura`.
 - Webhook: valida assinatura Stripe e atualiza `subscriptions`.
 - Portal Stripe: exige auth e customer Stripe salvo.
 - Admin: API exige usuario autenticado e e-mail em `ADMIN_EMAILS`.
@@ -51,7 +51,7 @@
 
 ## Pendencias externas
 
-- Stripe: produtos Starter, Pro e Premium em test/live, prices, cupom Pro primeiro mes, webhook e portal.
+- Stripe: produtos Starter, Pro e Premium em test/live, prices, cupom Pro primeiro mes em `STRIPE_PRO_FIRST_MONTH_COUPON_ID`, webhook e portal.
 - Supabase: migrations aplicadas, RLS revisado, Auth URLs e Redirect URLs configuradas.
 - Feedback: migration `0008_user_feedback.sql` aplicada e envio publico/autenticado validado.
 - Vercel: projeto, dominio, envs por ambiente e logs.
@@ -79,3 +79,12 @@
 - Pendencias externas: Vercel com `NEXT_PUBLIC_APP_URL`, Supabase real com migrations/RLS/Auth, Stripe test/live com webhook assinado, Resend com remetente real, OpenAI com billing/modelo, GA4, Meta Pixel, Sentry e dominio.
 - Riscos conhecidos: auth de pagina ainda usa hint no middleware, superficies legadas continuam acessiveis, limite mensal pode ter concorrencia em chamadas simultaneas e nao ha e2e autenticado real contra Supabase/Stripe.
 - Recomendacao final: liberar 3 a 5 primeiros usuarios por convite apos smoke final em staging/producao controlada; iniciar anuncios pequenos somente depois de comprovar checkout, webhook, tracking, e-mail e suporte no ambiente final.
+
+## Stripe billing completo - 2026-05-23
+
+- Estrategia Pro escolhida: Price mensal normal `STRIPE_PRICE_PRO` + cupom Stripe `duration=once` em `STRIPE_PRO_FIRST_MONTH_COUPON_ID`.
+- `STRIPE_PRICE_PRO_FIRST_MONTH_29` fica apenas como compatibilidade de mapeamento para eventos antigos/promocionais e continua resolvendo internamente como `plan = "pro"`.
+- Checkout retorna para `/assinatura?checkout=success` ou `/assinatura?checkout=cancel`.
+- Customer Portal retorna para `/assinatura`.
+- Testes automatizados cobrem plano invalido, usuario sem login, Starter, Pro com cupom, Premium, portal, assinatura invalida no webhook, update/delete de subscription e pagamento falho.
+- Pronto para teste real em Stripe test mode depois de configurar envs, products, prices, coupon, webhook e portal no Stripe Dashboard.
