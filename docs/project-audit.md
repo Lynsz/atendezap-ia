@@ -2,9 +2,9 @@
 
 ## Nota geral
 
-93/100
+94/100
 
-O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios e uma campanha pequena de validacao: funil publico, pagina direta de campanha, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, metricas internas, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin, feedback e metricas no ambiente final.
+O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios e uma campanha pequena de validacao: funil publico, pagina direta de campanha, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, metricas internas, relatorio de campanha, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin, feedback e metricas no ambiente final.
 
 ## Mapa tecnico
 
@@ -58,6 +58,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - `/api/stripe/webhook`
 - `/api/admin/overview`
 - `/api/admin/metrics`
+- `/api/admin/campaign-report`
 - `/api/support`
 - `/api/feedback`
 - `/api/kiwify/webhook`
@@ -82,6 +83,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Admin server-side exige usuario autenticado e e-mail listado em `ADMIN_EMAILS`.
 - Feedback de primeiros usuarios foi adicionado em `/feedback`, com API server-side, validacao, rate limit, associacao opcional a usuario autenticado, tabela `user_feedback` e listagem simples no admin.
 - Metricas internas foram adicionadas em `/api/admin/metrics` e no admin: funil, ativacao, uso inicial, feedback e assinaturas em formato agregado.
+- Relatorio de campanha foi adicionado em `/api/admin/campaign-report` e no admin: filtros por periodo, `utm_source` e `utm_campaign`, leads por UTM, cadastros, onboardings, ativacao, demo, primeira resposta, checkout, assinaturas, feedbacks, taxas de conversao, interpretacao simples e exportacao CSV agregada.
 - Preparacao para anuncios pequenos adicionada: pagina `/atendimento-whatsapp-ia`, CTAs revisados na landing/demo/ebook/obrigado, FAQ comercial ampliada, evento `campaign_view`, evento `plan_click`, evento `first_response_generated` e metricas por UTM/campanha no admin.
 - `docs/ads-validation-plan.md` e `docs/pre-ads-checklist.md` documentam objetivo, rotas, eventos, metricas, criterio de pausa e checklist antes de ligar anuncios.
 - Schema Supabase tem tabelas esperadas, RLS e policies por `auth.uid()` para dados de usuario.
@@ -123,7 +125,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Feedback: implementado para producao controlada, mas depende da migration `0008_user_feedback.sql` aplicada no Supabase real antes de convidar usuarios.
 - Tracking: eventos principais existem e no-op sem GA4/Meta Pixel, mas falta validacao com ferramentas reais em producao.
 - Metricas: admin mostra agregados internos confiaveis para primeiros usuarios; visitantes anonimos ainda dependem de GA4/Meta Pixel.
-- Admin: metricas, filtros e CSV existem; helpers e bloqueio sem sessao tem testes, mas nao ha endpoint dedicado de exportacao server-side nem teste e2e com sessao admin real.
+- Admin: metricas, filtros, relatorio de campanha e CSV existem; helpers e bloqueio sem sessao tem testes, mas nao ha endpoint dedicado de exportacao server-side nem teste e2e com sessao admin real.
 - SEO: metadados basicos existem; falta imagem OG padrao configurada se o ativo final existir.
 - Resend: entrega do ebook esta pronta, mas sequencia de nutricao e descadastro ainda nao estao implementados.
 - Release candidate: pronto para staging avancado e producao controlada com poucos usuarios; liberacao depende da execucao do checklist real com integracoes externas.
@@ -140,6 +142,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Nao ha evidencia ainda de validacao manual completa em Vercel staging com Supabase, Stripe, Resend, OpenAI, tracking e admin reais.
 - Nao ha evidencia ainda de validacao manual do novo fluxo de feedback em Supabase staging/producao.
 - Nao ha evidencia ainda de validacao manual das metricas internas contra dados reais de staging/producao.
+- Nao ha evidencia ainda de validacao manual do relatorio de campanha contra dados reais de campanha.
 - Pode rodar anuncios pequenos com orcamento baixo somente depois de validar no ambiente final: checkout real/test, webhook, pixels, e-mail, OpenAI, admin, UTMs e rotina operacional. Ainda nao esta pronto para escalar trafego pago.
 
 ## Prioridade maxima
@@ -209,6 +212,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - `npm run build`
 - `npm test`
 - `npm run test:e2e`
+- Validacao automatizada da rota agregada `/api/admin/campaign-report`.
 - Revisao operacional de mensagens de erro criticas, fallback de integracoes e admin inicial.
 - `npm install --dry-run`
 - Smoke test browser em `/`, `/ebook`, `/ebook/obrigado`, `/ebook/guia`, `/demo`, `/precos`, `/termos`, `/privacidade` e 404.
@@ -224,6 +228,7 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Supabase: aplicar migrations no projeto staging, validar RLS, Auth URLs e isolamento com dois usuarios.
 - Supabase: aplicar migration de feedback e validar criacao publica/autenticada e leitura no admin.
 - Admin: validar `/api/admin/metrics` com usuario admin e usuario comum no ambiente real.
+- Admin: validar `/api/admin/campaign-report` com usuario admin e usuario comum no ambiente real.
 - Stripe: criar produtos, prices, cupom Pro, webhook staging e testar eventos em modo test seguindo `docs/stripe-staging.md`.
 - Resend: validar dominio/remetente e testar entrega real seguindo `docs/resend-staging.md`.
 - OpenAI: configurar chave/modelo de staging, testar dashboard/demo e monitorar custos seguindo `docs/openai-staging.md`.
@@ -272,3 +277,13 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 - Admin/metricas revisado: `/api/admin/metrics` retorna leads por UTM source/campaign, cadastros aproximados por campanha, checkouts e assinaturas ativas por campanha quando houver metadata.
 - Documentos criados: `docs/ads-validation-plan.md` e `docs/pre-ads-checklist.md`.
 - Status para trafego pago: pronto para orcamento baixo com ressalvas externas; nao pronto para escala ate validar ambiente real e obter sinais de conversao/feedback.
+
+## Relatorio de campanha e validacao comercial - 2026-05-23
+
+- Estrutura criada: rota protegida `/api/admin/campaign-report`, secao "Relatorio de campanha" no admin, filtros por periodo/UTM, exportacao CSV agregada e interpretacao simples por regras.
+- Metricas disponiveis: leads totais, leads por source/campaign, cadastros, onboardings, usuarios ativados, demo usada, primeira resposta, checkout iniciado, assinaturas ativas, feedbacks, dificuldade de uso e taxas principais do funil.
+- Documentos criados: `docs/campaign-analysis.md` e `docs/campaign-daily-checklist.md`.
+- Documentos atualizados: `docs/ads-validation-plan.md` e `docs/pre-ads-checklist.md`.
+- Limitacoes restantes: visitantes e custo dependem de GA4/Meta/plataforma de anuncios; demo usada depende da tabela interna `events`; cadastro por campanha e aproximado por e-mail; checkout iniciado e aproximado por `subscriptions`.
+- Recomendacao atualizada: pronto para campanha pequena somente apos validar ambiente real e usar o relatorio diariamente para decidir continuar, ajustar ou pausar. Nao pronto para escalar anuncios.
+- Nota estimada nova: 94/100.

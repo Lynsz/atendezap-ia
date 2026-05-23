@@ -141,6 +141,41 @@ type ProductMetricsPayload = {
   };
 };
 
+type CampaignReportPayload = {
+  period: { value: PeriodFilter; label: string; start: string | null };
+  filters: {
+    utm_source: string;
+    utm_campaign: string;
+  };
+  filterOptions: {
+    utmSources: string[];
+    utmCampaigns: string[];
+  };
+  metrics: {
+    totalLeads: number;
+    totalSignups: number;
+    onboardingCompleted: number;
+    activatedUsers: number;
+    demoUses: number;
+    firstResponseGenerated: number;
+    checkoutStarted: number;
+    activeSubscriptions: number;
+    feedbackCount: number;
+    difficultyFeedbacks: number;
+    leadToSignupRate: number;
+    signupToOnboardingRate: number;
+    onboardingToFirstResponseRate: number;
+    signupToSubscriptionRate: number;
+    leadToSubscriptionRate: number;
+  };
+  breakdowns: {
+    leadsByUtmSource: Array<{ label: string; count: number }>;
+    leadsByUtmCampaign: Array<{ label: string; count: number }>;
+  };
+  interpretation: string;
+  notes: string[];
+};
+
 type Filters = {
   search: string;
   business_type: string;
@@ -249,9 +284,56 @@ function exportLeadsCsv(leads: AdminLead[]) {
   URL.revokeObjectURL(url);
 }
 
+function exportCampaignReportCsv(report: CampaignReportPayload) {
+  const headers = [
+    "periodo",
+    "utm_source",
+    "utm_campaign",
+    "total_leads",
+    "total_signups",
+    "onboarding_completed",
+    "activated_users",
+    "demo_uses",
+    "checkout_started",
+    "active_subscriptions",
+    "feedback_count",
+    "lead_to_signup_rate",
+    "signup_to_onboarding_rate",
+    "onboarding_to_activation_rate",
+    "signup_to_subscription_rate"
+  ];
+  const row = [
+    report.period.label,
+    report.filters.utm_source || "todos",
+    report.filters.utm_campaign || "todos",
+    report.metrics.totalLeads,
+    report.metrics.totalSignups,
+    report.metrics.onboardingCompleted,
+    report.metrics.activatedUsers,
+    report.metrics.demoUses,
+    report.metrics.checkoutStarted,
+    report.metrics.activeSubscriptions,
+    report.metrics.feedbackCount,
+    report.metrics.leadToSignupRate,
+    report.metrics.signupToOnboardingRate,
+    report.metrics.onboardingToFirstResponseRate,
+    report.metrics.signupToSubscriptionRate
+  ];
+  const blob = new Blob([[headers.join(","), row.map(csvEscape).join(",")].join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `atendezap-campaign-report-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 export default function AdminDashboardPage() {
   const [data, setData] = useState<AdminPayload | null>(null);
   const [productMetrics, setProductMetrics] = useState<ProductMetricsPayload | null>(null);
+  const [campaignReport, setCampaignReport] = useState<CampaignReportPayload | null>(null);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(initialFilters);
   const [loading, setLoading] = useState(true);
@@ -280,7 +362,7 @@ export default function AdminDashboardPage() {
         if (value) params.set(key, value);
       });
 
-      const [response, metricsResponse] = await Promise.all([
+      const [response, metricsResponse, campaignResponse] = await Promise.all([
         fetch(`/api/admin/overview?${params.toString()}`, {
           headers: {
             Authorization: `Bearer ${token}`
@@ -290,10 +372,16 @@ export default function AdminDashboardPage() {
           headers: {
             Authorization: `Bearer ${token}`
           }
+        }),
+        fetch(`/api/admin/campaign-report?${params.toString()}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
       ]);
       const payload = (await response.json().catch(() => ({}))) as AdminPayload & { error?: string };
       const metricsPayload = (await metricsResponse.json().catch(() => ({}))) as ProductMetricsPayload & { error?: string };
+      const campaignPayload = (await campaignResponse.json().catch(() => ({}))) as CampaignReportPayload & { error?: string };
 
       if (!response.ok) {
         setAccessDenied(response.status === 401 || response.status === 403);
@@ -307,8 +395,15 @@ export default function AdminDashboardPage() {
         return;
       }
 
+      if (!campaignResponse.ok) {
+        setAccessDenied(campaignResponse.status === 401 || campaignResponse.status === 403);
+        setError(campaignPayload.error || "Nao foi possivel carregar o relatorio de campanha.");
+        return;
+      }
+
       setData(payload);
       setProductMetrics(metricsPayload);
+      setCampaignReport(campaignPayload);
     } catch {
       setError("Não foi possível carregar a área admin agora.");
     } finally {
@@ -537,6 +632,112 @@ export default function AdminDashboardPage() {
               <p className="rounded-md border border-white/10 bg-[#0b1118] p-3">{productMetrics.notes.checkoutStarted}</p>
               <p className="rounded-md border border-white/10 bg-[#0b1118] p-3">{productMetrics.notes.campaign}</p>
               <p className="rounded-md border border-white/10 bg-[#0b1118] p-3 lg:col-span-2">{productMetrics.notes.timeToActivation}</p>
+            </div>
+          </section>
+        ) : null}
+
+        {campaignReport ? (
+          <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Relatorio de campanha</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Validacao de anuncios</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  Performance do funil para decidir se a campanha inicial deve continuar, ser ajustada ou pausada. Periodo: {campaignReport.period.label}.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => exportCampaignReportCsv(campaignReport)}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-black text-slate-950 hover:bg-slate-100"
+              >
+                <Download className="h-4 w-4" />
+                Exportar resumo CSV
+              </button>
+            </div>
+
+            <form onSubmit={handleApplyFilters} className="mb-5 grid gap-3 md:grid-cols-2 lg:grid-cols-[1fr_1fr_180px_auto]">
+              <FilterSelect
+                label="UTM source"
+                value={filters.utm_source}
+                onChange={(value) => setFilters((current) => ({ ...current, utm_source: value }))}
+                options={campaignReport.filterOptions.utmSources}
+              />
+              <FilterSelect
+                label="UTM campaign"
+                value={filters.utm_campaign}
+                onChange={(value) => setFilters((current) => ({ ...current, utm_campaign: value }))}
+                options={campaignReport.filterOptions.utmCampaigns}
+              />
+              <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+                Periodo
+                <select value={filters.period} onChange={(event) => setFilters((current) => ({ ...current, period: event.target.value as PeriodFilter }))} className="field-input">
+                  {periods.map((period) => (
+                    <option value={period.value} key={period.value}>
+                      {period.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300">
+                <Filter className="h-4 w-4" />
+                Filtrar
+              </button>
+            </form>
+
+            <div className="mb-5 rounded-md border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm font-black leading-6 text-emerald-100">
+              {campaignReport.interpretation}
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Leads totais" value={campaignReport.metrics.totalLeads} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Cadastros totais" value={campaignReport.metrics.totalSignups} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Onboardings concluidos" value={campaignReport.metrics.onboardingCompleted} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Usuarios ativados" value={campaignReport.metrics.activatedUsers} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Demo usada" value={campaignReport.metrics.demoUses} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Primeira resposta" value={campaignReport.metrics.firstResponseGenerated} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Checkout iniciado" value={campaignReport.metrics.checkoutStarted} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Assinaturas ativas" value={campaignReport.metrics.activeSubscriptions} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Feedbacks recebidos" value={campaignReport.metrics.feedbackCount} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Dificuldade de uso" value={campaignReport.metrics.difficultyFeedbacks} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Lead -> cadastro" value={`${campaignReport.metrics.leadToSignupRate}%`} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Cadastro -> assinatura" value={`${campaignReport.metrics.signupToSubscriptionRate}%`} icon={<BarChart3 className="h-5 w-5" />} />
+            </div>
+
+            <div className="mt-5 grid gap-5 xl:grid-cols-4">
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 xl:col-span-2">
+                <h3 className="text-lg font-black text-white">Taxas do funil</h3>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <ConversionLine label="Lead -> cadastro" value={`${campaignReport.metrics.leadToSignupRate}%`} />
+                  <ConversionLine label="Cadastro -> onboarding" value={`${campaignReport.metrics.signupToOnboardingRate}%`} />
+                  <ConversionLine label="Onboarding -> primeira resposta" value={`${campaignReport.metrics.onboardingToFirstResponseRate}%`} />
+                  <ConversionLine label="Lead -> assinatura" value={`${campaignReport.metrics.leadToSubscriptionRate}%`} />
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Leads por source</h3>
+                <div className="mt-4 grid gap-3">
+                  {(campaignReport.breakdowns.leadsByUtmSource.length ? campaignReport.breakdowns.leadsByUtmSource : [{ label: "sem_dados", count: 0 }]).slice(0, 5).map((item) => (
+                    <ConversionLine key={`report-source-${item.label}`} label={item.label} value={item.count} />
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Leads por campanha</h3>
+                <div className="mt-4 grid gap-3">
+                  {(campaignReport.breakdowns.leadsByUtmCampaign.length ? campaignReport.breakdowns.leadsByUtmCampaign : [{ label: "sem_dados", count: 0 }]).slice(0, 5).map((item) => (
+                    <ConversionLine key={`report-campaign-${item.label}`} label={item.label} value={item.count} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 text-xs font-bold leading-5 text-slate-400 lg:grid-cols-2">
+              {campaignReport.notes.map((note) => (
+                <p className="rounded-md border border-white/10 bg-[#0b1118] p-3" key={note}>
+                  {note}
+                </p>
+              ))}
             </div>
           </section>
         ) : null}

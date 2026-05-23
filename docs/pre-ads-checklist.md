@@ -47,9 +47,14 @@
 - [ ] Admin `/admin` funcionando com usuario admin.
 - [ ] Usuario comum bloqueado no admin.
 - [ ] Metricas de produto carregando.
+- [ ] Relatorio de campanha carregando no admin.
+- [ ] Filtros de `utm_source`, `utm_campaign` e periodo revisados.
+- [ ] Exportacao CSV do resumo da campanha funcionando.
 - [ ] Feedbacks recentes aparecendo.
 - [ ] Exportacao CSV de leads funcionando.
 - [ ] Plano de triagem de bugs revisado.
+- [ ] `docs/campaign-analysis.md` revisado.
+- [ ] `docs/campaign-daily-checklist.md` pronto para uso diario.
 
 ## Mobile
 
@@ -64,3 +69,13 @@
 ## Criterio para iniciar
 
 Ligar apenas com orcamento baixo quando todos os itens criticos de funil, pagamento, tracking e admin estiverem validados no ambiente real.
+
+## Durante a campanha
+
+Use o relatorio de campanha no admin todos os dias. Olhe primeiro para leads, UTMs, cadastro, onboarding, primeira resposta, checkout, assinatura e feedbacks de dificuldade.
+
+Pausar se lead nao salva, IA falha, checkout quebra, webhook nao ativa assinatura ou erro P0 aparecer nos logs.
+
+Ajustar copy quando houver trafego e poucos leads. Ajustar pagina de obrigado ou CTA quando houver leads e poucos cadastros. Ajustar onboarding/dashboard quando houver cadastros e pouco uso. Ajustar preco/confianca quando houver checkouts e poucas assinaturas.
+
+Nao aumentar orcamento sem sinais reais: usuarios entendendo o produto, gerando respostas e demonstrando intencao de compra.
