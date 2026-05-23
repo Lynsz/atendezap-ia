@@ -98,3 +98,25 @@ export function isPlanId(planId: string | null | undefined): planId is PlanId {
 export function planPriceForFirstCharge(plan: SaasPlan, shouldApplyFirstMonthOffer: boolean) {
   return shouldApplyFirstMonthOffer && plan.firstMonthPrice ? plan.firstMonthPrice : plan.monthlyPrice;
 }
+
+export function getMonthlyLimitForPlan(planId: string | null | undefined) {
+  return getSaasPlan(planId)?.responseLimit ?? null;
+}
+
+export function getStripePriceEnvNamesForPlan(planId: PlanId) {
+  const plan = SAAS_PLANS[planId];
+  return [plan.priceEnv, plan.promoPriceEnv].filter(Boolean) as string[];
+}
+
+export function getPlanIdByConfiguredStripePriceId(
+  stripePriceId: string | null | undefined,
+  readEnv: (name: string) => string | undefined
+) {
+  if (!stripePriceId) return null;
+
+  return (
+    PLAN_IDS.find((planId) =>
+      getStripePriceEnvNamesForPlan(planId).some((envName) => readEnv(envName)?.trim() === stripePriceId)
+    ) ?? null
+  );
+}

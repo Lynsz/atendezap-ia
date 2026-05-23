@@ -24,12 +24,12 @@ describe("Stripe service helpers", () => {
     expect(() => getStripeWebhookSecret()).toThrow("Webhook Stripe");
   });
 
-  it("valida price e cupom obrigatorios para checkout", () => {
+  it("valida price obrigatorio e deixa cupom do Pro opcional", () => {
     vi.stubEnv("STRIPE_PRICE_STARTER", "");
     vi.stubEnv("STRIPE_PRO_FIRST_MONTH_COUPON_ID", "");
 
     expect(() => getStripePriceId(SAAS_PLANS.starter)).toThrow("Stripe");
-    expect(() => getStripeCouponId(SAAS_PLANS.pro, true)).toThrow("Cupom Stripe");
+    expect(getStripeCouponId(SAAS_PLANS.pro, true)).toBeNull();
     expect(getStripeCouponId(SAAS_PLANS.pro, false)).toBeNull();
   });
 

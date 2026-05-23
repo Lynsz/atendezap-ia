@@ -93,14 +93,15 @@ export async function POST(request: Request) {
       .limit(1)
       .maybeSingle();
 
-    const shouldApplyFirstMonthOffer =
+    const isEligibleForFirstMonthOffer =
       plan.id === "pro" && !currentSubscription?.first_month_offer_used_at && !currentSubscription?.first_month_price_applied;
 
     const stripe = getStripe();
     const priceId = getStripePriceId(plan);
-    const couponId = getStripeCouponId(plan, shouldApplyFirstMonthOffer);
+    const couponId = getStripeCouponId(plan, isEligibleForFirstMonthOffer);
+    const firstMonthOfferApplied = Boolean(couponId);
     const appUrl = getAppUrl();
-    const metadata = buildStripeCheckoutMetadata(user.id, plan.id, shouldApplyFirstMonthOffer, {
+    const metadata = buildStripeCheckoutMetadata(user.id, plan.id, firstMonthOfferApplied, {
       price_id: priceId,
       source: body.source,
       funnel: body.funnel,
@@ -167,7 +168,7 @@ export async function POST(request: Request) {
         price: plan.monthlyPrice,
         first_month_price: plan.firstMonthPrice ?? null,
         is_first_month_offer: Boolean(plan.firstMonthPrice),
-        first_month_price_applied: shouldApplyFirstMonthOffer || Boolean(currentSubscription?.first_month_price_applied),
+        first_month_price_applied: firstMonthOfferApplied || Boolean(currentSubscription?.first_month_price_applied),
         promo_code: couponId ? "stripe_pro_first_month_29" : null,
         current_period_start: null,
         current_period_end: null,
@@ -182,7 +183,7 @@ export async function POST(request: Request) {
           utm_campaign: metadata.utm_campaign || null,
           utm_content: metadata.utm_content || null,
           utm_term: metadata.utm_term || null,
-          offer_reserved_at: shouldApplyFirstMonthOffer ? now : null
+          offer_reserved_at: firstMonthOfferApplied ? now : null
         }
       },
       { onConflict: "user_id" }
@@ -197,7 +198,7 @@ export async function POST(request: Request) {
       route: "/api/stripe/create-checkout-session",
       userId: user.id,
       status: "ok",
-      metadata: { plan: plan.id, first_month_offer: shouldApplyFirstMonthOffer }
+      metadata: { plan: plan.id, first_month_offer: firstMonthOfferApplied }
     });
 
     return Response.json({
@@ -205,7 +206,7 @@ export async function POST(request: Request) {
       provider: "stripe",
       sessionId: checkoutSession.id,
       url: checkoutSession.url,
-      firstMonthPriceApplied: shouldApplyFirstMonthOffer
+      firstMonthPriceApplied: firstMonthOfferApplied
     });
   } catch (error) {
     serverLog({ level: "warn", event: "stripe_checkout_failed", route: "/api/stripe/create-checkout-session", userId, error });

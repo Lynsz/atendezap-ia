@@ -251,6 +251,34 @@ describe("Stripe API routes", () => {
     );
   });
 
+  it("cria checkout do Pro sem desconto quando cupom nao esta configurado", async () => {
+    delete process.env.STRIPE_PRO_FIRST_MONTH_COUPON_ID;
+
+    const { POST } = await import("./create-checkout-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
+        body: JSON.stringify({ plan: "pro" })
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.firstMonthPriceApplied).toBe(false);
+    expect(mocks.checkoutCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: "price_pro", quantity: 1 }],
+        discounts: undefined,
+        metadata: expect.objectContaining({
+          plan: "pro",
+          first_month_offer_applied: "false"
+        })
+      })
+    );
+  });
+
   it("cria checkout Premium com price premium", async () => {
     const { POST } = await import("./create-checkout-session/route");
     const response = await POST(

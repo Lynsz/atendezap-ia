@@ -1,6 +1,12 @@
 import Stripe from "stripe";
+import {
+  getPlanIdByConfiguredStripePriceId,
+  getSaasPlan,
+  getStripePriceEnvNamesForPlan,
+  type PlanId,
+  type SaasPlan
+} from "@/config/plans";
 import { AppError } from "@/lib/errors";
-import { getSaasPlan, PLAN_IDS, type PlanId, type SaasPlan } from "@/config/plans";
 
 export type StripeSubscriptionStatus =
   | "active"
@@ -17,7 +23,7 @@ let stripeClient: Stripe | null = null;
 export function getStripe() {
   const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
   if (!secretKey) {
-    throw new AppError("Stripe não está configurado neste ambiente.", 503);
+    throw new AppError("Stripe nao esta configurado neste ambiente.", 503);
   }
 
   if (!stripeClient) {
@@ -32,7 +38,7 @@ export function getStripe() {
 export function getStripeWebhookSecret() {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
   if (!webhookSecret) {
-    throw new AppError("Webhook Stripe não está configurado neste ambiente.", 500);
+    throw new AppError("Webhook Stripe nao esta configurado neste ambiente.", 500);
   }
   return webhookSecret;
 }
@@ -66,14 +72,16 @@ function getCheckoutStripePriceId(planId: PlanId) {
 export function getStripePlanPriceIds(planId: PlanId) {
   const checkoutPriceId = getCheckoutStripePriceId(planId);
   const plan = getSaasPlan(planId);
-  const compatibilityPriceIds = plan?.promoPriceEnv ? [envValue(plan.promoPriceEnv)] : [];
+  const compatibilityPriceIds = getStripePriceEnvNamesForPlan(planId)
+    .filter((envName) => envName !== plan?.priceEnv)
+    .map((envName) => envValue(envName));
   return [checkoutPriceId, ...compatibilityPriceIds].filter(Boolean);
 }
 
 export function getStripePriceId(plan: SaasPlan) {
   const priceId = getCheckoutStripePriceId(plan.id);
   if (!priceId) {
-    throw new AppError(`Preço Stripe não configurado para o plano ${plan.name}.`, 503);
+    throw new AppError(`Preco Stripe nao configurado para o plano ${plan.name}.`, 503);
   }
   return priceId;
 }
@@ -81,16 +89,17 @@ export function getStripePriceId(plan: SaasPlan) {
 export function getStripeCouponId(plan: SaasPlan, shouldApplyFirstMonthOffer: boolean) {
   if (!shouldApplyFirstMonthOffer) return null;
   if (plan.id !== "pro") return null;
-  const couponId = envValue(plan.firstMonthCouponEnv || "STRIPE_PRO_FIRST_MONTH_COUPON_ID", "STRIPE_COUPON_PRO_FIRST_MONTH_29", "STRIPE_COUPON_PRO_FIRST_MONTH");
-  if (!couponId) {
-    throw new AppError("Cupom Stripe do primeiro mês do Plano Pro não configurado.", 503);
-  }
-  return couponId;
+  return (
+    envValue(
+      plan.firstMonthCouponEnv || "STRIPE_PRO_FIRST_MONTH_COUPON_ID",
+      "STRIPE_COUPON_PRO_FIRST_MONTH_29",
+      "STRIPE_COUPON_PRO_FIRST_MONTH"
+    ) || null
+  );
 }
 
 export function getSaasPlanByStripePriceId(stripePriceId: string | null | undefined) {
-  if (!stripePriceId) return null;
-  const planId = PLAN_IDS.find((id) => getStripePlanPriceIds(id).includes(stripePriceId));
+  const planId = getPlanIdByConfiguredStripePriceId(stripePriceId, (name) => envValue(name));
   return planId ? getSaasPlan(planId) : null;
 }
 
