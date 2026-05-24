@@ -526,3 +526,36 @@ Recomendacao atualizada:
 Pode preparar a segunda campanha com baixo orcamento e variações controladas. Nao aumentar investimento antes de identificar uma entrada vencedora com dados reais e sem bugs P0/P1.
 
 Nota estimada mantida: 96/100 ate validacao real da segunda campanha.
+
+## Analise da segunda campanha e escala cautelosa - 2026-05-24
+
+Status: sem dados reais suficientes para recomendar escala.
+
+O que foi feito:
+
+- Criado `docs/second-campaign-analysis.md` para comparar demo, ebook, landing e Pro R$ 29.
+- Criado `docs/scale-decision-matrix.md` com condicoes para escalar, nao escalar e pausar.
+- Criado `docs/cautious-scale-plan.md` para aumento gradual com monitoramento diario.
+- Criado `docs/copy-iteration-notes.md` com hipoteses de copy, CTAs e objecoes a validar.
+- Criado `docs/third-campaign-prep-checklist.md` para preparar a proxima rodada somente depois de dados reais.
+- Atualizado `docs/second-campaign-report.md` com resultado comparativo, melhor/pior variacao, decisao recomendada e proximos ajustes.
+- Atualizado `docs/scale-ads-checklist.md` com criterios antes de aumentar orcamento e revisao pos-segunda campanha.
+
+Inspecao realizada:
+
+- Admin/metricas ja mostra leads, cadastros, onboarding, primeira resposta, checkout, assinaturas, feedbacks e leads por `utm_source`, `utm_campaign` e `utm_content`.
+- Tracking preserva UTMs e eventos principais do funil.
+- Landing, demo, ebook, pricing e dashboard seguem explicando que a IA gera respostas para copiar, ajustar e enviar manualmente.
+
+Pendencias:
+
+- Preencher resultados reais por variacao.
+- Validar visitantes e custos em GA4/Meta Ads.
+- Conferir Stripe, webhook, Resend, OpenAI e Vercel logs durante a campanha.
+- Corrigir qualquer P0/P1 antes de novo aumento.
+
+Recomendacao atualizada:
+
+Nao escalar ainda. O AtendeZap IA esta pronto para avaliar a segunda campanha e preparar escala cautelosa, mas a decisao depende de dados reais, tracking confiavel, checkouts funcionando e ausencia de bugs P0/P1.
+
+Nota estimada mantida: 96/100 ate validacao real da segunda campanha e decisao de escala.

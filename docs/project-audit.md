@@ -451,3 +451,15 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias externas: configurar links reais com dominio final, validar GA4/Meta Ads, preencher visitantes/custos fora do app e registrar resultados no relatorio.
 - Recomendacao: rodar a segunda campanha com baixo orcamento e uma decisao por variacao; aumentar orcamento apenas com tracking confiavel, ativacao real e sem P0/P1.
 - Nota operacional estimada mantida: 96/100 ate haver dados reais da segunda campanha.
+
+## Analise da segunda campanha e escala cautelosa - 2026-05-24
+
+- Status dos dados: sem resultados reais preenchidos para a segunda campanha; a decisao atual e nao escalar ainda.
+- Documentos criados: `docs/second-campaign-analysis.md`, `docs/scale-decision-matrix.md`, `docs/cautious-scale-plan.md`, `docs/copy-iteration-notes.md` e `docs/third-campaign-prep-checklist.md`.
+- Documentos atualizados: `docs/second-campaign-report.md` e `docs/scale-ads-checklist.md`.
+- Admin revisado: ja permite comparar `utm_campaign`, `utm_content`, leads por variacao, checkouts aproximados e assinaturas agregadas; feedback por variacao depende de contexto/origem ou analise manual.
+- Tracking revisado: eventos principais e eventos `campaign_*` existem no helper client-safe e nao devem quebrar sem GA4/Meta.
+- Melhorias aplicadas: nenhuma mudanca de copy/produto aplicada, porque nao ha gargalo real comprovado nos dados atuais.
+- Riscos conhecidos: visitantes, custos e parte da analise de criativos dependem de GA4/Meta Ads; o app nao recebe gasto de midia automaticamente.
+- Decisao de escala: nao escalar ate preencher `docs/second-campaign-analysis.md` e passar pela matriz de decisao.
+- Nota operacional estimada mantida: 96/100 ate haver dados reais, tracking validado e ausencia de P0/P1 em producao.

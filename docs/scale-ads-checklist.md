@@ -42,6 +42,19 @@ Nao aumente orcamento enquanto este checklist nao estiver majoritariamente verde
 - [ ] ajustar campanha antes de aumentar
 - [ ] pausar por bloqueador
 
+## Antes de aumentar orcamento
+
+- [ ] melhor variacao identificada
+- [ ] tracking validado
+- [ ] eventos principais funcionando
+- [ ] custo OpenAI sob controle
+- [ ] Stripe sem falhas
+- [ ] Resend sem falhas criticas
+- [ ] feedbacks P0/P1 resolvidos
+- [ ] checkout testado
+- [ ] suporte minimo pronto
+- [ ] rollback pronto
+
 ## Limite recomendado
 
 Aumente aos poucos. Se a campanha pequena ainda nao gerou cadastros, onboarding e primeiras respostas com clareza, nao ha base suficiente para escalar.
@@ -60,3 +73,11 @@ Aumente aos poucos. Se a campanha pequena ainda nao gerou cadastros, onboarding 
 - [ ] CTAs da pagina de campanha rastreados por eventos `campaign_*`
 - [ ] leads por `utm_content` conferidos no admin
 - [ ] admin conferido com UTMs e diagnostico do funil
+
+## Depois da segunda campanha
+
+- [ ] `docs/second-campaign-analysis.md` preenchido
+- [ ] `docs/scale-decision-matrix.md` revisado
+- [ ] `docs/cautious-scale-plan.md` revisado
+- [ ] `docs/copy-iteration-notes.md` atualizado com dados reais
+- [ ] `docs/third-campaign-prep-checklist.md` pronto, se houver nova rodada
