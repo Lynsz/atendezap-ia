@@ -312,3 +312,48 @@ Pendencias externas:
 Recomendacao: ainda nao liberar primeiros usuarios. Avancar para staging validado assim que a URL/projeto Vercel estiver acessivel.
 
 Nota estimada mantida: 96/100 ate a validacao real do staging.
+
+## Producao controlada - 2026-05-24
+
+Status: pronto para preparacao de producao controlada, com go-live condicionado a validacao no dominio final.
+
+Foram criados os documentos operacionais de producao:
+
+- `docs/production-readiness.md`
+- `docs/domain-checklist.md`
+- `docs/stripe-production.md`
+- `docs/supabase-production.md`
+- `docs/resend-production.md`
+- `docs/openai-production.md`
+- `docs/tracking-production.md`
+- `docs/go-live-checklist.md`
+- `docs/first-users-launch.md`
+
+Revisoes executadas:
+
+- Busca por `localhost`, `127.0.0.1`, placeholders Vercel e `NEXT_PUBLIC_APP_URL`.
+- Busca por textos de staging/teste/simulado no codigo.
+- Busca por variaveis sensiveis em `src`.
+- Conferencia de `.gitignore` e `.env.example`.
+
+Resultado:
+
+- Nao foi encontrado dominio hardcoded de producao no codigo.
+- `localhost` permanece apenas em fallback local controlado, testes e documentacao.
+- Variaveis sensiveis continuam sem valores reais em arquivos versionados.
+- Fluxos de Stripe, Supabase, Resend e OpenAI continuam dependentes de validacao real no ambiente final.
+
+Pendencias antes de liberar usuarios:
+
+- Configurar dominio final e `NEXT_PUBLIC_APP_URL`.
+- Configurar Vercel Production com variaveis reais.
+- Aplicar migrations Supabase e validar RLS/isolamento.
+- Configurar Stripe live mode, price IDs, cupom Pro e webhook.
+- Configurar Resend com dominio/remetente final.
+- Configurar OpenAI com limite de custo.
+- Configurar GA4/Meta, se usados.
+- Executar `docs/go-live-checklist.md`.
+
+Recomendacao final: liberar somente para 3 a 5 usuarios depois do go-live checklist verde. Nao escalar anuncios ate obter validacao real de checkout, webhook, e-mail, IA, tracking, admin e suporte.
+
+Nota estimada mantida: 96/100 ate validar producao no dominio final.

@@ -103,3 +103,11 @@
 - Bloqueio: URL/projeto Vercel do AtendeZap IA nao foi encontrado no repositorio nem no conector Vercel disponivel.
 - Bugs reais confirmados: nenhum, por falta de acesso ao ambiente publicado.
 - Recomendacao: manter como release candidate para staging avancado; nao promover para primeiros usuarios ate executar o checklist completo na URL publicada.
+
+## Producao controlada - 2026-05-24
+
+- Status: preparado para go-live controlado, condicionado a validacao real no dominio final.
+- Documentos criados: `docs/production-readiness.md`, `docs/domain-checklist.md`, `docs/stripe-production.md`, `docs/supabase-production.md`, `docs/resend-production.md`, `docs/openai-production.md`, `docs/tracking-production.md`, `docs/go-live-checklist.md` e `docs/first-users-launch.md`.
+- Auditoria: URLs, `NEXT_PUBLIC_APP_URL`, segredos server-only, `.gitignore`, `.env.example`, copy publica e pendencias externas revisadas.
+- Criterio atualizado: liberar 3 a 5 usuarios apenas depois de `docs/go-live-checklist.md` verde no dominio final.
+- Nao escalar anuncios ate confirmar checkout, webhook, Supabase, Resend, OpenAI, tracking e admin em producao.

@@ -382,3 +382,15 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias externas restantes: informar URL staging, confirmar envs da Vercel, aplicar migrations Supabase staging, configurar Auth URLs, configurar webhook Stripe staging, validar Resend/OpenAI/tracking/admin e executar o checklist completo.
 - Recomendacao: ainda nao liberar primeiros usuarios. Liberar apenas para staging avancado quando a URL for fornecida e o checklist pos-deploy for executado de ponta a ponta.
 - Nota operacional estimada: 96/100 ate validar o ambiente Vercel real com provedores configurados.
+
+## Producao controlada - 2026-05-24
+
+- Documentacao criada: `docs/production-readiness.md`, `docs/domain-checklist.md`, `docs/stripe-production.md`, `docs/supabase-production.md`, `docs/resend-production.md`, `docs/openai-production.md`, `docs/tracking-production.md`, `docs/go-live-checklist.md` e `docs/first-users-launch.md`.
+- URLs revisadas: codigo usa `NEXT_PUBLIC_APP_URL`/`VERCEL_URL` para links absolutos, Stripe, e-mails e metadados; `localhost` aparece apenas como fallback local controlado, testes ou documentacao.
+- Seguranca revisada: `.gitignore` ignora arquivos `.env`, `.env.example` segue sem valores reais, service role/OpenAI/Resend/Stripe secrets aparecem apenas em codigo server-side ou testes.
+- Copy publica revisada por busca: nao ha dominio fixo de staging no codigo; textos de mock/simulacao permanecem em superficies legadas fora do fluxo SaaS principal e devem ser avaliados antes de escalar trafego.
+- Status de producao controlada: pronto documentalmente para go-live controlado com 3 a 5 usuarios, condicionado a validacao real no dominio final.
+- Pendencias externas: dominio final, Vercel Production envs, Supabase producao/RLS/Auth URLs, Stripe live/webhook, Resend dominio/remetente, OpenAI custo/modelo, tracking GA4/Meta e admin real.
+- Riscos restantes: auth de pagina ainda usa cookie de hint, superficies legadas ainda existem, nao ha e2e autenticado real contra provedores e staging publicado ainda precisa ser confirmado.
+- Recomendacao final: nao escalar anuncios. Liberar primeiros usuarios somente depois de `docs/go-live-checklist.md` verde no dominio final.
+- Nota operacional estimada mantida: 96/100 ate validar dominio final e provedores de producao.
