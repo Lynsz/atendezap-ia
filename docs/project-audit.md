@@ -416,3 +416,15 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias restantes: executar nova rodada com 3 a 5 usuarios, preencher URL/data reais do go-live, validar provedores no dominio final e corrigir qualquer P0/P1 antes de anuncios.
 - Recomendacao: pronto para nova rodada controlada com usuarios; anuncios pequenos somente depois de checklist pre-anuncio verde e ausencia de P0/P1 aberto.
 - Nota operacional estimada mantida: 96/100 ate haver validacao real pos-go-live.
+
+## Primeira campanha paga pequena - 2026-05-24
+
+- Documentos criados: `docs/first-paid-campaign-plan.md`, `docs/first-campaign-daily-checklist.md`, `docs/first-campaign-report.md`, `docs/campaign-utm-links.md`, `docs/ads-pause-criteria.md`, `docs/scale-ads-checklist.md` e `docs/tracking-setup.md`.
+- Documentos atualizados: `docs/pre-ads-final-checklist.md`, `docs/tracking.md` e `docs/final-readiness-report.md`.
+- Admin revisado: relatorio de campanha existente ja cobre leads, cadastros, onboarding, usuarios ativados, demo, primeira resposta, checkout, assinaturas, feedbacks, leads por `utm_source` e leads por `utm_campaign`.
+- Ajuste pequeno no admin: bloco "Diagnostico do funil" com mensagens acionaveis para lead -> cadastro, cadastro -> onboarding, onboarding -> primeira resposta, primeira resposta -> checkout e checkout -> assinatura.
+- Tracking revisado: eventos principais existem em `src/lib/tracking.ts` e chamadas foram confirmadas em landing, ebook, demo, cadastro, onboarding/dashboard, checkout, assinatura e feedback.
+- UTMs revisadas: lead salva `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` e `utm_term`; checkout recebe UTMs em metadata; admin mostra e filtra UTMs dos leads.
+- Riscos conhecidos: visitantes e custo por etapa dependem de GA4/Meta/plataforma externa; o app nao recebe gasto de midia automaticamente.
+- Recomendacao: rodar campanha pequena somente com checklist final verde; acompanhar diariamente e pausar se houver P0, tracking quebrado, lead sem salvar, IA sem gerar, checkout quebrado ou webhook sem liberar plano.
+- Nota operacional estimada mantida: 96/100 ate haver dados reais de campanha.

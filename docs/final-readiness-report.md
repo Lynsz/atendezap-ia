@@ -424,3 +424,42 @@ Recomendacao atualizada:
 Ainda nao declarar pronto para anuncios pequenos sem uma rodada real validada. O projeto esta pronto para nova rodada com usuarios e pode seguir para anuncios pequenos apenas se o checklist pre-anuncio final ficar verde e nao houver P0/P1 aberto.
 
 Nota estimada mantida: 96/100 ate a validacao real dos primeiros usuarios e do ambiente final.
+
+## Primeira campanha paga pequena - 2026-05-24
+
+Status: estrutura pronta para acompanhar uma campanha inicial de baixo orcamento, com decisao diaria de continuar, ajustar ou pausar.
+
+Documentos criados:
+
+- `docs/first-paid-campaign-plan.md`
+- `docs/first-campaign-daily-checklist.md`
+- `docs/first-campaign-report.md`
+- `docs/campaign-utm-links.md`
+- `docs/ads-pause-criteria.md`
+- `docs/scale-ads-checklist.md`
+- `docs/tracking-setup.md`
+
+Revisoes realizadas:
+
+- Admin ja possui relatorio de campanha protegido, filtros por periodo, `utm_source` e `utm_campaign`, cards de leads, cadastros, onboarding, primeira resposta, checkout, assinaturas, feedbacks e leads por UTM.
+- O bloco do admin foi alinhado para "Diagnostico do funil" com mensagens acionaveis por etapa.
+- Tracking e UTMs foram revisados: eventos principais existem e UTMs sao preservadas no lead e no checkout.
+- `docs/tracking.md` foi atualizado com os eventos atuais do funil.
+- `docs/pre-ads-final-checklist.md` agora aponta para os documentos operacionais da campanha.
+
+Metricas a acompanhar:
+
+- visitas, leads, custo por lead, cadastros, custo por cadastro, onboarding concluido, primeira resposta gerada, checkout iniciado, assinatura ativa, feedbacks, bugs, origem por UTM e campanha com melhor desempenho.
+
+Riscos conhecidos:
+
+- Visitantes e custos dependem de GA4, Meta Ads ou plataforma externa.
+- Custo por lead, cadastro, checkout e assinatura precisa ser calculado manualmente usando gasto externo e totais do admin.
+- Demo usada no admin depende de eventos internos persistidos; se GA4/Meta forem a fonte principal, validar tambem fora do app.
+- Ainda nao ha validacao real da campanha com trafego pago nesta sessao.
+
+Recomendacao atualizada:
+
+Pode preparar e rodar uma campanha pequena somente depois de `docs/pre-ads-final-checklist.md` verde no ambiente final. Pausar imediatamente se checkout, lead, cadastro, IA, webhook, pagina principal ou tracking quebrarem. Nao aumentar orcamento antes de preencher `docs/first-campaign-report.md` e passar por `docs/scale-ads-checklist.md`.
+
+Nota estimada mantida: 96/100 ate haver dados reais da primeira campanha.

@@ -152,10 +152,11 @@ function buildInterpretation(metrics: {
   difficultyFeedbacks: number;
 }) {
   if (metrics.totalLeads < 5 && metrics.totalSignups < 3) return "Sem dados suficientes para conclusao.";
-  if (metrics.totalLeads >= 5 && percent(metrics.totalSignups, metrics.totalLeads) < 10) return "Atencao: muitos leads, mas poucos cadastros.";
-  if (metrics.totalSignups >= 3 && percent(metrics.onboardingCompleted, metrics.totalSignups) < 30) return "Atencao: cadastros existem, mas o onboarding esta travando.";
-  if (metrics.onboardingCompleted >= 3 && percent(metrics.firstResponseGenerated, metrics.onboardingCompleted) < 40) return "Atencao: usuarios concluem onboarding, mas nao chegam na primeira resposta.";
-  if (metrics.checkoutStarted >= 2 && metrics.activeSubscriptions === 0) return "Risco: checkouts iniciados sem assinatura concluida.";
+  if (metrics.totalLeads >= 5 && percent(metrics.totalSignups, metrics.totalLeads) < 10) return "Gargalo provavel: lead para cadastro. Revise pagina de obrigado, CTA e proposta de valor.";
+  if (metrics.totalSignups >= 3 && percent(metrics.onboardingCompleted, metrics.totalSignups) < 30) return "Gargalo provavel: onboarding. Revise clareza e numero de campos.";
+  if (metrics.onboardingCompleted >= 3 && percent(metrics.firstResponseGenerated, metrics.onboardingCompleted) < 40) return "Gargalo provavel: primeira experiencia no dashboard. Destaque melhor o campo de geracao.";
+  if (metrics.firstResponseGenerated >= 3 && metrics.checkoutStarted === 0) return "Gargalo provavel: oferta, pricing ou CTA para plano.";
+  if (metrics.checkoutStarted >= 2 && metrics.activeSubscriptions === 0) return "Gargalo provavel: preco, confianca ou checkout.";
   if (metrics.difficultyFeedbacks > 0 && metrics.difficultyFeedbacks >= Math.max(2, Math.ceil(metrics.totalSignups * 0.25))) return "Risco: feedbacks indicam dificuldade de uso.";
   if (metrics.onboardingCompleted > 0 && metrics.firstResponseGenerated > 0) return "Boa ativacao: usuarios estao concluindo onboarding e gerando respostas.";
   return "Acompanhar por mais dados antes de decidir.";

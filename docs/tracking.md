@@ -14,6 +14,11 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 ## Eventos rastreados
 
 - `page_view`: mudanca de rota no App Router.
+- `landing_view`: abertura da landing principal.
+- `campaign_view`: abertura da pagina direta de campanha.
+- `plan_click`: clique em um plano.
+- `demo_view`: abertura da demo publica.
+- `demo_response_success`: demo gerou resposta ou fallback controlado.
 - `ebook_view`: abertura da pagina `/ebook`.
 - `lead_submit`: envio do formulario do ebook.
 - `lead_success`: lead salvo com sucesso e chegada na pagina de obrigado.
@@ -28,7 +33,12 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `signup_completed`: cadastro criado.
 - `onboarding_started`: inicio do onboarding.
 - `onboarding_completed`: onboarding finalizado.
+- `first_response_generated`: primeira resposta gerada no dashboard.
 - `subscription_active`: dashboard carregado com assinatura ativa.
+- `feedback_submit`: envio de feedback.
+- `feedback_success`: feedback salvo.
+- `feedback_error`: falha ao salvar feedback.
+- `feedback_cta_click`: clique em CTA para feedback.
 
 ## Mapeamento externo
 
@@ -39,6 +49,7 @@ Meta Pixel recebe:
 - `PageView` para page views.
 - `ViewContent` em `ebook_view`.
 - `Lead` em `lead_success`.
+- `Lead` em `demo_response_success`.
 - `InitiateCheckout` em `checkout_started`.
 - `CompleteRegistration` em `signup_completed`.
 - `Subscribe` em `subscription_active`.

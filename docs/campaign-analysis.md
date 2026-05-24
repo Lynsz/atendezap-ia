@@ -140,3 +140,17 @@ Processo recomendado:
 5. Escolher uma melhoria pequena P0 ou P1 antes de aumentar anuncios.
 
 Se a amostra ainda for baixa, registrar "dados insuficientes" e manter o orcamento baixo ate haver sinal real.
+
+## Primeira campanha paga
+
+Use estes documentos para operar a primeira campanha de baixo orcamento:
+
+- `docs/first-paid-campaign-plan.md`: plano, publico, rotas, eventos e decisao esperada.
+- `docs/first-campaign-daily-checklist.md`: rotina diaria de anuncios, site, funil, produto e tecnico.
+- `docs/first-campaign-report.md`: modelo para consolidar resultados, taxas, custos, gargalos, bugs e decisao final.
+- `docs/campaign-utm-links.md`: modelos de links com UTM usando `SEU-DOMINIO`.
+- `docs/ads-pause-criteria.md`: criterio para pausar, ajustar ou continuar com cautela.
+- `docs/scale-ads-checklist.md`: checklist antes de aumentar orcamento.
+- `docs/tracking-setup.md`: setup e validacao de eventos/UTMs antes da campanha.
+
+O bloco "Diagnostico do funil" no admin e uma triagem inicial. A decisao final deve combinar dados do admin, gasto da plataforma de anuncios, feedbacks, logs e testes manuais do fluxo critico.

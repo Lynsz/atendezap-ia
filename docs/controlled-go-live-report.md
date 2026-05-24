@@ -76,3 +76,12 @@ Classificações possíveis:
 - Melhorias aplicadas: CTA da demo mais claro para criar conta e salvar respostas; dashboard mostra CTA de feedback apos resposta gerada; copy reforca que a IA gera sugestoes para copiar, ajustar e enviar manualmente.
 - Documentacao criada: `docs/post-go-live-fixes.md` e `docs/pre-ads-final-checklist.md`.
 - Recomendacao atual: executar uma nova rodada com 3 a 5 usuarios reais antes de ligar anuncios pequenos. Anuncios pequenos devem depender do checklist pre-anuncio final, ausencia de P0/P1 e validacao real de checkout, webhook, e-mail, IA, tracking, admin e mobile.
+
+## Preparacao da primeira campanha paga - 2026-05-24
+
+- Status: estrutura operacional criada para acompanhar campanha pequena de baixo orcamento.
+- Documentos criados: `docs/first-paid-campaign-plan.md`, `docs/first-campaign-daily-checklist.md`, `docs/first-campaign-report.md`, `docs/campaign-utm-links.md`, `docs/ads-pause-criteria.md`, `docs/scale-ads-checklist.md` e `docs/tracking-setup.md`.
+- Admin: usar o relatorio de campanha para acompanhar leads, cadastros, onboarding, primeira resposta, checkout, assinatura, feedbacks e UTMs.
+- Diagnostico do funil: usar o bloco do admin como triagem inicial, sem tratar como decisao automatica.
+- Pendencias externas: configurar GA4/Meta, validar Pixel, informar gasto da campanha manualmente, conferir Stripe/Supabase/Resend/OpenAI no ambiente final e preencher o relatorio com dados reais.
+- Recomendacao: ligar apenas campanha pequena apos checklist final verde. Pausar se houver checkout quebrado, lead sem salvar, cadastro quebrado, IA falhando, webhook sem liberar assinatura, erro 500 em pagina principal ou custo consumindo sem tracking.

@@ -49,6 +49,7 @@ Use este checklist antes de liberar qualquer campanha com orcamento baixo. Se al
 ## Tracking
 
 - [ ] UTMs persistem entre paginas
+- [ ] links da campanha usam `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` e `utm_term`
 - [ ] GA4 testado no dominio final, se configurado
 - [ ] Meta Pixel testado no dominio final, se configurado
 - [ ] `landing_view` testado
@@ -87,6 +88,12 @@ Use este checklist antes de liberar qualquer campanha com orcamento baixo. Se al
 - [ ] pelo menos 3 usuarios reais geraram primeira resposta
 - [ ] pelo menos 1 usuario demonstrou intencao real de uso ou pagamento
 - [ ] dados de tracking e admin sao suficientes para acompanhar a campanha
+- [ ] `docs/first-paid-campaign-plan.md` revisado
+- [ ] `docs/first-campaign-daily-checklist.md` pronto para uso diario
+- [ ] `docs/first-campaign-report.md` preparado para preencher resultados
+- [ ] `docs/ads-pause-criteria.md` revisado antes de ligar campanha
+- [ ] `docs/scale-ads-checklist.md` revisado antes de aumentar orcamento
+- [ ] `docs/tracking-setup.md` revisado antes de validar eventos e UTMs
 
 Resultado:
 

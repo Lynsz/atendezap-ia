@@ -377,19 +377,19 @@ function getLikelyBottleneck(report: CampaignReportPayload | null, metrics: Prod
     return "Ainda não há dados suficientes para conclusão.";
   }
   if (funnel.leads >= 5 && funnel.signups < Math.max(1, Math.ceil(funnel.leads * 0.15))) {
-    return "Gargalo provável: transição do lead para cadastro.";
+    return "Gargalo provável: lead para cadastro. Revise página de obrigado, CTA e proposta de valor.";
   }
   if (funnel.signups >= 3 && funnel.onboarding < Math.max(1, Math.ceil(funnel.signups * 0.4))) {
-    return "Gargalo provável: onboarding.";
+    return "Gargalo provável: onboarding. Revise clareza e número de campos.";
   }
   if (funnel.onboarding >= 3 && funnel.firstResponses < Math.max(1, Math.ceil(funnel.onboarding * 0.5))) {
-    return "Gargalo provável: primeira experiência no dashboard.";
+    return "Gargalo provável: primeira experiência no dashboard. Destaque melhor o campo de geração.";
   }
   if (funnel.firstResponses >= 3 && funnel.checkouts === 0) {
-    return "Gargalo provável: oferta, preço ou CTA.";
+    return "Gargalo provável: oferta, pricing ou CTA para plano.";
   }
   if (funnel.checkouts >= 2 && funnel.subscriptions === 0) {
-    return "Gargalo provável: checkout, preço ou confiança.";
+    return "Gargalo provável: preço, confiança ou checkout.";
   }
   return "Ainda não há dados suficientes para conclusão.";
 }
@@ -590,7 +590,7 @@ export default function AdminDashboardPage() {
         {error ? <div className="mb-5 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">{error}</div> : null}
 
         <section className="mb-6 rounded-lg border border-amber-300/20 bg-amber-400/10 p-5 shadow-xl shadow-black/20">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-100">Possível gargalo atual</p>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-100">Diagnóstico do funil</p>
           <h2 className="mt-2 text-2xl font-black text-white">{likelyBottleneck}</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-amber-50/80">
             Regra simples baseada em leads, cadastros, onboarding, primeira resposta, checkout e assinatura. Use como triagem inicial antes de decidir a próxima melhoria.
