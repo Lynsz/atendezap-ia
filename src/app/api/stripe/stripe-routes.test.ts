@@ -315,6 +315,21 @@ describe("Stripe API routes", () => {
     expect(mocks.portalCreate).not.toHaveBeenCalled();
   });
 
+  it("retorna 401 quando portal nao tem usuario logado", async () => {
+    const { POST } = await import("./create-portal-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-portal-session", {
+        method: "POST"
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(body.error).toContain("login");
+    expect(mocks.portalCreate).not.toHaveBeenCalled();
+  });
+
   it("cria portal Stripe com retorno para assinatura quando existe customer", async () => {
     mocks.currentSubscription = {
       provider: "stripe",

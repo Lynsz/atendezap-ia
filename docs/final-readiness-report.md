@@ -28,6 +28,7 @@ Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de
 - Stripe checkout: API protegida sem sessao, valida plano, usa variaveis de price IDs, aplica cupom de primeiro mes no Pro quando elegivel e retorna para `/assinatura`.
 - Stripe webhook: rota publica para middleware, valida assinatura Stripe e trata eventos principais.
 - Portal Stripe: API protegida sem sessao, retorna erro controlado quando nao ha customer e usa `/assinatura` como return URL.
+- Stripe validacao automatizada: mocks cobrem checkout sem login, plano invalido, Starter, Pro, Premium, cupom Pro, webhook invalido, assinatura Pro com cupom, cancelamento, pagamento bem-sucedido/falho e portal sem/com customer.
 - Supabase: service role fica em codigo server-side; client usa apenas URL e anon key publicas.
 - Resend: ebook pode salvar lead mesmo se envio estiver indisponivel; entrega real depende de chave/remetente.
 - OpenAI: chave fica no backend; demo e geracao usam fallback/erro controlado.
@@ -146,3 +147,43 @@ Estrategia escolhida para o Pro: cupom Stripe.
 - `docs/stripe-setup.md` documenta produtos, prices, variaveis, webhook, Stripe CLI e teste manual.
 
 Status atualizado: pronto para teste real em Stripe test mode quando as variaveis externas, products, prices, coupon, webhook e Customer Portal estiverem configurados no ambiente final.
+
+## Validacao Stripe ponta a ponta - 2026-05-24
+
+Status: parcialmente validado e pronto para teste real em modo test.
+
+O fluxo Stripe foi revisado do botao ate o dashboard: `StripeCheckoutButton`, `/api/stripe/create-checkout-session`, `/api/stripe/webhook`, `/api/stripe/create-portal-session`, `src/services/stripe.ts`, mapeamento de planos, migrations Supabase, `/assinatura` e dashboard.
+
+O que esta validado por codigo/testes:
+
+- Checkout sem login retorna 401.
+- Plano invalido retorna 400.
+- Starter usa `STRIPE_PRICE_STARTER`.
+- Pro usa `STRIPE_PRICE_PRO`.
+- Premium usa `STRIPE_PRICE_PREMIUM`.
+- Cupom `STRIPE_PRO_FIRST_MONTH_COUPON_ID` aplica somente no Pro quando configurado.
+- Metadata inclui `user_id`, `plan`, `price_id` e UTMs.
+- `client_reference_id` usa `user_id`.
+- `success_url` e `cancel_url` retornam para `/assinatura`.
+- Webhook rejeita assinatura invalida.
+- Webhook mapeia price Pro e price promocional legado como `plan = "pro"`.
+- `customer.subscription.deleted` marca `canceled`.
+- `invoice.payment_failed` registra falha/pagamento pendente.
+- Portal sem customer retorna erro amigavel e portal com customer retorna para `/assinatura`.
+
+O que ainda depende de teste manual externo:
+
+- Rodar `npm run stripe:setup-products` com `STRIPE_SECRET_KEY` test real.
+- Copiar price IDs e cupom para `.env.local`.
+- Rodar `stripe listen` e configurar `STRIPE_WEBHOOK_SECRET`.
+- Assinar Starter, Pro e Premium em Stripe Checkout test mode.
+- Conferir eventos reais no Stripe CLI.
+- Confirmar linhas reais em `subscriptions` no Supabase.
+- Confirmar `/assinatura` e dashboard com usuario real apos webhook.
+
+Documentos criados:
+
+- `docs/stripe-validation-checklist.md`
+- `docs/stripe-validation-report.md`
+
+Nota estimada mantida: 96/100 ate a validacao real externa ser executada. A nota operacional pode subir para 97/100 depois de confirmar checkout, webhook, Supabase, portal e dashboard em Stripe test mode.

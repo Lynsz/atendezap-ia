@@ -27,7 +27,7 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
 
   async function handleClick() {
     setFeedback("");
-    if (disabled) return;
+    if (loading || disabled) return;
     const attribution = getAttribution();
     const funnel = attribution.funnel || (typeof window !== "undefined" && window.location.pathname.startsWith("/ebook") ? "ebook" : "pricing");
     trackEvent("plan_click", {

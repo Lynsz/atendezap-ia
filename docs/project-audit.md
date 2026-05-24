@@ -223,6 +223,7 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Smoke mobile em `/`, `/ebook`, `/ebook/obrigado`, `/demo`, `/precos`, `/login`, `/cadastro`, `/dashboard`, `/onboarding`, `/assinatura`, `/admin`, `/termos`, `/privacidade`.
 - Smoke API em `/api/health`, `/api/ai/generate-response`, `/api/stripe/create-checkout-session`, `/api/admin/overview`.
 - Testes automatizados de Stripe para checkout sem login, plano invalido, Starter, Pro com cupom, Premium, portal, webhook invalido, mapeamento do Pro promocional, cancelamento e pagamento falho.
+- Checklist e relatorio de validacao Stripe criados em `docs/stripe-validation-checklist.md` e `docs/stripe-validation-report.md`.
 - Testes automatizados da API de feedback para payload invalido, feedback publico, feedback autenticado e atualizacao admin.
 - Testes automatizados da API de metricas para agregados e bloqueio de usuario comum.
 
@@ -319,4 +320,18 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Documentacao local criada: `docs/stripe-local-test.md`, com setup de `.env.local`, execucao do script, webhook CLI, checkout dos tres planos e conferencia no Supabase/dashboard.
 - Testes revisados: cobertura de cupom apenas no Pro, mapeamento Pro com cupom como `plan = "pro"`, cancelamento e pagamento bem-sucedido/falho por webhook.
 - Pendencias externas restantes: rodar o script com chave Stripe test real, copiar IDs para `.env.local`, executar `stripe listen`, fazer checkout real dos tres planos, confirmar webhook no Supabase e repetir em Vercel Preview/Staging.
+- Nota estimada nova: 97/100.
+
+## Validacao ponta a ponta Stripe - 2026-05-24
+
+- Fluxo revisado: checkout, portal, webhook, mapeamento de planos, middleware, `/assinatura`, dashboard e migrations Supabase.
+- Variaveis esperadas confirmadas em `.env.example`: App URL, Stripe publishable/secret/webhook, price IDs, cupom Pro, Supabase URL/anon/service role e OpenAI.
+- Checkout segue protegido por auth: sem sessao retorna 401, plano invalido retorna 400, Starter/Pro/Premium usam price IDs server-side e Pro aplica cupom somente quando configurado.
+- `StripeCheckoutButton` revisado: mostra loading, desabilita durante carregamento, ignora clique duplo, mostra erro amigavel, redireciona para Stripe Checkout e nao contem secret key nem price IDs.
+- Webhook segue publico no middleware, usa raw body via `request.text()`, valida `STRIPE_WEBHOOK_SECRET`, rejeita assinatura invalida e trata checkout, subscription created/updated/deleted e invoices paid/failed.
+- Supabase revisado: migrations/schema tem `user_id`, `stripe_customer_id`, `stripe_subscription_id`, `subscription_status`, `plan`, `current_period_start`, `current_period_end`, `monthly_limit`, `usage_count` e `updated_at`.
+- `/assinatura` e dashboard leem assinatura real de `subscriptions`, mostram status/limite/uso/periodo, tratam cancelada/inativa como sem plano ativo e abrem Customer Portal quando ha customer Stripe.
+- Documentos criados: `docs/stripe-validation-checklist.md` e `docs/stripe-validation-report.md`.
+- Testes automatizados reforcados: portal sem login retorna 401, portal sem customer retorna erro amigavel, Pro com cupom continua `plan = "pro"`, cancelamento fica `canceled` e invoice falha/sucesso atualizam status de pagamento.
+- Status: pronto para executar validacao real com Stripe test mode, Stripe CLI e Supabase de teste; ainda nao validado de ponta a ponta com provedores reais neste ambiente.
 - Nota estimada nova: 97/100.
