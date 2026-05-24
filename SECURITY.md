@@ -151,6 +151,52 @@ Payloads grandes sao rejeitados antes de parsear JSON nas rotas sensiveis.
 - `SENTRY_AUTH_TOKEN`
 - tokens de usuario, cookies ou secrets de webhook
 
+## Protecao de variaveis de ambiente
+
+Arquivos `.env` com valores reais devem ficar fora do Git. O `.gitignore` cobre:
+
+- `.env`
+- `.env.local`
+- `.env.production`
+- `.env.development.local`
+- `.env.test.local`
+- `.env*.local`
+
+Somente `.env.example` deve ser versionado, sempre sem valores reais de chaves.
+
+Variaveis com prefixo `NEXT_PUBLIC_` entram no bundle do navegador. Use esse prefixo apenas para valores publicos, como `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `NEXT_PUBLIC_META_PIXEL_ID` e `NEXT_PUBLIC_SENTRY_DSN`.
+
+Nunca use `NEXT_PUBLIC_` em:
+
+- `OPENAI_API_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_RESTRICTED_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `RESEND_API_KEY`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `SENTRY_AUTH_TOKEN`
+- `KIWIFY_WEBHOOK_SECRET`
+
+Antes de commitar:
+
+```bash
+git status
+npm run check:secrets
+```
+
+Se um arquivo `.env` estiver rastreado, remova apenas do controle do Git e mantenha o arquivo local:
+
+```bash
+git rm --cached .env.local
+git rm --cached .env
+git rm --cached .env.production
+git rm --cached .env.development.local
+git rm --cached .env.test.local
+```
+
+Rotacione uma chave sempre que ela tiver sido exposta em commit, chat, issue, log, print, documentacao publica ou qualquer ambiente fora do provedor original. Remover a chave do Git depois da exposicao nao e suficiente.
+
 ## Como reportar erro interno
 
 Ao investigar um erro em producao:

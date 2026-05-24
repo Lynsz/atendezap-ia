@@ -48,14 +48,14 @@ Configure a URL:
 Se a Kiwify permitir segredo/header, configure:
 
 ```text
-KIWIFY_WEBHOOK_SECRET=um-segredo-forte
+KIWIFY_WEBHOOK_SECRET=
 ```
 
 O app aceita o segredo em:
 
 - `x-kiwify-webhook-secret`
 - `x-webhook-secret`
-- `Authorization: Bearer seu-segredo`
+- `Authorization: Bearer <segredo-configurado-na-env>`
 
 ## Nomes esperados no funil
 

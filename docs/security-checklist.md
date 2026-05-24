@@ -5,6 +5,8 @@
 - [ ] `OPENAI_API_KEY` nao aparece em Client Components.
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` nao aparece no navegador.
 - [ ] `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` nao usam `NEXT_PUBLIC_`.
+- [ ] `STRIPE_RESTRICTED_KEY`, se usada, fica somente no servidor.
+- [ ] Chaves Stripe reais existem apenas em `.env.local` ou na Vercel, nunca em codigo, docs, commits, prompts, issues ou logs.
 - [ ] Webhook Stripe valida assinatura.
 - [ ] Webhook Kiwify valida segredo quando `KIWIFY_WEBHOOK_SECRET` existe.
 - [ ] Admin bloqueia usuario comum no client e na API.
