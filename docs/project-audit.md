@@ -372,3 +372,13 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias externas restantes: criar projeto Vercel, preencher envs por ambiente, aplicar migrations Supabase, configurar webhook Stripe, validar Resend/OpenAI/tracking/admin em staging e depois repetir no dominio final.
 - Status: pronto para deploy staging; producao controlada somente apos checklist staging verde.
 - Nota estimada mantida: 97/100 ate validacao real na Vercel.
+
+## Validacao pos-deploy staging - 2026-05-24
+
+- Relatorio criado: `docs/staging-validation-report.md`.
+- Status real desta etapa: nao validado em staging publicado, porque a URL/projeto Vercel do AtendeZap IA nao foi encontrado no repositorio nem entre os projetos disponiveis pelo conector da Vercel nesta sessao.
+- Bugs reais de staging encontrados: nenhum confirmado sem acesso a URL/logs do deploy.
+- Bugs corrigidos: nenhuma correcao de runtime remoto aplicada; a revisao ficou limitada a documentacao, descoberta de projeto/URL e validacoes locais.
+- Pendencias externas restantes: informar URL staging, confirmar envs da Vercel, aplicar migrations Supabase staging, configurar Auth URLs, configurar webhook Stripe staging, validar Resend/OpenAI/tracking/admin e executar o checklist completo.
+- Recomendacao: ainda nao liberar primeiros usuarios. Liberar apenas para staging avancado quando a URL for fornecida e o checklist pos-deploy for executado de ponta a ponta.
+- Nota operacional estimada: 96/100 ate validar o ambiente Vercel real com provedores configurados.

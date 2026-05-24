@@ -286,3 +286,29 @@ O que ainda depende de teste externo:
 - Executar `docs/staging-vercel-checklist.md` completo.
 
 Nota estimada mantida: 96/100 ate validar staging real. Com staging Vercel verde e provedores reais testados, a nota operacional pode subir para 97/100.
+
+## Validacao pos-deploy staging - 2026-05-24
+
+Status: nao validado em staging publicado nesta sessao.
+
+Foi criado `docs/staging-validation-report.md` para registrar a validacao pos-deploy. A URL real da Vercel nao foi encontrada no repositorio e o conector Vercel disponivel nao listou um projeto AtendeZap IA, portanto nao houve teste remoto de paginas, auth, Stripe, webhook, Supabase, Resend, OpenAI, tracking, admin ou mobile.
+
+O que foi validado nesta etapa:
+
+- Documentos obrigatorios de deploy foram revisados.
+- Busca local confirmou que nao ha URL real de staging versionada; apenas placeholders/documentacao.
+- `/api/health` continua simples e sem dados sensiveis.
+- Middleware mantem `/api/stripe/webhook` e `/api/health` como rotas publicas.
+- Validacoes locais foram executadas para reduzir risco antes do proximo deploy.
+
+Pendencias externas:
+
+- Informar a URL de staging ou vincular o projeto correto na Vercel.
+- Confirmar `NEXT_PUBLIC_APP_URL` no ambiente Preview/Staging.
+- Confirmar envs reais na Vercel sem colocar valores no codigo.
+- Executar `docs/staging-vercel-checklist.md` no deploy publicado.
+- Registrar bugs reais encontrados no ambiente publicado antes de liberar usuarios.
+
+Recomendacao: ainda nao liberar primeiros usuarios. Avancar para staging validado assim que a URL/projeto Vercel estiver acessivel.
+
+Nota estimada mantida: 96/100 ate a validacao real do staging.

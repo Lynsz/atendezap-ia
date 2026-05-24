@@ -95,3 +95,11 @@
 - Documentos criados: `docs/vercel-deploy.md`, `docs/supabase-vercel.md`, `docs/staging-vercel-checklist.md` e `docs/deploy-troubleshooting.md`.
 - Auditoria: `NEXT_PUBLIC_APP_URL`, middleware, health check, Stripe webhook/redirects, Supabase, Resend, OpenAI, tracking e Sentry opcional revisados.
 - Criterio atualizado: promover para producao controlada somente apos `docs/staging-vercel-checklist.md` verde com Supabase, Stripe, Resend, OpenAI, admin e mobile validados.
+
+## Validacao pos-deploy staging - 2026-05-24
+
+- Status: nao validado em Vercel staging real nesta sessao.
+- Relatorio: `docs/staging-validation-report.md`.
+- Bloqueio: URL/projeto Vercel do AtendeZap IA nao foi encontrado no repositorio nem no conector Vercel disponivel.
+- Bugs reais confirmados: nenhum, por falta de acesso ao ambiente publicado.
+- Recomendacao: manter como release candidate para staging avancado; nao promover para primeiros usuarios ate executar o checklist completo na URL publicada.
