@@ -164,7 +164,7 @@ https://SEU-DOMINIO/api/stripe/webhook
 4. Configure `EMAIL_FROM` com remetente validado.
 5. Envie um lead pelo ebook.
 6. Confirme recebimento do e-mail do guia.
-7. Confira `lead_email_events` ou o admin para status `sent`, `failed` ou `skipped`.
+7. Confira `lead_email_events` ou o admin para status `sent`, `failed` ou `skipped_not_configured`.
 
 ## 7. Configurar tracking
 

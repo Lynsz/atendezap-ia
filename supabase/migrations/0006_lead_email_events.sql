@@ -14,6 +14,7 @@ create table if not exists public.lead_email_events (
 
 create index if not exists lead_email_events_lead_id_idx on public.lead_email_events(lead_id);
 create index if not exists lead_email_events_email_idx on public.lead_email_events(email);
+create index if not exists lead_email_events_status_idx on public.lead_email_events(status);
 create index if not exists lead_email_events_created_at_idx on public.lead_email_events(created_at desc);
 
 alter table public.lead_email_events enable row level security;
@@ -25,4 +26,4 @@ revoke all on public.lead_email_events from anon, authenticated;
 
 comment on table public.lead_email_events is 'Registro operacional de envios de e-mail para leads do funil de ebook.';
 comment on column public.lead_email_events.event_type is 'Tipo de e-mail planejado/enviado, por exemplo ebook_delivery.';
-comment on column public.lead_email_events.status is 'Status controlado do envio: sent, skipped, failed ou pending.';
+comment on column public.lead_email_events.status is 'Status controlado do envio: sent, failed, skipped_not_configured ou pending.';

@@ -40,7 +40,7 @@ Use este guia nos primeiros dias de producao controlada. A prioridade e encontra
 - Lead foi salvo, mas nao ha registro de envio bem-sucedido.
 - Resend mostra erro de remetente, dominio, API key ou entrega.
 - O usuario nao recebeu o e-mail e confirmou spam/lixo eletronico.
-- O admin mostra status de e-mail `failed` ou `skipped`.
+- O admin mostra status de e-mail `failed` ou `skipped_not_configured`.
 
 ## Alertas manuais importantes
 

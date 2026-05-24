@@ -11,7 +11,7 @@ Use este checklist para liberar o AtendeZap IA para poucos usuarios antes de anu
 - [ ] Stripe testado em modo test.
 - [ ] Webhook Stripe assinado testado.
 - [ ] Portal Stripe testado.
-- [ ] Resend testado ou status `skipped` documentado.
+- [ ] Resend testado ou status `skipped_not_configured` documentado.
 - [ ] OpenAI testado com limite de custo.
 - [ ] Admin testado com usuario admin e comum.
 - [ ] Tracking testado com UTMs.

@@ -347,3 +347,16 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Documentos criados: `docs/supabase-security.md` e `docs/supabase-production-checklist.md`.
 - Pendencias externas restantes: aplicar migrations no Supabase real/staging, conferir policies/grants no painel, testar usuario A vs usuario B, validar admin comum/admin real e confirmar Auth URLs/Redirect URLs.
 - Nota estimada mantida: 97/100; pode subir apos teste manual de RLS e isolamento no Supabase real.
+
+## Resend e funil de e-mail do ebook - 2026-05-24
+
+- Fluxo auditado: `/ebook`, `EbookLeadForm`, `/api/ebook-lead`, `src/lib/email.ts`, `src/lib/resend.ts`, `/ebook/obrigado`, `/ebook/guia`, admin overview, `ebook_leads` e `lead_email_events`.
+- API de lead reforcada: o lead precisa ser salvo no Supabase antes da tentativa de envio; se o Supabase falhar, retorna erro amigavel e nao tenta enviar e-mail.
+- Resend reforcado: `RESEND_API_KEY` e `EMAIL_FROM` sao validados no servidor; quando faltam, o lead continua salvo e o evento usa `status = skipped_not_configured`.
+- Template do ebook revisado: assunto `Seu guia gratuito do AtendeZap IA esta aqui`, CTA principal para `/ebook/guia`, CTA secundario para `/demo`, links absolutos com `NEXT_PUBLIC_APP_URL` e aviso de solicitacao do guia.
+- Admin revisado: lista de leads mostra status do envio, data/evento e erro resumido; metricas agora separam enviados, falhas e Resend nao configurado.
+- Schema/migrations: `lead_email_events` recebeu indice seguro por `status` via `0010_lead_email_events_status_index.sql`; nenhuma tabela foi removida ou duplicada.
+- Documentos criados/atualizados: `docs/resend-setup.md`, `docs/email-funnel-checklist.md` e `docs/emails.md`.
+- Testes adicionados/reforcados: validacao de lead, UTMs, Resend ausente, falha/sucesso de envio, falha ao salvar lead, template de e-mail e CTAs de obrigado/guia.
+- Pendencias externas restantes: configurar dominio/remetente no Resend, preencher envs em staging/Vercel, enviar lead real e confirmar `lead_email_events` no Supabase.
+- Nota estimada mantida: 97/100; pode subir apos teste real de entrega Resend em staging.

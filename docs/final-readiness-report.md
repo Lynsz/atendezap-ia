@@ -219,3 +219,38 @@ Documentos criados:
 - `docs/supabase-production-checklist.md`
 
 Nota estimada mantida: 96/100 ate validar RLS e isolamento no Supabase real. Com Stripe test mode e Supabase staging validados de ponta a ponta, a nota operacional pode subir para 97/100.
+
+## Resend e funil do ebook - 2026-05-24
+
+Status: validado por codigo/testes e pronto para teste real com Resend em staging.
+
+O fluxo do ebook foi revisado de ponta a ponta: pagina `/ebook`, formulario, API `/api/ebook-lead`, Supabase, Resend, `lead_email_events`, pagina `/ebook/obrigado`, guia `/ebook/guia` e admin.
+
+O que esta validado por codigo/testes:
+
+- Lead sem nome, sem e-mail ou com e-mail invalido retorna 400.
+- Lead valido e salvo em `ebook_leads`.
+- UTMs sao preservadas.
+- Resend ausente ou `EMAIL_FROM` ausente nao quebra o funil e registra `skipped_not_configured`.
+- Falha do Resend registra `failed` sem perder o lead.
+- Sucesso do Resend registra `sent` com id do provider.
+- Falha ao salvar lead retorna erro amigavel e nao tenta enviar e-mail.
+- Obrigado mostra acesso imediato ao guia, demo, planos/cadastro e Pro por R$ 29 no primeiro mes.
+- Guia abre sem login e tem CTAs para demo, cadastro, planos, termos e privacidade.
+- Admin mostra status, data/evento e erro resumido do envio.
+
+O que ainda depende de teste manual externo:
+
+- Configurar remetente/dominio no Resend.
+- Preencher `RESEND_API_KEY`, `EMAIL_FROM` e `NEXT_PUBLIC_APP_URL` em staging/Vercel.
+- Enviar lead real pelo formulario.
+- Confirmar recebimento do e-mail.
+- Confirmar eventos `sent`, `failed` e `skipped_not_configured` no Supabase/admin.
+
+Documentos criados/atualizados:
+
+- `docs/resend-setup.md`
+- `docs/email-funnel-checklist.md`
+- `docs/emails.md`
+
+Nota estimada mantida: 96/100 ate validar entrega real no Resend. Com Resend, Stripe e Supabase staging validados, a nota operacional pode subir para 97/100.

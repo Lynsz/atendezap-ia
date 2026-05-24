@@ -32,7 +32,7 @@
 - Aplicar Supabase staging e validar RLS com dois usuarios reais.
 - Validar cadastro/login/dashboard com Supabase staging.
 - Validar Stripe test mode de ponta a ponta: checkout, webhook assinado, plano ativo, portal e cancelamento.
-- Validar Resend com remetente real ou registrar explicitamente status `skipped` antes de liberar usuarios.
+- Validar Resend com remetente real ou registrar explicitamente status `skipped_not_configured` antes de liberar usuarios.
 - Validar OpenAI com limite de custo e modelo configurado.
 - Validar admin com usuario admin e usuario comum.
 - Executar rotina operacional de producao controlada: monitoramento diario, suporte minimo e rollback documentado.

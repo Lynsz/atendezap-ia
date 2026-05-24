@@ -39,6 +39,7 @@ type EmailEventRow = {
   event_type: string;
   subject: string;
   sent_at: string | null;
+  error: string | null;
   created_at: string;
 };
 
@@ -152,6 +153,7 @@ export async function GET(request: Request) {
       subscriptionsResult,
       sentEmailEventsResult,
       failedEmailEventsResult,
+      skippedEmailEventsResult,
       allLeadEmailsResult,
       monthlyUsageResult,
       feedbackResult
@@ -167,6 +169,7 @@ export async function GET(request: Request) {
         .limit(200),
       supabase.from("lead_email_events").select("id", { count: "exact", head: true }).eq("status", "sent"),
       supabase.from("lead_email_events").select("id", { count: "exact", head: true }).eq("status", "failed"),
+      supabase.from("lead_email_events").select("id", { count: "exact", head: true }).eq("status", "skipped_not_configured"),
       supabase.from("ebook_leads").select("email"),
       supabase.from("generated_responses").select("user_id, created_at").gte("created_at", getCurrentMonthStart()).limit(5000),
       supabase.from("user_feedback").select("id, user_id, name, email, type, message, page, source, context, campaign, status, created_at").order("created_at", { ascending: false }).limit(50)
@@ -224,7 +227,7 @@ export async function GET(request: Request) {
     if (leadIds.length) {
       const { data: eventsData } = await supabase
         .from("lead_email_events")
-        .select("lead_id, email, status, event_type, subject, sent_at, created_at")
+        .select("lead_id, email, status, event_type, subject, sent_at, error, created_at")
         .in("lead_id", leadIds)
         .order("created_at", { ascending: false })
         .limit(500);
@@ -243,7 +246,10 @@ export async function GET(request: Request) {
       return {
         ...lead,
         email_status: latestEmailEvent?.status || "sem_registro",
-        email_sent_at: latestEmailEvent?.sent_at || null
+        email_sent_at: latestEmailEvent?.sent_at || null,
+        email_event_type: latestEmailEvent?.event_type || null,
+        email_event_created_at: latestEmailEvent?.created_at || null,
+        email_error: latestEmailEvent?.error || null
       };
     });
 
@@ -273,6 +279,7 @@ export async function GET(request: Request) {
         mostUsedPlan,
         emailSentSuccess: sentEmailEventsResult.count || 0,
         emailSentFailed: failedEmailEventsResult.count || 0,
+        emailSkippedNotConfigured: skippedEmailEventsResult.count || 0,
         leadToSignupRate: percent(signedUpLeadCount, totalLeads),
         signupToSubscriptionRate: percent(activeSubscriptionCount, totalUsers),
         leadToSubscriptionRate: percent(activeSubscriptionCount, totalLeads)

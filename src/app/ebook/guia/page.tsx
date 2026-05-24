@@ -1,6 +1,7 @@
 import { ArrowRight, CheckCircle2, MessageCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
+import Link from "next/link";
 
 export const metadata = {
   title: "Como responder clientes mais rápido no WhatsApp usando IA",
@@ -90,6 +91,9 @@ export default function EbookGuidePage() {
               Um guia prático para autônomos, prestadores de serviço e pequenos negócios que querem responder com mais clareza, velocidade e consistência.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button href="/demo" className="bg-emerald-600 text-white hover:bg-emerald-700">
+                Testar demo
+              </Button>
               <Button href="/precos">
                 Conhecer o AtendeZap IA
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -212,12 +216,23 @@ export default function EbookGuidePage() {
             Plano Pro com primeiro mês por R$ 29 para novos usuários.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Button href="/demo" className="bg-white text-slate-950 hover:bg-slate-100">
+              Testar demo
+            </Button>
             <Button href="/cadastro" className="bg-emerald-400 text-slate-950 hover:bg-emerald-300">
               Criar minha conta
             </Button>
             <Button href="/precos" variant="ghost">
               Ver planos
             </Button>
+          </div>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-slate-500">
+            <Link href="/termos" className="hover:text-emerald-200">
+              Termos de Uso
+            </Link>
+            <Link href="/privacidade" className="hover:text-emerald-200">
+              Politica de Privacidade
+            </Link>
           </div>
         </div>
       </section>

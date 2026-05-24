@@ -247,6 +247,7 @@ create index if not exists ebook_leads_created_at_idx on public.ebook_leads(crea
 create index if not exists ebook_leads_utm_campaign_idx on public.ebook_leads(utm_campaign) where utm_campaign is not null;
 create index if not exists lead_email_events_lead_id_idx on public.lead_email_events(lead_id);
 create index if not exists lead_email_events_email_idx on public.lead_email_events(email);
+create index if not exists lead_email_events_status_idx on public.lead_email_events(status);
 create index if not exists lead_email_events_created_at_idx on public.lead_email_events(created_at desc);
 create index if not exists user_feedback_user_id_idx on public.user_feedback(user_id);
 create index if not exists user_feedback_status_idx on public.user_feedback(status);

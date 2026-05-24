@@ -101,7 +101,7 @@ Use este roteiro antes do deploy real e antes de ligar tráfego pago. Marque cad
 - [ ] Confirmar que o app funciona sem `NEXT_PUBLIC_META_PIXEL_ID`.
 - [ ] Confirmar eventos `ebook_view`, `lead_submit`, `lead_success`, `thank_you_view`, `pricing_view`, `checkout_click`, `checkout_started`, `signup_completed`, `onboarding_completed`.
 - [ ] Confirmar e-mail do ebook com `RESEND_API_KEY` e `EMAIL_FROM`.
-- [ ] Confirmar evento em `lead_email_events` com status `sent`, `failed` ou `skipped`.
+- [ ] Confirmar evento em `lead_email_events` com status `sent`, `failed` ou `skipped_not_configured`.
 - [ ] Confirmar `.env`, `.env.local`, `node_modules` e `.next` ignorados no Git.
 
 ## Build e regressão

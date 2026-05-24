@@ -22,6 +22,9 @@ type AdminLead = {
   created_at: string;
   email_status: string;
   email_sent_at: string | null;
+  email_event_type: string | null;
+  email_event_created_at: string | null;
+  email_error: string | null;
 };
 
 type AdminSubscription = {
@@ -67,6 +70,7 @@ type AdminPayload = {
     mostUsedPlan: string;
     emailSentSuccess: number;
     emailSentFailed: number;
+    emailSkippedNotConfigured: number;
     leadToSignupRate: number;
     signupToSubscriptionRate: number;
     leadToSubscriptionRate: number;
@@ -221,7 +225,7 @@ function statusClass(status?: string | null) {
   if (normalized === "failed" || normalized === "canceled") {
     return "border-red-400/30 bg-red-500/10 text-red-200";
   }
-  if (normalized === "pending" || normalized === "past_due" || normalized === "skipped") {
+  if (normalized === "pending" || normalized === "past_due" || normalized === "skipped" || normalized === "skipped_not_configured") {
     return "border-amber-400/30 bg-amber-400/10 text-amber-100";
   }
   return "border-slate-400/20 bg-white/[0.04] text-slate-300";
@@ -257,8 +261,20 @@ function csvEscape(value: string | number | null | undefined) {
   return `"${text.replace(/"/g, '""')}"`;
 }
 
+function emailStatusLabel(status?: string | null) {
+  const labels: Record<string, string> = {
+    sent: "Enviado",
+    failed: "Falhou",
+    skipped: "Sem Resend",
+    skipped_not_configured: "Resend nao configurado",
+    pending: "Pendente",
+    sem_registro: "Sem registro"
+  };
+  return labels[status || ""] || status || "Sem registro";
+}
+
 function exportLeadsCsv(leads: AdminLead[]) {
-  const headers = ["name", "email", "whatsapp", "business_type", "source", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "created_at"];
+  const headers = ["name", "email", "whatsapp", "business_type", "source", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "created_at", "email_status", "email_sent_at", "email_error"];
   const rows = leads.map((lead) =>
     [
       lead.name,
@@ -271,7 +287,10 @@ function exportLeadsCsv(leads: AdminLead[]) {
       lead.utm_campaign,
       lead.utm_content,
       lead.utm_term,
-      lead.created_at
+      lead.created_at,
+      lead.email_status,
+      lead.email_sent_at,
+      lead.email_error
     ]
       .map(csvEscape)
       .join(",")
@@ -588,6 +607,7 @@ export default function AdminDashboardPage() {
           <MetricCard label="Plano mais usado" value={metrics?.mostUsedPlan || "Sem dados"} icon={<BarChart3 className="h-5 w-5" />} />
           <MetricCard label="Ebooks enviados" value={metrics?.emailSentSuccess ?? 0} icon={<Mail className="h-5 w-5" />} />
           <MetricCard label="Falha no envio" value={metrics?.emailSentFailed ?? 0} icon={<Mail className="h-5 w-5" />} />
+          <MetricCard label="Resend nao configurado" value={metrics?.emailSkippedNotConfigured ?? 0} icon={<Mail className="h-5 w-5" />} />
           <MetricCard label="Feedbacks recentes" value={data?.feedback?.length ?? 0} icon={<MessageSquare className="h-5 w-5" />} />
           <MetricCard label="Lead -> cadastro" value={`${metrics?.leadToSignupRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
           <MetricCard label="Cadastro -> assinatura" value={`${metrics?.signupToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
@@ -911,7 +931,7 @@ export default function AdminDashboardPage() {
             <table className="min-w-[1100px] w-full border-separate border-spacing-0 text-left text-sm">
               <thead className="text-xs uppercase tracking-wide text-slate-500">
                 <tr>
-                  {["Nome", "E-mail", "WhatsApp", "Tipo", "Source", "UTM source", "UTM campaign", "Cadastro", "Ebook"].map((header) => (
+                  {["Nome", "E-mail", "WhatsApp", "Tipo", "Source", "UTM source", "UTM campaign", "Cadastro", "Ebook", "Detalhe envio"].map((header) => (
                     <th className="border-b border-white/10 px-3 py-3 font-black" key={header}>
                       {header}
                     </th>
@@ -931,13 +951,17 @@ export default function AdminDashboardPage() {
                       <td className="border-b border-white/10 px-3 py-3 text-slate-300">{lead.utm_campaign || "-"}</td>
                       <td className="border-b border-white/10 px-3 py-3 text-slate-300">{formatDate(lead.created_at)}</td>
                       <td className="border-b border-white/10 px-3 py-3">
-                        <span className={`rounded-full border px-2.5 py-1 text-xs font-black ${statusClass(lead.email_status)}`}>{lead.email_status}</span>
+                        <span className={`rounded-full border px-2.5 py-1 text-xs font-black ${statusClass(lead.email_status)}`}>{emailStatusLabel(lead.email_status)}</span>
+                      </td>
+                      <td className="border-b border-white/10 px-3 py-3 text-slate-300">
+                        <p>{lead.email_sent_at ? formatDate(lead.email_sent_at) : lead.email_event_created_at ? formatDate(lead.email_event_created_at) : "-"}</p>
+                        {lead.email_error ? <p className="mt-1 max-w-[260px] truncate text-xs font-bold text-amber-100" title={lead.email_error}>{lead.email_error}</p> : null}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td className="px-3 py-8 text-center text-slate-400" colSpan={9}>
+                    <td className="px-3 py-8 text-center text-slate-400" colSpan={10}>
                       Nenhum lead encontrado para os filtros atuais.
                     </td>
                   </tr>

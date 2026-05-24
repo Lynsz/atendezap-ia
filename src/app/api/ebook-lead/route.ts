@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { errorResponse } from "@/lib/errors";
+import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { sendEbookDeliveryEmail } from "@/lib/email";
 import { serverLog } from "@/lib/logger";
@@ -39,48 +39,44 @@ export async function POST(request: NextRequest) {
       route: "api:ebook-lead",
       limit: 8,
       windowMs: 10 * 60_000,
-      message: "Você enviou muitas solicitações rapidamente. Tente de novo em instantes."
+      message: "Voce enviou muitas solicitacoes rapidamente. Tente de novo em instantes."
     });
     const lead = await parseLead(request);
     const normalizedEmail = lead.email.toLowerCase();
-    let leadId: string | null = null;
-    let supabase: ReturnType<typeof getSupabaseAdmin> | null = null;
+    const supabase = getSupabaseAdmin();
 
-    try {
-      supabase = getSupabaseAdmin();
-      const { data, error } = await supabase
-        .from("ebook_leads")
-        .upsert(
-          {
-            name: lead.name,
-            email: normalizedEmail,
-            whatsapp: lead.whatsapp || null,
-            business_type: lead.business_type,
-            source: lead.source,
-            utm_source: lead.utm_source || null,
-            utm_medium: lead.utm_medium || null,
-            utm_campaign: lead.utm_campaign || null,
-            utm_content: lead.utm_content || null,
-            utm_term: lead.utm_term || null
-          },
-          { onConflict: "email" }
-        )
-        .select("id")
-        .single();
+    const { data, error: leadError } = await supabase
+      .from("ebook_leads")
+      .upsert(
+        {
+          name: lead.name,
+          email: normalizedEmail,
+          whatsapp: lead.whatsapp || null,
+          business_type: lead.business_type,
+          source: lead.source,
+          utm_source: lead.utm_source || null,
+          utm_medium: lead.utm_medium || null,
+          utm_campaign: lead.utm_campaign || null,
+          utm_content: lead.utm_content || null,
+          utm_term: lead.utm_term || null
+        },
+        { onConflict: "email" }
+      )
+      .select("id")
+      .single();
 
-      if (error) throw error;
-      leadId = (data?.id as string | undefined) || null;
-    } catch (error) {
-      console.error("Falha ao salvar lead do ebook:", error instanceof Error ? error.message : "unknown");
+    if (leadError) {
+      serverLog({ level: "error", event: "ebook_lead_save_failed", route: "/api/ebook-lead", error: leadError });
+      throw new AppError("Nao foi possivel liberar o guia agora. Tente novamente em instantes.", 500);
     }
 
+    const leadId = (data?.id as string | undefined) || null;
     const emailResult = await sendEbookDeliveryEmail({
       name: lead.name,
       email: normalizedEmail
     });
 
     try {
-      if (!supabase) supabase = getSupabaseAdmin();
       await supabase.from("lead_email_events").insert({
         lead_id: leadId,
         email: normalizedEmail,
@@ -90,7 +86,7 @@ export async function POST(request: NextRequest) {
         provider: emailResult.provider || "resend",
         provider_message_id: emailResult.providerMessageId || null,
         sent_at: emailResult.status === "sent" ? new Date().toISOString() : null,
-        error: emailResult.status === "failed" || emailResult.status === "skipped" ? emailResult.error || null : null
+        error: emailResult.status === "failed" || emailResult.status === "skipped_not_configured" ? emailResult.error || null : null
       });
     } catch (error) {
       console.error("Falha ao registrar envio do ebook:", error instanceof Error ? error.message : "unknown");
@@ -122,7 +118,7 @@ export async function POST(request: NextRequest) {
         message:
           emailResult.status === "sent"
             ? "Guia enviado para o seu e-mail."
-            : "Lead cadastrado. Você também pode acessar o guia na próxima página.",
+            : "Lead cadastrado. Voce tambem pode acessar o guia na proxima pagina.",
         emailStatus: emailResult.status
       });
     }
@@ -138,5 +134,5 @@ export async function POST(request: NextRequest) {
 }
 
 export function GET() {
-  return Response.json({ error: "Método não permitido. Use POST." }, { status: 405 });
+  return Response.json({ error: "Metodo nao permitido. Use POST." }, { status: 405 });
 }
