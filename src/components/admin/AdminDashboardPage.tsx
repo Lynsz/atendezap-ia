@@ -373,7 +373,13 @@ function getLikelyBottleneck(report: CampaignReportPayload | null, metrics: Prod
         }
       : null;
 
-  if (!funnel || (funnel.leads < 5 && funnel.signups < 3)) {
+  if (!funnel) {
+    return "Ainda não há dados suficientes para conclusão.";
+  }
+  if (funnel.leads === 0 && funnel.signups === 0) {
+    return "Poucos leads: revise criativo, público ou landing.";
+  }
+  if (funnel.leads < 5 && funnel.signups < 3) {
     return "Ainda não há dados suficientes para conclusão.";
   }
   if (funnel.leads >= 5 && funnel.signups < Math.max(1, Math.ceil(funnel.leads * 0.15))) {

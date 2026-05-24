@@ -26,7 +26,7 @@ Use este roteiro antes do deploy real e antes de ligar tráfego pago. Marque cad
 - [ ] Enviar muitas requisições para `/api/demo/generate-response` e confirmar bloqueio amigável por rate limit.
 - [ ] Testar demo sem `OPENAI_API_KEY` e confirmar resposta simulada sem quebra.
 - [ ] Clicar nos CTAs da demo para cadastro e preços.
-- [ ] Confirmar eventos `demo_view`, `demo_example_click`, `demo_generate_click`, `demo_response_success`, `demo_response_error`, `demo_signup_cta_click` e `demo_pricing_cta_click`.
+- [ ] Confirmar eventos `demo_view`, `demo_example_click`, `demo_generate_click`, `demo_response_success`, `demo_response_error`, `demo_signup_cta_click`, `demo_pricing_cta_click` e `demo_ebook_cta_click`.
 
 - [ ] Abrir `/` e confirmar CTAs para ebook, preços, login e cadastro.
 - [ ] Abrir `/ebook?utm_source=meta&utm_medium=cpc&utm_campaign=qa_final`.

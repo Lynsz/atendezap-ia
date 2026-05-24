@@ -77,6 +77,15 @@ Ao final da campanha, decidir:
 - pausar anuncios
 - corrigir produto antes de investir mais
 
+## Analise apos a campanha
+
+Preencha `docs/first-campaign-report.md` com dados reais e use:
+
+- `docs/first-campaign-analysis.md` para consolidar numeros, taxas, gargalos, hipoteses e decisao.
+- `docs/funnel-diagnosis.md` para interpretar cada etapa do funil.
+- `docs/post-campaign-improvement-plan.md` para priorizar P0/P1 antes de novo trafego.
+- `docs/second-campaign-plan.md` para definir uma hipotese clara da segunda rodada.
+
 ## Regra de prudencia
 
 Nao aumentar orcamento se houver P0/P1 aberto, tracking quebrado, lead sem salvar, checkout instavel, webhook sem liberar plano ou IA sem gerar resposta.

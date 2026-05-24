@@ -25,6 +25,12 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `lead_error`: falha no envio do lead.
 - `thank_you_view`: abertura de `/ebook/obrigado`.
 - `thank_you_cta_click`: clique no CTA principal da pagina de obrigado.
+- `thank_you_demo_cta_click`: clique da pagina de obrigado para a demo.
+- `thank_you_signup_cta_click`: clique da pagina de obrigado para cadastro.
+- `thank_you_pricing_cta_click`: clique da pagina de obrigado para planos.
+- `demo_signup_cta_click`: clique da demo para cadastro.
+- `demo_pricing_cta_click`: clique da demo para planos.
+- `demo_ebook_cta_click`: clique da demo para o ebook.
 - `pricing_view`: visualizacao da area/pagina de planos.
 - `checkout_click`: clique em um plano.
 - `checkout_started`: sessao Stripe criada com sucesso.

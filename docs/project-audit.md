@@ -428,3 +428,14 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Riscos conhecidos: visitantes e custo por etapa dependem de GA4/Meta/plataforma externa; o app nao recebe gasto de midia automaticamente.
 - Recomendacao: rodar campanha pequena somente com checklist final verde; acompanhar diariamente e pausar se houver P0, tracking quebrado, lead sem salvar, IA sem gerar, checkout quebrado ou webhook sem liberar plano.
 - Nota operacional estimada mantida: 96/100 ate haver dados reais de campanha.
+
+## Analise pos-primeira campanha e segunda rodada - 2026-05-24
+
+- Status dos dados: sem numeros reais preenchidos nos relatorios atuais; a etapa ficou preparada para analise posterior e pequenas melhorias preventivas.
+- Documentos criados: `docs/first-campaign-analysis.md`, `docs/funnel-diagnosis.md`, `docs/post-campaign-improvement-plan.md` e `docs/second-campaign-plan.md`.
+- Documentos atualizados: `docs/first-campaign-report.md`, `docs/first-paid-campaign-plan.md`, `docs/ads-pause-criteria.md`, `docs/scale-ads-checklist.md`, `docs/tracking.md` e `docs/tracking-setup.md`.
+- Melhorias aplicadas: CTA pos-demo mais claro, evento `demo_ebook_cta_click`, pagina de obrigado com CTAs separados para demo/cadastro/planos e diagnostico do admin para poucos leads.
+- Admin revisado: metricas de campanha, filtros por UTM, subscriptions, feedbacks e diagnostico continuam simples e agregados; nao foi criado dashboard complexo.
+- Pendencias restantes: preencher relatorio da primeira campanha com dados reais, identificar gargalo principal, corrigir qualquer P0/P1 real e validar a hipotese antes de aumentar orcamento.
+- Recomendacao: rodar segunda campanha pequena somente com uma hipotese clara e tracking validado; nao aumentar orcamento sem dados suficientes.
+- Nota operacional estimada mantida: 96/100 ate haver resultados reais e checklist de escala verde.

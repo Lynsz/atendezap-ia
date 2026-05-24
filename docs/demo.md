@@ -62,6 +62,7 @@ Eventos usados na demo:
 - `demo_response_error`
 - `demo_signup_cta_click`
 - `demo_pricing_cta_click`
+- `demo_ebook_cta_click`
 
 Se GA4 ou Meta Pixel nao estiverem configurados, a camada de tracking funciona como no-op seguro e nao quebra a pagina.
 

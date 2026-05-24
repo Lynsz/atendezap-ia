@@ -43,3 +43,9 @@ Use este documento durante a primeira campanha pequena. A regra e preservar caix
 - P1 de ativacao/conversao: reduzir orcamento ou pausar, corrigir e retestar.
 - Dados insuficientes sem erro tecnico: manter baixo orcamento ate formar amostra minima.
 - Sinais positivos com feedback corrigivel: continuar com cautela e corrigir pequenos atritos.
+
+## Depois da primeira rodada
+
+- Se nao houver dados suficientes, nao aumentar orcamento; preencher `docs/first-campaign-analysis.md` e rodar nova hipotese pequena.
+- Se o gargalo principal estiver claro, corrigir P0/P1 em `docs/post-campaign-improvement-plan.md` antes de nova campanha.
+- Se o tracking estiver incompleto, pausar ate corrigir os eventos principais e UTMs.

@@ -49,6 +49,20 @@
 
 - item
 
+## Aprendizados
+
+- Sem dados reais preenchidos ainda.
+
+## Gargalos
+
+- Preencher depois de comparar visitantes, leads, cadastros, onboarding, primeira resposta, checkout e assinatura.
+
+## Mudancas para segunda rodada
+
+- CTA pos-demo separado em cadastro, planos e ebook.
+- Pagina de obrigado com CTAs rastreados para demo, cadastro e planos.
+- Diagnostico do admin destaca ausencia de leads como possivel problema de criativo, publico ou landing.
+
 ## Feedbacks dos usuarios
 
 - item
@@ -62,6 +76,7 @@
 - [ ] continuar
 - [ ] ajustar
 - [ ] pausar
+- [ ] ajustar e rodar nova campanha
 
 ## Proximas acoes
 

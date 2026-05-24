@@ -463,3 +463,30 @@ Recomendacao atualizada:
 Pode preparar e rodar uma campanha pequena somente depois de `docs/pre-ads-final-checklist.md` verde no ambiente final. Pausar imediatamente se checkout, lead, cadastro, IA, webhook, pagina principal ou tracking quebrarem. Nao aumentar orcamento antes de preencher `docs/first-campaign-report.md` e passar por `docs/scale-ads-checklist.md`.
 
 Nota estimada mantida: 96/100 ate haver dados reais da primeira campanha.
+
+## Analise pos-primeira campanha e segunda rodada - 2026-05-24
+
+Status: estrutura de analise criada, sem dados reais suficientes registrados nos documentos atuais.
+
+O que foi feito:
+
+- Criado `docs/first-campaign-analysis.md` para consolidar numeros, taxas, gargalos, hipoteses e decisao.
+- Criado `docs/funnel-diagnosis.md` para interpretar cada etapa do funil.
+- Criado `docs/post-campaign-improvement-plan.md` para priorizar P0/P1/P2/P3 antes de novo trafego.
+- Criado `docs/second-campaign-plan.md` para orientar uma segunda campanha com hipotese unica.
+- Demo pos-resposta recebeu copy mais direta e evento separado `demo_ebook_cta_click`.
+- Pagina de obrigado recebeu copy mais conectada ao produto e eventos separados `thank_you_demo_cta_click`, `thank_you_signup_cta_click` e `thank_you_pricing_cta_click`.
+- Admin/campaign report agora diferenciam ausencia de leads como sinal para revisar criativo, publico ou landing.
+
+Pendencias:
+
+- Preencher dados reais de visitantes, leads, cadastros, onboarding, primeira resposta, checkout e assinatura.
+- Validar GA4/Meta Ads com os eventos novos.
+- Comparar UTMs no admin antes de decidir canal, criativo ou rota vencedora.
+- Corrigir qualquer P0/P1 real antes da segunda campanha.
+
+Recomendacao atualizada:
+
+Nao aumentar orcamento ainda. O projeto esta preparado para aprender com a primeira campanha e rodar uma segunda campanha pequena, desde que o relatorio seja preenchido com dados reais e o checklist de escala continue sem bloqueadores.
+
+Nota estimada mantida: 96/100 ate haver dados reais de campanha e validacao de segunda rodada.

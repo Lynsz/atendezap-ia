@@ -36,7 +36,7 @@ export default function EbookThankYouPage() {
           <p className="mb-3 text-xs font-black uppercase tracking-[0.24em] text-emerald-300">Guia gratuito liberado</p>
           <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Seu guia gratuito está pronto.</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-300">
-            Enviamos o guia para o seu e-mail. Você também pode acessar agora pelo botão abaixo e depois ver como aplicar isso na prática com o AtendeZap IA.
+            Seu guia foi enviado. Agora você pode testar na prática como a IA cria respostas para clientes no WhatsApp.
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export default function EbookThankYouPage() {
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <TrackedLink
               href="/demo"
-              eventName="thank_you_cta_click"
+              eventName="thank_you_demo_cta_click"
               properties={{ cta: "testar_demo", funnel: "ebook" }}
               className="bg-white text-slate-950 hover:bg-slate-100 focus:ring-white"
             >
@@ -90,16 +90,21 @@ export default function EbookThankYouPage() {
             </TrackedLink>
             <TrackedLink
               href="/precos"
-              eventName="pricing_cta_click"
+              eventName="thank_you_pricing_cta_click"
               properties={{ cta: "conhecer_planos", funnel: "ebook" }}
               className="bg-emerald-400 text-slate-950 hover:bg-emerald-300 focus:ring-emerald-300"
             >
               Conhecer planos
               <ArrowRight className="ml-2 h-4 w-4" />
             </TrackedLink>
-            <Button href="/cadastro" variant="ghost">
+            <TrackedLink
+              href="/cadastro"
+              eventName="thank_you_signup_cta_click"
+              properties={{ cta: "criar_conta", funnel: "ebook" }}
+              className="border border-white/10 bg-white/10 text-white hover:bg-white/15 focus:ring-emerald-300"
+            >
               Criar minha conta
-            </Button>
+            </TrackedLink>
           </div>
         </div>
 

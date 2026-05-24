@@ -119,7 +119,7 @@ export function PublicDemo() {
   }
 
   function trackEbookCta() {
-    trackEvent("ebook_cta_click", { cta: "demo_ebook", source: "demo" });
+    trackEvent("demo_ebook_cta_click", { cta: "demo_ebook", source: "demo" });
   }
 
   return (
@@ -229,7 +229,7 @@ export function PublicDemo() {
                 {mode.includes("fallback") ? <p className="mt-3 text-xs font-bold text-slate-500">Modo local de demonstração: OpenAI não configurada neste ambiente.</p> : null}
                 <div className="mt-5 rounded-md border border-white/10 bg-white/[0.04] p-4">
                   <p className="text-sm font-bold leading-6 text-slate-200">
-                    Quer salvar respostas, configurar seu atendimento e usar todos os dias? Crie sua conta no AtendeZap IA.
+                    Essa foi só uma prévia. Com sua conta, você pode configurar seu atendimento, salvar histórico e gerar respostas mais alinhadas ao seu negócio.
                   </p>
                   <p className="mt-2 text-xs font-bold leading-5 text-slate-400">
                     A IA gera uma sugestao. Voce revisa, copia e envia manualmente pelo WhatsApp.
@@ -240,7 +240,7 @@ export function PublicDemo() {
                       onClick={trackSignupCta}
                       className="inline-flex min-h-11 items-center justify-center rounded-md bg-emerald-400 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2"
                     >
-                      Criar minha conta e salvar respostas
+                      Criar minha conta
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                     <Link

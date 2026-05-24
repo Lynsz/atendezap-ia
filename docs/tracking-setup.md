@@ -20,6 +20,9 @@ As variaveis sao opcionais e publicas. Se estiverem vazias, o app nao deve quebr
 - `lead_success`
 - `demo_view`
 - `demo_response_success`
+- `demo_signup_cta_click`
+- `demo_pricing_cta_click`
+- `demo_ebook_cta_click`
 - `signup_completed`
 - `onboarding_completed`
 - `first_response_generated`
@@ -27,6 +30,9 @@ As variaveis sao opcionais e publicas. Se estiverem vazias, o app nao deve quebr
 - `checkout_started`
 - `subscription_active`
 - `feedback_submit`
+- `thank_you_demo_cta_click`
+- `thank_you_signup_cta_click`
+- `thank_you_pricing_cta_click`
 
 ## UTMs obrigatorias nos links
 

@@ -151,6 +151,7 @@ function buildInterpretation(metrics: {
   activeSubscriptions: number;
   difficultyFeedbacks: number;
 }) {
+  if (metrics.totalLeads === 0 && metrics.totalSignups === 0) return "Poucos leads: revise criativo, publico ou landing.";
   if (metrics.totalLeads < 5 && metrics.totalSignups < 3) return "Sem dados suficientes para conclusao.";
   if (metrics.totalLeads >= 5 && percent(metrics.totalSignups, metrics.totalLeads) < 10) return "Gargalo provavel: lead para cadastro. Revise pagina de obrigado, CTA e proposta de valor.";
   if (metrics.totalSignups >= 3 && percent(metrics.onboardingCompleted, metrics.totalSignups) < 30) return "Gargalo provavel: onboarding. Revise clareza e numero de campos.";

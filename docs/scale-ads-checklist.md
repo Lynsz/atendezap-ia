@@ -45,3 +45,14 @@ Nao aumente orcamento enquanto este checklist nao estiver majoritariamente verde
 ## Limite recomendado
 
 Aumente aos poucos. Se a campanha pequena ainda nao gerou cadastros, onboarding e primeiras respostas com clareza, nao ha base suficiente para escalar.
+
+## Antes da segunda campanha
+
+- [ ] `docs/first-campaign-report.md` preenchido com numeros reais
+- [ ] `docs/first-campaign-analysis.md` atualizado
+- [ ] gargalo principal identificado ou classificado como dados insuficientes
+- [ ] P0 resolvido
+- [ ] P1 grave resolvido
+- [ ] hipotese da segunda campanha registrada em `docs/second-campaign-plan.md`
+- [ ] CTAs da demo e obrigado rastreados separadamente
+- [ ] admin conferido com UTMs e diagnostico do funil
