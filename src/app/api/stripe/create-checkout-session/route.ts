@@ -173,6 +173,7 @@ export async function POST(request: Request) {
         current_period_start: null,
         current_period_end: null,
         last_payment_status: "checkout_created",
+        updated_at: now,
         metadata: {
           provider: "stripe",
           checkout_session_id: checkoutSession.id,

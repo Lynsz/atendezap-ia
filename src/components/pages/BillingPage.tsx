@@ -316,6 +316,7 @@ function BillingContent() {
                     {plan.recommended ? <p className="mb-3 w-fit rounded-full bg-emerald-300 px-3 py-1 text-xs font-black text-slate-950">Mais recomendado</p> : null}
                     <h3 className="text-xl font-black text-white">{plan.name}</h3>
                     <p className="mt-2 text-3xl font-black text-emerald-300">{plan.firstMonthPriceLabel || plan.monthlyPriceLabel}</p>
+                    {plan.id === "pro" ? <p className="mt-2 text-sm font-black text-emerald-100">Primeiro mês por R$ 29 para novos usuários</p> : null}
                     {plan.recurringPriceLabel ? <p className="mt-1 text-xs font-bold text-slate-400">{plan.recurringPriceLabel}</p> : null}
                   </div>
 

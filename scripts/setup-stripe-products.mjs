@@ -1,4 +1,6 @@
 import Stripe from "stripe";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 const DEFAULTS = {
   currency: "brl",
@@ -31,6 +33,31 @@ const plans = [
     defaultAmountCents: DEFAULTS.premiumAmountCents
   }
 ];
+
+function loadEnvFile(fileName) {
+  const filePath = resolve(process.cwd(), fileName);
+  if (!existsSync(filePath)) return;
+
+  const content = readFileSync(filePath, "utf8");
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    const rawValue = trimmed.slice(separatorIndex + 1).trim();
+    if (!key || process.env[key]) continue;
+
+    process.env[key] = rawValue.replace(/^["']|["']$/g, "");
+  }
+}
+
+function loadLocalEnv() {
+  loadEnvFile(".env");
+  loadEnvFile(".env.local");
+}
 
 function requiredEnv(name) {
   const value = process.env[name]?.trim();
@@ -141,6 +168,8 @@ async function findOrCreateProFirstMonthCoupon(stripe, proAmountCents, firstMont
 }
 
 async function main() {
+  loadLocalEnv();
+
   const stripe = new Stripe(requiredEnv("STRIPE_SECRET_KEY"), {
     typescript: true
   });
@@ -164,6 +193,7 @@ async function main() {
   }
   console.log(`STRIPE_PRO_FIRST_MONTH_COUPON_ID=${coupon.id}`);
   console.log("\nSTRIPE_SECRET_KEY nao foi impresso. Rode primeiro em Stripe test mode.");
+  console.log("O script reutiliza produtos/precos/cupom quando encontra metadata compativel; revise o painel Stripe antes de rodar novamente com outros valores.");
 }
 
 main().catch((error) => {

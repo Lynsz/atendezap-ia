@@ -207,6 +207,7 @@ describe("Stripe API routes", () => {
         customer: "cus_test",
         client_reference_id: "11111111-1111-4111-8111-111111111111",
         line_items: [{ price: "price_starter", quantity: 1 }],
+        discounts: undefined,
         success_url: "https://app.example.com/assinatura?checkout=success",
         cancel_url: "https://app.example.com/assinatura?checkout=cancel",
         metadata: expect.objectContaining({
@@ -403,6 +404,51 @@ describe("Stripe API routes", () => {
     );
   });
 
+  it("mantem assinatura Pro com cupom como plan pro no webhook", async () => {
+    mocks.constructEvent.mockReturnValue({
+      id: "evt_subscription_pro_coupon",
+      type: "customer.subscription.updated",
+      data: {
+        object: {
+          id: "sub_pro_coupon",
+          status: "active",
+          customer: "cus_test",
+          metadata: {
+            user_id: "11111111-1111-4111-8111-111111111111",
+            plan: "pro",
+            first_month_offer_applied: "true"
+          },
+          items: { data: [{ price: { id: "price_pro" } }] },
+          cancel_at_period_end: false,
+          current_period_start: 1_700_000_000,
+          current_period_end: 1_702_592_000
+        }
+      }
+    });
+
+    const { POST } = await import("./webhook/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": "valid" },
+        body: "{}"
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.upsertSubscription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user_id: "11111111-1111-4111-8111-111111111111",
+        plan: "pro",
+        provider_price_id: "price_pro",
+        monthly_limit: 600,
+        first_month_price_applied: true,
+        promo_code: "stripe_pro_first_month_29"
+      }),
+      { onConflict: "user_id" }
+    );
+  });
+
   it("processa webhook sem user_id sem quebrar quando nao ha assinatura salva", async () => {
     mocks.constructEvent.mockReturnValue({
       id: "evt_missing_user",
@@ -516,6 +562,52 @@ describe("Stripe API routes", () => {
       expect.objectContaining({
         provider_payment_id: "pi_failed",
         last_payment_status: "failed"
+      })
+    );
+  });
+
+  it("marca invoice.payment_succeeded como pagamento bem sucedido", async () => {
+    mocks.constructEvent.mockReturnValue({
+      id: "evt_invoice_succeeded",
+      type: "invoice.payment_succeeded",
+      data: {
+        object: {
+          subscription: "sub_paid",
+          payment_intent: "pi_paid"
+        }
+      }
+    });
+    mocks.subscriptionRetrieve.mockResolvedValue({
+      id: "sub_paid",
+      status: "active",
+      customer: "cus_test",
+      metadata: { user_id: "11111111-1111-4111-8111-111111111111" },
+      items: { data: [{ price: { id: "price_pro" } }] },
+      cancel_at_period_end: false
+    });
+
+    const { POST } = await import("./webhook/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": "valid" },
+        body: "{}"
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.upsertSubscription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        plan: "pro",
+        status: "active",
+        last_payment_status: "succeeded"
+      }),
+      { onConflict: "user_id" }
+    );
+    expect(mocks.updateSubscription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        provider_payment_id: "pi_paid",
+        last_payment_status: "succeeded"
       })
     );
   });

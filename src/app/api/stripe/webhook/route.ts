@@ -99,6 +99,7 @@ async function updateSubscriptionFromStripe(
 
   const internalStatus = mapStripeSubscriptionStatus(subscription.status);
   const firstMonthOfferApplied = subscription.metadata.first_month_offer_applied === "true";
+  const now = new Date().toISOString();
 
   const { error } = await supabase.from("subscriptions").upsert(
     {
@@ -125,6 +126,7 @@ async function updateSubscriptionFromStripe(
       current_period_end: unixToIso(periodSubscription.current_period_end),
       cancel_at_period_end: subscription.cancel_at_period_end,
       last_payment_status: lastPaymentStatus || subscription.status,
+      updated_at: now,
       metadata: {
         provider: "stripe",
         last_stripe_event_id: eventId,
@@ -156,7 +158,8 @@ async function updateSubscriptionFromCheckoutSession(session: Stripe.Checkout.Se
       provider_customer_id: getStringId(session.customer),
       stripe_customer_id: getStringId(session.customer),
       stripe_subscription_id: subscription.id,
-      last_payment_status: session.payment_status || "checkout_completed"
+      last_payment_status: session.payment_status || "checkout_completed",
+      updated_at: new Date().toISOString()
     })
     .eq("provider", "stripe")
     .eq("provider_subscription_id", subscription.id);
@@ -177,7 +180,8 @@ async function updatePaymentStatusFromInvoice(invoice: Stripe.Invoice, eventId: 
       provider_payment_id: paymentId,
       stripe_event_id: eventId,
       subscription_status: stripeSubscription.status,
-      last_payment_status: paymentStatus
+      last_payment_status: paymentStatus,
+      updated_at: new Date().toISOString()
     })
     .eq("provider", "stripe")
     .eq("provider_subscription_id", subscriptionId);

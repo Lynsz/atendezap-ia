@@ -233,7 +233,7 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Supabase: aplicar migration de feedback e validar criacao publica/autenticada e leitura no admin.
 - Admin: validar `/api/admin/metrics` com usuario admin e usuario comum no ambiente real.
 - Admin: validar `/api/admin/campaign-report` com usuario admin e usuario comum no ambiente real.
-- Stripe: criar produtos, prices, cupom Pro, webhook staging e testar eventos em modo test seguindo `docs/stripe-staging.md`.
+- Stripe: rodar `npm run stripe:setup-products`, copiar price IDs/cupom para `.env.local`/Vercel, configurar webhook e validar eventos em modo test seguindo `docs/stripe-local-test.md` e `docs/stripe-staging.md`.
 - Resend: validar dominio/remetente e testar entrega real seguindo `docs/resend-staging.md`.
 - OpenAI: configurar chave/modelo de staging, testar dashboard/demo e monitorar custos seguindo `docs/openai-staging.md`.
 - GA4: configurar Measurement ID e validar eventos em staging.
@@ -308,3 +308,15 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Documentacao criada: `docs/stripe-setup.md`.
 - Status: pronto para teste real com Stripe test mode apos configurar products, prices, coupon, webhook, portal e envs no ambiente final.
 - Nota estimada nova: 96/100.
+
+## Stripe test mode local - 2026-05-24
+
+- Script revisado: `scripts/setup-stripe-products.mjs` cria ou reutiliza produtos `AtendeZap IA Starter`, `AtendeZap IA Pro` e `AtendeZap IA Premium`, prices mensais recorrentes em BRL e cupom Pro `duration=once`.
+- O script carrega `.env` e `.env.local`, usa `STRIPE_SECRET_KEY` somente em runtime local/servidor, imprime apenas `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_PREMIUM` e `STRIPE_PRO_FIRST_MONTH_COUPON_ID`, e nao imprime a secret key.
+- Checkout revisado: Starter usa `STRIPE_PRICE_STARTER`, Pro usa `STRIPE_PRICE_PRO` com cupom `STRIPE_PRO_FIRST_MONTH_COUPON_ID` quando elegivel, Premium usa `STRIPE_PRICE_PREMIUM`, e a metadata preserva `user_id`, `plan`, `price_id` e UTMs.
+- Webhook revisado: continua validando assinatura com raw body, trata checkout, subscription created/updated/deleted e invoices paid/failed, e atualiza campos de assinatura no Supabase incluindo `updated_at`.
+- `/assinatura` reforca a oferta "Primeiro mês por R$ 29 para novos usuários", le assinatura real no Supabase, mostra status, limite, uso mensal e portal Stripe.
+- Documentacao local criada: `docs/stripe-local-test.md`, com setup de `.env.local`, execucao do script, webhook CLI, checkout dos tres planos e conferencia no Supabase/dashboard.
+- Testes revisados: cobertura de cupom apenas no Pro, mapeamento Pro com cupom como `plan = "pro"`, cancelamento e pagamento bem-sucedido/falho por webhook.
+- Pendencias externas restantes: rodar o script com chave Stripe test real, copiar IDs para `.env.local`, executar `stripe listen`, fazer checkout real dos tres planos, confirmar webhook no Supabase e repetir em Vercel Preview/Staging.
+- Nota estimada nova: 97/100.
