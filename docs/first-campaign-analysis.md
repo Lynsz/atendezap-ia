@@ -48,6 +48,7 @@
 - Comparar UTMs no admin para identificar origem e campanha com melhor sinal.
 - Priorizar P0/P1 em `docs/post-campaign-improvement-plan.md` antes de nova rodada.
 - Rodar a segunda campanha com uma hipotese unica por vez.
+- Para a segunda campanha, comparar variacoes por `utm_content` usando `docs/second-campaign-utm-links.md`.
 
 ## Decisao
 
@@ -55,3 +56,10 @@
 - [ ] pausar
 - [x] ajustar e rodar nova campanha quando houver dados suficientes
 - [ ] corrigir produto antes de investir mais
+
+## Preparacao da segunda campanha
+
+- Rota dedicada revisada: `/atendimento-whatsapp-ia`.
+- Variações planejadas: demo, ebook, landing principal e Pro R$ 29.
+- CTAs de campanha rastreados com eventos `campaign_*`.
+- Admin passa a mostrar leads por criativo usando `utm_content`.

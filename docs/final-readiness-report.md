@@ -490,3 +490,39 @@ Recomendacao atualizada:
 Nao aumentar orcamento ainda. O projeto esta preparado para aprender com a primeira campanha e rodar uma segunda campanha pequena, desde que o relatorio seja preenchido com dados reais e o checklist de escala continue sem bloqueadores.
 
 Nota estimada mantida: 96/100 ate haver dados reais de campanha e validacao de segunda rodada.
+
+## Segunda campanha com variacoes controladas - 2026-05-24
+
+Status: preparada para execucao manual por UTM, sem sistema complexo de A/B testing.
+
+O que foi feito:
+
+- Criado `docs/second-campaign-execution.md`.
+- Criado `docs/second-campaign-utm-links.md`.
+- Criado `docs/second-campaign-creatives.md`.
+- Criado `docs/second-campaign-report.md`.
+- Criado `docs/second-campaign-decision-criteria.md`.
+- Revisada a pagina existente `/atendimento-whatsapp-ia` como rota direta de campanha.
+- CTAs da pagina de campanha agora disparam eventos `campaign_*`.
+- Relatorio admin inclui leads por `utm_content` para comparar criativos e rotas.
+
+Variacoes preparadas:
+
+- Demo primeiro.
+- Ebook primeiro.
+- Landing principal.
+- Pagina direta de campanha.
+- Destaque Pro com primeiro mes por R$ 29 para novos usuarios.
+
+Pendencias:
+
+- Gerar links finais com dominio real fora da documentacao versionada.
+- Validar eventos novos no GA4/Meta Pixel.
+- Rodar campanha pequena e preencher `docs/second-campaign-report.md`.
+- Comparar visitantes/custos na plataforma de anuncios com leads/ativacao no admin.
+
+Recomendacao atualizada:
+
+Pode preparar a segunda campanha com baixo orcamento e variações controladas. Nao aumentar investimento antes de identificar uma entrada vencedora com dados reais e sem bugs P0/P1.
+
+Nota estimada mantida: 96/100 ate validacao real da segunda campanha.

@@ -14,6 +14,7 @@ type LeadRow = {
   created_at: string;
   utm_source: string | null;
   utm_campaign: string | null;
+  utm_content: string | null;
 };
 
 type ProfileRow = {
@@ -130,7 +131,7 @@ function eventMatchesFilters(event: EventRow, filters: { utmSource: string; utmC
   return true;
 }
 
-function breakdown(rows: LeadRow[], key: "utm_source" | "utm_campaign") {
+function breakdown(rows: LeadRow[], key: "utm_source" | "utm_campaign" | "utm_content") {
   return Object.entries(
     rows.reduce<Record<string, number>>((accumulator, row) => {
       const label = cleanValue(row[key]);
@@ -203,7 +204,7 @@ export async function GET(request: Request) {
     };
 
     const [leadsResult, profilesResult, businessesResult, responsesResult, subscriptionsResult, feedbackResult, eventsResult] = await Promise.all([
-      supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign").limit(10000),
+      supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign, utm_content").limit(10000),
       supabase.from("profiles").select("id, email, created_at").limit(10000),
       supabase.from("businesses").select("user_id, onboarding_completed, created_at, updated_at").limit(10000),
       supabase.from("generated_responses").select("user_id, created_at").limit(20000),
@@ -295,12 +296,14 @@ export async function GET(request: Request) {
       },
       breakdowns: {
         leadsByUtmSource: breakdown(filteredLeads, "utm_source"),
-        leadsByUtmCampaign: breakdown(filteredLeads, "utm_campaign")
+        leadsByUtmCampaign: breakdown(filteredLeads, "utm_campaign"),
+        leadsByUtmContent: breakdown(filteredLeads, "utm_content")
       },
       interpretation: buildInterpretation(metrics),
       notes: [
         "Dados retornados sao agregados e nao incluem listas de pessoas.",
         "Cadastro por campanha e aproximado por e-mail entre ebook_leads e profiles.",
+        "Variações de criativo devem ser comparadas por utm_content.",
         "Onboarding, ativacao e primeira resposta usam usuarios associados aos leads filtrados quando ha UTM ou leads no periodo.",
         "Demo usada depende de eventos internos persistidos na tabela events; se apenas GA4/Meta estiverem ativos, essa metrica pode aparecer zerada.",
         "Checkout iniciado e aproximado por subscriptions pendentes ou com ids Stripe salvos."

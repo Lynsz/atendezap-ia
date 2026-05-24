@@ -178,6 +178,7 @@ type CampaignReportPayload = {
   breakdowns: {
     leadsByUtmSource: Array<{ label: string; count: number }>;
     leadsByUtmCampaign: Array<{ label: string; count: number }>;
+    leadsByUtmContent: Array<{ label: string; count: number }>;
   };
   interpretation: string;
   notes: string[];
@@ -784,7 +785,7 @@ export default function AdminDashboardPage() {
               <MetricCard label="Cadastro -> assinatura" value={`${campaignReport.metrics.signupToSubscriptionRate}%`} icon={<BarChart3 className="h-5 w-5" />} />
             </div>
 
-            <div className="mt-5 grid gap-5 xl:grid-cols-4">
+            <div className="mt-5 grid gap-5 xl:grid-cols-5">
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4 xl:col-span-2">
                 <h3 className="text-lg font-black text-white">Taxas do funil</h3>
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -807,6 +808,14 @@ export default function AdminDashboardPage() {
                 <div className="mt-4 grid gap-3">
                   {(campaignReport.breakdowns.leadsByUtmCampaign.length ? campaignReport.breakdowns.leadsByUtmCampaign : [{ label: "sem_dados", count: 0 }]).slice(0, 5).map((item) => (
                     <ConversionLine key={`report-campaign-${item.label}`} label={item.label} value={item.count} />
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Leads por criativo</h3>
+                <div className="mt-4 grid gap-3">
+                  {(campaignReport.breakdowns.leadsByUtmContent.length ? campaignReport.breakdowns.leadsByUtmContent : [{ label: "sem_dados", count: 0 }]).slice(0, 5).map((item) => (
+                    <ConversionLine key={`report-content-${item.label}`} label={item.label} value={item.count} />
                   ))}
                 </div>
               </div>

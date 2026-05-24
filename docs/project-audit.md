@@ -439,3 +439,15 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias restantes: preencher relatorio da primeira campanha com dados reais, identificar gargalo principal, corrigir qualquer P0/P1 real e validar a hipotese antes de aumentar orcamento.
 - Recomendacao: rodar segunda campanha pequena somente com uma hipotese clara e tracking validado; nao aumentar orcamento sem dados suficientes.
 - Nota operacional estimada mantida: 96/100 ate haver resultados reais e checklist de escala verde.
+
+## Segunda campanha com variacoes controladas - 2026-05-24
+
+- Estrutura criada: `docs/second-campaign-execution.md`, `docs/second-campaign-utm-links.md`, `docs/second-campaign-creatives.md`, `docs/second-campaign-report.md` e `docs/second-campaign-decision-criteria.md`.
+- Pagina de campanha revisada: `/atendimento-whatsapp-ia` continua sendo a rota dedicada para trafego pago, sem criar rota paralela.
+- Variações preparadas: entrada por demo, ebook, landing principal, pagina direta de campanha e destaque Pro R$ 29.
+- Tracking revisado: CTAs da pagina de campanha usam eventos `campaign_demo_cta_click`, `campaign_ebook_cta_click`, `campaign_signup_cta_click`, `campaign_pricing_cta_click` e `campaign_pro_cta_click`.
+- Admin revisado: relatorio de campanha agora inclui leads por `utm_content`, permitindo comparar criativo/variacao sem dashboard complexo.
+- Documentos atualizados: `docs/tracking.md`, `docs/tracking-setup.md`, `docs/campaign-utm-links.md`, `docs/second-campaign-plan.md`, `docs/first-campaign-analysis.md`, `docs/post-campaign-improvement-plan.md` e `docs/scale-ads-checklist.md`.
+- Pendencias externas: configurar links reais com dominio final, validar GA4/Meta Ads, preencher visitantes/custos fora do app e registrar resultados no relatorio.
+- Recomendacao: rodar a segunda campanha com baixo orcamento e uma decisao por variacao; aumentar orcamento apenas com tracking confiavel, ativacao real e sem P0/P1.
+- Nota operacional estimada mantida: 96/100 ate haver dados reais da segunda campanha.

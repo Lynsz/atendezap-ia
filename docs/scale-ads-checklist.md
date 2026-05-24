@@ -54,5 +54,9 @@ Aumente aos poucos. Se a campanha pequena ainda nao gerou cadastros, onboarding 
 - [ ] P0 resolvido
 - [ ] P1 grave resolvido
 - [ ] hipotese da segunda campanha registrada em `docs/second-campaign-plan.md`
+- [ ] `docs/second-campaign-execution.md` preenchido
+- [ ] `docs/second-campaign-report.md` preenchido por variacao
 - [ ] CTAs da demo e obrigado rastreados separadamente
+- [ ] CTAs da pagina de campanha rastreados por eventos `campaign_*`
+- [ ] leads por `utm_content` conferidos no admin
 - [ ] admin conferido com UTMs e diagnostico do funil

@@ -85,7 +85,7 @@ export default function CampaignPage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <TrackedLink
                 href="/demo"
-                eventName="demo_cta_click"
+                eventName="campaign_demo_cta_click"
                 properties={{ section: "campaign_hero", destination: "demo" }}
                 className="bg-emerald-500 text-slate-950 hover:bg-emerald-400 focus:ring-emerald-500"
               >
@@ -94,7 +94,7 @@ export default function CampaignPage() {
               </TrackedLink>
               <TrackedLink
                 href="/ebook"
-                eventName="ebook_cta_click"
+                eventName="campaign_ebook_cta_click"
                 properties={{ section: "campaign_hero", destination: "ebook" }}
                 className="bg-white text-ink ring-1 ring-slate-200 hover:bg-slate-50 focus:ring-brand-500"
               >
@@ -102,7 +102,7 @@ export default function CampaignPage() {
               </TrackedLink>
               <TrackedLink
                 href="/precos#planos"
-                eventName="pricing_cta_click"
+                eventName="campaign_pricing_cta_click"
                 properties={{ section: "campaign_hero", destination: "pricing" }}
                 className="bg-slate-950 text-white hover:bg-slate-800 focus:ring-slate-900"
               >
@@ -181,6 +181,14 @@ export default function CampaignPage() {
               Melhor custo-beneficio para validar uso diario. Depois do primeiro mes, a assinatura continua no valor mensal normal e pode ser gerenciada pelo Stripe.
             </p>
             <div className="mt-6 max-w-sm">
+              <TrackedLink
+                href="/precos#planos"
+                eventName="campaign_pro_cta_click"
+                properties={{ section: "campaign_pro_offer", destination: "pricing", plan: "pro" }}
+                className="mb-3 w-full bg-white/10 text-white ring-1 ring-white/15 hover:bg-white/15 focus:ring-emerald-300"
+              >
+                Entender oferta do Pro
+              </TrackedLink>
               <StripeCheckoutButton planId="pro" recommended label="Assinar Pro" />
             </div>
           </div>
@@ -212,7 +220,7 @@ export default function CampaignPage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <TrackedLink
               href="/demo"
-              eventName="demo_cta_click"
+              eventName="campaign_demo_cta_click"
               properties={{ section: "campaign_final", destination: "demo" }}
               className="bg-emerald-500 text-slate-950 hover:bg-emerald-400 focus:ring-emerald-500"
             >
@@ -221,7 +229,7 @@ export default function CampaignPage() {
             </TrackedLink>
             <TrackedLink
               href="/cadastro"
-              eventName="hero_cta_click"
+              eventName="campaign_signup_cta_click"
               properties={{ section: "campaign_final", destination: "signup" }}
               className="bg-slate-950 text-white hover:bg-slate-800 focus:ring-slate-900"
             >

@@ -28,6 +28,7 @@ Correcoes pequenas aplicadas nesta rodada:
 - Pagina de obrigado conecta melhor o guia com o teste pratico da IA.
 - Eventos dos CTAs da pagina de obrigado foram separados para diagnosticar lead -> cadastro.
 - Diagnostico do admin ganhou leitura explicita para poucos leads.
+- Segunda campanha preparada com eventos `campaign_*` e leitura de leads por `utm_content`.
 
 ## P2 - Melhorar apos segunda rodada
 

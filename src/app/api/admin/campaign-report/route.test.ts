@@ -21,8 +21,8 @@ function createCampaignReportSupabase() {
   const now = new Date().toISOString();
   const rows: Record<string, unknown[]> = {
     ebook_leads: [
-      { email: "cliente@example.com", created_at: now, utm_source: "meta", utm_campaign: "campanha-maio" },
-      { email: "outro@example.com", created_at: now, utm_source: "google", utm_campaign: "busca" }
+      { email: "cliente@example.com", created_at: now, utm_source: "meta", utm_campaign: "campanha-maio", utm_content: "demo_criativo_1" },
+      { email: "outro@example.com", created_at: now, utm_source: "google", utm_campaign: "busca", utm_content: "ebook_criativo_1" }
     ],
     profiles: [
       { id: "user_1", email: "cliente@example.com", created_at: now },
@@ -83,6 +83,7 @@ describe("GET /api/admin/campaign-report", () => {
     expect(body.metrics.feedbackCount).toBe(1);
     expect(body.metrics.leadToSignupRate).toBe(100);
     expect(body.breakdowns.leadsByUtmSource).toEqual([{ label: "meta", count: 1 }]);
+    expect(body.breakdowns.leadsByUtmContent).toEqual([{ label: "demo_criativo_1", count: 1 }]);
     expect(body.leads).toBeUndefined();
     expect(body.profiles).toBeUndefined();
   });

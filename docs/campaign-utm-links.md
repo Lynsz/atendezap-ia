@@ -42,3 +42,7 @@ https://SEU-DOMINIO.com/atendimento-whatsapp-ia?utm_source=meta&utm_medium=paid&
 4. Enviar um lead de teste controlado.
 5. Conferir no admin se `utm_source`, `utm_medium`, `utm_campaign`, `utm_content` e `utm_term` foram preservadas.
 6. Iniciar checkout com usuario autenticado e confirmar se as UTMs chegam na metadata Stripe/Supabase.
+
+## Segunda campanha
+
+Para a segunda rodada, use tambem `docs/second-campaign-utm-links.md`. Nessa etapa, `utm_content` identifica a variacao de rota/criativo e deve ser usado para comparar demo, ebook, landing e Pro R$ 29.

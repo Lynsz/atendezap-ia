@@ -15,6 +15,11 @@ As variaveis sao opcionais e publicas. Se estiverem vazias, o app nao deve quebr
 
 - `landing_view`
 - `campaign_view`
+- `campaign_demo_cta_click`
+- `campaign_ebook_cta_click`
+- `campaign_signup_cta_click`
+- `campaign_pricing_cta_click`
+- `campaign_pro_cta_click`
 - `ebook_view`
 - `lead_submit`
 - `lead_success`
@@ -42,7 +47,7 @@ As variaveis sao opcionais e publicas. Se estiverem vazias, o app nao deve quebr
 - `utm_content`
 - `utm_term`
 
-Use os modelos em `docs/campaign-utm-links.md`.
+Use os modelos em `docs/campaign-utm-links.md` e `docs/second-campaign-utm-links.md`.
 
 ## Validacao antes da campanha
 
@@ -53,6 +58,7 @@ Use os modelos em `docs/campaign-utm-links.md`.
 5. Conferir UTMs no admin.
 6. Iniciar checkout autenticado e conferir metadata da Stripe/Supabase.
 7. Confirmar GA4 DebugView e Meta Events Manager, se configurados.
+8. Na segunda campanha, conferir leads por `utm_content` no admin para comparar criativos e rotas.
 
 ## Limitacoes
 

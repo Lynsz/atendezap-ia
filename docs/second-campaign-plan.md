@@ -16,15 +16,15 @@
 
 ## O que sera alterado
 
-- headline:
-- criativo:
-- rota de destino:
-- CTA:
-- publico:
-- oferta:
-- pagina do ebook:
-- demo:
-- pricing:
+- headline: testar dor de tempo, profissionalismo e oferta Pro.
+- criativo: separar `utm_content` por demo, ebook, landing e Pro R$ 29.
+- rota de destino: comparar `/demo`, `/ebook`, `/` e `/atendimento-whatsapp-ia`.
+- CTA: testar `Testar demo gratis`, `Baixar guia gratuito`, `Criar minha conta` e `Ver planos`.
+- publico: manter amplo, mas separar conjuntos quando houver volume suficiente.
+- oferta: manter Pro com primeiro mes por R$ 29 para novos usuarios, sem urgencia falsa.
+- pagina do ebook: usar como entrada de lead e ponte para demo/cadastro.
+- demo: usar como prova de valor antes do cadastro.
+- pricing: usar para visitantes com maior intencao.
 
 ## Hipotese da segunda campanha
 
@@ -56,3 +56,11 @@ Se destacarmos a demo antes do ebook, mais pessoas vao entender o valor do produ
 - checkout ou webhook falha
 - tracking principal fica inconfiavel
 - custo consumindo sem sinal de ativacao
+
+## Documentos de execucao
+
+- `docs/second-campaign-execution.md`
+- `docs/second-campaign-utm-links.md`
+- `docs/second-campaign-creatives.md`
+- `docs/second-campaign-report.md`
+- `docs/second-campaign-decision-criteria.md`
