@@ -111,3 +111,10 @@
 - Auditoria: URLs, `NEXT_PUBLIC_APP_URL`, segredos server-only, `.gitignore`, `.env.example`, copy publica e pendencias externas revisadas.
 - Criterio atualizado: liberar 3 a 5 usuarios apenas depois de `docs/go-live-checklist.md` verde no dominio final.
 - Nao escalar anuncios ate confirmar checkout, webhook, Supabase, Resend, OpenAI, tracking e admin em producao.
+
+## Go-live controlado - 2026-05-24
+
+- Status: pronto para validacao assistida com 3 a 5 primeiros usuarios depois do ambiente final verde.
+- Documentos criados: `docs/controlled-go-live-report.md`, `docs/first-users-validation-checklist.md`, `docs/first-users-interview.md`, `docs/launch-bugs.md` e `docs/launch-day-monitoring.md`.
+- Suporte atualizado: `docs/support.md` e `docs/support-messages.md`.
+- Criterio atualizado: pausar novos convites se aparecer P0/P1; preparar anuncios pequenos somente apos feedback real sem bloqueadores.

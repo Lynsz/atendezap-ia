@@ -4,6 +4,25 @@ Este guia cobre os casos mais comuns no lancamento controlado. Nunca envie chave
 
 Use `docs/support-messages.md` para respostas prontas e encaminhe usuarios para `/feedback` quando houver bug, duvida, sugestao ou dificuldade de uso que precise ser registrada.
 
+## Como comecar
+
+- Orientar o usuario a criar conta ou fazer login.
+- Pedir para concluir o onboarding com dados reais do atendimento.
+- Explicar que ele deve colar uma pergunta comum de cliente no dashboard.
+- Reforcar que a IA gera uma sugestao para copiar, ajustar e enviar manualmente pelo WhatsApp.
+
+## IA envia direto no WhatsApp?
+
+- Explicar que nao.
+- O AtendeZap IA gera respostas prontas para revisar, copiar e enviar manualmente.
+- Nao prometer envio automatico, integracao direta com WhatsApp ou chatbot se isso ainda nao estiver ativo.
+
+## Preciso pagar para testar?
+
+- Explicar conforme a configuracao comercial vigente.
+- Se houver acesso gratuito/limitado, orientar o usuario a criar conta e gerar as primeiras respostas.
+- Se o usuario precisar de mais limite, orientar a pagina de assinatura.
+
 ## Cliente nao conseguiu criar conta
 
 - Confirmar se o e-mail foi digitado corretamente.
@@ -43,6 +62,13 @@ Use `docs/support-messages.md` para respostas prontas e encaminhe usuarios para 
 - Conferir status no Resend.
 - Conferir se houve erro em `lead_email_events`, quando disponivel.
 - Reenviar manualmente se necessario.
+
+## Resposta da IA nao ficou boa
+
+- Conferir se o onboarding foi preenchido com contexto suficiente.
+- Sugerir editar informacoes do negocio, servicos, perguntas comuns e tom de voz.
+- Pedir para o usuario testar uma pergunta real e objetiva.
+- Registrar feedback se a resposta continuar ruim.
 
 ## IA nao gerou resposta
 

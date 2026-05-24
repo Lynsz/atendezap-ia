@@ -357,3 +357,44 @@ Pendencias antes de liberar usuarios:
 Recomendacao final: liberar somente para 3 a 5 usuarios depois do go-live checklist verde. Nao escalar anuncios ate obter validacao real de checkout, webhook, e-mail, IA, tracking, admin e suporte.
 
 Nota estimada mantida: 96/100 ate validar producao no dominio final.
+
+## Go-live controlado com primeiros usuarios - 2026-05-24
+
+Status: pronto para executar validacao com 3 a 5 primeiros usuarios, apos ambiente final configurado.
+
+Documentos criados:
+
+- `docs/controlled-go-live-report.md`
+- `docs/first-users-validation-checklist.md`
+- `docs/first-users-interview.md`
+- `docs/launch-bugs.md`
+- `docs/launch-day-monitoring.md`
+
+Documentos atualizados:
+
+- `docs/support.md`
+- `docs/support-messages.md`
+- `docs/production-readiness.md`
+
+O que esta preparado:
+
+- Relatorio de go-live com status, URL, fluxos, bugs, pendencias e recomendacao final.
+- Checklist por usuario convidado.
+- Roteiro de entrevista curta.
+- Classificacao simples de bugs P0/P1/P2/P3.
+- Checklist de monitoramento do dia do lancamento.
+- Respostas de suporte para as principais duvidas.
+- Canal de feedback visivel no dashboard e pagina `/feedback`.
+- Admin ja contem leads, feedbacks, assinaturas, metricas, campanha/UTMs e CSV sem novo dashboard complexo.
+
+Pendencias antes de anuncios pequenos:
+
+- Preencher o relatorio com URL/data reais.
+- Executar teste com 3 a 5 usuarios.
+- Corrigir qualquer P0/P1.
+- Confirmar que pelo menos um usuario entende valor, gera primeira resposta e demonstra intencao real de uso/pagamento.
+- Confirmar checkout, webhook, e-mail, IA, tracking e admin no dominio final.
+
+Recomendacao: liberar para 3 a 5 usuarios por convite apos go-live tecnico. Anuncios pequenos somente depois de validar esses usuarios e atualizar `docs/controlled-go-live-report.md`.
+
+Nota estimada mantida: 96/100 ate obter dados reais dos primeiros usuarios.

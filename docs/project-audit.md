@@ -394,3 +394,14 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Riscos restantes: auth de pagina ainda usa cookie de hint, superficies legadas ainda existem, nao ha e2e autenticado real contra provedores e staging publicado ainda precisa ser confirmado.
 - Recomendacao final: nao escalar anuncios. Liberar primeiros usuarios somente depois de `docs/go-live-checklist.md` verde no dominio final.
 - Nota operacional estimada mantida: 96/100 ate validar dominio final e provedores de producao.
+
+## Go-live controlado com primeiros usuarios - 2026-05-24
+
+- Documentacao criada: `docs/controlled-go-live-report.md`, `docs/first-users-validation-checklist.md`, `docs/first-users-interview.md`, `docs/launch-bugs.md` e `docs/launch-day-monitoring.md`.
+- Suporte atualizado: `docs/support.md` e `docs/support-messages.md` agora cobrem como comecar, envio manual no WhatsApp, teste/pagamento, cancelamento, pagamento sem liberacao, ebook nao recebido, resposta ruim e limite mensal.
+- Estados vazios revisados: dashboard, historico, clientes, assinatura, admin e feedback ja orientam proximo passo; foi corrigido texto visivel do formulario de feedback e de metricas de feedback no admin.
+- Admin revisado para primeiros usuarios: ja mostra leads recentes, usuarios, assinaturas, feedbacks, uso/metricas agregadas, campanhas/UTMs e CSV de leads/campanha sem criar dashboard novo.
+- Pendencias externas: executar o checklist em producao real, preencher URL/data no relatorio, registrar bugs reais e validar logs/provedores durante os testes.
+- Riscos conhecidos: qualquer P0/P1 em cadastro, login, IA, checkout, webhook, dashboard, admin ou isolamento deve pausar novos convites.
+- Recomendacao: liberar para 3 a 5 usuarios depois do go-live tecnico verde; anuncios pequenos somente depois de feedback positivo e ausencia de P0/P1.
+- Nota operacional estimada mantida: 96/100 ate validar uso real com primeiros usuarios.

@@ -54,3 +54,15 @@ Use este documento para sair de staging e liberar o AtendeZap IA para poucos usu
 Pode liberar producao controlada quando cadastro, login, onboarding, primeira resposta, assinatura, webhook, e-mail do ebook, admin e tracking principal funcionarem no dominio final.
 
 Nao liberar se cadastro, IA, checkout, webhook, Supabase ou dashboard apresentarem erro critico.
+
+## Go-live controlado
+
+Antes de convidar os primeiros usuarios, use:
+
+- `docs/controlled-go-live-report.md` para registrar status, bugs, pendencias e decisao final.
+- `docs/first-users-validation-checklist.md` para acompanhar cada usuario convidado.
+- `docs/first-users-interview.md` para coletar feedback qualitativo.
+- `docs/launch-bugs.md` para classificar problemas em P0/P1/P2/P3.
+- `docs/launch-day-monitoring.md` para monitorar Vercel, Supabase, Stripe, Resend, OpenAI, admin e tracking durante o teste.
+
+Recomendacao: liberar para 3 a 5 usuarios por convite direto. So preparar anuncios pequenos depois que esses usuarios conseguirem criar conta, concluir onboarding, gerar resposta, entender planos e reportar feedback sem bugs criticos.
