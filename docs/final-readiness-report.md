@@ -254,3 +254,35 @@ Documentos criados/atualizados:
 - `docs/emails.md`
 
 Nota estimada mantida: 96/100 ate validar entrega real no Resend. Com Resend, Stripe e Supabase staging validados, a nota operacional pode subir para 97/100.
+
+## Deploy Vercel staging/producao controlada - 2026-05-24
+
+Status: pronto para deploy staging com validacao manual obrigatoria.
+
+A configuracao de deploy foi auditada em `package.json`, `next.config.mjs`, middleware, rotas API, variaveis, URLs, Stripe, Supabase, Resend, OpenAI, tracking, Sentry opcional e documentacao.
+
+O que esta validado por codigo/documentacao:
+
+- Build command esperado e `npm run build`.
+- `/api/health` existe e retorna apenas `status`, `environment` e `timestamp`.
+- Webhook Stripe fica publico no middleware.
+- Rotas privadas continuam protegidas.
+- Stripe usa `NEXT_PUBLIC_APP_URL` para checkout e portal.
+- E-mails do ebook usam `NEXT_PUBLIC_APP_URL` para links absolutos.
+- Sentry e opcional e nao quebra sem `NEXT_PUBLIC_SENTRY_DSN`.
+- `.env.example` contem placeholders sem valores reais.
+- Documentacao Vercel, Supabase/Vercel, checklist staging e troubleshooting foram criados.
+
+O que ainda depende de teste externo:
+
+- Criar projeto Vercel e conectar GitHub.
+- Preencher envs por ambiente.
+- Aplicar migrations no Supabase staging.
+- Configurar Supabase Auth Site URL e Redirect URLs.
+- Configurar webhook Stripe para a URL Vercel.
+- Validar Resend com remetente real.
+- Validar OpenAI com chave e limite de custo.
+- Validar GA4/Meta, se forem usados.
+- Executar `docs/staging-vercel-checklist.md` completo.
+
+Nota estimada mantida: 96/100 ate validar staging real. Com staging Vercel verde e provedores reais testados, a nota operacional pode subir para 97/100.

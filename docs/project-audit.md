@@ -360,3 +360,15 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Testes adicionados/reforcados: validacao de lead, UTMs, Resend ausente, falha/sucesso de envio, falha ao salvar lead, template de e-mail e CTAs de obrigado/guia.
 - Pendencias externas restantes: configurar dominio/remetente no Resend, preencher envs em staging/Vercel, enviar lead real e confirmar `lead_email_events` no Supabase.
 - Nota estimada mantida: 97/100; pode subir apos teste real de entrega Resend em staging.
+
+## Deploy Vercel staging/producao controlada - 2026-05-24
+
+- Configuracao auditada: `package.json`, `next.config.mjs`, middleware, rotas API, `/api/health`, `.env.example`, Supabase clients, Stripe redirects/webhook, Resend, OpenAI, tracking, Sentry opcional e documentacao existente.
+- Health check revisado: `/api/health` retorna `status`, `environment` e `timestamp`, sem expor chaves, banco ou configuracoes sensiveis.
+- `NEXT_PUBLIC_APP_URL` revisado: usado para Stripe Checkout, Customer Portal, e-mails do ebook e metadados; fallback `localhost` aparece apenas em desenvolvimento local/documentacao.
+- Middleware revisado: `/api/stripe/webhook` segue publico e nao depende de login; APIs privadas e admin continuam protegidas.
+- Variaveis de Vercel revisadas em `.env.example`: App, Supabase, OpenAI, Stripe, Resend, Tracking, Admin, Upstash e Sentry sem valores reais.
+- Documentos criados: `docs/vercel-deploy.md`, `docs/supabase-vercel.md`, `docs/staging-vercel-checklist.md` e `docs/deploy-troubleshooting.md`.
+- Pendencias externas restantes: criar projeto Vercel, preencher envs por ambiente, aplicar migrations Supabase, configurar webhook Stripe, validar Resend/OpenAI/tracking/admin em staging e depois repetir no dominio final.
+- Status: pronto para deploy staging; producao controlada somente apos checklist staging verde.
+- Nota estimada mantida: 97/100 ate validacao real na Vercel.

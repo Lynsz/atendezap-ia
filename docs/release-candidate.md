@@ -88,3 +88,10 @@
 - Customer Portal retorna para `/assinatura`.
 - Testes automatizados cobrem plano invalido, usuario sem login, Starter, Pro com cupom, Premium, portal, assinatura invalida no webhook, update/delete de subscription e pagamento falho.
 - Pronto para teste real em Stripe test mode depois de configurar envs, products, prices, coupon, webhook e portal no Stripe Dashboard.
+
+## Deploy Vercel staging - 2026-05-24
+
+- Status: pronto para criar deploy staging na Vercel, sem declarar producao irrestrita.
+- Documentos criados: `docs/vercel-deploy.md`, `docs/supabase-vercel.md`, `docs/staging-vercel-checklist.md` e `docs/deploy-troubleshooting.md`.
+- Auditoria: `NEXT_PUBLIC_APP_URL`, middleware, health check, Stripe webhook/redirects, Supabase, Resend, OpenAI, tracking e Sentry opcional revisados.
+- Criterio atualizado: promover para producao controlada somente apos `docs/staging-vercel-checklist.md` verde com Supabase, Stripe, Resend, OpenAI, admin e mobile validados.
