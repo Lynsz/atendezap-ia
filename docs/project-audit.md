@@ -405,3 +405,14 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Riscos conhecidos: qualquer P0/P1 em cadastro, login, IA, checkout, webhook, dashboard, admin ou isolamento deve pausar novos convites.
 - Recomendacao: liberar para 3 a 5 usuarios depois do go-live tecnico verde; anuncios pequenos somente depois de feedback positivo e ausencia de P0/P1.
 - Nota operacional estimada mantida: 96/100 ate validar uso real com primeiros usuarios.
+
+## Correcoes pos-go-live e preparacao pre-anuncios - 2026-05-24
+
+- Relatorios revisados: `docs/controlled-go-live-report.md`, `docs/launch-bugs.md`, `docs/first-users-validation-checklist.md`, `docs/first-users-interview.md`, `docs/launch-day-monitoring.md`, `docs/final-readiness-report.md` e `docs/support.md`.
+- Bugs P0/P1 encontrados: nenhum bug real registrado nos documentos atuais.
+- Correcoes de experiencia: demo publica reforca que a IA gera sugestoes para copiar, ajustar e enviar manualmente; CTA pos-demo agora conecta melhor com criacao de conta e historico salvo.
+- Correcoes de feedback: dashboard exibe CTA para feedback depois de resposta gerada, com evento `feedback_cta_click`.
+- Documentos criados: `docs/post-go-live-fixes.md` e `docs/pre-ads-final-checklist.md`.
+- Pendencias restantes: executar nova rodada com 3 a 5 usuarios, preencher URL/data reais do go-live, validar provedores no dominio final e corrigir qualquer P0/P1 antes de anuncios.
+- Recomendacao: pronto para nova rodada controlada com usuarios; anuncios pequenos somente depois de checklist pre-anuncio verde e ausencia de P0/P1 aberto.
+- Nota operacional estimada mantida: 96/100 ate haver validacao real pos-go-live.

@@ -592,6 +592,13 @@ function SaasDashboardContent() {
     showFeedback("Resposta copiada.");
   }
 
+  function openGeneratedResponseFeedback() {
+    trackEvent("feedback_cta_click", {
+      source: "generated_response"
+    });
+    router.push("/feedback?source=generated_response");
+  }
+
   async function manageStripeSubscription() {
     setError("");
     try {
@@ -1182,7 +1189,21 @@ function SaasDashboardContent() {
                 ) : null}
               </div>
               {generatedAnswer ? (
-                <p className="whitespace-pre-wrap rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm leading-7 text-emerald-50">{generatedAnswer}</p>
+                <>
+                  <p className="whitespace-pre-wrap rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm leading-7 text-emerald-50">{generatedAnswer}</p>
+                  <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                    <p className="text-sm font-bold leading-6 text-slate-200">
+                      A resposta ajudou? Copie, ajuste se precisar e envie manualmente pelo WhatsApp.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={openGeneratedResponseFeedback}
+                      className="mt-3 inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15"
+                    >
+                      Dar feedback sobre esta resposta
+                    </button>
+                  </div>
+                </>
               ) : (
                 <div className="flex min-h-72 flex-col items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm leading-6 text-slate-400">
                   <MessageCircle className="mb-4 h-8 w-8 text-slate-500" />

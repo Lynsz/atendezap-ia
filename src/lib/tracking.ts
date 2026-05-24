@@ -45,6 +45,7 @@ export type TrackingEventName =
   | "feedback_submit"
   | "feedback_success"
   | "feedback_error"
+  | "feedback_cta_click"
   | "support_cta_click";
 
 export type TrackingProperties = Record<string, string | number | boolean | null | undefined>;

@@ -398,3 +398,29 @@ Pendencias antes de anuncios pequenos:
 Recomendacao: liberar para 3 a 5 usuarios por convite apos go-live tecnico. Anuncios pequenos somente depois de validar esses usuarios e atualizar `docs/controlled-go-live-report.md`.
 
 Nota estimada mantida: 96/100 ate obter dados reais dos primeiros usuarios.
+
+## Correcoes pos-go-live e pre-anuncios - 2026-05-24
+
+Status: preparacao preventiva para anuncios pequenos, sem P0/P1 real registrado nos documentos atuais.
+
+O que foi feito:
+
+- `docs/controlled-go-live-report.md` e `docs/launch-bugs.md` foram revisados; nao ha bug P0/P1 registrado.
+- Demo publica reforca que a IA gera sugestoes para revisar, copiar e enviar manualmente pelo WhatsApp.
+- CTA pos-demo ficou mais claro para criacao de conta e salvamento de respostas.
+- Dashboard mostra CTA de feedback logo apos uma resposta gerada.
+- `docs/post-go-live-fixes.md` registra correcoes, pendencias e recomendacao.
+- `docs/pre-ads-final-checklist.md` consolida o checklist operacional antes de qualquer campanha pequena.
+
+Pendencias:
+
+- Executar validacao real com 3 a 5 usuarios.
+- Preencher URL/data reais no relatorio de go-live.
+- Validar ambiente final com Stripe, Supabase, Resend, OpenAI, tracking, admin e mobile.
+- Corrigir qualquer P0/P1 que aparecer antes de ligar anuncios.
+
+Recomendacao atualizada:
+
+Ainda nao declarar pronto para anuncios pequenos sem uma rodada real validada. O projeto esta pronto para nova rodada com usuarios e pode seguir para anuncios pequenos apenas se o checklist pre-anuncio final ficar verde e nao houver P0/P1 aberto.
+
+Nota estimada mantida: 96/100 ate a validacao real dos primeiros usuarios e do ambiente final.
