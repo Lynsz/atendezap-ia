@@ -1,3 +1,5 @@
+import "server-only";
+
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 export async function logEvent(eventName: string, metadata?: Record<string, unknown>) {

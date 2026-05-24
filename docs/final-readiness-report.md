@@ -187,3 +187,35 @@ Documentos criados:
 - `docs/stripe-validation-report.md`
 
 Nota estimada mantida: 96/100 ate a validacao real externa ser executada. A nota operacional pode subir para 97/100 depois de confirmar checkout, webhook, Supabase, portal e dashboard em Stripe test mode.
+
+## Supabase seguranca e isolamento - 2026-05-24
+
+Status: validado por auditoria de codigo/schema e pronto para teste manual em staging.
+
+O Supabase foi revisado em migrations, schema consolidado, clientes, auth helpers, APIs, dashboard, assinatura, admin, onboarding, historico, leads, feedbacks e subscriptions.
+
+O que esta validado por codigo/testes:
+
+- Tabelas principais existem com nomes reais do projeto: `profiles`, `businesses`, `generated_responses`, `subscriptions`, `ebook_leads`, `lead_email_events` e `user_feedback`.
+- RLS esta previsto em `supabase/schema.sql` para tabelas sensiveis.
+- Queries privadas filtram pelo `user_id` da sessao autenticada.
+- APIs privadas retornam erro sem sessao e nao usam `user_id` livre do client para autorizacao.
+- Admin passa por API protegida e `ADMIN_EMAILS`.
+- Service role fica centralizada em helper server-side com `server-only`.
+- Teste automatizado cobre a fronteira service role/client.
+
+O que ainda depende de teste manual externo:
+
+- Aplicar migrations no Supabase de staging/producao.
+- Conferir RLS e grants no painel Supabase.
+- Criar usuario A e usuario B e validar isolamento real.
+- Confirmar que usuario comum nao lista leads, eventos internos, pedidos ou kits.
+- Confirmar que admin comum e admin autorizado se comportam corretamente.
+- Confirmar Auth Site URL e Redirect URLs no painel Supabase.
+
+Documentos criados:
+
+- `docs/supabase-security.md`
+- `docs/supabase-production-checklist.md`
+
+Nota estimada mantida: 96/100 ate validar RLS e isolamento no Supabase real. Com Stripe test mode e Supabase staging validados de ponta a ponta, a nota operacional pode subir para 97/100.

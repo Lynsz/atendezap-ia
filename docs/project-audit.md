@@ -335,3 +335,15 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Testes automatizados reforcados: portal sem login retorna 401, portal sem customer retorna erro amigavel, Pro com cupom continua `plan = "pro"`, cancelamento fica `canceled` e invoice falha/sucesso atualizam status de pagamento.
 - Status: pronto para executar validacao real com Stripe test mode, Stripe CLI e Supabase de teste; ainda nao validado de ponta a ponta com provedores reais neste ambiente.
 - Nota estimada nova: 97/100.
+
+## Supabase seguranca e isolamento - 2026-05-24
+
+- Estrutura auditada: migrations, `supabase/schema.sql`, clientes Supabase, helpers de auth, APIs publicas/privadas, dashboard, `/assinatura`, admin, onboarding, historico, leads, feedbacks, subscriptions e uso mensal.
+- Tabelas essenciais confirmadas com os nomes reais do projeto: `profiles`, `businesses`, `generated_responses`, `subscriptions`, `ebook_leads`, `lead_email_events` e `user_feedback`.
+- RLS revisado: tabelas por usuario usam `auth.uid()`; `subscriptions` fica somente leitura para usuario autenticado; leads, eventos de e-mail, webhooks, pedidos, kits e eventos internos nao ficam listaveis pelo client.
+- Isolamento multiusuario revisado: dashboard, geracao de IA, `/assinatura` e portal Stripe usam o usuario autenticado e filtros por `user_id`, sem confiar em `user_id` arbitrario vindo do client.
+- Service role reforcada: `src/lib/supabase/server.ts` agora importa `server-only`; teste automatizado verifica que componentes client nao importam service role nem `SUPABASE_SERVICE_ROLE_KEY`.
+- Migrations: nenhuma migration nova foi necessaria; o schema existente ja cobre campos, indices e policies esperados. Nao houve `DROP TABLE` nem alteracao destrutiva.
+- Documentos criados: `docs/supabase-security.md` e `docs/supabase-production-checklist.md`.
+- Pendencias externas restantes: aplicar migrations no Supabase real/staging, conferir policies/grants no painel, testar usuario A vs usuario B, validar admin comum/admin real e confirmar Auth URLs/Redirect URLs.
+- Nota estimada mantida: 97/100; pode subir apos teste manual de RLS e isolamento no Supabase real.
