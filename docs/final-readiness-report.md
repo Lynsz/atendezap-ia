@@ -8,6 +8,25 @@
 
 Pronto para producao controlada com primeiros usuarios.
 
+## Status versao 1.0
+
+O AtendeZap IA esta consolidado como versao 1.0 em termos de escopo, documentacao e operacao. A 1.0 representa o MVP validado para producao controlada e campanhas pequenas, com limites claros: a ferramenta gera respostas para revisar, copiar e enviar manualmente pelo WhatsApp; ela nao envia mensagens automaticamente, nao e CRM completo e nao inclui automacoes avancadas.
+
+Documentos adicionados para a consolidacao:
+
+- `docs/version-1.0.md`
+- `CHANGELOG.md`
+- `docs/roadmap-post-1.0.md`
+- `docs/weekly-maintenance-checklist.md`
+- `docs/stability-criteria.md`
+- `docs/README.md`
+
+Pendencias conhecidas ficam registradas como backlog ou validacao externa: provedores reais, e2e autenticado completo, RLS real com dois usuarios, tracking/custos em plataformas externas, alertas automaticos e reducao futura de superficies legadas.
+
+Nota estimada atualizada: 96/100. A nota nao sobe nesta consolidacao porque a etapa organizou escopo e documentacao, mas nao substitui validacao real de producao, Stripe, Supabase, Resend, OpenAI, tracking e admin.
+
+Recomendacao sobre escala cautelosa: manter a decisao de nao escalar ainda sem dados reais preenchidos em `docs/second-campaign-analysis.md`, matriz de escala verde e ausencia de bugs P0/P1. Campanhas pequenas continuam aceitaveis somente com monitoramento diario e baixo orcamento.
+
 ## Resumo executivo
 
 O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 usuarios reais e para uma campanha pequena de validacao com orcamento baixo, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. Alem da validacao local de release, agora existe um canal simples de feedback, lista no admin, roteiro de entrevista, mensagens de suporte, triagem rapida de bugs, metricas internas, pagina direta para campanha e relatorio de validacao comercial.

@@ -4,6 +4,20 @@
 
 96/100
 
+## Status versao 1.0
+
+O AtendeZap IA esta consolidado como versao 1.0 documentalmente: o escopo do MVP, os fluxos prontos para operacao, os limites do produto e o roadmap pos-1.0 estao definidos em `docs/version-1.0.md`, `docs/roadmap-post-1.0.md`, `docs/stability-criteria.md`, `docs/weekly-maintenance-checklist.md` e `docs/README.md`.
+
+A classificacao atual e: MVP validado, pronto para producao controlada, pronto para campanhas pequenas com baixo orcamento apos checklists reais, pronto apenas para escala cautelosa planejada e ainda nao pronto para escala ampla.
+
+O escopo da 1.0 inclui landing, demo publica, ebook, captura de leads, envio de e-mail, auth, onboarding, geracao de respostas com IA, historico, limite mensal, planos Starter/Pro/Premium, Stripe Checkout, Stripe Customer Portal, webhook Stripe, assinatura, admin, metricas basicas, feedback, tracking e paginas legais.
+
+Ficam fora da 1.0: envio automatico pelo WhatsApp, CRM completo, multiplos atendentes, automacoes avancadas, integracoes externas avancadas, testes A/B automaticos e nutricao avancada por e-mail.
+
+Pendencias conhecidas seguem principalmente externas/operacionais: validacao manual com provedores reais, RLS real com dois usuarios, Stripe live/test mode de ponta a ponta, Resend real, tracking real, admin real e reducao futura de superficies legadas fora do fluxo vendavel.
+
+Recomendacao atualizada: manter producao controlada e campanhas pequenas como rotina de validacao. Nao escalar investimento enquanto `docs/second-campaign-analysis.md` nao tiver dados reais suficientes, enquanto a matriz de decisao nao estiver verde e enquanto houver qualquer P0/P1 aberto.
+
 O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios e uma campanha pequena de validacao: funil publico, pagina direta de campanha, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, metricas internas, relatorio de campanha, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin, feedback e metricas no ambiente final.
 
 O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de priorizacao, revisao semanal, backlog de crescimento, experimentos pequenos e bloco simples de gargalo no admin para orientar melhorias com dados reais.

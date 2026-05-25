@@ -1,77 +1,80 @@
-﻿# AtendeZap IA
+# AtendeZap IA
 
-MVP SaaS para pessoas autonomas, prestadores de servico, pequenos negocios e qualquer pessoa que usa WhatsApp para atender, vender ou responder clientes.
+AtendeZap IA e um micro-SaaS para autonomos, prestadores de servico, pequenos negocios, lojas pequenas, delivery, estetica, assistencia tecnica, restaurantes e vendedores que atendem pelo WhatsApp.
 
-O produto permite criar conta, cadastrar negocio, servico ou atividade, gerar respostas com IA, salvar historico no Supabase, organizar clientes/leads e vender planos mensais com Stripe Billing.
+O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta real de cliente, gerar uma sugestao de resposta com IA, revisar, copiar e enviar manualmente pelo WhatsApp. A versao 1.0 nao envia mensagens automaticamente e nao conecta diretamente ao WhatsApp.
 
-## Status Comercial
+## Status
 
-Funil principal:
+- Versao 1.0 consolidada documentalmente.
+- MVP validado.
+- Pronto para producao controlada quando o checklist do ambiente real estiver verde.
+- Pronto para campanhas pequenas com baixo orcamento depois de validar checkout, webhook, Supabase, Resend, OpenAI, tracking, admin e suporte.
+- Ainda nao pronto para escala ampla.
 
-```text
-Ebook gratuito -> pagina de obrigado -> oferta Pro -> Stripe Checkout -> dashboard
-```
+## Principais features
 
-Oferta permanente do Plano Pro:
+- Landing page.
+- Demo publica.
+- Ebook gratuito e captura de leads.
+- Envio do ebook por e-mail via Resend.
+- Cadastro/login com Supabase.
+- Onboarding no dashboard.
+- Geracao de respostas com IA em rota server-side.
+- Historico de respostas.
+- Limite mensal por plano.
+- Planos Starter, Pro e Premium.
+- Pro recomendado com primeiro mes por R$ 29 para novos usuarios.
+- Stripe Checkout, Customer Portal e webhook.
+- Dashboard de assinatura.
+- Admin protegido.
+- Metricas basicas, feedback e tracking.
+- Paginas legais.
 
-```text
-Plano Pro por R$ 29 no primeiro mes. Depois, R$ 97/mes.
-```
+## Stack usada
 
-Essa oferta vale para novos usuarios, nao e temporaria e nao usa urgencia artificial.
+- Next.js com App Router.
+- React.
+- TypeScript.
+- Tailwind CSS.
+- Supabase Auth e Database.
+- Stripe Billing, Checkout, Webhooks e Customer Portal.
+- OpenAI SDK em backend.
+- Resend.
+- `@react-pdf/renderer`.
+- Zod.
+- Vitest.
+- Playwright.
+- Deploy compativel com Vercel.
 
-Stripe e o billing principal do SaaS. Kiwify fica apenas como canal opcional de aquisicao para ebook, captura de lead, order bump e redirecionamento.
-
-## Stack
-
-- Next.js com App Router
-- React e TypeScript
-- Tailwind CSS
-- Supabase Auth e Database
-- Stripe Billing, Stripe Checkout, Stripe Webhooks e Customer Portal
-- OpenAI SDK em rota server-side
-- Resend para e-mails do fluxo de kit
-- `@react-pdf/renderer`
-- Vitest
-- Deploy compativel com Vercel
-
-## Rotas Principais
-
-- `/`: landing page com hero, problemas, como funciona, beneficios, demo, ebook, planos, comparacao, objecoes e FAQ.
-- `/demo`: demonstracao publica e limitada de geracao de respostas.
-- `/ebook`: captura do guia gratuito.
-- `/ebook/guia`: guia gratuito em HTML enviado por e-mail e acessível pela página de obrigado.
-- `/ebook/obrigado`: pagina de obrigado e oferta do Pro.
-- `/precos` e `/plans`: pagina de planos.
-- `/cadastro` e `/login`: autenticacao.
-- `/dashboard`: area logada do SaaS.
-- `/api/stripe/create-checkout-session`: inicia Stripe Checkout.
-- `/api/stripe/create-portal-session`: abre Customer Portal.
-- `/api/stripe/webhook`: atualiza assinaturas no Supabase.
-- `/api/kiwify/webhook`: registra aquisicao/funil.
-
-## Planos
-
-Fonte unica: `src/config/plans.ts`.
-
-- Starter: R$ 49/mes, 150 respostas com IA por mes.
-- Pro: R$ 29 no primeiro mes para novos usuarios, depois R$ 97/mes, 600 respostas com IA por mes.
-- Premium: R$ 197/mes, 2.000 respostas com IA por mes.
-
-O Pro e o plano recomendado.
-
-## Variaveis De Ambiente
-
-Copie `.env.example` para `.env.local`:
+## Como rodar localmente
 
 ```bash
+npm install
+npm run dev
+```
+
+Abra `http://localhost:3000`.
+
+Para simular um ambiente de producao local:
+
+```bash
+npm run build
+npm run start
+```
+
+## Variaveis de ambiente
+
+Copie `.env.example` para `.env.local` e preencha apenas no ambiente local ou nos provedores. Nunca commite `.env.local`.
+
+Variaveis principais:
+
+```bash
+NEXT_PUBLIC_APP_URL=
+
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-
-NEXT_PUBLIC_APP_URL=
-NEXT_PUBLIC_GA_MEASUREMENT_ID=
-NEXT_PUBLIC_META_PIXEL_ID=
 
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
@@ -79,90 +82,57 @@ STRIPE_WEBHOOK_SECRET=
 STRIPE_PRICE_STARTER=
 STRIPE_PRICE_PRO=
 STRIPE_PRICE_PREMIUM=
-STRIPE_COUPON_PRO_FIRST_MONTH_29=
-
-NEXT_PUBLIC_KIWIFY_EBOOK_URL=
-NEXT_PUBLIC_KIWIFY_PRO_ORDER_BUMP_URL=
-NEXT_PUBLIC_KIWIFY_STARTER_URL=
-NEXT_PUBLIC_KIWIFY_PREMIUM_URL=
-KIWIFY_WEBHOOK_SECRET=
+STRIPE_PRO_FIRST_MONTH_COUPON_ID=
 
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL=
+
 RESEND_API_KEY=
 EMAIL_FROM=
+
 ADMIN_EMAILS=
 SUPPORT_EMAIL=
+
+NEXT_PUBLIC_GA_MEASUREMENT_ID=
+NEXT_PUBLIC_META_PIXEL_ID=
+
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
-`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `RESEND_API_KEY`, `ADMIN_EMAILS` e `KIWIFY_WEBHOOK_SECRET` sao somente servidor.
+Variaveis server-only:
 
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_KIWIFY_*`, `NEXT_PUBLIC_GA_MEASUREMENT_ID` e `NEXT_PUBLIC_META_PIXEL_ID` podem ser publicas.
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `OPENAI_API_KEY`
+- `RESEND_API_KEY`
+- `ADMIN_EMAILS`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `KIWIFY_WEBHOOK_SECRET`, se usado
 
-O tracking de trafego pago e opcional. Veja `docs/tracking.md` para eventos, UTMs, GA4 e Meta Pixel. Veja tambem `docs/conversion.md` para CTAs e eventos da landing/pricing.
+Variaveis com `NEXT_PUBLIC_` entram no bundle do navegador. Use esse prefixo apenas para valores publicos.
 
-O envio do guia por e-mail usa Resend de forma opcional. Veja `docs/emails.md` para configurar `RESEND_API_KEY`, `EMAIL_FROM`, templates e logs em `lead_email_events`.
-
-O painel interno fica em `/admin` e usa `ADMIN_EMAILS` para liberar acesso. Veja `docs/admin.md`.
-
-## Supabase
-
-Schema principal:
-
-```text
-supabase/schema.sql
-```
-
-Migrations:
-
-```text
-supabase/migrations/0001_initial_schema.sql
-supabase/migrations/0002_funnel_pricing_ebook.sql
-supabase/migrations/0003_stripe_billing.sql
-```
-
-`subscriptions` e a fonte final de verdade para plano, status, limite mensal, periodo e provider. O client pode ler a propria assinatura, mas atualizacoes de plano/status devem vir de backend seguro ou webhook validado.
-
-## Stripe
-
-Configure no Dashboard da Stripe:
-
-1. Produtos Starter, Pro e Premium.
-2. Prices mensais:
-   - Starter: R$ 49
-   - Pro: R$ 97
-   - Premium: R$ 197
-3. Cupom do primeiro mes do Pro com `duration=once`, reduzindo a primeira fatura para R$ 29.
-4. Customer Portal.
-5. Webhook para `/api/stripe/webhook`.
-
-Eventos usados:
-
-- `checkout.session.completed`
-- `customer.subscription.created`
-- `customer.subscription.updated`
-- `customer.subscription.deleted`
-- `invoice.payment_succeeded`
-- `invoice.payment_failed`
-
-## Kiwify
-
-Kiwify nao e billing principal do SaaS. Use apenas para:
-
-- ebook gratuito ou baixo ticket;
-- captura de lead;
-- order bump;
-- upsell/cross-sell apontando para `/precos`;
-- registro de `acquisition_source = "kiwify"` e `funnel_source = "ebook"`.
-
-## Desenvolvimento
+## Comandos principais
 
 ```bash
-npm install
-npm run dev
+npm run lint
+npm run typecheck
+npm run build
+npm test
+npm run test:e2e
 ```
 
-Antes de finalizar qualquer alteracao:
+Comandos auxiliares:
+
+```bash
+npm run check
+npm run test:all
+npm run check:secrets
+npm run stripe:setup-products
+```
+
+Antes de finalizar uma mudanca, rode:
 
 ```bash
 npm run lint
@@ -170,34 +140,61 @@ npm run typecheck
 npm run build
 ```
 
-Quando a mudanca tocar webhook, checkout, assinatura, plano, limite ou IA:
+Quando a mudanca tocar validacao, webhook, prompt, geracao, assinatura, limite ou logica critica, rode tambem:
 
 ```bash
-npm run test
+npm test
 ```
 
-## Testar Stripe Localmente
+## Rotas principais
 
-```bash
-stripe login
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-```
+- `/`: landing page.
+- `/atendimento-whatsapp-ia`: pagina de campanha pequena.
+- `/demo`: demo publica.
+- `/ebook`: captura do guia gratuito.
+- `/ebook/obrigado`: obrigado e ponte para demo/cadastro/planos.
+- `/ebook/guia`: guia gratuito.
+- `/precos`: planos.
+- `/cadastro` e `/login`: autenticacao.
+- `/dashboard`: produto logado.
+- `/assinatura`: assinatura e portal.
+- `/admin`: painel protegido.
+- `/feedback`: coleta de feedback.
+- `/termos` e `/privacidade`: paginas legais.
 
-Copie o `whsec_...` para `STRIPE_WEBHOOK_SECRET`, rode `npm run dev`, crie/login de usuario, abra `/precos`, escolha um plano e pague em modo teste.
+## Documentacao importante
 
-Confirme no Supabase:
+- `docs/README.md`: indice principal da documentacao.
+- `docs/version-1.0.md`: escopo da versao 1.0.
+- `docs/roadmap-post-1.0.md`: roadmap depois da 1.0.
+- `docs/stability-criteria.md`: criterios de estabilidade.
+- `docs/production-readiness.md`: preparacao para producao controlada.
+- `docs/go-live-checklist.md`: checklist final no dominio real.
+- `docs/deploy-vercel.md`: deploy na Vercel.
+- `docs/stripe-setup.md`: Stripe.
+- `docs/supabase-setup.md`: Supabase.
+- `docs/openai-production.md`: OpenAI em producao.
+- `docs/resend-setup.md`: Resend.
+- `docs/tracking.md`: GA4, Meta Pixel, UTMs e eventos.
+- `docs/testing.md`: testes automatizados e manuais.
+- `SECURITY.md`: seguranca e segredos.
+- `CHANGELOG.md`: historico de versoes.
 
-- `subscriptions.provider = 'stripe'`
-- `subscriptions.provider_customer_id` preenchido
-- `subscriptions.provider_subscription_id` preenchido
-- `subscriptions.status = 'active'`
-- `subscriptions.monthly_limit` conforme plano
+## Seguranca
 
-## Documentacao
+- Nunca commitar `.env.local`.
+- Nunca colocar valores reais de chaves em arquivos versionados.
+- Nunca chamar OpenAI diretamente do frontend.
+- Nunca enviar `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` ou `RESEND_API_KEY` para o navegador.
+- Manter webhooks, APIs privadas, admin e RLS como fronteiras de seguranca.
 
-- `docs/billing.md`: arquitetura Kiwify + Stripe.
-- `docs/conversion.md`: promessa central, CTAs, secoes da landing/pricing e eventos de conversao.
-- `docs/demo.md`: demonstracao publica, limites, tracking e fallback sem OpenAI.
-- `docs/kiwify-setup.md`: funil de aquisicao.
-- `docs/smoke-test.md`: checklist manual.
-- `docs/troubleshooting.md`: erros comuns.
+## Escopo fora da 1.0
+
+- Envio automatico direto pelo WhatsApp.
+- CRM completo.
+- Multiplos atendentes.
+- Automacoes avancadas.
+- Integracoes externas avancadas.
+- Testes A/B automaticos.
+- Nutricao avancada por e-mail.
+- App mobile.
