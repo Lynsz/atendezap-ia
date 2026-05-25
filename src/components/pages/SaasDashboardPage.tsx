@@ -739,6 +739,20 @@ function SaasDashboardContent() {
                 <MessageSquare className="h-4 w-4" />
                 Enviar feedback
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent("support_cta_click", {
+                    source: "dashboard_header",
+                    destination: "support"
+                  });
+                  router.push("/suporte");
+                }}
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 text-sm font-bold text-slate-200 hover:bg-white/10"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Suporte
+              </button>
               {canManageStripeSubscription ? (
                 <button type="button" onClick={manageStripeSubscription} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-emerald-300 px-4 text-sm font-black text-slate-950 hover:bg-emerald-200">
                   <CreditCard className="h-4 w-4" />
@@ -1055,6 +1069,9 @@ function SaasDashboardContent() {
                 ) : isNearMonthlyLimit ? (
                   <p className="mt-3 text-sm font-bold text-amber-200">Você usou {usagePercent}% do seu limite mensal. Faça upgrade para continuar respondendo clientes sem travar o atendimento.</p>
                 ) : null}
+                <button type="button" onClick={() => router.push("/suporte")} className="mt-4 inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-white/5 px-4 text-sm font-bold text-slate-200 hover:bg-white/10">
+                  Preciso de ajuda com minha assinatura
+                </button>
               </div>
 
               {!activeSubscription ? (

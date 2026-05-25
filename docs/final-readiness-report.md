@@ -27,6 +27,24 @@ Nota estimada atualizada: 96/100. A nota nao sobe nesta consolidacao porque a et
 
 Recomendacao sobre escala cautelosa: manter a decisao de nao escalar ainda sem dados reais preenchidos em `docs/second-campaign-analysis.md`, matriz de escala verde e ausencia de bugs P0/P1. Campanhas pequenas continuam aceitaveis somente com monitoramento diario e baixo orcamento.
 
+## Operacao continua 1.0
+
+A operacao 1.0 esta documentada para manter o produto estavel apos o lancamento:
+
+- `docs/operations-1.0.md`: rotina diaria, semanal e mensal.
+- `docs/incident-response.md`: resposta a incidentes P0/P1/P2/P3.
+- `docs/incident-log.md`: modelo para registrar incidentes.
+- `docs/cost-monitoring.md`: custos de OpenAI, Stripe, Supabase, Vercel, Resend e campanhas.
+- `docs/retention-plan.md`: sinais iniciais de retencao e abandono.
+- `docs/ai-response-quality-plan.md`: criterios de qualidade das respostas e melhorias futuras.
+- `docs/internal-faq.md`: respostas operacionais internas.
+
+O admin foi revisado e continua suficiente para a fase atual: leads, usuarios, assinaturas, status, feedbacks, metricas de ativacao, uso de IA, UTMs e CSV. A visibilidade de suporte foi reforcada no dashboard, assinatura, feedback, FAQ e pagina de suporte, sem criar chat ou fluxo novo.
+
+Pendencias restantes: alertas automaticos, dashboard financeiro, relatorios de churn/retencao e monitoramento avancado seguem no roadmap pos-1.0. Ferramentas externas como Vercel, Supabase, Stripe, Resend, OpenAI, GA4 e Meta ainda precisam ser acompanhadas nos respectivos paineis.
+
+Nota estimada atualizada: 96/100. A operacao esta documentada, mas a maturidade operacional ainda depende de uso real, incidentes reais registrados, custos reais acompanhados e validacao continua dos provedores.
+
 ## Resumo executivo
 
 O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 usuarios reais e para uma campanha pequena de validacao com orcamento baixo, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. Alem da validacao local de release, agora existe um canal simples de feedback, lista no admin, roteiro de entrevista, mensagens de suporte, triagem rapida de bugs, metricas internas, pagina direta para campanha e relatorio de validacao comercial.

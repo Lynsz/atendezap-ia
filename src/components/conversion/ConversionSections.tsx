@@ -163,6 +163,11 @@ export const conversionFaqItems: FaqItem[] = [
     question: "Preciso saber tecnologia?",
     answer:
       "Não. Você configura seu atendimento com informações simples, gera a resposta, revisa e copia para enviar pelo WhatsApp."
+  },
+  {
+    question: "Como peco ajuda?",
+    answer:
+      "Use a pagina de suporte para duvidas de acesso, pagamento ou conta. Para reportar problema ou sugestao de produto, use a pagina de feedback."
   }
 ];
 

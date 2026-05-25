@@ -18,6 +18,20 @@ Pendencias conhecidas seguem principalmente externas/operacionais: validacao man
 
 Recomendacao atualizada: manter producao controlada e campanhas pequenas como rotina de validacao. Nao escalar investimento enquanto `docs/second-campaign-analysis.md` nao tiver dados reais suficientes, enquanto a matriz de decisao nao estiver verde e enquanto houver qualquer P0/P1 aberto.
 
+## Operacao 1.0
+
+A operacao continua da versao 1.0 agora esta documentada em `docs/operations-1.0.md`, com rotinas diaria, semanal e mensal para logs, provedores, feedbacks, leads, usuarios, assinaturas, custos, bugs e campanhas.
+
+O plano de incidentes foi criado em `docs/incident-response.md`, com severidades P0/P1/P2/P3, regra de pausa de anuncios, rollback e registro em `docs/incident-log.md`.
+
+O monitoramento de custos foi criado em `docs/cost-monitoring.md`, cobrindo OpenAI, Stripe, Supabase, Vercel, Resend e custos externos de campanhas. O plano de retencao inicial esta em `docs/retention-plan.md`, e a melhoria de qualidade da IA esta em `docs/ai-response-quality-plan.md`.
+
+O admin foi revisado para operacao e ja cobre leads recentes, usuarios cadastrados, assinaturas, status de assinatura, feedbacks, metricas de ativacao, uso de IA, origem por UTM e exportacao CSV agregada. Nao foi criado dashboard complexo novo.
+
+Pendencias restantes: alertas automaticos ainda dependem de configuracao externa; custos de midia continuam fora do app; e retencao/churn mais avancados seguem como roadmap pos-1.0.
+
+Nota estimada atualizada: 96/100. A nota permanece estavel porque a operacao foi organizada, mas ainda depende de validacao e monitoramento reais em producao.
+
 O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios e uma campanha pequena de validacao: funil publico, pagina direta de campanha, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, metricas internas, relatorio de campanha, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin, feedback e metricas no ambiente final.
 
 O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de priorizacao, revisao semanal, backlog de crescimento, experimentos pequenos e bloco simples de gargalo no admin para orientar melhorias com dados reais.

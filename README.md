@@ -166,8 +166,15 @@ npm test
 
 - `docs/README.md`: indice principal da documentacao.
 - `docs/version-1.0.md`: escopo da versao 1.0.
+- `docs/operations-1.0.md`: rotina operacional da versao 1.0.
 - `docs/roadmap-post-1.0.md`: roadmap depois da 1.0.
 - `docs/stability-criteria.md`: criterios de estabilidade.
+- `docs/incident-response.md`: resposta a incidentes.
+- `docs/incident-log.md`: modelo de registro de incidentes.
+- `docs/cost-monitoring.md`: monitoramento de custos.
+- `docs/retention-plan.md`: plano inicial de retencao.
+- `docs/ai-response-quality-plan.md`: qualidade das respostas com IA.
+- `docs/internal-faq.md`: FAQ operacional interna.
 - `docs/production-readiness.md`: preparacao para producao controlada.
 - `docs/go-live-checklist.md`: checklist final no dominio real.
 - `docs/deploy-vercel.md`: deploy na Vercel.

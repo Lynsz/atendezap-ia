@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, BadgeDollarSign, CalendarClock, CheckCircle2, CreditCard, RefreshCw, ShieldCheck, Wallet } from "lucide-react";
+import { AlertCircle, BadgeDollarSign, CalendarClock, CheckCircle2, CreditCard, MessageCircle, RefreshCw, ShieldCheck, Wallet } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
 import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
@@ -266,6 +266,13 @@ function BillingContent() {
                 className="inline-flex min-h-11 items-center justify-center rounded-md border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-bold text-slate-200 transition hover:bg-white/10"
               >
                 Voltar ao dashboard
+              </Link>
+              <Link
+                href="/suporte"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-bold text-slate-200 transition hover:bg-white/10"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Suporte
               </Link>
             </div>
           </article>
