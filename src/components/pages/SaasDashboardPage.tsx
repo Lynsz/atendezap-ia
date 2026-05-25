@@ -22,6 +22,7 @@ import {
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
 import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
+import { businessTypeOptions, getBusinessExamples, getBusinessTemplate, getBusinessTypeLabel } from "@/lib/ai/business-templates";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
@@ -61,7 +62,7 @@ type CustomerDraft = {
 const emptyBusiness: BusinessDraft = {
   business_name: "",
   business_area: "",
-  business_type: "Prestador de serviço",
+  business_type: "Prestador de servico",
   location: "",
   description: "",
   products_services: "",
@@ -103,24 +104,11 @@ const customerStatusLabels: Record<CustomerStatus, string> = {
   perdido: "Perdido"
 };
 
-const businessTypeOptions = ["Autônomo", "Prestador de serviço", "Loja", "Delivery", "Estética", "Restaurante", "Assistência técnica", "Outro"];
-
 const mainChannelOptions = ["WhatsApp", "Instagram", "Telefone", "Outros"];
 
 const responseGoalOptions = ["Responder em até 5 minutos", "Responder em até 15 minutos", "Responder em até 1 hora", "Responder no mesmo dia"];
 
 const toneOptions = ["Profissional", "Simpático", "Direto", "Vendedor", "Acolhedor"];
-
-const exampleQuestionsByType: Record<string, string[]> = {
-  "Autônomo": ["Qual o valor do serviço?", "Você atende hoje?", "Como faço para agendar?"],
-  "Prestador de serviço": ["Qual o valor do serviço?", "Vocês fazem orçamento?", "Quais formas de pagamento?"],
-  Loja: ["Tem esse produto disponível?", "Quais formas de pagamento?", "Pode me passar mais informações?"],
-  Delivery: ["Tem entrega?", "Qual o prazo de entrega?", "Quais formas de pagamento?"],
-  Estética: ["Como faço para agendar?", "Qual o valor do procedimento?", "Vocês atendem hoje?"],
-  Restaurante: ["Tem entrega?", "Qual o cardápio de hoje?", "Quais formas de pagamento?"],
-  "Assistência técnica": ["Vocês fazem orçamento?", "Qual o prazo do conserto?", "Como funciona a garantia?"],
-  Outro: ["Qual o valor do serviço?", "Vocês atendem hoje?", "Pode me passar mais informações?"]
-};
 
 function getCurrentMonthStart() {
   const now = new Date();
@@ -152,10 +140,11 @@ function formatShortDate(value?: string | null) {
 
 function toBusinessDraft(business: Business | null): BusinessDraft {
   if (!business) return emptyBusiness;
+  const businessType = getBusinessTemplate(business.business_type || business.business_area || "Prestador de servico").type;
   return {
     business_name: business.business_name || "",
     business_area: business.business_area || "",
-    business_type: business.business_type || business.business_area || "Prestador de serviço",
+    business_type: businessType,
     location: business.location || "",
     description: business.description || "",
     products_services: business.products_services || "",
@@ -213,10 +202,6 @@ function normalizePlanId(planName?: string | null): PlanId | null {
   return PLAN_IDS.find((planId) => planId === normalizedPlanName || SAAS_PLANS[planId].name.toLowerCase() === normalizedPlanName) ?? null;
 }
 
-function getExampleQuestions(businessType: string) {
-  return exampleQuestionsByType[businessType] || exampleQuestionsByType.Outro;
-}
-
 function SaasDashboardContent() {
   const router = useRouter();
   const [tab, setTab] = useState<DashboardTab>("assistant");
@@ -232,6 +217,10 @@ function SaasDashboardContent() {
   const [question, setQuestion] = useState("");
   const [responseType, setResponseType] = useState<ResponseType>("atendimento");
   const [generatedAnswer, setGeneratedAnswer] = useState("");
+  const [generatedResponseId, setGeneratedResponseId] = useState<string | null>(null);
+  const [qualityComment, setQualityComment] = useState("");
+  const [qualitySubmitting, setQualitySubmitting] = useState(false);
+  const [qualitySubmittedRating, setQualitySubmittedRating] = useState<"positive" | "negative" | null>(null);
   const [history, setHistory] = useState<GeneratedResponse[]>([]);
   const [customers, setCustomers] = useState<CustomerLead[]>([]);
   const [customerDraft, setCustomerDraft] = useState<CustomerDraft>(emptyCustomer);
@@ -302,9 +291,36 @@ function SaasDashboardContent() {
       ? planRows.find((plan) => plan.name.toLowerCase() === activePlanName.toLowerCase())
       : planRows.find((plan) => plan.name.toLowerCase() === "inicial");
 
+    const responses = (responseData as GeneratedResponse[] | null) || [];
+    const responseIds = responses.map((response) => response.id);
+    let responsesWithFeedback = responses;
+    if (responseIds.length) {
+      const { data: aiFeedbackData } = await supabase
+        .from("ai_response_feedback")
+        .select("response_id, rating, comment, created_at")
+        .eq("user_id", user.id)
+        .in("response_id", responseIds)
+        .order("created_at", { ascending: false });
+      const feedbackByResponseId = new Map<string, { rating: string | null; comment: string | null; created_at: string | null }>();
+      ((aiFeedbackData as Array<{ response_id: string; rating: string | null; comment: string | null; created_at: string | null }> | null) || []).forEach((item) => {
+        if (!feedbackByResponseId.has(item.response_id)) feedbackByResponseId.set(item.response_id, item);
+      });
+      responsesWithFeedback = responses.map((response) => {
+        const responseFeedback = feedbackByResponseId.get(response.id);
+        return responseFeedback
+          ? {
+              ...response,
+              quality_feedback_rating: responseFeedback.rating,
+              quality_feedback_comment: responseFeedback.comment,
+              quality_feedback_created_at: responseFeedback.created_at
+            }
+          : response;
+      });
+    }
+
     setBusiness((businessData as Business | null) || null);
     setBusinessDraft(toBusinessDraft((businessData as Business | null) || null));
-    setHistory((responseData as GeneratedResponse[] | null) || []);
+    setHistory(responsesWithFeedback);
     setCustomers((customerData as CustomerLead[] | null) || []);
     setSubscription(subscriptionRow);
     setCurrentPlan(matchedPlan || null);
@@ -376,7 +392,7 @@ function SaasDashboardContent() {
         business_type: payload.business_type
       });
       setTab("assistant");
-      setQuestion(getExampleQuestions(payload.business_type)[0] || "Qual o valor do serviço?");
+      setQuestion(getBusinessExamples(payload.business_type)[0] || "Qual o valor do servico?");
     }
     showFeedback(options?.successMessage || "Negócio salvo com sucesso.");
   }
@@ -431,6 +447,9 @@ function SaasDashboardContent() {
     event.preventDefault();
     setError("");
     setGeneratedAnswer("");
+    setGeneratedResponseId(null);
+    setQualityComment("");
+    setQualitySubmittedRating(null);
 
     if (!supabase) {
       setError("Supabase indisponível. Revise o ambiente e tente novamente.");
@@ -468,6 +487,7 @@ function SaasDashboardContent() {
       });
 
       setGeneratedAnswer(answer);
+      setGeneratedResponseId(savedResponse?.id || null);
       setMonthlyUsage(usage.used);
       if (savedResponse) {
         setHistory((current) => [savedResponse, ...current]);
@@ -626,6 +646,65 @@ function SaasDashboardContent() {
     }
   }
 
+  async function handleQualityFeedback(rating: "positive" | "negative") {
+    setError("");
+
+    if (!supabase || !generatedResponseId) {
+      setError("Gere uma resposta antes de avaliar.");
+      return;
+    }
+
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      setError("Sessão não encontrada. Faça login novamente.");
+      router.replace("/login");
+      return;
+    }
+
+    setQualitySubmitting(true);
+    try {
+      const response = await fetch("/api/ai/response-feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          responseId: generatedResponseId,
+          rating,
+          comment: qualityComment.trim() || undefined
+        })
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(result.error || "Não foi possível salvar a avaliação agora.");
+      }
+
+      setQualitySubmittedRating(rating);
+      setHistory((current) =>
+        current.map((item) =>
+          item.id === generatedResponseId
+            ? {
+                ...item,
+                quality_feedback_rating: rating,
+                quality_feedback_comment: qualityComment.trim() || null,
+                quality_feedback_created_at: new Date().toISOString()
+              }
+            : item
+        )
+      );
+      showFeedback("Avaliação salva. Obrigado pelo feedback.");
+    } catch (qualityError) {
+      setError(qualityError instanceof Error ? qualityError.message : "Não foi possível salvar a avaliação agora.");
+    } finally {
+      setQualitySubmitting(false);
+    }
+  }
+
   const planName = subscription?.plan || subscription?.plan_name || currentPlan?.name || "Sem assinatura";
   const monthlyLimit = getPlanLimit(subscription, currentPlan);
   const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
@@ -639,7 +718,7 @@ function SaasDashboardContent() {
     subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id || subscription.stripe_customer_id);
   const isFreeOrTrial = !subscriptionPlanName || subscriptionPlanName.toLowerCase() === "free" || subscription?.status?.toLowerCase() === "trial";
   const shouldShowOnboarding = !business?.onboarding_completed;
-  const exampleQuestions = getExampleQuestions(businessDraft.business_type);
+  const exampleQuestions = getBusinessExamples(businessDraft.business_type);
   const responseLimit = monthlyLimit.toLocaleString("pt-BR");
   const renewalDetail = subscription?.current_period_end
     ? `Renova em ${new Intl.DateTimeFormat("pt-BR").format(new Date(subscription.current_period_end))}`
@@ -815,7 +894,7 @@ function SaasDashboardContent() {
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
                   Tipo de atuação
                   <select value={businessDraft.business_type} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_type: event.target.value, business_area: event.target.value }))} className="field-input">
-                    {businessTypeOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                    {businessTypeOptions.map((option) => <option value={option} key={option}>{getBusinessTypeLabel(option)}</option>)}
                   </select>
                 </label>
                 <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
@@ -1212,13 +1291,46 @@ function SaasDashboardContent() {
                     <p className="text-sm font-bold leading-6 text-slate-200">
                       A resposta ajudou? Copie, ajuste se precisar e envie manualmente pelo WhatsApp.
                     </p>
-                    <button
-                      type="button"
-                      onClick={openGeneratedResponseFeedback}
-                      className="mt-3 inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15"
-                    >
-                      Dar feedback sobre esta resposta
-                    </button>
+                    <label className="mt-3 grid gap-2 text-xs font-bold text-slate-300">
+                      O que poderia melhorar? (opcional)
+                      <textarea
+                        value={qualityComment}
+                        onChange={(event) => setQualityComment(event.target.value.slice(0, 500))}
+                        disabled={Boolean(qualitySubmittedRating)}
+                        className="field-input min-h-20 resize-none py-3 text-sm"
+                        placeholder="Ex.: ficou longa, faltou objetividade, tom formal demais..."
+                      />
+                    </label>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleQualityFeedback("positive")}
+                        disabled={qualitySubmitting || Boolean(qualitySubmittedRating) || !generatedResponseId}
+                        className="inline-flex min-h-10 items-center justify-center rounded-md bg-emerald-400 px-4 text-xs font-black text-slate-950 hover:bg-emerald-300 disabled:opacity-60"
+                      >
+                        Sim
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleQualityFeedback("negative")}
+                        disabled={qualitySubmitting || Boolean(qualitySubmittedRating) || !generatedResponseId}
+                        className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15 disabled:opacity-60"
+                      >
+                        Não
+                      </button>
+                      <button
+                        type="button"
+                        onClick={openGeneratedResponseFeedback}
+                        className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-transparent px-4 text-xs font-black text-slate-300 hover:bg-white/10"
+                      >
+                        Feedback detalhado
+                      </button>
+                    </div>
+                    {qualitySubmittedRating ? (
+                      <p className="mt-2 text-xs font-bold text-emerald-200">
+                        Avaliação salva como {qualitySubmittedRating === "positive" ? "útil" : "não útil"}.
+                      </p>
+                    ) : null}
                   </div>
                 </>
               ) : (
@@ -1254,7 +1366,7 @@ function SaasDashboardContent() {
               <label className="grid gap-2 text-sm font-bold text-slate-300">
                 Tipo de atuação
                 <select value={businessDraft.business_type} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_type: event.target.value, business_area: event.target.value }))} className="field-input">
-                  {businessTypeOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+                    {businessTypeOptions.map((option) => <option value={option} key={option}>{getBusinessTypeLabel(option)}</option>)}
                 </select>
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300">
@@ -1308,6 +1420,17 @@ function SaasDashboardContent() {
                     <span className="text-xs text-slate-500">{formatDate(item.created_at)}</span>
                   </div>
                   <p className="text-sm font-bold text-white">Cliente: {item.customer_question}</p>
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold text-slate-400">
+                    <span>Tipo: {getBusinessTypeLabel(item.business_type || businessDraft.business_type) || "Não informado"}</span>
+                    <span>Tom: {item.brand_tone || businessDraft.brand_tone || "Não informado"}</span>
+                    {item.quality_feedback_rating ? (
+                      <span className={item.quality_feedback_rating === "positive" ? "text-emerald-200" : "text-amber-200"}>
+                        Avaliação: {item.quality_feedback_rating === "positive" ? "útil" : "não útil"}
+                      </span>
+                    ) : (
+                      <span>Avaliação: pendente</span>
+                    )}
+                  </div>
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{item.generated_answer}</p>
                   <div className="mt-4 flex gap-2">
                     <button type="button" onClick={() => copyText(item.generated_answer)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>

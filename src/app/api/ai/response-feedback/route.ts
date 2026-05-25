@@ -1,0 +1,124 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { z } from "zod";
+import { AppError } from "@/lib/errors";
+import { serverLog } from "@/lib/logger";
+import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
+
+export const runtime = "nodejs";
+
+const responseFeedbackSchema = z
+  .object({
+    responseId: z.string().uuid("Resposta invalida."),
+    rating: z.enum(["positive", "negative"], { errorMap: () => ({ message: "Escolha uma avaliacao valida." }) }),
+    comment: z.string().trim().max(500, "Comentario muito longo. Use ate 500 caracteres.").optional()
+  })
+  .strict();
+
+export async function POST(request: Request) {
+  let userId: string | null = null;
+
+  try {
+    assertRequestSize(request, 8_192);
+    await enforceRateLimit({
+      request,
+      route: "api:ai-response-feedback:ip",
+      limit: 30,
+      windowMs: 5 * 60_000,
+      message: "Voce enviou muitas avaliacoes rapidamente. Tente de novo em instantes."
+    });
+
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!url || !anonKey) {
+      serverLog({ level: "error", event: "ai_feedback_missing_supabase_config", route: "/api/ai/response-feedback" });
+      return NextResponse.json({ error: "Supabase nao configurado no servidor. Revise as variaveis de ambiente." }, { status: 500 });
+    }
+
+    const authorization = request.headers.get("authorization");
+    if (!authorization) {
+      return NextResponse.json({ error: "Sessao nao encontrada. Faca login novamente." }, { status: 401 });
+    }
+
+    const supabase = createClient(url, anonKey, {
+      global: {
+        headers: {
+          Authorization: authorization
+        }
+      },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false
+      }
+    });
+
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return NextResponse.json({ error: "Sessao invalida. Faca login novamente." }, { status: 401 });
+    }
+
+    userId = user.id;
+    await enforceRateLimit({
+      request,
+      route: "api:ai-response-feedback:user",
+      identifier: user.id,
+      limit: 20,
+      windowMs: 5 * 60_000,
+      message: "Voce enviou muitas avaliacoes rapidamente. Tente de novo em instantes."
+    });
+
+    const payload = responseFeedbackSchema.safeParse(await request.json());
+    if (!payload.success) {
+      return NextResponse.json({ error: payload.error.issues[0]?.message || "Dados invalidos." }, { status: 400 });
+    }
+
+    const { data: generatedResponse, error: responseError } = await supabase
+      .from("generated_responses")
+      .select("id")
+      .eq("id", payload.data.responseId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (responseError) {
+      serverLog({ level: "warn", event: "ai_feedback_response_lookup_failed", route: "/api/ai/response-feedback", userId: user.id, error: responseError });
+      return NextResponse.json({ error: "Nao foi possivel validar a resposta agora." }, { status: 500 });
+    }
+
+    if (!generatedResponse) {
+      return NextResponse.json({ error: "Resposta nao encontrada para este usuario." }, { status: 404 });
+    }
+
+    const { data: feedback, error: upsertError } = await supabase
+      .from("ai_response_feedback")
+      .upsert(
+        {
+          user_id: user.id,
+          response_id: payload.data.responseId,
+          rating: payload.data.rating,
+          comment: payload.data.comment || null
+        },
+        { onConflict: "user_id,response_id" }
+      )
+      .select("*")
+      .single();
+
+    if (upsertError || !feedback) {
+      serverLog({ level: "error", event: "ai_feedback_save_failed", route: "/api/ai/response-feedback", userId: user.id, error: upsertError });
+      return NextResponse.json({ error: "Nao foi possivel salvar a avaliacao agora." }, { status: 500 });
+    }
+
+    serverLog({ event: "ai_response_feedback_saved", route: "/api/ai/response-feedback", userId: user.id, status: "ok", metadata: { rating: payload.data.rating } });
+    return NextResponse.json({ feedback });
+  } catch (error) {
+    serverLog({ level: "warn", event: "ai_feedback_failed", route: "/api/ai/response-feedback", userId, error });
+    if (error instanceof AppError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    return NextResponse.json({ error: "Nao foi possivel salvar a avaliacao agora. Tente novamente em instantes." }, { status: 500 });
+  }
+}

@@ -1,7 +1,9 @@
 import OpenAI from "openai";
+import { formatBusinessTemplateForPrompt, getBusinessTemplate } from "@/lib/ai/business-templates";
 import type { ResponseType } from "@/types/mvp";
 
 export type BusinessDataForResponse = {
+  id?: string;
   business_name: string;
   business_area?: string;
   business_type?: string;
@@ -29,60 +31,81 @@ export type GenerateAiResponseInput = {
 const responseTypeLabels: Record<ResponseType, string> = {
   atendimento: "atendimento",
   venda: "venda",
-  orcamento: "orçamento",
+  orcamento: "orcamento",
   cliente_indeciso: "cliente indeciso",
   pos_venda: "pos-venda",
-  recuperacao: "recuperação de cliente sumido"
+  recuperacao: "recuperacao de cliente sumido"
 };
 
-function line(label: string, value?: string) {
+function line(label: string, value?: string | null) {
   return value?.trim() ? `- ${label}: ${value.trim()}` : "";
 }
 
 export function generateFallbackCustomerResponse({ customerQuestion, responseType, businessData }: GenerateAiResponseInput) {
+  const template = getBusinessTemplate(businessData.business_type || businessData.business_area);
   const details = [
     businessData.products_services ? `trabalhamos com ${businessData.products_services}` : "",
     businessData.opening_hours ? `nosso atendimento funciona em ${businessData.opening_hours}` : "",
-    businessData.main_channel ? `o canal principal de atendimento é ${businessData.main_channel}` : "",
+    businessData.main_channel ? `o canal principal de atendimento e ${businessData.main_channel}` : "",
     businessData.payment_methods ? `aceitamos ${businessData.payment_methods}` : "",
-    businessData.booking_or_payment_link ? `você também pode acessar este link: ${businessData.booking_or_payment_link}` : ""
+    businessData.booking_or_payment_link ? `voce tambem pode acessar este link: ${businessData.booking_or_payment_link}` : ""
   ].filter(Boolean);
 
   return [
-    `Olá! Obrigada pelo contato. Sobre sua dúvida: ${customerQuestion.trim()}.`,
-    `Aqui no ${businessData.business_name}, ${details.length ? details.join(", ") : "posso te ajudar com mais informações do nosso atendimento"}.`,
+    `Ola! Obrigada pelo contato. Sobre sua duvida: ${customerQuestion.trim()}.`,
+    `Aqui no ${businessData.business_name}, ${details.length ? details.join(", ") : "posso te ajudar com mais informacoes do nosso atendimento"}.`,
     responseType === "venda" || responseType === "cliente_indeciso"
-      ? "Me chama por aqui que eu te ajudo a escolher a melhor opção."
-      : "Posso te ajudar com mais detalhes por aqui."
-  ].join(" ");
+      ? "Me chama por aqui que eu te ajudo a escolher a melhor opcao."
+      : "Posso te ajudar com mais detalhes por aqui.",
+    template.importantCare.length ? "Se faltar alguma informacao, me mande mais detalhes para eu confirmar antes de te passar prazo, valor ou disponibilidade." : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 export function buildCustomerResponsePrompt({ customerQuestion, responseType, businessData }: GenerateAiResponseInput) {
+  const template = getBusinessTemplate(businessData.business_type || businessData.business_area);
+
   return `Pergunta do cliente:
 ${customerQuestion}
 
 Tipo de resposta:
 ${responseTypeLabels[responseType]}
 
-Dados do negócio:
+Dados do negocio:
 ${[
   line("Nome", businessData.business_name),
-  line("Área", businessData.business_area),
-  line("Tipo de atuação", businessData.business_type),
+  line("Area", businessData.business_area),
+  line("Tipo de atuacao", businessData.business_type),
   line("Cidade/estado", businessData.location),
-  line("Descrição", businessData.description),
-  line("Produtos/serviços", businessData.products_services),
+  line("Descricao", businessData.description),
+  line("Produtos/servicos", businessData.products_services),
   line("Perguntas comuns dos clientes", businessData.common_questions),
-  line("Informações importantes para a IA", businessData.important_info),
-  line("Preços", businessData.prices),
+  line("Informacoes importantes para a IA", businessData.important_info),
+  line("Precos", businessData.prices),
   line("Canal principal", businessData.main_channel),
-  line("Horário", businessData.opening_hours),
+  line("Horario", businessData.opening_hours),
   line("Meta de tempo de resposta", businessData.response_goal),
-  line("Endereço", businessData.address),
+  line("Endereco", businessData.address),
   line("Formas de pagamento", businessData.payment_methods),
   line("Link de pagamento/agendamento", businessData.booking_or_payment_link),
   line("Tom de voz", businessData.brand_tone)
-].filter(Boolean).join("\n")}`;
+]
+  .filter(Boolean)
+  .join("\n")}
+
+Template do tipo de atuacao:
+${formatBusinessTemplateForPrompt(template)}
+
+Regras obrigatorias:
+- Gerar uma resposta pronta para WhatsApp, curta, clara e natural.
+- Adaptar a resposta ao tipo de atuacao, ao tom de voz e aos dados do negocio.
+- Usar apenas precos, prazos, horarios, disponibilidade, endereco, links e formas de pagamento informados nos dados.
+- Nao inventar preco, prazo, disponibilidade, estoque, garantia, endereco, link ou forma de pagamento.
+- Nao confirmar agendamento, reserva, entrega, avaliacao ou atendimento sem dados suficientes.
+- Nao dizer que a mensagem foi enviada automaticamente.
+- Se faltar informacao, pedir os detalhes necessarios de forma educada.
+- Nao usar markdown, listas longas ou aspas envolvendo a resposta final.`;
 }
 
 export async function generateCustomerResponseWithAi(input: GenerateAiResponseInput) {
@@ -100,7 +123,7 @@ export async function generateCustomerResponseWithAi(input: GenerateAiResponseIn
       {
         role: "system",
         content:
-          "Você é uma assistente comercial especialista em atendimento por WhatsApp para pequenos negócios brasileiros. Sua função é criar respostas prontas para copiar e colar no WhatsApp. Responda de forma natural, objetiva, educada e persuasiva. Use apenas as informações fornecidas sobre o negócio. Não invente preços, horários, endereço, links, formas de pagamento ou serviços. Se uma informação estiver ausente, responda de forma útil sem criar dados falsos. A resposta deve parecer humana e profissional. Evite textos longos demais. Não use markdown. Não use aspas envolvendo a resposta final."
+          "Voce e uma assistente comercial especialista em atendimento por WhatsApp para pequenos negocios brasileiros. Sua funcao e criar respostas prontas para copiar, ajustar e enviar manualmente. Responda de forma natural, objetiva, educada e util. Use apenas as informacoes fornecidas sobre o negocio e o template do nicho. Nao invente preco, prazo, disponibilidade, estoque, garantia, endereco, link, forma de pagamento, horario ou servico. Nao confirme agendamento, reserva ou entrega sem dados suficientes. Se uma informacao estiver ausente, peca o detalhe necessario. A resposta deve parecer humana e profissional, curta o bastante para WhatsApp. Nao use markdown. Nao use aspas envolvendo a resposta final."
       },
       {
         role: "user",

@@ -39,6 +39,8 @@ create table if not exists public.generated_responses (
   customer_question text not null,
   generated_answer text not null,
   response_type text,
+  business_type text,
+  brand_tone text,
   created_at timestamptz default now()
 );
 
@@ -127,6 +129,8 @@ alter table public.subscriptions add column if not exists current_period_start t
 alter table public.plans add column if not exists first_month_price numeric;
 alter table public.plans add column if not exists is_first_month_offer boolean default false;
 alter table public.plans add column if not exists status text default 'active';
+alter table public.generated_responses add column if not exists business_type text;
+alter table public.generated_responses add column if not exists brand_tone text;
 
 create table if not exists public.ebook_leads (
   id uuid primary key default gen_random_uuid(),
@@ -175,6 +179,18 @@ create table if not exists public.user_feedback (
   updated_at timestamptz default now(),
   constraint user_feedback_type_check check (type in ('bug', 'duvida', 'sugestao', 'elogio', 'dificuldade_uso')),
   constraint user_feedback_status_check check (status in ('new', 'reviewing', 'resolved', 'ignored'))
+);
+
+create table if not exists public.ai_response_feedback (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  response_id uuid references public.generated_responses(id) on delete cascade not null,
+  rating text not null,
+  comment text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  constraint ai_response_feedback_rating_check check (rating in ('positive', 'negative')),
+  constraint ai_response_feedback_user_response_unique unique (user_id, response_id)
 );
 
 create table if not exists public.stripe_webhook_events (
@@ -255,6 +271,10 @@ create index if not exists user_feedback_type_idx on public.user_feedback(type);
 create index if not exists user_feedback_context_idx on public.user_feedback(context);
 create index if not exists user_feedback_source_idx on public.user_feedback(source);
 create index if not exists user_feedback_created_at_idx on public.user_feedback(created_at desc);
+create index if not exists ai_response_feedback_user_id_idx on public.ai_response_feedback(user_id);
+create index if not exists ai_response_feedback_response_id_idx on public.ai_response_feedback(response_id);
+create index if not exists ai_response_feedback_rating_idx on public.ai_response_feedback(rating);
+create index if not exists ai_response_feedback_created_at_idx on public.ai_response_feedback(created_at desc);
 create unique index if not exists stripe_webhook_events_provider_event_id_unique_idx on public.stripe_webhook_events(provider_event_id);
 create index if not exists subscriptions_provider_subscription_id_idx on public.subscriptions(provider_subscription_id);
 create index if not exists subscriptions_provider_customer_id_idx on public.subscriptions(provider_customer_id);
@@ -309,6 +329,11 @@ create trigger set_user_feedback_updated_at
   before update on public.user_feedback
   for each row execute function public.set_updated_at();
 
+drop trigger if exists set_ai_response_feedback_updated_at on public.ai_response_feedback;
+create trigger set_ai_response_feedback_updated_at
+  before update on public.ai_response_feedback
+  for each row execute function public.set_updated_at();
+
 create or replace function public.handle_new_user()
 returns trigger
 set search_path = ''
@@ -343,6 +368,7 @@ alter table public.plans enable row level security;
 alter table public.ebook_leads enable row level security;
 alter table public.lead_email_events enable row level security;
 alter table public.user_feedback enable row level security;
+alter table public.ai_response_feedback enable row level security;
 alter table public.stripe_webhook_events enable row level security;
 alter table public.purchasers enable row level security;
 alter table public.orders enable row level security;
@@ -373,6 +399,9 @@ drop policy if exists "ebook_leads_no_client_access" on public.ebook_leads;
 drop policy if exists "lead_email_events_no_client_access" on public.lead_email_events;
 drop policy if exists "user_feedback_insert_public" on public.user_feedback;
 drop policy if exists "user_feedback_select_own" on public.user_feedback;
+drop policy if exists "ai_response_feedback_select_own" on public.ai_response_feedback;
+drop policy if exists "ai_response_feedback_insert_own" on public.ai_response_feedback;
+drop policy if exists "ai_response_feedback_update_own" on public.ai_response_feedback;
 drop policy if exists "stripe_webhook_events_no_client_access" on public.stripe_webhook_events;
 drop policy if exists "purchasers_no_client_access" on public.purchasers;
 drop policy if exists "orders_no_client_access" on public.orders;
@@ -408,6 +437,25 @@ create policy "ebook_leads_no_client_access" on public.ebook_leads for all to an
 create policy "lead_email_events_no_client_access" on public.lead_email_events for all to anon, authenticated using (false) with check (false);
 create policy "user_feedback_insert_public" on public.user_feedback for insert to anon, authenticated with check (user_id is null or (select auth.uid()) = user_id);
 create policy "user_feedback_select_own" on public.user_feedback for select to authenticated using ((select auth.uid()) = user_id);
+create policy "ai_response_feedback_select_own" on public.ai_response_feedback for select to authenticated using ((select auth.uid()) = user_id);
+create policy "ai_response_feedback_insert_own" on public.ai_response_feedback for insert to authenticated with check (
+  (select auth.uid()) = user_id
+  and exists (
+    select 1
+    from public.generated_responses gr
+    where gr.id = response_id
+      and gr.user_id = (select auth.uid())
+  )
+);
+create policy "ai_response_feedback_update_own" on public.ai_response_feedback for update to authenticated using ((select auth.uid()) = user_id) with check (
+  (select auth.uid()) = user_id
+  and exists (
+    select 1
+    from public.generated_responses gr
+    where gr.id = response_id
+      and gr.user_id = (select auth.uid())
+  )
+);
 create policy "stripe_webhook_events_no_client_access" on public.stripe_webhook_events for all to anon, authenticated using (false) with check (false);
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
 create policy "orders_no_client_access" on public.orders for all to anon, authenticated using (false) with check (false);
@@ -426,6 +474,8 @@ revoke all on public.lead_email_events from anon, authenticated;
 revoke all on public.user_feedback from anon, authenticated;
 grant insert on public.user_feedback to anon, authenticated;
 grant select on public.user_feedback to authenticated;
+revoke all on public.ai_response_feedback from anon, authenticated;
+grant select, insert, update on public.ai_response_feedback to authenticated;
 revoke all on public.stripe_webhook_events from anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;

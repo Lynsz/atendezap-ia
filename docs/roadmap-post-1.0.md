@@ -39,11 +39,19 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 
 ## Melhorias de produto
 
-- Templates por nicho.
 - Respostas favoritas.
 - Biblioteca de respostas.
 - Avaliacao da resposta.
 - Sequencia de e-mails.
+
+## Melhorias futuras de IA
+
+- Templates avancados por nicho.
+- Biblioteca de respostas favoritas.
+- Ajuste de tom por resposta.
+- Avaliacao com estrelas.
+- Sugestoes de melhoria automatica.
+- Respostas salvas por categoria.
 
 ## Melhorias comerciais
 

@@ -76,7 +76,9 @@ function createSupabaseMock() {
             id: "22222222-2222-4222-8222-222222222222",
             user_id: "11111111-1111-4111-8111-111111111111",
             business_name: "Studio Maria",
-            business_area: "beleza"
+            business_area: "beleza",
+            business_type: "Estetica",
+            brand_tone: "Acolhedor"
           },
           error: null
         }));
@@ -243,7 +245,9 @@ describe("POST /api/ai/generate-response", () => {
     expect(mocks.tableFilters).not.toContainEqual({ table: "businesses", column: "user_id", value: "33333333-3333-4333-8333-333333333333" });
     expect(mocks.insertPayload).toMatchObject({
       user_id: "11111111-1111-4111-8111-111111111111",
-      business_id: "22222222-2222-4222-8222-222222222222"
+      business_id: "22222222-2222-4222-8222-222222222222",
+      business_type: "Estetica",
+      brand_tone: "Acolhedor"
     });
   });
 });

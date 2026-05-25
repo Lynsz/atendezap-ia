@@ -596,3 +596,33 @@ Recomendacao atualizada:
 Nao escalar ainda. O AtendeZap IA esta pronto para avaliar a segunda campanha e preparar escala cautelosa, mas a decisao depende de dados reais, tracking confiavel, checkouts funcionando e ausencia de bugs P0/P1.
 
 Nota estimada mantida: 96/100 ate validacao real da segunda campanha e decisao de escala.
+
+## Qualidade das respostas com IA - 2026-05-25
+
+Status: melhoria pos-1.0 implementada para gerar respostas mais especificas por nicho e coletar feedback real de qualidade.
+
+O que foi feito:
+
+- Criados templates por nicho para Autonomo, Prestador de servico, Loja, Delivery, Estetica, Restaurante, Assistencia tecnica e Outro.
+- Atualizado o prompt interno da IA para usar tipo de atuacao, tom de voz, contexto do negocio, perguntas comuns, informacoes importantes e template do nicho.
+- Reforcadas regras para nao inventar preco, prazo, disponibilidade, estoque, garantia, endereco, link ou forma de pagamento.
+- Reforcada regra para nao confirmar agendamento, reserva, entrega ou atendimento sem dados suficientes.
+- Dashboard e demo publica passam a mostrar exemplos por tipo de atuacao.
+- Criada avaliacao simples da resposta com Sim, Nao e comentario opcional.
+- Criada tabela `ai_response_feedback` com RLS para o proprio usuario e leitura agregada pelo admin.
+- Admin mostra positivos, negativos, taxa util e comentarios recentes de qualidade da IA.
+- Historico mostra tipo de atuacao, tom usado e status da avaliacao quando existir.
+- Criado `docs/ai-business-templates.md` e atualizado o plano de qualidade da IA.
+
+Pendencias:
+
+- Aplicar a migration `0011_ai_response_feedback.sql` nos ambientes Supabase.
+- Acompanhar feedbacks reais antes de mexer novamente no prompt.
+- Evoluir templates por subnicho somente depois de padroes recorrentes em uso real.
+- Validar manualmente demo/dashboard/admin no dominio final depois do deploy.
+
+Recomendacao atualizada:
+
+O AtendeZap IA esta mais preparado para operar a IA da versao 1.0 com melhoria continua de qualidade. A escala cautelosa continua recomendada; nao escalar amplamente sem dados reais de uso, custos sob controle, feedbacks positivos e ausencia de P0/P1.
+
+Nota estimada atualizada: 97/100 para operacao controlada da IA pos-1.0, condicionada a migration aplicada e validacao real em producao.

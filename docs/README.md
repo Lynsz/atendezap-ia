@@ -32,6 +32,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [feedback](first-users-feedback.md)
 - [retention-plan](retention-plan.md)
 - [ai-response-quality-plan](ai-response-quality-plan.md)
+- [ai-business-templates](ai-business-templates.md)
 
 ## Campanhas
 
@@ -55,7 +56,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Resend: use `resend-setup.md`, `emails.md` e `email-funnel-checklist.md`.
 - Tracking: use `tracking.md` como fonte principal; `tracking-setup.md` e `tracking-production.md` complementam validacao.
 - Custos: use `cost-monitoring.md` junto com dashboards dos provedores.
-- Retencao e qualidade: use `retention-plan.md` e `ai-response-quality-plan.md`.
+- Retencao e qualidade: use `retention-plan.md`, `ai-response-quality-plan.md` e `ai-business-templates.md`.
 - Seguranca: use `SECURITY.md` na raiz como fonte completa; `docs/security.md` e `docs/security-checklist.md` sao entradas auxiliares.
 - Campanhas: use `first-paid-campaign-plan.md`, `second-campaign-analysis.md`, `scale-decision-matrix.md` e `cautious-scale-plan.md`.
 - Suporte: use `support.md`, `support-messages.md` e `launch-bugs.md`.

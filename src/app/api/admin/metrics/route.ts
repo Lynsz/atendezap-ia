@@ -52,6 +52,12 @@ type FeedbackMetricRow = {
   created_at: string;
 };
 
+type AiResponseFeedbackMetricRow = {
+  rating: string | null;
+  comment: string | null;
+  created_at: string;
+};
+
 const metricsQuerySchema = z.object({
   period: z.enum(["today", "7d", "30d", "all"]).optional().default("30d")
 });
@@ -159,13 +165,14 @@ export async function GET(request: Request) {
     const sevenDaysStart = daysAgo(7);
     const thirtyDaysStart = daysAgo(30);
 
-    const [leadsResult, profilesResult, businessesResult, responsesResult, subscriptionsResult, feedbackResult] = await Promise.all([
+    const [leadsResult, profilesResult, businessesResult, responsesResult, subscriptionsResult, feedbackResult, aiResponseFeedbackResult] = await Promise.all([
       supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign").limit(10000),
       supabase.from("profiles").select("id, email, created_at").limit(10000),
       supabase.from("businesses").select("user_id, onboarding_completed, created_at, updated_at").limit(10000),
       supabase.from("generated_responses").select("user_id, created_at").limit(20000),
       supabase.from("subscriptions").select("user_id, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
-      supabase.from("user_feedback").select("type, status, created_at").limit(10000)
+      supabase.from("user_feedback").select("type, status, created_at").limit(10000),
+      supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000)
     ]);
 
     const leads = (leadsResult.data || []) as LeadMetricRow[];
@@ -174,6 +181,7 @@ export async function GET(request: Request) {
     const responses = (responsesResult.data || []) as ResponseMetricRow[];
     const subscriptions = (subscriptionsResult.data || []) as SubscriptionMetricRow[];
     const feedback = (feedbackResult.data || []) as FeedbackMetricRow[];
+    const aiResponseFeedback = (aiResponseFeedbackResult.data || []) as AiResponseFeedbackMetricRow[];
 
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
     const leadEmails = new Set(leads.map((lead) => lead.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -200,6 +208,18 @@ export async function GET(request: Request) {
     }, {});
     const activeUsers7Days = new Set(responses.filter((response) => isAtOrAfter(response.created_at, sevenDaysStart)).map((response) => response.user_id).filter(Boolean) as string[]);
     const activeUsers30Days = new Set(responses.filter((response) => isAtOrAfter(response.created_at, thirtyDaysStart)).map((response) => response.user_id).filter(Boolean) as string[]);
+    const positiveAiFeedback = aiResponseFeedback.filter((item) => item.rating === "positive");
+    const negativeAiFeedback = aiResponseFeedback.filter((item) => item.rating === "negative");
+    const aiFeedbackInPeriod = aiResponseFeedback.filter((item) => isAtOrAfter(item.created_at, periodStart));
+    const recentAiComments = aiResponseFeedback
+      .filter((item) => item.comment?.trim())
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 5)
+      .map((item) => ({
+        rating: item.rating || "unknown",
+        comment: item.comment as string,
+        created_at: item.created_at
+      }));
 
     const firstResponseAtByUser = new Map<string, string>();
     for (const response of responses.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())) {
@@ -292,6 +312,14 @@ export async function GET(request: Request) {
         newFeedbacks: feedback.filter((item) => item.status === "new").length,
         unresolvedFeedbacks: feedback.filter((item) => isUnresolvedFeedback(item.status)).length,
         byType: feedbackByType
+      },
+      aiQuality: {
+        totalFeedbacks: aiResponseFeedback.length,
+        periodFeedbacks: aiFeedbackInPeriod.length,
+        positiveFeedbacks: positiveAiFeedback.length,
+        negativeFeedbacks: negativeAiFeedback.length,
+        usefulRate: percent(positiveAiFeedback.length, aiResponseFeedback.length),
+        recentComments: recentAiComments
       },
       campaign: {
         leadsByUtmSource: topBreakdown(leads.map((lead) => ({ label: cleanCampaignValue(lead.utm_source) }))),

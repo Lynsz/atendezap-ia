@@ -18,6 +18,7 @@ test.describe("protecao sem login", () => {
 
   const privateApis = [
     { path: "/api/ai/generate-response", method: "post" as const, body: { customerQuestion: "Oi" } },
+    { path: "/api/ai/response-feedback", method: "post" as const, body: { responseId: "22222222-2222-4222-8222-222222222222", rating: "positive" } },
     { path: "/api/stripe/create-checkout-session", method: "post" as const, body: { planId: "starter" } },
     { path: "/api/stripe/create-portal-session", method: "post" as const, body: {} },
     { path: "/api/admin/overview", method: "get" as const },

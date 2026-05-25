@@ -15,6 +15,7 @@ describe("auth route guards", () => {
     expect(isPrivateRoute("/assinatura")).toBe(true);
     expect(isPrivateRoute("/onboarding")).toBe(true);
     expect(isPrivateRoute("/api/ai/generate-response")).toBe(true);
+    expect(isPrivateRoute("/api/ai/response-feedback")).toBe(true);
     expect(isAdminRoute("/admin")).toBe(true);
     expect(isAdminRoute("/api/admin/overview")).toBe(true);
   });

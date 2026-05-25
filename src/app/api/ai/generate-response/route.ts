@@ -160,7 +160,9 @@ export async function POST(request: Request) {
         business_id: businessDataForAi.id || requestedBusinessId || null,
         customer_question: payload.data.customerQuestion,
         generated_answer: generatedAnswer,
-        response_type: payload.data.responseType
+        response_type: payload.data.responseType,
+        business_type: businessDataForAi.business_type || businessDataForAi.business_area || null,
+        brand_tone: businessDataForAi.brand_tone || null
       })
       .select("*")
       .single();

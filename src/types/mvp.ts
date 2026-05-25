@@ -41,6 +41,11 @@ export type GeneratedResponse = {
   customer_question: string;
   generated_answer: string;
   response_type: string | null;
+  business_type?: string | null;
+  brand_tone?: string | null;
+  quality_feedback_rating?: string | null;
+  quality_feedback_comment?: string | null;
+  quality_feedback_created_at?: string | null;
   created_at: string;
 };
 

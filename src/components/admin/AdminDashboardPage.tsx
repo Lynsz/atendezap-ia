@@ -133,6 +133,14 @@ type ProductMetricsPayload = {
       dificuldade_uso: number;
     };
   };
+  aiQuality: {
+    totalFeedbacks: number;
+    periodFeedbacks: number;
+    positiveFeedbacks: number;
+    negativeFeedbacks: number;
+    usefulRate: number;
+    recentComments: Array<{ rating: string; comment: string; created_at: string }>;
+  };
   campaign: {
     leadsByUtmSource: Array<{ label: string; count: number }>;
     leadsByUtmCampaign: Array<{ label: string; count: number }>;
@@ -651,7 +659,7 @@ export default function AdminDashboardPage() {
               />
             </div>
 
-            <div className="mt-5 grid gap-5 xl:grid-cols-4">
+            <div className="mt-5 grid gap-5 xl:grid-cols-5">
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                 <h3 className="text-lg font-black text-white">Funil</h3>
                 <div className="mt-4 grid gap-3">
@@ -689,6 +697,23 @@ export default function AdminDashboardPage() {
                   <ConversionLine label="SugestÃ£o" value={productMetrics.feedback.byType.sugestao} />
                   <ConversionLine label="Elogio" value={productMetrics.feedback.byType.elogio} />
                   <ConversionLine label="Dificuldade de uso" value={productMetrics.feedback.byType.dificuldade_uso} />
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Qualidade IA</h3>
+                <div className="mt-4 grid gap-3">
+                  <ConversionLine label="Avaliações no período" value={productMetrics.aiQuality.periodFeedbacks} />
+                  <ConversionLine label="Úteis" value={productMetrics.aiQuality.positiveFeedbacks} />
+                  <ConversionLine label="Não úteis" value={productMetrics.aiQuality.negativeFeedbacks} />
+                  <ConversionLine label="Taxa útil" value={`${productMetrics.aiQuality.usefulRate}%`} />
+                </div>
+                <div className="mt-4 grid gap-2">
+                  {(productMetrics.aiQuality.recentComments.length ? productMetrics.aiQuality.recentComments : [{ rating: "sem_dados", comment: "Sem comentários recentes.", created_at: "" }]).slice(0, 3).map((item, index) => (
+                    <p key={`${item.created_at}-${index}`} className="rounded-md border border-white/10 bg-[#0b1118] p-2 text-xs font-bold leading-5 text-slate-300">
+                      {item.rating === "positive" ? "Útil" : item.rating === "negative" ? "Não útil" : "Sem dados"}: {item.comment}
+                    </p>
+                  ))}
                 </div>
               </div>
 

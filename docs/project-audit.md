@@ -491,3 +491,17 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Riscos conhecidos: visitantes, custos e parte da analise de criativos dependem de GA4/Meta Ads; o app nao recebe gasto de midia automaticamente.
 - Decisao de escala: nao escalar ate preencher `docs/second-campaign-analysis.md` e passar pela matriz de decisao.
 - Nota operacional estimada mantida: 96/100 ate haver dados reais, tracking validado e ausencia de P0/P1 em producao.
+
+## Qualidade das respostas com IA - 2026-05-25
+
+- Escopo: melhoria pequena e segura de qualidade da IA, sem WhatsApp direto, CRM, automacoes avancadas ou novas rotas comerciais.
+- Geração auditada: `/api/ai/generate-response`, `src/lib/ai-response.ts`, dashboard, historico, demo publica, admin e testes existentes.
+- Templates por nicho criados em `src/lib/ai/business-templates.ts`, cobrindo Autonomo, Prestador de servico, Loja, Delivery, Estetica, Restaurante, Assistencia tecnica e Outro.
+- Prompt interno melhorado: agora inclui template do nicho, tipo de atuacao, tom de voz, contexto do negocio, perguntas comuns, informacoes importantes e regras explicitas contra inventar preco, prazo, disponibilidade ou confirmar agenda sem dados.
+- Dashboard e demo publica: exemplos de perguntas agora seguem o tipo de atuacao selecionado.
+- Avaliacao simples criada: usuario autenticado pode marcar resposta como util ou nao util e deixar comentario curto; feedback salvo em `ai_response_feedback` com RLS.
+- Historico melhorado: respostas salvas passam a registrar tipo de atuacao, tom usado e exibem avaliacao quando existir.
+- Admin: painel de metricas exibe qualidade agregada da IA com positivos, negativos, taxa util e comentarios recentes.
+- Documentacao criada/atualizada: `docs/ai-business-templates.md`, `docs/ai-response-quality-plan.md`, `docs/roadmap-post-1.0.md` e `docs/README.md`.
+- Pendencias restantes: aplicar migration `0011_ai_response_feedback.sql` no Supabase real, revisar feedbacks reais semanalmente e evoluir templates apenas com evidencia de uso.
+- Nota operacional estimada atualizada: 97/100 para a etapa de qualidade da IA; escala ampla continua condicionada a dados reais, estabilidade e ausencia de P0/P1.

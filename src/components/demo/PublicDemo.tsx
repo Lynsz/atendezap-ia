@@ -4,19 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import { ArrowRight, Clipboard, MessageCircle, Send, Sparkles } from "lucide-react";
+import { businessTypeOptions, getBusinessExamples, getBusinessTypeLabel } from "@/lib/ai/business-templates";
 import { captureUtmsFromLocation, trackEvent } from "@/lib/tracking";
 
-const exampleQuestions = [
-  "Qual o valor do serviço?",
-  "Vocês atendem hoje?",
-  "Tem entrega?",
-  "Quais formas de pagamento?",
-  "Como faço para agendar?",
-  "Pode me passar mais informações?"
+const toneOptions = [
+  { value: "Profissional", label: "Profissional" },
+  { value: "Simpatico", label: "Simpático" },
+  { value: "Direto", label: "Direto" },
+  { value: "Vendedor", label: "Vendedor" },
+  { value: "Acolhedor", label: "Acolhedor" }
 ];
-
-const businessTypes = ["Autônomo", "Prestador de serviço", "Loja", "Delivery", "Estética", "Restaurante", "Assistência técnica", "Outro"];
-const toneOptions = ["Profissional", "Simpático", "Direto", "Vendedor", "Acolhedor"];
 
 type DemoResponse = {
   answer?: string;
@@ -25,9 +22,10 @@ type DemoResponse = {
 };
 
 export function PublicDemo() {
+  const [businessType, setBusinessType] = useState("Prestador de servico");
+  const exampleQuestions = useMemo(() => getBusinessExamples(businessType), [businessType]);
   const [question, setQuestion] = useState(exampleQuestions[0]);
-  const [businessType, setBusinessType] = useState("Prestador de serviço");
-  const [tone, setTone] = useState("Simpático");
+  const [tone, setTone] = useState("Simpatico");
   const [answer, setAnswer] = useState("");
   const [mode, setMode] = useState("");
   const [error, setError] = useState("");
@@ -47,6 +45,13 @@ export function PublicDemo() {
       business_type: businessType,
       tone
     });
+  }
+
+  function changeBusinessType(nextBusinessType: string) {
+    setBusinessType(nextBusinessType);
+    setQuestion(getBusinessExamples(nextBusinessType)[0] || "Qual o valor?");
+    setAnswer("");
+    setError("");
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -181,10 +186,10 @@ export function PublicDemo() {
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-2 text-sm font-bold text-slate-200">
                 Tipo de atuação
-                <select value={businessType} onChange={(event) => setBusinessType(event.target.value)} className="field-input">
-                  {businessTypes.map((option) => (
+                <select value={businessType} onChange={(event) => changeBusinessType(event.target.value)} className="field-input">
+                  {businessTypeOptions.map((option) => (
                     <option value={option} key={option}>
-                      {option}
+                      {getBusinessTypeLabel(option)}
                     </option>
                   ))}
                 </select>
@@ -193,8 +198,8 @@ export function PublicDemo() {
                 Tom de voz
                 <select value={tone} onChange={(event) => setTone(event.target.value)} className="field-input">
                   {toneOptions.map((option) => (
-                    <option value={option} key={option}>
-                      {option}
+                    <option value={option.value} key={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>

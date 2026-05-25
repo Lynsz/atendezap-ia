@@ -72,4 +72,13 @@ describe("POST /api/demo/generate-response", () => {
     expect(response.status).toBe(400);
     expect(body.error).toContain("Pergunta muito longa");
   });
+
+  it("inclui template do nicho no prompt da demo", async () => {
+    const { buildDemoPrompt } = await import("./route");
+    const prompt = buildDemoPrompt("Quanto tempo demora?", "Assistencia tecnica", "Direto");
+
+    expect(prompt).toContain("Template do nicho");
+    expect(prompt).toContain("Quanto custa para avaliar?");
+    expect(prompt).toContain("Nao confirme agendamento");
+  });
 });
