@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("protecao sem login", () => {
-  for (const path of ["/dashboard", "/assinatura", "/admin"]) {
+  for (const path of ["/dashboard", "/dashboard/biblioteca", "/assinatura", "/admin"]) {
     test(`${path} redireciona ou bloqueia acesso anonimo`, async ({ page }) => {
       await page.goto(path);
 
@@ -19,6 +19,8 @@ test.describe("protecao sem login", () => {
   const privateApis = [
     { path: "/api/ai/generate-response", method: "post" as const, body: { customerQuestion: "Oi" } },
     { path: "/api/ai/response-feedback", method: "post" as const, body: { responseId: "22222222-2222-4222-8222-222222222222", rating: "positive" } },
+    { path: "/api/saved-responses", method: "get" as const },
+    { path: "/api/saved-responses", method: "post" as const, body: { content: "Resposta" } },
     { path: "/api/stripe/create-checkout-session", method: "post" as const, body: { planId: "starter" } },
     { path: "/api/stripe/create-portal-session", method: "post" as const, body: {} },
     { path: "/api/admin/overview", method: "get" as const },

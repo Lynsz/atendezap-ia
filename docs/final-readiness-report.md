@@ -626,3 +626,32 @@ Recomendacao atualizada:
 O AtendeZap IA esta mais preparado para operar a IA da versao 1.0 com melhoria continua de qualidade. A escala cautelosa continua recomendada; nao escalar amplamente sem dados reais de uso, custos sob controle, feedbacks positivos e ausencia de P0/P1.
 
 Nota estimada atualizada: 97/100 para operacao controlada da IA pos-1.0, condicionada a migration aplicada e validacao real em producao.
+
+## Biblioteca de respostas salvas - 2026-05-26
+
+Status: melhoria pos-1.0 implementada para reutilizar respostas boas sem criar CRM, automacao ou integracao direta com WhatsApp.
+
+O que foi feito:
+
+- Criada tabela `saved_responses` com RLS por usuario.
+- Criadas APIs autenticadas para listar, salvar, editar e remover respostas salvas.
+- Dashboard ganhou botao "Salvar resposta" na resposta gerada e no historico.
+- Criada secao/rota protegida `/dashboard/biblioteca` para buscar, copiar, editar e remover respostas salvas.
+- Categorias simples adicionadas: Preco, Agendamento, Entrega, Pagamento, Horario, Informacoes gerais, Pos-venda e Outro.
+- Busca simples client-side por titulo, categoria e conteudo.
+- Botao "Copiar" revisado com feedback visual e erro amigavel.
+- Tracking adicionado sem enviar conteudo completo da resposta.
+- Admin recebeu apenas metricas agregadas de biblioteca.
+- Documentacao criada em `docs/saved-responses.md` e roadmap atualizado.
+
+Pendencias:
+
+- Aplicar `supabase/migrations/0012_saved_responses.sql` no Supabase real/staging.
+- Validar manualmente usuario A vs usuario B no ambiente real.
+- Validar a rota `/dashboard/biblioteca` em Vercel depois do deploy.
+
+Recomendacao atualizada:
+
+A biblioteca esta dentro do escopo pos-1.0 e melhora reutilizacao sem transformar o produto em CRM. A producao controlada continua recomendada; nao escalar amplamente sem migrations aplicadas, RLS conferido e validacao real dos provedores.
+
+Nota estimada atualizada: 97/100 para operacao controlada pos-1.0, condicionada a validacao real de Supabase/RLS e provedores em staging/producao.

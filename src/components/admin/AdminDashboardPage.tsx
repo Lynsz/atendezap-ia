@@ -119,6 +119,9 @@ type ProductMetricsPayload = {
     responsesLast30Days: number;
     activeUsersLast7Days: number;
     activeUsersLast30Days: number;
+    totalSavedResponses: number;
+    periodSavedResponses: number;
+    usersWithSavedResponses: number;
   };
   feedback: {
     totalFeedbacks: number;
@@ -714,6 +717,15 @@ export default function AdminDashboardPage() {
                       {item.rating === "positive" ? "Útil" : item.rating === "negative" ? "Não útil" : "Sem dados"}: {item.comment}
                     </p>
                   ))}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Biblioteca</h3>
+                <div className="mt-4 grid gap-3">
+                  <ConversionLine label="Respostas salvas" value={productMetrics.usage.totalSavedResponses} />
+                  <ConversionLine label="Salvas no periodo" value={productMetrics.usage.periodSavedResponses} />
+                  <ConversionLine label="Usuarios com biblioteca" value={productMetrics.usage.usersWithSavedResponses} />
                 </div>
               </div>
 

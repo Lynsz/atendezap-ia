@@ -13,11 +13,12 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 
 ## Prioridade media
 
-- Templates por nicho.
+- Templates por nicho. Implementado.
+- Biblioteca de respostas. Implementado nesta etapa.
+- Respostas favoritas/salvas. Implementado nesta etapa.
 - Sequencia de e-mails.
-- Biblioteca de respostas.
 - Exportacao de historico.
-- Tags/categorias de respostas.
+- Tags/categorias avancadas de respostas.
 
 ## Futuro
 
@@ -39,19 +40,23 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 
 ## Melhorias de produto
 
-- Respostas favoritas.
-- Biblioteca de respostas.
+- Respostas favoritas. Implementado como biblioteca simples de respostas salvas.
+- Biblioteca de respostas. Implementado.
 - Avaliacao da resposta.
 - Sequencia de e-mails.
 
 ## Melhorias futuras de IA
 
 - Templates avancados por nicho.
-- Biblioteca de respostas favoritas.
+- Tags avancadas para respostas salvas.
+- Pastas para biblioteca.
+- Templates por equipe, se um dia houver equipes.
+- Busca avancada em respostas salvas.
+- Respostas compartilhadas, se um dia houver equipes.
 - Ajuste de tom por resposta.
 - Avaliacao com estrelas.
 - Sugestoes de melhoria automatica.
-- Respostas salvas por categoria.
+- Respostas salvas por categoria avancada.
 
 ## Melhorias comerciais
 

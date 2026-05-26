@@ -36,6 +36,19 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 
 O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de priorizacao, revisao semanal, backlog de crescimento, experimentos pequenos e bloco simples de gargalo no admin para orientar melhorias com dados reais.
 
+## Biblioteca de respostas salvas - 2026-05-26
+
+- Estrutura criada: tabela `saved_responses`, migration `0012_saved_responses.sql`, RLS por `user_id`, indices por usuario, data e categoria, e indice unico parcial para evitar duplicar a mesma resposta gerada na biblioteca do usuario.
+- APIs criadas: `GET /api/saved-responses`, `POST /api/saved-responses`, `PATCH /api/saved-responses/[id]` e `DELETE /api/saved-responses/[id]`, todas autenticadas, sem aceitar `user_id` do client e filtrando pelo usuario da sessao.
+- Dashboard revisado: resposta gerada e historico ganharam acao "Salvar resposta"; biblioteca simples foi adicionada com busca client-side, categorias opcionais, copiar, editar titulo/categoria/conteudo e remover.
+- Copia revisada: respostas geradas, historico e biblioteca usam feedback visual e erro amigavel quando a area de transferencia nao esta disponivel.
+- Tracking adicionado sem conteudo sensivel: `saved_response_create`, `saved_response_copy`, `saved_response_delete`, `saved_response_edit` e `saved_responses_view`.
+- Admin/metricas: agregados simples adicionados para total de respostas salvas, respostas salvas no periodo e usuarios com biblioteca, sem exibir conteudo das respostas.
+- Documentacao criada: `docs/saved-responses.md`; roadmap atualizado para marcar biblioteca/favoritos como implementado e registrar melhorias futuras como tags, pastas, busca avancada e compartilhamento por equipe.
+- Seguranca revisada: usuario so acessa as proprias respostas salvas por API e RLS; salvar a partir do historico valida que `response_id` pertence ao usuario autenticado; conteudo completo nao vai para analytics.
+- Pendencias restantes: aplicar a migration `0012_saved_responses.sql` no Supabase real/staging e validar manualmente isolamento com dois usuarios.
+- Nota estimada atualizada: 97/100 para a etapa pos-1.0 de biblioteca, condicionada a migration aplicada e validacao real de RLS em staging/producao.
+
 ## Mapa tecnico
 
 - Framework: Next.js 16 com App Router em `src/app`.

@@ -1,0 +1,67 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  getSession: vi.fn()
+}));
+
+vi.mock("@/lib/supabase/browser", () => ({
+  supabase: {
+    auth: {
+      getSession: mocks.getSession
+    }
+  }
+}));
+
+describe("saved responses service", () => {
+  beforeEach(() => {
+    mocks.getSession.mockReset().mockResolvedValue({
+      data: {
+        session: {
+          access_token: "test-token"
+        }
+      }
+    });
+  });
+
+  it("saveResponseToLibrary chama a API autenticada", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          savedResponse: {
+            id: "33333333-3333-4333-8333-333333333333",
+            user_id: "11111111-1111-4111-8111-111111111111",
+            response_id: "22222222-2222-4222-8222-222222222222",
+            title: "Resposta",
+            content: "Conteudo",
+            category: "Preco",
+            created_at: "2026-05-26T12:00:00.000Z",
+            updated_at: "2026-05-26T12:00:00.000Z"
+          }
+        }),
+        { status: 201 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { saveResponseToLibrary } = await import("./saved-responses");
+    await saveResponseToLibrary({
+      response_id: "22222222-2222-4222-8222-222222222222",
+      category: "Preco"
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/saved-responses",
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          Authorization: "Bearer test-token"
+        }),
+        body: JSON.stringify({
+          response_id: "22222222-2222-4222-8222-222222222222",
+          category: "Preco"
+        })
+      })
+    );
+    vi.unstubAllGlobals();
+  });
+});

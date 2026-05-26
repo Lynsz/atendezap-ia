@@ -193,6 +193,29 @@ create table if not exists public.ai_response_feedback (
   constraint ai_response_feedback_user_response_unique unique (user_id, response_id)
 );
 
+create table if not exists public.saved_responses (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  response_id uuid references public.generated_responses(id) on delete set null,
+  title text,
+  content text not null,
+  category text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  constraint saved_responses_category_check check (
+    category is null or category in (
+      'Preco',
+      'Agendamento',
+      'Entrega',
+      'Pagamento',
+      'Horario',
+      'Informacoes gerais',
+      'Pos-venda',
+      'Outro'
+    )
+  )
+);
+
 create table if not exists public.stripe_webhook_events (
   id uuid primary key default gen_random_uuid(),
   provider_event_id text not null,
@@ -275,6 +298,10 @@ create index if not exists ai_response_feedback_user_id_idx on public.ai_respons
 create index if not exists ai_response_feedback_response_id_idx on public.ai_response_feedback(response_id);
 create index if not exists ai_response_feedback_rating_idx on public.ai_response_feedback(rating);
 create index if not exists ai_response_feedback_created_at_idx on public.ai_response_feedback(created_at desc);
+create index if not exists saved_responses_user_id_idx on public.saved_responses(user_id);
+create index if not exists saved_responses_created_at_idx on public.saved_responses(created_at desc);
+create index if not exists saved_responses_category_idx on public.saved_responses(category) where category is not null;
+create unique index if not exists saved_responses_user_response_unique_idx on public.saved_responses(user_id, response_id) where response_id is not null;
 create unique index if not exists stripe_webhook_events_provider_event_id_unique_idx on public.stripe_webhook_events(provider_event_id);
 create index if not exists subscriptions_provider_subscription_id_idx on public.subscriptions(provider_subscription_id);
 create index if not exists subscriptions_provider_customer_id_idx on public.subscriptions(provider_customer_id);
@@ -334,6 +361,11 @@ create trigger set_ai_response_feedback_updated_at
   before update on public.ai_response_feedback
   for each row execute function public.set_updated_at();
 
+drop trigger if exists set_saved_responses_updated_at on public.saved_responses;
+create trigger set_saved_responses_updated_at
+  before update on public.saved_responses
+  for each row execute function public.set_updated_at();
+
 create or replace function public.handle_new_user()
 returns trigger
 set search_path = ''
@@ -369,6 +401,7 @@ alter table public.ebook_leads enable row level security;
 alter table public.lead_email_events enable row level security;
 alter table public.user_feedback enable row level security;
 alter table public.ai_response_feedback enable row level security;
+alter table public.saved_responses enable row level security;
 alter table public.stripe_webhook_events enable row level security;
 alter table public.purchasers enable row level security;
 alter table public.orders enable row level security;
@@ -402,6 +435,10 @@ drop policy if exists "user_feedback_select_own" on public.user_feedback;
 drop policy if exists "ai_response_feedback_select_own" on public.ai_response_feedback;
 drop policy if exists "ai_response_feedback_insert_own" on public.ai_response_feedback;
 drop policy if exists "ai_response_feedback_update_own" on public.ai_response_feedback;
+drop policy if exists "saved_responses_select_own" on public.saved_responses;
+drop policy if exists "saved_responses_insert_own" on public.saved_responses;
+drop policy if exists "saved_responses_update_own" on public.saved_responses;
+drop policy if exists "saved_responses_delete_own" on public.saved_responses;
 drop policy if exists "stripe_webhook_events_no_client_access" on public.stripe_webhook_events;
 drop policy if exists "purchasers_no_client_access" on public.purchasers;
 drop policy if exists "orders_no_client_access" on public.orders;
@@ -456,6 +493,32 @@ create policy "ai_response_feedback_update_own" on public.ai_response_feedback f
       and gr.user_id = (select auth.uid())
   )
 );
+create policy "saved_responses_select_own" on public.saved_responses for select to authenticated using ((select auth.uid()) = user_id);
+create policy "saved_responses_insert_own" on public.saved_responses for insert to authenticated with check (
+  (select auth.uid()) = user_id
+  and (
+    response_id is null
+    or exists (
+      select 1
+      from public.generated_responses gr
+      where gr.id = response_id
+        and gr.user_id = (select auth.uid())
+    )
+  )
+);
+create policy "saved_responses_update_own" on public.saved_responses for update to authenticated using ((select auth.uid()) = user_id) with check (
+  (select auth.uid()) = user_id
+  and (
+    response_id is null
+    or exists (
+      select 1
+      from public.generated_responses gr
+      where gr.id = response_id
+        and gr.user_id = (select auth.uid())
+    )
+  )
+);
+create policy "saved_responses_delete_own" on public.saved_responses for delete to authenticated using ((select auth.uid()) = user_id);
 create policy "stripe_webhook_events_no_client_access" on public.stripe_webhook_events for all to anon, authenticated using (false) with check (false);
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
 create policy "orders_no_client_access" on public.orders for all to anon, authenticated using (false) with check (false);
@@ -476,6 +539,8 @@ grant insert on public.user_feedback to anon, authenticated;
 grant select on public.user_feedback to authenticated;
 revoke all on public.ai_response_feedback from anon, authenticated;
 grant select, insert, update on public.ai_response_feedback to authenticated;
+revoke all on public.saved_responses from anon, authenticated;
+grant select, insert, update, delete on public.saved_responses to authenticated;
 revoke all on public.stripe_webhook_events from anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;

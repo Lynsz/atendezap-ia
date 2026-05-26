@@ -9,13 +9,16 @@ import {
   CheckCircle2,
   Clipboard,
   CreditCard,
+  Edit3,
   LogOut,
   MessageCircle,
   MessageSquare,
   Plus,
   RefreshCw,
   Save,
+  Search,
   Send,
+  Star,
   Trash2,
   Users
 } from "lucide-react";
@@ -23,14 +26,17 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
 import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
 import { businessTypeOptions, getBusinessExamples, getBusinessTemplate, getBusinessTypeLabel } from "@/lib/ai/business-templates";
+import { copyResponseText } from "@/lib/clipboard";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
+import { savedResponseCategories } from "@/lib/saved-responses";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
 import { trackEvent } from "@/lib/tracking";
 import { generateCustomerResponse } from "@/services/ai";
-import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, Subscription } from "@/types/mvp";
+import { deleteSavedResponse, listSavedResponses, saveResponseToLibrary, updateSavedResponse } from "@/services/saved-responses";
+import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, SavedResponse, Subscription } from "@/types/mvp";
 
-type DashboardTab = "assistant" | "business" | "history" | "customers" | "billing";
+type DashboardTab = "assistant" | "business" | "history" | "library" | "customers" | "billing";
 
 type BusinessDraft = {
   business_name: string;
@@ -57,6 +63,12 @@ type CustomerDraft = {
   phone: string;
   status: CustomerStatus;
   notes: string;
+};
+
+type SavedResponseDraft = {
+  title: string;
+  category: string;
+  content: string;
 };
 
 const emptyBusiness: BusinessDraft = {
@@ -109,6 +121,12 @@ const mainChannelOptions = ["WhatsApp", "Instagram", "Telefone", "Outros"];
 const responseGoalOptions = ["Responder em até 5 minutos", "Responder em até 15 minutos", "Responder em até 1 hora", "Responder no mesmo dia"];
 
 const toneOptions = ["Profissional", "Simpático", "Direto", "Vendedor", "Acolhedor"];
+
+const emptySavedResponseDraft: SavedResponseDraft = {
+  title: "",
+  category: "",
+  content: ""
+};
 
 function getCurrentMonthStart() {
   const now = new Date();
@@ -202,9 +220,9 @@ function normalizePlanId(planName?: string | null): PlanId | null {
   return PLAN_IDS.find((planId) => planId === normalizedPlanName || SAAS_PLANS[planId].name.toLowerCase() === normalizedPlanName) ?? null;
 }
 
-function SaasDashboardContent() {
+function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: DashboardTab }) {
   const router = useRouter();
-  const [tab, setTab] = useState<DashboardTab>("assistant");
+  const [tab, setTab] = useState<DashboardTab>(initialTab);
   const [loading, setLoading] = useState(true);
   const [savingBusiness, setSavingBusiness] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -222,6 +240,13 @@ function SaasDashboardContent() {
   const [qualitySubmitting, setQualitySubmitting] = useState(false);
   const [qualitySubmittedRating, setQualitySubmittedRating] = useState<"positive" | "negative" | null>(null);
   const [history, setHistory] = useState<GeneratedResponse[]>([]);
+  const [savedResponses, setSavedResponses] = useState<SavedResponse[]>([]);
+  const [savedResponsesLoaded, setSavedResponsesLoaded] = useState(false);
+  const [loadingSavedResponses, setLoadingSavedResponses] = useState(false);
+  const [savingResponseId, setSavingResponseId] = useState<string | null>(null);
+  const [editingSavedResponseId, setEditingSavedResponseId] = useState<string | null>(null);
+  const [savedResponseDraft, setSavedResponseDraft] = useState<SavedResponseDraft>(emptySavedResponseDraft);
+  const [savedResponseSearch, setSavedResponseSearch] = useState("");
   const [customers, setCustomers] = useState<CustomerLead[]>([]);
   const [customerDraft, setCustomerDraft] = useState<CustomerDraft>(emptyCustomer);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -525,6 +550,102 @@ function SaasDashboardContent() {
     setHistory((current) => current.filter((item) => item.id !== itemId));
   }
 
+  const loadSavedResponses = useCallback(async (options?: { force?: boolean }) => {
+    if (savedResponsesLoaded && !options?.force) return;
+    setLoadingSavedResponses(true);
+    setError("");
+
+    try {
+      const items = await listSavedResponses();
+      setSavedResponses(items);
+      setSavedResponsesLoaded(true);
+      trackEvent("saved_responses_view", {
+        source: "dashboard",
+        count: items.length
+      });
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Não foi possível carregar sua biblioteca agora.");
+    } finally {
+      setLoadingSavedResponses(false);
+    }
+  }, [savedResponsesLoaded]);
+
+  async function handleSaveGeneratedResponse(input: { responseId?: string | null; content: string; title?: string | null; category?: string | null }) {
+    setError("");
+
+    if (!input.responseId && !input.content.trim()) {
+      setError("Gere uma resposta antes de salvar.");
+      return;
+    }
+
+    setSavingResponseId(input.responseId || "generated");
+    try {
+      const result = await saveResponseToLibrary({
+        response_id: input.responseId || undefined,
+        title: input.title || undefined,
+        content: input.content,
+        category: input.category || undefined
+      });
+      setSavedResponses((current) => {
+        const withoutDuplicate = current.filter((item) => item.id !== result.savedResponse.id);
+        return [result.savedResponse, ...withoutDuplicate];
+      });
+      setSavedResponsesLoaded(true);
+      trackEvent("saved_response_create", {
+        source: input.responseId ? "generated_response" : "manual",
+        category: result.savedResponse.category || "sem_categoria"
+      });
+      showFeedback(result.alreadySaved ? "Resposta já estava salva." : "Resposta salva na biblioteca.");
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Não foi possível salvar a resposta agora.");
+    } finally {
+      setSavingResponseId(null);
+    }
+  }
+
+  function startEditingSavedResponse(item: SavedResponse) {
+    setEditingSavedResponseId(item.id);
+    setSavedResponseDraft({
+      title: item.title || "",
+      category: item.category || "",
+      content: item.content
+    });
+  }
+
+  async function handleUpdateSavedResponse(item: SavedResponse) {
+    setError("");
+    try {
+      const updated = await updateSavedResponse(item.id, {
+        title: savedResponseDraft.title.trim() || null,
+        category: savedResponseDraft.category || null,
+        content: savedResponseDraft.content.trim()
+      });
+      setSavedResponses((current) => current.map((savedResponse) => (savedResponse.id === updated.id ? updated : savedResponse)));
+      setEditingSavedResponseId(null);
+      setSavedResponseDraft(emptySavedResponseDraft);
+      trackEvent("saved_response_edit", {
+        category: updated.category || "sem_categoria"
+      });
+      showFeedback("Resposta salva atualizada.");
+    } catch (updateError) {
+      setError(updateError instanceof Error ? updateError.message : "Não foi possível atualizar a resposta salva agora.");
+    }
+  }
+
+  async function handleDeleteSavedResponse(item: SavedResponse) {
+    setError("");
+    try {
+      await deleteSavedResponse(item.id);
+      setSavedResponses((current) => current.filter((savedResponse) => savedResponse.id !== item.id));
+      trackEvent("saved_response_delete", {
+        category: item.category || "sem_categoria"
+      });
+      showFeedback("Resposta removida da biblioteca.");
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Não foi possível remover a resposta salva agora.");
+    }
+  }
+
   async function handleDeleteCustomer(itemId: string) {
     if (!supabase) {
       setError("Supabase indisponível. Revise o ambiente e tente novamente.");
@@ -607,9 +728,18 @@ function SaasDashboardContent() {
     if (updateError) setError("Não conseguimos atualizar o cliente.");
   }
 
-  function copyText(value: string) {
-    void navigator.clipboard?.writeText(value);
-    showFeedback("Resposta copiada.");
+  async function copyText(value: string, source: "generated" | "history" | "library" = "generated") {
+    try {
+      await copyResponseText(value);
+      if (source === "library") {
+        trackEvent("saved_response_copy", {
+          source: "library"
+        });
+      }
+      showFeedback("Resposta copiada.");
+    } catch {
+      setError("Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.");
+    }
   }
 
   function openGeneratedResponseFeedback() {
@@ -744,6 +874,24 @@ function SaasDashboardContent() {
       });
     }
   }, [loading, shouldShowOnboarding]);
+
+  useEffect(() => {
+    if (tab === "library") {
+      queueMicrotask(() => {
+        void loadSavedResponses();
+      });
+    }
+  }, [loadSavedResponses, tab]);
+
+  const filteredSavedResponses = savedResponses.filter((item) => {
+    const search = savedResponseSearch.trim().toLowerCase();
+    if (!search) return true;
+    return [item.title, item.category, item.content]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(search));
+  });
+
+  const savedGeneratedResponseIds = new Set(savedResponses.map((item) => item.response_id).filter(Boolean) as string[]);
   const overviewCards = [
     {
       label: "Plano atual",
@@ -774,6 +922,12 @@ function SaasDashboardContent() {
       value: history.length.toString(),
       detail: "Histórico salvo da conta",
       icon: Clipboard
+    },
+    {
+      label: "Biblioteca",
+      value: savedResponses.length.toString(),
+      detail: "Respostas salvas para reutilizar",
+      icon: Star
     }
   ];
 
@@ -1034,10 +1188,11 @@ function SaasDashboardContent() {
           ))}
         </section>
 
-        <section className="mb-5 grid gap-3 md:grid-cols-5">
+        <section className="mb-5 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
           {[
             ["Gerar resposta", "assistant", Bot],
             [business ? "Editar configuração da IA" : "Configurar atendimento", "business", BriefcaseBusiness],
+            ["Biblioteca", "library", Star],
             ["Clientes", "customers", Users],
             ["Assinatura", "billing", CreditCard],
             ["Preços", "plans", CreditCard]
@@ -1061,6 +1216,7 @@ function SaasDashboardContent() {
             ["assistant", "Gerar resposta", Bot],
             ["business", "Meu negócio", BriefcaseBusiness],
             ["history", "Histórico", Clipboard],
+            ["library", "Biblioteca", Star],
             ["customers", "Clientes", Users],
             ["billing", "Assinatura", CreditCard]
           ].map(([id, label, Icon]) => (
@@ -1279,9 +1435,20 @@ function SaasDashboardContent() {
               <div className="mb-4 flex items-center justify-between gap-3">
                 <h2 className="text-xl font-black text-white">Resposta gerada</h2>
                 {generatedAnswer ? (
-                  <button type="button" onClick={() => copyText(generatedAnswer)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950 hover:bg-slate-200">
-                    Copiar
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer })}
+                      disabled={savingResponseId === (generatedResponseId || "generated") || Boolean(generatedResponseId && savedGeneratedResponseIds.has(generatedResponseId))}
+                      className="inline-flex min-h-9 items-center gap-2 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-3 text-xs font-black text-emerald-100 hover:bg-emerald-400/20 disabled:opacity-60"
+                    >
+                      <Star className="h-3.5 w-3.5" />
+                      {generatedResponseId && savedGeneratedResponseIds.has(generatedResponseId) ? "Resposta salva" : savingResponseId === (generatedResponseId || "generated") ? "Salvando..." : "Salvar resposta"}
+                    </button>
+                    <button type="button" onClick={() => copyText(generatedAnswer, "generated")} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950 hover:bg-slate-200">
+                      Copiar
+                    </button>
+                  </div>
                 ) : null}
               </div>
               {generatedAnswer ? (
@@ -1432,8 +1599,17 @@ function SaasDashboardContent() {
                     )}
                   </div>
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{item.generated_answer}</p>
-                  <div className="mt-4 flex gap-2">
-                    <button type="button" onClick={() => copyText(item.generated_answer)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSaveGeneratedResponse({ responseId: item.id, content: item.generated_answer })}
+                      disabled={savingResponseId === item.id || savedGeneratedResponseIds.has(item.id)}
+                      className="inline-flex min-h-9 items-center gap-2 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-3 text-xs font-black text-emerald-100 disabled:opacity-60"
+                    >
+                      <Star className="h-3.5 w-3.5" />
+                      {savedGeneratedResponseIds.has(item.id) ? "Resposta salva" : savingResponseId === item.id ? "Salvando..." : "Salvar resposta"}
+                    </button>
+                    <button type="button" onClick={() => copyText(item.generated_answer, "history")} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
                     <button type="button" onClick={() => handleDeleteHistory(item.id)} className="rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-200">Excluir</button>
                   </div>
                 </article>
@@ -1442,6 +1618,113 @@ function SaasDashboardContent() {
                   <Clipboard className="mx-auto mb-4 h-8 w-8 text-slate-500" />
                   <p className="font-bold text-slate-200">Nenhuma resposta gerada ainda.</p>
                   <p className="mt-2">Você ainda não gerou respostas. Comece digitando uma pergunta comum de cliente.</p>
+                  <button type="button" onClick={() => setTab("assistant")} className="mt-4 rounded-md bg-emerald-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
+                    Gerar resposta
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        ) : null}
+
+        {tab === "library" ? (
+          <section className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <h2 className="text-xl font-black text-white">Biblioteca de respostas</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Salve respostas úteis, organize por categoria simples e copie rapidamente quando a pergunta voltar.</p>
+              </div>
+              <button type="button" onClick={() => loadSavedResponses({ force: true })} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15">
+                <RefreshCw className="h-3.5 w-3.5" />
+                Atualizar
+              </button>
+            </div>
+
+            <label className="mt-5 flex min-h-11 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-300">
+              <Search className="h-4 w-4 text-slate-500" />
+              <input
+                value={savedResponseSearch}
+                onChange={(event) => setSavedResponseSearch(event.target.value)}
+                className="w-full bg-transparent outline-none placeholder:text-slate-500"
+                placeholder="Buscar por título, categoria ou conteúdo"
+              />
+            </label>
+
+            <div className="mt-5 grid gap-3">
+              {loadingSavedResponses ? (
+                <div className="rounded-md border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-bold text-slate-300">
+                  Carregando respostas salvas...
+                </div>
+              ) : filteredSavedResponses.length ? (
+                filteredSavedResponses.map((item) => {
+                  const isEditing = editingSavedResponseId === item.id;
+                  return (
+                    <article className="rounded-md border border-white/10 bg-white/[0.04] p-4" key={item.id}>
+                      {isEditing ? (
+                        <div className="grid gap-3">
+                          <label className="grid gap-2 text-sm font-bold text-slate-300">
+                            Título
+                            <input value={savedResponseDraft.title} onChange={(event) => setSavedResponseDraft((current) => ({ ...current, title: event.target.value }))} className="field-input" />
+                          </label>
+                          <label className="grid gap-2 text-sm font-bold text-slate-300">
+                            Categoria
+                            <select value={savedResponseDraft.category} onChange={(event) => setSavedResponseDraft((current) => ({ ...current, category: event.target.value }))} className="field-input">
+                              <option value="">Sem categoria</option>
+                              {savedResponseCategories.map((category) => (
+                                <option value={category} key={category}>{category}</option>
+                              ))}
+                            </select>
+                          </label>
+                          <label className="grid gap-2 text-sm font-bold text-slate-300">
+                            Resposta
+                            <textarea value={savedResponseDraft.content} onChange={(event) => setSavedResponseDraft((current) => ({ ...current, content: event.target.value }))} className="field-input min-h-36 resize-none py-3" />
+                          </label>
+                          <div className="flex flex-wrap gap-2">
+                            <button type="button" onClick={() => handleUpdateSavedResponse(item)} className="rounded-md bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
+                              Salvar edição
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingSavedResponseId(null);
+                                setSavedResponseDraft(emptySavedResponseDraft);
+                              }}
+                              className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-200 hover:bg-white/15"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                            <div>
+                              <h3 className="font-black text-white">{item.title || "Resposta salva"}</h3>
+                              <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold text-slate-400">
+                                <span>{item.category || "Sem categoria"}</span>
+                                <span>{formatDate(item.created_at)}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{item.content}</p>
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            <button type="button" onClick={() => copyText(item.content, "library")} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
+                            <button type="button" onClick={() => startEditingSavedResponse(item)} className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-200">
+                              <Edit3 className="h-3.5 w-3.5" />
+                              Editar
+                            </button>
+                            <button type="button" onClick={() => handleDeleteSavedResponse(item)} className="rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-200">Remover</button>
+                          </div>
+                        </>
+                      )}
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
+                  <Star className="mx-auto mb-4 h-8 w-8 text-slate-500" />
+                  <p className="font-bold text-slate-200">Você ainda não salvou nenhuma resposta.</p>
+                  <p className="mt-2">Gere uma resposta com IA e clique em “Salvar resposta” para reutilizar depois.</p>
                   <button type="button" onClick={() => setTab("assistant")} className="mt-4 rounded-md bg-emerald-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
                     Gerar resposta
                   </button>
@@ -1521,10 +1804,10 @@ function SaasDashboardContent() {
   );
 }
 
-export default function SaasDashboardPage() {
+export default function SaasDashboardPage({ initialTab }: { initialTab?: DashboardTab }) {
   return (
     <ProtectedRoute>
-      <SaasDashboardContent />
+      <SaasDashboardContent initialTab={initialTab} />
     </ProtectedRoute>
   );
 }

@@ -48,7 +48,7 @@ const PRIVATE_PAGE_PREFIXES = [
   "/sistema/backend"
 ];
 
-const PRIVATE_API_PREFIXES = ["/api/ai", "/api/generate-response", "/api/stripe/create-checkout-session", "/api/stripe/create-portal-session"];
+const PRIVATE_API_PREFIXES = ["/api/ai", "/api/generate-response", "/api/saved-responses", "/api/stripe/create-checkout-session", "/api/stripe/create-portal-session"];
 
 const ADMIN_PREFIXES = ["/admin", "/api/admin"];
 
