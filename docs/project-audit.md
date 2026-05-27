@@ -49,6 +49,19 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias restantes: aplicar a migration `0012_saved_responses.sql` no Supabase real/staging e validar manualmente isolamento com dois usuarios.
 - Nota estimada atualizada: 97/100 para a etapa pos-1.0 de biblioteca, condicionada a migration aplicada e validacao real de RLS em staging/producao.
 
+## Templates prontos para WhatsApp - 2026-05-26
+
+- Catalogo estatico criado em `src/lib/templates/whatsapp-templates.ts`, cobrindo Autonomo, Prestador de servico, Loja, Delivery, Estetica, Restaurante, Assistencia tecnica e Outro, com pelo menos 5 templates por nicho.
+- Templates seguem regras do produto: nao inventam preco, nao prometem prazo exato, nao confirmam agenda automaticamente e usam campos editaveis como `[valor]`, `[horario]`, `[bairro]` e `[servico]`.
+- Dashboard recebeu aba/rota protegida `/dashboard/templates` com filtros por nicho, categoria, busca simples, copiar e salvar na biblioteca.
+- Dashboard principal mostra recomendacoes "Comece com templates prontos" para usuarios no inicio, usando o `business_type` do onboarding quando disponivel.
+- Integracao com biblioteca: `saved_responses` recebeu `source_template_id` para evitar duplicar o mesmo template salvo pelo usuario; as APIs continuam autenticadas e sem aceitar `user_id` do client.
+- Tracking adicionado sem conteudo sensivel: `templates_view`, `template_copy`, `template_save`, `template_filter_change` e `template_search`.
+- Admin/metricas ganhou agregados simples de templates salvos e categorias mais salvas; copias ainda dependem de analytics client-side, sem novo dashboard complexo.
+- Documentacao criada: `docs/whatsapp-templates.md`; `docs/saved-responses.md`, `docs/roadmap-post-1.0.md`, `docs/project-audit.md` e `docs/final-readiness-report.md` foram atualizados.
+- Pendencias restantes: aplicar `0013_saved_response_templates.sql` no Supabase real/staging, validar `/dashboard/templates` no deploy e, se necessario no futuro, persistir eventos internos de copia de template.
+- Nota estimada atualizada: 97/100 para a etapa pos-1.0 de templates prontos, condicionada a migrations aplicadas e validacao real de RLS em staging/producao.
+
 ## Mapa tecnico
 
 - Framework: Next.js 16 com App Router em `src/app`.

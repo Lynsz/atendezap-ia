@@ -122,6 +122,8 @@ type ProductMetricsPayload = {
     totalSavedResponses: number;
     periodSavedResponses: number;
     usersWithSavedResponses: number;
+    totalSavedTemplates: number;
+    savedTemplatesByCategory: Array<{ label: string; count: number }>;
   };
   feedback: {
     totalFeedbacks: number;
@@ -726,6 +728,10 @@ export default function AdminDashboardPage() {
                   <ConversionLine label="Respostas salvas" value={productMetrics.usage.totalSavedResponses} />
                   <ConversionLine label="Salvas no periodo" value={productMetrics.usage.periodSavedResponses} />
                   <ConversionLine label="Usuarios com biblioteca" value={productMetrics.usage.usersWithSavedResponses} />
+                  <ConversionLine label="Templates salvos" value={productMetrics.usage.totalSavedTemplates} />
+                  {(productMetrics.usage.savedTemplatesByCategory.length ? productMetrics.usage.savedTemplatesByCategory : [{ label: "sem_dados", count: 0 }]).slice(0, 3).map((item) => (
+                    <ConversionLine key={`template-${item.label}`} label={`Categoria: ${item.label}`} value={item.count} />
+                  ))}
                 </div>
               </div>
 

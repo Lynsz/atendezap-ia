@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("protecao sem login", () => {
-  for (const path of ["/dashboard", "/dashboard/biblioteca", "/assinatura", "/admin"]) {
+  for (const path of ["/dashboard", "/dashboard/biblioteca", "/dashboard/templates", "/assinatura", "/admin"]) {
     test(`${path} redireciona ou bloqueia acesso anonimo`, async ({ page }) => {
       await page.goto(path);
 

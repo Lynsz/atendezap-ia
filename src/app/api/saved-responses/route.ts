@@ -167,6 +167,24 @@ export async function POST(request: Request) {
       generatedResponse = data as GeneratedResponseForSave;
     }
 
+    if (payload.source_template_id) {
+      const { data: existingSavedTemplate, error: existingSavedTemplateError } = await supabase
+        .from("saved_responses")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("source_template_id", payload.source_template_id)
+        .maybeSingle();
+
+      if (existingSavedTemplateError) {
+        serverLog({ level: "warn", event: "saved_template_existing_lookup_failed", route: "/api/saved-responses", userId: user.id, error: existingSavedTemplateError });
+        return NextResponse.json({ error: "Nao foi possivel verificar se o template ja estava salvo." }, { status: 500 });
+      }
+
+      if (existingSavedTemplate) {
+        return NextResponse.json({ savedResponse: existingSavedTemplate, alreadySaved: true });
+      }
+    }
+
     const content = payload.content || generatedResponse?.generated_answer;
     if (!content) {
       return NextResponse.json({ error: "Informe o conteudo da resposta para salvar." }, { status: 400 });
@@ -177,6 +195,7 @@ export async function POST(request: Request) {
       .insert({
         user_id: user.id,
         response_id: payload.response_id || null,
+        source_template_id: payload.source_template_id || null,
         title: payload.title || (generatedResponse ? defaultTitleFromGeneratedResponse(generatedResponse) : "Resposta salva"),
         content,
         category: payload.category || null

@@ -655,3 +655,32 @@ Recomendacao atualizada:
 A biblioteca esta dentro do escopo pos-1.0 e melhora reutilizacao sem transformar o produto em CRM. A producao controlada continua recomendada; nao escalar amplamente sem migrations aplicadas, RLS conferido e validacao real dos provedores.
 
 Nota estimada atualizada: 97/100 para operacao controlada pos-1.0, condicionada a validacao real de Supabase/RLS e provedores em staging/producao.
+
+## Templates prontos para WhatsApp - 2026-05-26
+
+Status: melhoria pos-1.0 implementada para acelerar o primeiro uso com mensagens prontas por nicho, sem CRM, automacao ou envio automatico.
+
+O que foi feito:
+
+- Criado catalogo estatico de templates em `src/lib/templates/whatsapp-templates.ts`.
+- Cobertos os nichos Delivery, Estetica, Assistencia tecnica, Loja, Restaurante, Prestador de servico, Autonomo e Outro.
+- Criados pelo menos 5 templates por nicho, com categorias simples e campos editaveis.
+- Criada rota protegida `/dashboard/templates` e aba no dashboard com filtros, busca, copiar e salvar na biblioteca.
+- Dashboard principal recomenda templates conforme `business_type` para usuarios no inicio.
+- Biblioteca de respostas passou a aceitar `source_template_id`, evitando duplicar o mesmo template salvo pelo usuario.
+- Tracking adicionado sem enviar conteudo completo do template.
+- Admin recebeu agregados simples de templates salvos e categorias mais salvas.
+- Documentacao criada em `docs/whatsapp-templates.md`.
+
+Pendencias:
+
+- Aplicar `supabase/migrations/0013_saved_response_templates.sql` no Supabase real/staging.
+- Validar usuario A vs usuario B no ambiente real.
+- Validar `/dashboard/templates` em Vercel depois do deploy.
+- Persistir eventos internos de copia de template somente se houver necessidade futura de metricas mais profundas.
+
+Recomendacao atualizada:
+
+Os templates prontos melhoram ativacao inicial e reforcam o valor do produto sem ampliar escopo para WhatsApp direto ou CRM. A producao controlada continua recomendada ate validar migrations, RLS e provedores no ambiente real.
+
+Nota estimada atualizada: 97/100 para operacao controlada pos-1.0, condicionada a validacao real de Supabase/RLS e provedores em staging/producao.

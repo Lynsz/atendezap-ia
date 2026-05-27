@@ -60,6 +60,8 @@ type AiResponseFeedbackMetricRow = {
 
 type SavedResponseMetricRow = {
   user_id: string | null;
+  source_template_id?: string | null;
+  category?: string | null;
   created_at: string;
 };
 
@@ -178,7 +180,7 @@ export async function GET(request: Request) {
       supabase.from("subscriptions").select("user_id, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
       supabase.from("user_feedback").select("type, status, created_at").limit(10000),
       supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000),
-      supabase.from("saved_responses").select("user_id, created_at").limit(20000)
+      supabase.from("saved_responses").select("user_id, source_template_id, category, created_at").limit(20000)
     ]);
 
     const leads = (leadsResult.data || []) as LeadMetricRow[];
@@ -189,6 +191,7 @@ export async function GET(request: Request) {
     const feedback = (feedbackResult.data || []) as FeedbackMetricRow[];
     const aiResponseFeedback = (aiResponseFeedbackResult.data || []) as AiResponseFeedbackMetricRow[];
     const savedResponses = (savedResponsesResult.data || []) as SavedResponseMetricRow[];
+    const savedTemplates = savedResponses.filter((item) => item.source_template_id);
 
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
     const leadEmails = new Set(leads.map((lead) => lead.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -315,7 +318,9 @@ export async function GET(request: Request) {
         activeUsersLast30Days: activeUsers30Days.size,
         totalSavedResponses: savedResponses.length,
         periodSavedResponses: savedResponses.filter((item) => isAtOrAfter(item.created_at, periodStart)).length,
-        usersWithSavedResponses: savedResponseUsers.size
+        usersWithSavedResponses: savedResponseUsers.size,
+        totalSavedTemplates: savedTemplates.length,
+        savedTemplatesByCategory: topBreakdown(savedTemplates.map((item) => ({ label: cleanCampaignValue(item.category) })), 8)
       },
       feedback: {
         totalFeedbacks: feedback.length,

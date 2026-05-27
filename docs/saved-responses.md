@@ -22,6 +22,9 @@ Permitir que o usuario reutilize respostas boas geradas pela IA sem depender de 
 - Horario
 - Informacoes gerais
 - Pos-venda
+- Orcamento
+- Confirmacao
+- Cancelamento
 - Outro
 
 ## O que nao faz
@@ -39,6 +42,7 @@ Permitir que o usuario reutilize respostas boas geradas pela IA sem depender de 
 - O client nao envia nem controla `user_id`.
 - Usuario so lista, cria, edita e remove as proprias respostas salvas.
 - Ao salvar a partir do historico, a API valida que `response_id` pertence ao usuario autenticado.
+- Ao salvar a partir dos templates prontos, a API registra `source_template_id` para evitar duplicar o mesmo template na biblioteca do usuario.
 - Conteudo completo da resposta nao e enviado para analytics.
 - O admin usa apenas agregados: total de respostas salvas e usuarios com pelo menos uma resposta salva.
 

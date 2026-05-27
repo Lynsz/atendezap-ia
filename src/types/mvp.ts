@@ -53,6 +53,7 @@ export type SavedResponse = {
   id: string;
   user_id: string;
   response_id: string | null;
+  source_template_id?: string | null;
   title: string | null;
   content: string;
   category: string | null;

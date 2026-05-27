@@ -197,6 +197,7 @@ create table if not exists public.saved_responses (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   response_id uuid references public.generated_responses(id) on delete set null,
+  source_template_id text,
   title text,
   content text not null,
   category text,
@@ -211,6 +212,9 @@ create table if not exists public.saved_responses (
       'Horario',
       'Informacoes gerais',
       'Pos-venda',
+      'Orcamento',
+      'Confirmacao',
+      'Cancelamento',
       'Outro'
     )
   )
@@ -301,7 +305,9 @@ create index if not exists ai_response_feedback_created_at_idx on public.ai_resp
 create index if not exists saved_responses_user_id_idx on public.saved_responses(user_id);
 create index if not exists saved_responses_created_at_idx on public.saved_responses(created_at desc);
 create index if not exists saved_responses_category_idx on public.saved_responses(category) where category is not null;
+create index if not exists saved_responses_source_template_id_idx on public.saved_responses(source_template_id) where source_template_id is not null;
 create unique index if not exists saved_responses_user_response_unique_idx on public.saved_responses(user_id, response_id) where response_id is not null;
+create unique index if not exists saved_responses_user_template_unique_idx on public.saved_responses(user_id, source_template_id) where source_template_id is not null;
 create unique index if not exists stripe_webhook_events_provider_event_id_unique_idx on public.stripe_webhook_events(provider_event_id);
 create index if not exists subscriptions_provider_subscription_id_idx on public.subscriptions(provider_subscription_id);
 create index if not exists subscriptions_provider_customer_id_idx on public.subscriptions(provider_customer_id);

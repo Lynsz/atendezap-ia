@@ -31,12 +31,18 @@ import { businessSchema, customerSchema, customerStatuses, responseTypes } from 
 import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { savedResponseCategories } from "@/lib/saved-responses";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
+import {
+  filterWhatsAppTemplates,
+  getRecommendedWhatsAppTemplates,
+  whatsappTemplateCategories,
+  type WhatsAppTemplate
+} from "@/lib/templates/whatsapp-templates";
 import { trackEvent } from "@/lib/tracking";
 import { generateCustomerResponse } from "@/services/ai";
 import { deleteSavedResponse, listSavedResponses, saveResponseToLibrary, updateSavedResponse } from "@/services/saved-responses";
 import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, SavedResponse, Subscription } from "@/types/mvp";
 
-type DashboardTab = "assistant" | "business" | "history" | "library" | "customers" | "billing";
+type DashboardTab = "assistant" | "business" | "history" | "library" | "templates" | "customers" | "billing";
 
 type BusinessDraft = {
   business_name: string;
@@ -247,6 +253,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [editingSavedResponseId, setEditingSavedResponseId] = useState<string | null>(null);
   const [savedResponseDraft, setSavedResponseDraft] = useState<SavedResponseDraft>(emptySavedResponseDraft);
   const [savedResponseSearch, setSavedResponseSearch] = useState("");
+  const [templateBusinessTypeFilter, setTemplateBusinessTypeFilter] = useState("Todos");
+  const [templateCategoryFilter, setTemplateCategoryFilter] = useState("Todas");
+  const [templateSearch, setTemplateSearch] = useState("");
   const [customers, setCustomers] = useState<CustomerLead[]>([]);
   const [customerDraft, setCustomerDraft] = useState<CustomerDraft>(emptyCustomer);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -570,7 +579,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     }
   }, [savedResponsesLoaded]);
 
-  async function handleSaveGeneratedResponse(input: { responseId?: string | null; content: string; title?: string | null; category?: string | null }) {
+  async function handleSaveGeneratedResponse(input: { responseId?: string | null; sourceTemplateId?: string | null; content: string; title?: string | null; category?: string | null }) {
     setError("");
 
     if (!input.responseId && !input.content.trim()) {
@@ -578,10 +587,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       return;
     }
 
-    setSavingResponseId(input.responseId || "generated");
+    setSavingResponseId(input.sourceTemplateId || input.responseId || "generated");
     try {
       const result = await saveResponseToLibrary({
         response_id: input.responseId || undefined,
+        source_template_id: input.sourceTemplateId || undefined,
         title: input.title || undefined,
         content: input.content,
         category: input.category || undefined
@@ -591,10 +601,17 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         return [result.savedResponse, ...withoutDuplicate];
       });
       setSavedResponsesLoaded(true);
-      trackEvent("saved_response_create", {
-        source: input.responseId ? "generated_response" : "manual",
-        category: result.savedResponse.category || "sem_categoria"
-      });
+      if (input.sourceTemplateId) {
+        trackEvent("template_save", {
+          templateId: input.sourceTemplateId,
+          category: result.savedResponse.category || "sem_categoria"
+        });
+      } else {
+        trackEvent("saved_response_create", {
+          source: input.responseId ? "generated_response" : "manual",
+          category: result.savedResponse.category || "sem_categoria"
+        });
+      }
       showFeedback(result.alreadySaved ? "Resposta já estava salva." : "Resposta salva na biblioteca.");
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Não foi possível salvar a resposta agora.");
@@ -643,6 +660,40 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       showFeedback("Resposta removida da biblioteca.");
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Não foi possível remover a resposta salva agora.");
+    }
+  }
+
+  async function handleSaveTemplate(template: WhatsAppTemplate) {
+    await handleSaveGeneratedResponse({
+      sourceTemplateId: template.id,
+      title: template.title,
+      content: template.content,
+      category: template.category
+    });
+  }
+
+  function handleTemplateBusinessTypeFilter(value: string) {
+    setTemplateBusinessTypeFilter(value);
+    trackEvent("template_filter_change", {
+      filter: "businessType",
+      businessType: value
+    });
+  }
+
+  function handleTemplateCategoryFilter(value: string) {
+    setTemplateCategoryFilter(value);
+    trackEvent("template_filter_change", {
+      filter: "category",
+      category: value
+    });
+  }
+
+  function handleTemplateSearch(value: string) {
+    setTemplateSearch(value);
+    if (value.trim().length >= 3 || value.trim().length === 0) {
+      trackEvent("template_search", {
+        hasSearch: Boolean(value.trim())
+      });
     }
   }
 
@@ -728,7 +779,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     if (updateError) setError("Não conseguimos atualizar o cliente.");
   }
 
-  async function copyText(value: string, source: "generated" | "history" | "library" = "generated") {
+  async function copyText(value: string, source: "generated" | "history" | "library" | "template" = "generated", template?: WhatsAppTemplate) {
     try {
       await copyResponseText(value);
       if (source === "library") {
@@ -736,7 +787,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           source: "library"
         });
       }
-      showFeedback("Resposta copiada.");
+      if (source === "template" && template) {
+        trackEvent("template_copy", {
+          templateId: template.id,
+          businessType: template.businessType,
+          category: template.category
+        });
+      }
+      showFeedback(source === "template" ? "Template copiado." : "Resposta copiada.");
     } catch {
       setError("Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.");
     }
@@ -883,6 +941,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     }
   }, [loadSavedResponses, tab]);
 
+  useEffect(() => {
+    if (tab === "templates") {
+      trackEvent("templates_view", {
+        source: "dashboard"
+      });
+    }
+  }, [tab]);
+
   const filteredSavedResponses = savedResponses.filter((item) => {
     const search = savedResponseSearch.trim().toLowerCase();
     if (!search) return true;
@@ -892,6 +958,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   });
 
   const savedGeneratedResponseIds = new Set(savedResponses.map((item) => item.response_id).filter(Boolean) as string[]);
+  const savedTemplateIds = new Set(savedResponses.map((item) => item.source_template_id).filter(Boolean) as string[]);
+  const filteredTemplates = filterWhatsAppTemplates({
+    businessType: templateBusinessTypeFilter,
+    category: templateCategoryFilter,
+    search: templateSearch
+  });
+  const recommendedTemplates = getRecommendedWhatsAppTemplates(business?.business_type || business?.business_area || businessDraft.business_type, 4);
+  const shouldShowTemplateRecommendations = tab === "assistant" && (!history.length || monthlyUsage <= 2);
   const overviewCards = [
     {
       label: "Plano atual",
@@ -1188,11 +1262,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           ))}
         </section>
 
-        <section className="mb-5 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+        <section className="mb-5 grid gap-3 md:grid-cols-3 xl:grid-cols-7">
           {[
             ["Gerar resposta", "assistant", Bot],
             [business ? "Editar configuração da IA" : "Configurar atendimento", "business", BriefcaseBusiness],
             ["Biblioteca", "library", Star],
+            ["Templates prontos", "templates", Clipboard],
             ["Clientes", "customers", Users],
             ["Assinatura", "billing", CreditCard],
             ["Preços", "plans", CreditCard]
@@ -1217,6 +1292,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             ["business", "Meu negócio", BriefcaseBusiness],
             ["history", "Histórico", Clipboard],
             ["library", "Biblioteca", Star],
+            ["templates", "Templates", Clipboard],
             ["customers", "Clientes", Users],
             ["billing", "Assinatura", CreditCard]
           ].map(([id, label, Icon]) => (
@@ -1392,6 +1468,45 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   </article>
                 );
               })}
+            </div>
+          </section>
+        ) : null}
+
+        {shouldShowTemplateRecommendations ? (
+          <section className="mb-5 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div>
+                <h2 className="text-xl font-black text-white">Comece com templates prontos</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-400">Use exemplos do seu tipo de atendimento para copiar, adaptar ou salvar na biblioteca.</p>
+              </div>
+              <button type="button" onClick={() => setTab("templates")} className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15">
+                Ver todos
+              </button>
+            </div>
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              {recommendedTemplates.map((template) => (
+                <article key={`recommended-${template.id}`} className="rounded-md border border-white/10 bg-white/[0.04] p-4">
+                  <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wide text-emerald-300">{template.businessType} · {template.category}</p>
+                      <h3 className="mt-1 font-black text-white">{template.title}</h3>
+                    </div>
+                  </div>
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{template.content}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button type="button" onClick={() => copyText(template.content, "template", template)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveTemplate(template)}
+                      disabled={savingResponseId === template.id || savedTemplateIds.has(template.id)}
+                      className="inline-flex min-h-9 items-center gap-2 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-3 text-xs font-black text-emerald-100 disabled:opacity-60"
+                    >
+                      <Star className="h-3.5 w-3.5" />
+                      {savedTemplateIds.has(template.id) ? "Salvo" : savingResponseId === template.id ? "Salvando..." : "Salvar na biblioteca"}
+                    </button>
+                  </div>
+                </article>
+              ))}
             </div>
           </section>
         ) : null}
@@ -1728,6 +1843,88 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   <button type="button" onClick={() => setTab("assistant")} className="mt-4 rounded-md bg-emerald-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
                     Gerar resposta
                   </button>
+                </div>
+              )}
+            </div>
+          </section>
+        ) : null}
+
+        {tab === "templates" ? (
+          <section className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <h2 className="text-xl font-black text-white">Templates prontos para WhatsApp</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Mensagens prontas por tipo de atuação para copiar, adaptar e salvar na sua biblioteca.</p>
+              </div>
+              <button type="button" onClick={() => setTab("library")} className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15">
+                Minha biblioteca
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_1fr_1.4fr]">
+              <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+                Nicho
+                <select value={templateBusinessTypeFilter} onChange={(event) => handleTemplateBusinessTypeFilter(event.target.value)} className="field-input">
+                  <option value="Todos">Todos</option>
+                  {businessTypeOptions.map((option) => (
+                    <option value={option} key={option}>{getBusinessTypeLabel(option)}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+                Categoria
+                <select value={templateCategoryFilter} onChange={(event) => handleTemplateCategoryFilter(event.target.value)} className="field-input">
+                  <option value="Todas">Todas</option>
+                  {whatsappTemplateCategories.map((category) => (
+                    <option value={category} key={category}>{category}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+                Buscar
+                <span className="flex min-h-11 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-300">
+                  <Search className="h-4 w-4 text-slate-500" />
+                  <input
+                    value={templateSearch}
+                    onChange={(event) => handleTemplateSearch(event.target.value)}
+                    className="w-full bg-transparent normal-case outline-none placeholder:text-slate-500"
+                    placeholder="Buscar por titulo, categoria ou texto"
+                  />
+                </span>
+              </label>
+            </div>
+
+            <div className="mt-5 grid gap-3 lg:grid-cols-2">
+              {filteredTemplates.length ? (
+                filteredTemplates.map((template) => (
+                  <article className="rounded-md border border-white/10 bg-white/[0.04] p-4" key={template.id}>
+                    <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-wide text-emerald-300">{getBusinessTypeLabel(template.businessType)} · {template.category}</p>
+                        <h3 className="mt-1 font-black text-white">{template.title}</h3>
+                        {template.description ? <p className="mt-1 text-xs font-bold leading-5 text-slate-500">{template.description}</p> : null}
+                      </div>
+                    </div>
+                    <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{template.content}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button type="button" onClick={() => copyText(template.content, "template", template)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveTemplate(template)}
+                        disabled={savingResponseId === template.id || savedTemplateIds.has(template.id)}
+                        className="inline-flex min-h-9 items-center gap-2 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-3 text-xs font-black text-emerald-100 disabled:opacity-60"
+                      >
+                        <Star className="h-3.5 w-3.5" />
+                        {savedTemplateIds.has(template.id) ? "Salvo" : savingResponseId === template.id ? "Salvando..." : "Salvar na minha biblioteca"}
+                      </button>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400 lg:col-span-2">
+                  <Clipboard className="mx-auto mb-4 h-8 w-8 text-slate-500" />
+                  <p className="font-bold text-slate-200">Nenhum template encontrado.</p>
+                  <p className="mt-2">Ajuste os filtros ou limpe a busca para ver mais mensagens prontas.</p>
                 </div>
               )}
             </div>

@@ -3,6 +3,7 @@ import type { SavedResponse } from "@/types/mvp";
 
 type SaveResponseInput = {
   response_id?: string;
+  source_template_id?: string;
   title?: string;
   content?: string;
   category?: string;

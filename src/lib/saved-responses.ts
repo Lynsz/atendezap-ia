@@ -8,6 +8,9 @@ export const savedResponseCategories = [
   "Horario",
   "Informacoes gerais",
   "Pos-venda",
+  "Orcamento",
+  "Confirmacao",
+  "Cancelamento",
   "Outro"
 ] as const;
 
@@ -28,6 +31,7 @@ export const savedResponseCategorySchema = z.enum(savedResponseCategories, {
 export const createSavedResponseSchema = z
   .object({
     response_id: z.string().uuid("Resposta original invalida.").optional(),
+    source_template_id: optionalText(120, "Template invalido."),
     title: optionalText(120, "Titulo muito longo. Use ate 120 caracteres."),
     content: optionalText(5000, "Resposta muito longa. Use ate 5000 caracteres."),
     category: savedResponseCategorySchema.optional()

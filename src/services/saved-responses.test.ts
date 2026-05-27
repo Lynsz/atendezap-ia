@@ -46,6 +46,7 @@ describe("saved responses service", () => {
     const { saveResponseToLibrary } = await import("./saved-responses");
     await saveResponseToLibrary({
       response_id: "22222222-2222-4222-8222-222222222222",
+      source_template_id: "delivery-1",
       category: "Preco"
     });
 
@@ -58,6 +59,7 @@ describe("saved responses service", () => {
         }),
         body: JSON.stringify({
           response_id: "22222222-2222-4222-8222-222222222222",
+          source_template_id: "delivery-1",
           category: "Preco"
         })
       })

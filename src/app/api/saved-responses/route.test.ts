@@ -154,6 +154,53 @@ describe("/api/saved-responses", () => {
     );
   });
 
+  it("salva template na biblioteca sem aceitar user_id do client", async () => {
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/saved-responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          user_id: "99999999-9999-4999-8999-999999999999",
+          source_template_id: "delivery-1",
+          title: "Informar taxa de entrega",
+          content: "Para [bairro], a taxa de entrega e [valor].",
+          category: "Entrega"
+        })
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.insertPayload).toBeNull();
+
+    const validResponse = await POST(
+      new Request("https://app.example.test/api/saved-responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          source_template_id: "delivery-1",
+          title: "Informar taxa de entrega",
+          content: "Para [bairro], a taxa de entrega e [valor].",
+          category: "Entrega"
+        })
+      })
+    );
+
+    expect(validResponse.status).toBe(201);
+    expect(mocks.insertPayload).toMatchObject({
+      user_id: "11111111-1111-4111-8111-111111111111",
+      source_template_id: "delivery-1",
+      title: "Informar taxa de entrega",
+      category: "Entrega"
+    });
+  });
+
   it("nao salva resposta original de outro usuario", async () => {
     mocks.generatedResponse = null;
     const { POST } = await import("./route");

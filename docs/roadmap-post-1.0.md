@@ -14,6 +14,7 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 ## Prioridade media
 
 - Templates por nicho. Implementado.
+- Biblioteca de templates prontos. Implementado nesta etapa.
 - Biblioteca de respostas. Implementado nesta etapa.
 - Respostas favoritas/salvas. Implementado nesta etapa.
 - Sequencia de e-mails.
@@ -42,12 +43,18 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 
 - Respostas favoritas. Implementado como biblioteca simples de respostas salvas.
 - Biblioteca de respostas. Implementado.
+- Templates prontos por nicho. Implementado.
 - Avaliacao da resposta.
 - Sequencia de e-mails.
 
 ## Melhorias futuras de IA
 
 - Templates avancados por nicho.
+- Templates editaveis por usuario.
+- Templates favoritos.
+- Templates por campanha.
+- Templates por objecao.
+- Templates com variaveis automaticas.
 - Tags avancadas para respostas salvas.
 - Pastas para biblioteca.
 - Templates por equipe, se um dia houver equipes.
