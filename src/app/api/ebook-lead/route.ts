@@ -89,9 +89,15 @@ export async function POST(request: NextRequest) {
         error: emailResult.status === "failed" || emailResult.status === "skipped_not_configured" ? emailResult.error || null : null
       });
     } catch (error) {
-      console.error("Falha ao registrar envio do ebook:", error instanceof Error ? error.message : "unknown");
+      serverLog({ level: "warn", event: "ebook_email_event_save_failed", route: "/api/ebook-lead", error });
     }
 
+    await logEvent(emailResult.status === "sent" ? "ebook_send_succeeded" : "ebook_send_failed", {
+      source: "ebook_page",
+      email_domain: lead.email.split("@")[1],
+      status: emailResult.status,
+      provider: emailResult.provider || "resend"
+    });
     await logEvent("ebook_lead_created", {
       email_domain: lead.email.split("@")[1],
       source: lead.source,

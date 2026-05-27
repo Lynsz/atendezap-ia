@@ -169,6 +169,16 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `.env.local` nunca deve ir para o Git.
 - Use `docs/staging-checklist.md`, `docs/production-deploy-checklist.md` e `docs/post-deploy-smoke-test.md` antes de producao.
 
+## Monitoramento e operacao
+
+- O projeto permanece privado e sem secrets no Git.
+- Use `docs/production-monitoring.md` para a rotina minima de acompanhamento em producao.
+- Use `docs/safe-logging.md` para revisar o que pode ou nao ir para logs.
+- Use `docs/daily-ops-checklist.md` para a checagem diaria.
+- Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
+- Use `docs/error-messages.md` para manter mensagens amigaveis e sem stack trace.
+- Logs e analytics nao devem conter dados sensiveis, prompts completos, respostas completas de IA, tokens ou chaves.
+
 ## Rotas principais
 
 - `/`: landing page.

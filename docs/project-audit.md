@@ -594,3 +594,16 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Documentacao criada/atualizada: `docs/ai-business-templates.md`, `docs/ai-response-quality-plan.md`, `docs/roadmap-post-1.0.md` e `docs/README.md`.
 - Pendencias restantes: aplicar migration `0011_ai_response_feedback.sql` no Supabase real, revisar feedbacks reais semanalmente e evoluir templates apenas com evidencia de uso.
 - Nota operacional estimada atualizada: 97/100 para a etapa de qualidade da IA; escala ampla continua condicionada a dados reais, estabilidade e ausencia de P0/P1.
+
+## Monitoramento minimo de producao - 2026-05-27
+
+- Monitoramento minimo criado em `docs/production-monitoring.md`, com rotina diaria, semanal e alertas criticos.
+- Logs seguros revisados: `src/lib/logger.ts` agora mascara user id, e-mails, chaves e omite campos de conteudo/prompt/resposta/payload.
+- Eventos internos seguros adicionados/reaproveitados via `src/lib/events.ts` e tabela `events`, mantendo metadata sanitizada e sem conteudo completo de IA.
+- Pontos criticos com logs/eventos minimos: geracao de IA, checkout Stripe, webhook Stripe, lead/ebook, envio Resend e respostas salvas.
+- Admin ganhou secao agregada "Saude do sistema" com respostas hoje, falhas de IA, leads, checkouts, webhooks, falhas de webhook, feedbacks negativos e assinaturas ativas.
+- Health check revisado/documentado para continuar leve, sem secrets, sem dados de usuario e sem chamadas caras a provedores.
+- Checklists criados: `docs/daily-ops-checklist.md` e `docs/critical-failure-checklist.md`.
+- Mensagens de erro documentadas em `docs/error-messages.md`; rotas criticas mantem respostas amigaveis sem stack trace.
+- Pendencias restantes: validar painel operacional em Vercel com dados reais, revisar logs de producao depois do primeiro deploy e configurar alertas externos se o volume justificar.
+- Nota estimada mantida: 97/100 para operacao controlada; monitoramento automatico mais avancado fica como melhoria futura.

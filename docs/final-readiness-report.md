@@ -802,3 +802,33 @@ Recomendacao atualizada:
 Os templates prontos melhoram ativacao inicial e reforcam o valor do produto sem ampliar escopo para WhatsApp direto ou CRM. A producao controlada continua recomendada ate validar migrations, RLS e provedores no ambiente real.
 
 Nota estimada atualizada: 97/100 para operacao controlada pos-1.0, condicionada a validacao real de Supabase/RLS e provedores em staging/producao.
+
+## Monitoramento minimo de producao - 2026-05-27
+
+Status: etapa operacional implementada para dar visibilidade basica de falhas criticas sem expor dados sensiveis e sem criar estrutura complexa.
+
+O que foi feito:
+
+- Criado `docs/production-monitoring.md`.
+- Criado `docs/safe-logging.md`.
+- Criado `docs/daily-ops-checklist.md`.
+- Criado `docs/critical-failure-checklist.md`.
+- Criado `docs/error-messages.md`.
+- Logger server-side revisado para mascarar user id, e-mails, secrets e omitir conteudo completo de mensagens, prompts, respostas e payloads.
+- Eventos internos seguros adicionados para sucesso/falha de IA, checkout, webhook Stripe, envio de ebook e resposta salva.
+- Painel admin recebeu secao "Saude do sistema" com metricas agregadas de operacao.
+- Health check documentado como endpoint leve, sem chamada a provedores caros e sem dados sensiveis.
+- README e indice de docs atualizados com os documentos de operacao.
+
+Pendencias:
+
+- Validar os contadores do painel admin com dados reais em staging/producao.
+- Conferir logs reais da Vercel apos deploy para confirmar que nao ha conteudo sensivel.
+- Configurar alertas externos somente se a operacao ganhar volume suficiente.
+- Continuar registrando incidentes em `docs/incident-log.md`.
+
+Recomendacao atualizada:
+
+O AtendeZap IA tem monitoramento minimo suficiente para producao controlada. A rotina ainda depende de checagem operacional diaria; alertas automaticos mais sofisticados devem ser adicionados apenas quando houver volume real.
+
+Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real em staging/producao e revisao dos logs depois do deploy.

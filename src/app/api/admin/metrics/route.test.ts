@@ -40,6 +40,13 @@ function createMetricsSupabase() {
     user_feedback: [
       { type: "bug", status: "new", created_at: new Date().toISOString() },
       { type: "elogio", status: "resolved", created_at: new Date().toISOString() }
+    ],
+    events: [
+      { event_name: "ai_generation_failed", created_at: new Date().toISOString() },
+      { event_name: "checkout_started", created_at: new Date().toISOString() }
+    ],
+    stripe_webhook_events: [
+      { event_type: "checkout.session.completed", processed_at: new Date().toISOString(), created_at: new Date().toISOString() }
     ]
   };
 
@@ -76,6 +83,10 @@ describe("GET /api/admin/metrics", () => {
     expect(body.funnel.activatedUsers).toBe(1);
     expect(body.funnel.activationRate).toBe(50);
     expect(body.usage.totalResponses).toBe(2);
+    expect(body.operationalHealth.responsesGeneratedToday).toBe(2);
+    expect(body.operationalHealth.aiFailuresToday).toBe(1);
+    expect(body.operationalHealth.checkoutsStartedToday).toBe(1);
+    expect(body.operationalHealth.stripeWebhooksProcessedToday).toBe(1);
     expect(body.feedback.byType.bug).toBe(1);
     expect(body.leads).toBeUndefined();
     expect(body.profiles).toBeUndefined();

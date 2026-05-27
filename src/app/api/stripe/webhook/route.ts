@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { getSaasPlan } from "@/config/plans";
 import { AppError, errorResponse } from "@/lib/errors";
+import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -89,10 +90,15 @@ async function updateSubscriptionFromStripe(
   const userId = subscription.metadata.user_id || userIdFallback || (await findStoredUserId(subscription));
 
   if (!userId || !plan) {
-    console.warn("Stripe webhook sem user_id ou plano reconhecido.", {
-      subscriptionId: subscription.id,
-      eventId,
-      priceId
+    serverLog({
+      level: "warn",
+      event: "stripe_webhook_subscription_unmapped",
+      route: "/api/stripe/webhook",
+      metadata: {
+        subscription_id: subscription.id,
+        event_id: eventId,
+        has_price_id: Boolean(priceId)
+      }
     });
     return;
   }
@@ -230,9 +236,17 @@ export async function POST(request: Request) {
         break;
     }
 
+    await logEvent("stripe_webhook_succeeded", {
+      source: "stripe",
+      event_type: event.type
+    });
     serverLog({ event: "stripe_webhook_processed", route: "/api/stripe/webhook", status: "ok", metadata: { event_type: event.type } });
     return Response.json({ ok: true, event: event.type });
   } catch (error) {
+    await logEvent("stripe_webhook_failed", {
+      source: "stripe",
+      error_name: error instanceof Error ? error.name : "unknown"
+    });
     serverLog({ level: "warn", event: "stripe_webhook_failed", route: "/api/stripe/webhook", error });
     return errorResponse(error);
   }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { generateCustomerResponseWithAi } from "@/lib/ai-response";
 import { AppError } from "@/lib/errors";
+import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { generateResponseSchema } from "@/lib/mvp-validators";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
@@ -180,6 +181,12 @@ export async function POST(request: Request) {
     }
 
     const nextUsed = used + 1;
+    await logEvent("ai_generation_succeeded", {
+      source: "dashboard",
+      response_type: payload.data.responseType,
+      mode,
+      plan: planName || "sem_plano"
+    });
     serverLog({ event: "ai_response_generated", route: "/api/ai/generate-response", userId: user.id, status: "ok", metadata: { response_type: payload.data.responseType, mode } });
     return NextResponse.json({
       generatedAnswer,
@@ -193,6 +200,10 @@ export async function POST(request: Request) {
       }
     });
   } catch (error) {
+    await logEvent("ai_generation_failed", {
+      source: "dashboard",
+      error_name: error instanceof Error ? error.name : "unknown"
+    });
     serverLog({ level: "warn", event: "ai_response_failed", route: "/api/ai/generate-response", userId, error });
     if (error instanceof AppError) {
       return NextResponse.json({ error: error.message }, { status: error.status });

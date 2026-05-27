@@ -27,3 +27,7 @@ Validar se a aplicacao esta online.
 - validar deploy
 - smoke test
 - monitoramento simples
+
+## Regra operacional
+
+O endpoint deve continuar leve e publico. Nao deve chamar Stripe, OpenAI, Supabase ou Resend para evitar custo, lentidao ou exposicao de detalhes internos.

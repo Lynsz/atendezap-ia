@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getSaasPlan, isPlanId } from "@/config/plans";
 import { AppError, errorResponse } from "@/lib/errors";
+import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -194,6 +195,12 @@ export async function POST(request: Request) {
       throw new AppError("Checkout criado na Stripe, mas não foi possível salvar a assinatura no Supabase.", 500);
     }
 
+    await logEvent("checkout_started", {
+      source: body.source || "pricing",
+      funnel: body.funnel || "pricing",
+      plan: plan.id,
+      first_month_offer: firstMonthOfferApplied
+    });
     serverLog({
       event: "stripe_checkout_created",
       route: "/api/stripe/create-checkout-session",
@@ -210,6 +217,10 @@ export async function POST(request: Request) {
       firstMonthPriceApplied: firstMonthOfferApplied
     });
   } catch (error) {
+    await logEvent("stripe_checkout_failed", {
+      source: "api",
+      error_name: error instanceof Error ? error.name : "unknown"
+    });
     serverLog({ level: "warn", event: "stripe_checkout_failed", route: "/api/stripe/create-checkout-session", userId, error });
     return errorResponse(error);
   }

@@ -1,15 +1,20 @@
-import "server-only";
-
-import { getSupabaseAdmin } from "@/lib/supabase/server";
+import { sanitizeLogMetadata, serverLog } from "@/lib/logger";
 
 export async function logEvent(eventName: string, metadata?: Record<string, unknown>) {
   try {
+    const { getSupabaseAdmin } = await import("@/lib/supabase/server");
     const supabase = getSupabaseAdmin();
     await supabase.from("events").insert({
       event_name: eventName,
-      metadata: metadata || {}
+      metadata: sanitizeLogMetadata(metadata) || {}
     });
   } catch (error) {
-    console.error("Falha ao registrar evento:", eventName, error instanceof Error ? error.message : "unknown");
+    serverLog({
+      level: "warn",
+      event: "internal_event_log_failed",
+      route: "src/lib/events",
+      error,
+      metadata: { event_name: eventName }
+    });
   }
 }

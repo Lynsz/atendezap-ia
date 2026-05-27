@@ -65,6 +65,17 @@ type SavedResponseMetricRow = {
   created_at: string;
 };
 
+type EventMetricRow = {
+  event_name: string;
+  created_at: string;
+};
+
+type StripeWebhookEventMetricRow = {
+  event_type: string;
+  processed_at: string | null;
+  created_at: string;
+};
+
 const metricsQuerySchema = z.object({
   period: z.enum(["today", "7d", "30d", "all"]).optional().default("30d")
 });
@@ -172,7 +183,18 @@ export async function GET(request: Request) {
     const sevenDaysStart = daysAgo(7);
     const thirtyDaysStart = daysAgo(30);
 
-    const [leadsResult, profilesResult, businessesResult, responsesResult, subscriptionsResult, feedbackResult, aiResponseFeedbackResult, savedResponsesResult] = await Promise.all([
+    const [
+      leadsResult,
+      profilesResult,
+      businessesResult,
+      responsesResult,
+      subscriptionsResult,
+      feedbackResult,
+      aiResponseFeedbackResult,
+      savedResponsesResult,
+      eventsResult,
+      stripeWebhookEventsResult
+    ] = await Promise.all([
       supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign").limit(10000),
       supabase.from("profiles").select("id, email, created_at").limit(10000),
       supabase.from("businesses").select("user_id, onboarding_completed, created_at, updated_at").limit(10000),
@@ -180,7 +202,9 @@ export async function GET(request: Request) {
       supabase.from("subscriptions").select("user_id, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
       supabase.from("user_feedback").select("type, status, created_at").limit(10000),
       supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000),
-      supabase.from("saved_responses").select("user_id, source_template_id, category, created_at").limit(20000)
+      supabase.from("saved_responses").select("user_id, source_template_id, category, created_at").limit(20000),
+      supabase.from("events").select("event_name, created_at").limit(20000),
+      supabase.from("stripe_webhook_events").select("event_type, processed_at, created_at").limit(10000)
     ]);
 
     const leads = (leadsResult.data || []) as LeadMetricRow[];
@@ -191,6 +215,8 @@ export async function GET(request: Request) {
     const feedback = (feedbackResult.data || []) as FeedbackMetricRow[];
     const aiResponseFeedback = (aiResponseFeedbackResult.data || []) as AiResponseFeedbackMetricRow[];
     const savedResponses = (savedResponsesResult.data || []) as SavedResponseMetricRow[];
+    const events = (eventsResult.data || []) as EventMetricRow[];
+    const stripeWebhookEvents = (stripeWebhookEventsResult.data || []) as StripeWebhookEventMetricRow[];
     const savedTemplates = savedResponses.filter((item) => item.source_template_id);
 
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -328,6 +354,18 @@ export async function GET(request: Request) {
         newFeedbacks: feedback.filter((item) => item.status === "new").length,
         unresolvedFeedbacks: feedback.filter((item) => isUnresolvedFeedback(item.status)).length,
         byType: feedbackByType
+      },
+      operationalHealth: {
+        responsesGeneratedToday: responses.filter((response) => isAtOrAfter(response.created_at, todayStart)).length,
+        aiFailuresToday: events.filter((event) => event.event_name === "ai_generation_failed" && isAtOrAfter(event.created_at, todayStart)).length,
+        leadsToday: leads.filter((lead) => isAtOrAfter(lead.created_at, todayStart)).length,
+        checkoutsStartedToday: events.filter((event) => event.event_name === "checkout_started" && isAtOrAfter(event.created_at, todayStart)).length,
+        stripeWebhooksProcessedToday: stripeWebhookEvents.filter((event) => Boolean(event.processed_at) && isAtOrAfter(event.created_at, todayStart)).length,
+        stripeWebhookFailuresToday: events.filter((event) => event.event_name === "stripe_webhook_failed" && isAtOrAfter(event.created_at, todayStart)).length,
+        recentNegativeFeedbacks:
+          aiResponseFeedback.filter((item) => item.rating === "negative" && isAtOrAfter(item.created_at, thirtyDaysStart)).length +
+          feedback.filter((item) => ["bug", "dificuldade_uso"].includes(item.type || "") && isAtOrAfter(item.created_at, thirtyDaysStart)).length,
+        activeSubscriptions: activeSubscriptions.length
       },
       aiQuality: {
         totalFeedbacks: aiResponseFeedback.length,

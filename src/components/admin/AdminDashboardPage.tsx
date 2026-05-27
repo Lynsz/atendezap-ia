@@ -138,6 +138,16 @@ type ProductMetricsPayload = {
       dificuldade_uso: number;
     };
   };
+  operationalHealth: {
+    responsesGeneratedToday: number;
+    aiFailuresToday: number;
+    leadsToday: number;
+    checkoutsStartedToday: number;
+    stripeWebhooksProcessedToday: number;
+    stripeWebhookFailuresToday: number;
+    recentNegativeFeedbacks: number;
+    activeSubscriptions: number;
+  };
   aiQuality: {
     totalFeedbacks: number;
     periodFeedbacks: number;
@@ -616,6 +626,34 @@ export default function AdminDashboardPage() {
             Regra simples baseada em leads, cadastros, onboarding, primeira resposta, checkout e assinatura. Use como triagem inicial antes de decidir a próxima melhoria.
           </p>
         </section>
+
+        {productMetrics ? (
+          <section className="mb-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Saude do sistema</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Monitoramento operacional</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  Contagens agregadas para triagem diaria. Esta visao nao mostra prompts, respostas completas, tokens, chaves ou dados de pagamento.
+                </p>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-slate-300">
+                Hoje
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Respostas geradas hoje" value={productMetrics.operationalHealth.responsesGeneratedToday} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Falhas de IA hoje" value={productMetrics.operationalHealth.aiFailuresToday} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Leads hoje" value={productMetrics.operationalHealth.leadsToday} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Checkouts iniciados hoje" value={productMetrics.operationalHealth.checkoutsStartedToday} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Webhooks processados hoje" value={productMetrics.operationalHealth.stripeWebhooksProcessedToday} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Falhas de webhook hoje" value={productMetrics.operationalHealth.stripeWebhookFailuresToday} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Feedbacks negativos recentes" value={productMetrics.operationalHealth.recentNegativeFeedbacks} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Assinaturas ativas" value={productMetrics.operationalHealth.activeSubscriptions} icon={<BarChart3 className="h-5 w-5" />} />
+            </div>
+          </section>
+        ) : null}
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Total de leads" value={metrics?.totalLeads ?? 0} icon={<Users className="h-5 w-5" />} />

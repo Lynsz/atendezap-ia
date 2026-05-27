@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { AppError } from "@/lib/errors";
+import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 import { createSavedResponseSchema, inferSavedResponseSource } from "@/lib/saved-responses";
@@ -210,6 +211,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Nao foi possivel salvar a resposta agora." }, { status: 500 });
     }
 
+    await logEvent("saved_response_created", {
+      source,
+      category: payload.category || "sem_categoria"
+    });
     serverLog({ event: "saved_response_created", route: "/api/saved-responses", userId: user.id, status: "ok", metadata: { category: payload.category || "sem_categoria", source } });
     return NextResponse.json({ savedResponse, alreadySaved: false }, { status: 201 });
   } catch (error) {
