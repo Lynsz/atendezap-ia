@@ -82,10 +82,35 @@ export async function PATCH(request: Request, context: RouteContext) {
     const { id: rawId } = await context.params;
     const id = idSchema.parse(rawId);
     const payload = updateSavedResponseSchema.parse(await request.json());
+    const shouldIncrementCopyCount = payload.copy_count_action === "increment";
+    let nextCopyCount: number | null = null;
+
+    if (shouldIncrementCopyCount) {
+      const { data: existingSavedResponse, error: lookupError } = await supabase
+        .from("saved_responses")
+        .select("copy_count")
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (lookupError) {
+        serverLog({ level: "warn", event: "saved_response_copy_lookup_failed", route: "/api/saved-responses/[id]", userId: user.id, error: lookupError });
+        return NextResponse.json({ error: "Nao foi possivel registrar a copia agora." }, { status: 500 });
+      }
+
+      if (!existingSavedResponse) {
+        return NextResponse.json({ error: "Resposta salva nao encontrada para este usuario." }, { status: 404 });
+      }
+
+      nextCopyCount = Number((existingSavedResponse as { copy_count?: number | null }).copy_count || 0) + 1;
+    }
+
     const updates = {
       ...(Object.prototype.hasOwnProperty.call(payload, "title") ? { title: payload.title || null } : {}),
       ...(Object.prototype.hasOwnProperty.call(payload, "content") ? { content: payload.content } : {}),
-      ...(Object.prototype.hasOwnProperty.call(payload, "category") ? { category: payload.category || null } : {})
+      ...(Object.prototype.hasOwnProperty.call(payload, "category") ? { category: payload.category || null } : {}),
+      ...(Object.prototype.hasOwnProperty.call(payload, "is_favorite") ? { is_favorite: payload.is_favorite } : {}),
+      ...(shouldIncrementCopyCount ? { copy_count: nextCopyCount, last_copied_at: new Date().toISOString() } : {})
     };
 
     const { data: savedResponse, error } = await supabase

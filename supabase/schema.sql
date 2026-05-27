@@ -202,6 +202,9 @@ create table if not exists public.saved_responses (
   title text,
   content text not null,
   category text,
+  is_favorite boolean not null default false,
+  copy_count integer not null default 0,
+  last_copied_at timestamptz,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   constraint saved_responses_category_check check (
@@ -221,6 +224,9 @@ create table if not exists public.saved_responses (
   ),
   constraint saved_responses_source_check check (
     source in ('ai_generated', 'template', 'manual')
+  ),
+  constraint saved_responses_copy_count_non_negative check (
+    copy_count >= 0
   )
 );
 
@@ -311,6 +317,8 @@ create index if not exists saved_responses_created_at_idx on public.saved_respon
 create index if not exists saved_responses_category_idx on public.saved_responses(category) where category is not null;
 create index if not exists saved_responses_source_idx on public.saved_responses(source);
 create index if not exists saved_responses_source_template_id_idx on public.saved_responses(source_template_id) where source_template_id is not null;
+create index if not exists saved_responses_user_favorite_idx on public.saved_responses(user_id, is_favorite, updated_at desc);
+create index if not exists saved_responses_user_last_copied_idx on public.saved_responses(user_id, last_copied_at desc) where last_copied_at is not null;
 create unique index if not exists saved_responses_user_response_unique_idx on public.saved_responses(user_id, response_id) where response_id is not null;
 create unique index if not exists saved_responses_user_template_unique_idx on public.saved_responses(user_id, source_template_id) where source_template_id is not null;
 create unique index if not exists stripe_webhook_events_provider_event_id_unique_idx on public.stripe_webhook_events(provider_event_id);

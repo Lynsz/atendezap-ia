@@ -55,7 +55,9 @@ export const updateSavedResponseSchema = z
   .object({
     title: optionalText(120, "Titulo muito longo. Use ate 120 caracteres.").nullable(),
     content: optionalText(5000, "Resposta muito longa. Use ate 5000 caracteres."),
-    category: savedResponseCategorySchema.optional().nullable()
+    category: savedResponseCategorySchema.optional().nullable(),
+    is_favorite: z.boolean().optional(),
+    copy_count_action: z.literal("increment").optional()
   })
   .strict()
   .refine((value) => Object.keys(value).length > 0, {

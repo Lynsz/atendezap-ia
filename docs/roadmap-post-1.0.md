@@ -20,6 +20,9 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 - Respostas salvas editaveis. Implementado.
 - Criacao manual de respostas. Implementado.
 - Duplicacao de respostas/templates salvos. Implementado.
+- Favoritos na biblioteca. Implementado nesta etapa.
+- Filtros avancados simples por categoria, origem, favoritos e busca. Implementado nesta etapa.
+- Acesso rapido a respostas favoritas no dashboard. Implementado nesta etapa.
 - Sequencia de e-mails.
 - Exportacao de historico.
 - Tags/categorias avancadas de respostas.
@@ -48,6 +51,7 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 - Biblioteca de respostas. Implementado.
 - Templates prontos por nicho. Implementado.
 - Personalizacao da biblioteca: criar, editar, duplicar, excluir, copiar e filtrar respostas salvas. Implementado.
+- Organizacao da biblioteca com favoritos, ordenacao simples e acesso rapido no dashboard. Implementado.
 - Avaliacao da resposta.
 - Sequencia de e-mails.
 
@@ -60,7 +64,8 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 - Templates com variaveis automaticas.
 - Tags avancadas para respostas salvas.
 - Pastas para biblioteca.
-- Favoritos dentro da biblioteca.
+- Respostas mais usadas com base em `copy_count`.
+- Sugestoes automaticas de favoritos.
 - Templates por equipe, se um dia houver equipes.
 - Busca avancada em respostas salvas.
 - Respostas compartilhadas, se um dia houver equipes.

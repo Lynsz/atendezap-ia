@@ -12,6 +12,9 @@ const mocks = vi.hoisted(() => ({
     title: "Resposta",
     content: "Conteudo salvo",
     category: "Preco",
+    is_favorite: false,
+    copy_count: 0,
+    last_copied_at: null,
     created_at: "2026-05-26T12:00:00.000Z",
     updated_at: "2026-05-26T12:00:00.000Z"
   } as Record<string, unknown> | null
@@ -80,6 +83,9 @@ describe("/api/saved-responses/[id]", () => {
       title: "Resposta",
       content: "Conteudo salvo",
       category: "Preco",
+      is_favorite: false,
+      copy_count: 0,
+      last_copied_at: null,
       created_at: "2026-05-26T12:00:00.000Z",
       updated_at: "2026-05-26T12:00:00.000Z"
     };
@@ -133,6 +139,77 @@ describe("/api/saved-responses/[id]", () => {
     );
 
     expect(response.status).toBe(404);
+  });
+
+  it("favorita somente resposta salva do usuario autenticado", async () => {
+    const { PATCH } = await import("./route");
+    const response = await PATCH(
+      new Request("https://app.example.test/api/saved-responses/33333333-3333-4333-8333-333333333333", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({ is_favorite: true })
+      }),
+      { params: Promise.resolve({ id: "33333333-3333-4333-8333-333333333333" }) }
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.updatePayload).toEqual({ is_favorite: true });
+    expect(mocks.tableFilters).toEqual(
+      expect.arrayContaining([
+        { table: "saved_responses", column: "id", value: "33333333-3333-4333-8333-333333333333" },
+        { table: "saved_responses", column: "user_id", value: "11111111-1111-4111-8111-111111111111" }
+      ])
+    );
+  });
+
+  it("nao favorita resposta salva de outro usuario", async () => {
+    mocks.savedResponse = null;
+    const { PATCH } = await import("./route");
+    const response = await PATCH(
+      new Request("https://app.example.test/api/saved-responses/33333333-3333-4333-8333-333333333333", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({ is_favorite: true })
+      }),
+      { params: Promise.resolve({ id: "33333333-3333-4333-8333-333333333333" }) }
+    );
+
+    expect(response.status).toBe(404);
+  });
+
+  it("registra copia com contador e data somente para o usuario autenticado", async () => {
+    mocks.savedResponse = {
+      ...(mocks.savedResponse || {}),
+      copy_count: 2
+    };
+    const { PATCH } = await import("./route");
+    const response = await PATCH(
+      new Request("https://app.example.test/api/saved-responses/33333333-3333-4333-8333-333333333333", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({ copy_count_action: "increment" })
+      }),
+      { params: Promise.resolve({ id: "33333333-3333-4333-8333-333333333333" }) }
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.updatePayload).toMatchObject({ copy_count: 3 });
+    expect(typeof mocks.updatePayload?.last_copied_at).toBe("string");
+    expect(mocks.tableFilters).toEqual(
+      expect.arrayContaining([
+        { table: "saved_responses", column: "id", value: "33333333-3333-4333-8333-333333333333" },
+        { table: "saved_responses", column: "user_id", value: "11111111-1111-4111-8111-111111111111" }
+      ])
+    );
   });
 
   it("exclui somente resposta salva do usuario autenticado", async () => {

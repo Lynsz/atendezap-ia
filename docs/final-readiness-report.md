@@ -683,6 +683,33 @@ A biblioteca editavel aumenta utilidade diaria sem mudar o escopo do produto. A 
 
 Nota estimada atualizada: 97/100 para operacao controlada pos-1.0, condicionada a validacao real de Supabase/RLS e provedores em staging/producao.
 
+## Organizacao da biblioteca com favoritos - 2026-05-27
+
+Status: melhoria pos-1.0 implementada para encontrar e copiar respostas importantes com menos atrito, sem criar CRM, automacao ou envio automatico pelo WhatsApp.
+
+O que foi feito:
+
+- Criado `is_favorite` em `saved_responses` com default `false`.
+- Criados `copy_count` e `last_copied_at` para contador simples de copias.
+- Criada migration incremental `supabase/migrations/0015_saved_response_favorites_and_copy_count.sql`.
+- Biblioteca ganhou favoritar/desfavoritar, filtro Todos/Favoritos, filtros combinados por categoria/origem/busca e ordenacao por recentes, antigos, atualizadas recentemente, favoritos primeiro e categoria.
+- Cards da biblioteca mostram titulo, categoria, origem, favorito, data, trecho da resposta, contador de copias e acoes de copiar, editar, duplicar, favoritar e excluir.
+- Dashboard principal ganhou bloco "Respostas favoritas" com ate 3 respostas e estado vazio.
+- Tracking foi ampliado sem enviar conteudo completo das respostas.
+- API continua autenticada e filtrando por `user_id`; usuario nao favorita, copia, edita, duplica nem exclui item de outro usuario.
+
+Pendencias:
+
+- Aplicar `supabase/migrations/0015_saved_response_favorites_and_copy_count.sql` no Supabase real/staging.
+- Validar usuario A vs usuario B no ambiente real, incluindo favoritar, copiar, editar, duplicar e excluir.
+- Validar mobile da biblioteca em Vercel depois do deploy.
+
+Recomendacao atualizada:
+
+A organizacao por favoritos melhora o uso diario da biblioteca sem ampliar escopo para CRM ou WhatsApp direto. A producao controlada continua recomendada ate migrations e isolamento real serem validados.
+
+Nota estimada mantida: 97/100 para operacao controlada pos-1.0, condicionada a validacao real de Supabase/RLS e provedores em staging/producao.
+
 ## Templates prontos para WhatsApp - 2026-05-26
 
 Status: melhoria pos-1.0 implementada para acelerar o primeiro uso com mensagens prontas por nicho, sem CRM, automacao ou envio automatico.

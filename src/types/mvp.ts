@@ -58,6 +58,9 @@ export type SavedResponse = {
   title: string | null;
   content: string;
   category: string | null;
+  is_favorite?: boolean | null;
+  copy_count?: number | null;
+  last_copied_at?: string | null;
   created_at: string;
   updated_at: string;
 };

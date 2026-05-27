@@ -103,4 +103,64 @@ describe("saved responses service", () => {
     );
     vi.unstubAllGlobals();
   });
+
+  it("updateSavedResponseFavorite chama PATCH autenticado com favorito", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          savedResponse: {
+            id: "33333333-3333-4333-8333-333333333333",
+            is_favorite: true
+          }
+        }),
+        { status: 200 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { updateSavedResponseFavorite } = await import("./saved-responses");
+    await updateSavedResponseFavorite("33333333-3333-4333-8333-333333333333", true);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/saved-responses/33333333-3333-4333-8333-333333333333",
+      expect.objectContaining({
+        method: "PATCH",
+        headers: expect.objectContaining({
+          Authorization: "Bearer test-token"
+        }),
+        body: JSON.stringify({ is_favorite: true })
+      })
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it("recordSavedResponseCopy chama PATCH autenticado com incremento", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          savedResponse: {
+            id: "33333333-3333-4333-8333-333333333333",
+            copy_count: 1
+          }
+        }),
+        { status: 200 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { recordSavedResponseCopy } = await import("./saved-responses");
+    await recordSavedResponseCopy("33333333-3333-4333-8333-333333333333");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/saved-responses/33333333-3333-4333-8333-333333333333",
+      expect.objectContaining({
+        method: "PATCH",
+        headers: expect.objectContaining({
+          Authorization: "Bearer test-token"
+        }),
+        body: JSON.stringify({ copy_count_action: "increment" })
+      })
+    );
+    vi.unstubAllGlobals();
+  });
 });

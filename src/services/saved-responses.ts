@@ -14,6 +14,8 @@ type UpdateSavedResponseInput = {
   title?: string | null;
   content?: string;
   category?: string | null;
+  is_favorite?: boolean;
+  copy_count_action?: "increment";
 };
 
 async function getAccessToken() {
@@ -75,6 +77,14 @@ export async function updateSavedResponse(id: string, input: UpdateSavedResponse
 
   const data = await parseJsonResponse<{ savedResponse: SavedResponse }>(response, "Nao foi possivel atualizar a resposta salva agora.");
   return data.savedResponse;
+}
+
+export async function updateSavedResponseFavorite(id: string, isFavorite: boolean) {
+  return updateSavedResponse(id, { is_favorite: isFavorite });
+}
+
+export async function recordSavedResponseCopy(id: string) {
+  return updateSavedResponse(id, { copy_count_action: "increment" });
 }
 
 export async function deleteSavedResponse(id: string) {

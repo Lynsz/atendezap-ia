@@ -30,7 +30,15 @@ import { businessTypeOptions, getBusinessExamples, getBusinessTemplate, getBusin
 import { copyResponseText } from "@/lib/clipboard";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
-import { filterSavedResponses, getSavedResponseSource, getSavedResponseSourceLabel, type SavedResponseSourceFilter } from "@/lib/saved-response-library";
+import {
+  filterSavedResponses,
+  sortSavedResponses,
+  getSavedResponseSource,
+  getSavedResponseSourceLabel,
+  type SavedResponseFavoriteFilter,
+  type SavedResponseSortOrder,
+  type SavedResponseSourceFilter
+} from "@/lib/saved-response-library";
 import { savedResponseCategories } from "@/lib/saved-responses";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
 import {
@@ -41,7 +49,15 @@ import {
 } from "@/lib/templates/whatsapp-templates";
 import { trackEvent } from "@/lib/tracking";
 import { generateCustomerResponse } from "@/services/ai";
-import { deleteSavedResponse, duplicateSavedResponse, listSavedResponses, saveResponseToLibrary, updateSavedResponse } from "@/services/saved-responses";
+import {
+  deleteSavedResponse,
+  duplicateSavedResponse,
+  listSavedResponses,
+  recordSavedResponseCopy,
+  saveResponseToLibrary,
+  updateSavedResponse,
+  updateSavedResponseFavorite
+} from "@/services/saved-responses";
 import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, SavedResponse, Subscription } from "@/types/mvp";
 
 type DashboardTab = "assistant" | "business" | "history" | "library" | "templates" | "customers" | "billing";
@@ -258,9 +274,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [showManualSavedResponseForm, setShowManualSavedResponseForm] = useState(false);
   const [creatingManualSavedResponse, setCreatingManualSavedResponse] = useState(false);
   const [duplicatingSavedResponseId, setDuplicatingSavedResponseId] = useState<string | null>(null);
+  const [favoriteLoadingSavedResponseId, setFavoriteLoadingSavedResponseId] = useState<string | null>(null);
   const [savedResponseSearch, setSavedResponseSearch] = useState("");
   const [savedResponseCategoryFilter, setSavedResponseCategoryFilter] = useState("Todas");
   const [savedResponseSourceFilter, setSavedResponseSourceFilter] = useState<SavedResponseSourceFilter>("all");
+  const [savedResponseFavoriteFilter, setSavedResponseFavoriteFilter] = useState<SavedResponseFavoriteFilter>("all");
+  const [savedResponseSortOrder, setSavedResponseSortOrder] = useState<SavedResponseSortOrder>("recent");
   const [templateBusinessTypeFilter, setTemplateBusinessTypeFilter] = useState("Todos");
   const [templateCategoryFilter, setTemplateCategoryFilter] = useState("Todas");
   const [templateSearch, setTemplateSearch] = useState("");
@@ -735,6 +754,27 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     }
   }
 
+  async function handleToggleSavedResponseFavorite(item: SavedResponse) {
+    setError("");
+    const nextFavorite = !item.is_favorite;
+    setFavoriteLoadingSavedResponseId(item.id);
+    try {
+      const updated = await updateSavedResponseFavorite(item.id, nextFavorite);
+      setSavedResponses((current) => current.map((savedResponse) => (savedResponse.id === updated.id ? updated : savedResponse)));
+      trackEvent(nextFavorite ? "saved_response_favorite" : "saved_response_unfavorite", {
+        category: updated.category || "sem_categoria",
+        source: getSavedResponseSource(updated),
+        isFavorite: Boolean(updated.is_favorite),
+        action: nextFavorite ? "favorite" : "unfavorite"
+      });
+      showFeedback(nextFavorite ? "Resposta marcada como favorita." : "Resposta removida dos favoritos.");
+    } catch (favoriteError) {
+      setError(favoriteError instanceof Error ? favoriteError.message : "Não foi possível atualizar o favorito agora.");
+    } finally {
+      setFavoriteLoadingSavedResponseId(null);
+    }
+  }
+
   async function handleSaveTemplate(template: WhatsAppTemplate) {
     await handleSaveGeneratedResponse({
       sourceTemplateId: template.id,
@@ -787,6 +827,25 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       action: "filter_source",
       source: value,
       category: savedResponseCategoryFilter
+    });
+  }
+
+  function handleSavedResponseFavoriteFilter(value: SavedResponseFavoriteFilter) {
+    setSavedResponseFavoriteFilter(value);
+    trackEvent(value === "favorites" ? "saved_response_filter_favorites" : "saved_response_filter", {
+      action: value === "favorites" ? "filter_favorites" : "filter_all",
+      isFavorite: value === "favorites",
+      category: savedResponseCategoryFilter,
+      source: savedResponseSourceFilter
+    });
+  }
+
+  function handleSavedResponseSortOrder(value: SavedResponseSortOrder) {
+    setSavedResponseSortOrder(value);
+    trackEvent("saved_response_sort_change", {
+      action: "sort",
+      sort: value,
+      isFavorite: savedResponseFavoriteFilter === "favorites"
     });
   }
 
@@ -885,9 +944,25 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     try {
       await copyResponseText(value);
       if (source === "library") {
+        if (savedResponse) {
+          void recordSavedResponseCopy(savedResponse.id)
+            .then((updated) => {
+              setSavedResponses((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+            })
+            .catch(() => {
+              setSavedResponses((current) =>
+                current.map((item) =>
+                  item.id === savedResponse.id
+                    ? { ...item, copy_count: (item.copy_count || 0) + 1, last_copied_at: new Date().toISOString() }
+                    : item
+                )
+              );
+            });
+        }
         trackEvent("saved_response_copy", {
           category: savedResponse?.category || "sem_categoria",
           source: savedResponse ? getSavedResponseSource(savedResponse) : "library",
+          isFavorite: Boolean(savedResponse?.is_favorite),
           action: "copy"
         });
       }
@@ -1046,6 +1121,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   }, [loadSavedResponses, tab]);
 
   useEffect(() => {
+    if (!loading && !shouldShowOnboarding && !savedResponsesLoaded) {
+      queueMicrotask(() => {
+        void loadSavedResponses();
+      });
+    }
+  }, [loadSavedResponses, loading, savedResponsesLoaded, shouldShowOnboarding]);
+
+  useEffect(() => {
     if (tab === "templates") {
       trackEvent("templates_view", {
         source: "dashboard"
@@ -1056,8 +1139,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const filteredSavedResponses = filterSavedResponses(savedResponses, {
     search: savedResponseSearch,
     category: savedResponseCategoryFilter,
-    source: savedResponseSourceFilter
+    source: savedResponseSourceFilter,
+    favorite: savedResponseFavoriteFilter,
+    sort: savedResponseSortOrder
   });
+  const favoriteSavedResponses = sortSavedResponses(savedResponses.filter((item) => item.is_favorite), "updated");
+  const quickFavoriteSavedResponses = favoriteSavedResponses.slice(0, 3);
+  const libraryFavoritePreview = favoriteSavedResponses.slice(0, 5);
 
   const savedGeneratedResponseIds = new Set(savedResponses.map((item) => item.response_id).filter(Boolean) as string[]);
   const savedTemplateIds = new Set(savedResponses.map((item) => item.source_template_id).filter(Boolean) as string[]);
@@ -1362,6 +1450,43 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               <p className="mt-2 text-xs leading-5 text-slate-400">{card.detail}</p>
             </article>
           ))}
+        </section>
+
+        <section className="mb-5 rounded-lg border border-white/10 bg-[#101821] p-4 shadow-xl shadow-black/20">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-lg font-black text-white">Respostas favoritas</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-400">Acesso rápido às mensagens mais usadas da sua biblioteca.</p>
+            </div>
+            <button type="button" onClick={() => setTab("library")} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15">
+              <Star className="h-3.5 w-3.5" />
+              Abrir biblioteca
+            </button>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            {quickFavoriteSavedResponses.length ? (
+              quickFavoriteSavedResponses.map((item) => (
+                <article className="rounded-md border border-amber-300/20 bg-amber-300/5 p-3" key={item.id}>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="line-clamp-2 text-sm font-black text-white">{item.title || "Resposta salva"}</h3>
+                    <Star className="h-4 w-4 flex-none fill-amber-300 text-amber-300" />
+                  </div>
+                  <p className="mt-2 line-clamp-3 text-xs leading-5 text-slate-300">{item.content}</p>
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span className="truncate text-xs font-bold text-slate-500">{item.category || "Sem categoria"}</span>
+                    <button type="button" onClick={() => copyText(item.content, "library", undefined, item)} className="inline-flex min-h-9 items-center justify-center gap-2 rounded-md bg-white px-3 text-xs font-black text-slate-950">
+                      <Copy className="h-3.5 w-3.5" />
+                      Copiar
+                    </button>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-4 text-sm text-slate-400 md:col-span-3">
+                Salve respostas como favoritas para acessar mais rápido aqui.
+              </div>
+            )}
+          </div>
         </section>
 
         <section className="mb-5 grid gap-3 md:grid-cols-3 xl:grid-cols-7">
@@ -1902,7 +2027,29 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               </div>
             ) : null}
 
-            <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_220px_180px]">
+            {libraryFavoritePreview.length ? (
+              <div className="mt-5 rounded-md border border-amber-300/20 bg-amber-300/5 p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h3 className="inline-flex items-center gap-2 text-sm font-black text-white">
+                    <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
+                    Favoritas
+                  </h3>
+                  <button type="button" onClick={() => handleSavedResponseFavoriteFilter("favorites")} className="rounded-md border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-xs font-black text-amber-100">
+                    Ver favoritas
+                  </button>
+                </div>
+                <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-5">
+                  {libraryFavoritePreview.map((item) => (
+                    <button key={item.id} type="button" onClick={() => copyText(item.content, "library", undefined, item)} className="min-h-24 rounded-md border border-white/10 bg-[#101821] p-3 text-left hover:bg-[#172231]">
+                      <span className="line-clamp-2 text-xs font-black text-white">{item.title || "Resposta salva"}</span>
+                      <span className="mt-2 line-clamp-2 text-xs leading-5 text-slate-400">{item.content}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="mt-5 grid gap-3 xl:grid-cols-[1fr_180px_220px_180px_220px]">
               <label className="flex min-h-11 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-300">
                 <Search className="h-4 w-4 text-slate-500" />
                 <input
@@ -1912,6 +2059,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   placeholder="Buscar por título, categoria ou conteúdo"
                 />
               </label>
+              <div className="grid grid-cols-2 overflow-hidden rounded-md border border-white/10 bg-white/[0.04] p-1">
+                <button type="button" onClick={() => handleSavedResponseFavoriteFilter("all")} className={`rounded px-3 text-xs font-black ${savedResponseFavoriteFilter === "all" ? "bg-white text-slate-950" : "text-slate-300"}`}>
+                  Todos
+                </button>
+                <button type="button" onClick={() => handleSavedResponseFavoriteFilter("favorites")} className={`rounded px-3 text-xs font-black ${savedResponseFavoriteFilter === "favorites" ? "bg-amber-300 text-slate-950" : "text-slate-300"}`}>
+                  Favoritos
+                </button>
+              </div>
               <select value={savedResponseCategoryFilter} onChange={(event) => handleSavedResponseCategoryFilter(event.target.value)} className="field-input">
                 <option value="Todas">Todas as categorias</option>
                 {savedResponseCategories.map((category) => (
@@ -1923,6 +2078,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                 <option value="ai_generated">IA</option>
                 <option value="template">Template</option>
                 <option value="manual">Manual</option>
+              </select>
+              <select value={savedResponseSortOrder} onChange={(event) => handleSavedResponseSortOrder(event.target.value as SavedResponseSortOrder)} className="field-input">
+                <option value="recent">Mais recentes</option>
+                <option value="oldest">Mais antigos</option>
+                <option value="updated">Atualizados recentemente</option>
+                <option value="favorites">Favoritos primeiro</option>
+                <option value="category">Categoria</option>
               </select>
             </div>
 
@@ -1978,15 +2140,33 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                             <div>
                               <h3 className="font-black text-white">{item.title || "Resposta salva"}</h3>
                               <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold text-slate-400">
-                                <span>{item.category || "Sem categoria"}</span>
-                                <span>{getSavedResponseSourceLabel(itemSource)}</span>
-                                <span>{formatDate(item.created_at)}</span>
+                                <span className="rounded-full bg-white/10 px-2 py-1">{item.category || "Sem categoria"}</span>
+                                <span className="rounded-full bg-white/10 px-2 py-1">{getSavedResponseSourceLabel(itemSource)}</span>
+                                {item.is_favorite ? <span className="rounded-full bg-amber-300/15 px-2 py-1 text-amber-100">Favorita</span> : null}
+                                <span className="rounded-full bg-white/10 px-2 py-1">{formatDate(item.updated_at || item.created_at)}</span>
+                                <span className="rounded-full bg-white/10 px-2 py-1">{item.copy_count || 0} copias</span>
                               </div>
                             </div>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleSavedResponseFavorite(item)}
+                              disabled={favoriteLoadingSavedResponseId === item.id}
+                              className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-md border px-3 text-xs font-black disabled:cursor-not-allowed disabled:opacity-60 ${
+                                item.is_favorite
+                                  ? "border-amber-300/40 bg-amber-300/15 text-amber-100"
+                                  : "border-white/10 bg-white/10 text-slate-200"
+                              }`}
+                            >
+                              <Star className={`h-3.5 w-3.5 ${item.is_favorite ? "fill-amber-300 text-amber-300" : ""}`} />
+                              {favoriteLoadingSavedResponseId === item.id ? "Atualizando..." : item.is_favorite ? "Remover dos favoritos" : "Favoritar"}
+                            </button>
                           </div>
-                          <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{item.content}</p>
+                          <p className="mt-3 line-clamp-5 whitespace-pre-wrap text-sm leading-6 text-slate-300">{item.content}</p>
                           <div className="mt-4 flex flex-wrap gap-2">
-                            <button type="button" onClick={() => copyText(item.content, "library", undefined, item)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
+                            <button type="button" onClick={() => copyText(item.content, "library", undefined, item)} className="inline-flex min-h-10 items-center gap-2 rounded-md bg-white px-3 text-xs font-black text-slate-950">
+                              <Copy className="h-3.5 w-3.5" />
+                              Copiar
+                            </button>
                             <button type="button" onClick={() => startEditingSavedResponse(item)} className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-200">
                               <Edit3 className="h-3.5 w-3.5" />
                               Editar

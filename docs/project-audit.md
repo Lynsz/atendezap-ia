@@ -74,6 +74,19 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias restantes: aplicar `0014_saved_responses_source.sql` no Supabase real/staging e validar manualmente criacao, edicao, duplicacao e exclusao com dois usuarios.
 - Nota estimada atualizada: 97/100 para a etapa pos-1.0 de biblioteca editavel, condicionada a migrations aplicadas e validacao real de RLS em staging/producao.
 
+## Organizacao da biblioteca com favoritos - 2026-05-27
+
+- Campo `is_favorite` criado em `saved_responses` com default `false`, sem remover dados e mantendo RLS por `user_id`.
+- Campos `copy_count` e `last_copied_at` criados para registrar copias de respostas salvas sem afetar cobranca ou limite mensal.
+- Migration incremental criada: `supabase/migrations/0015_saved_response_favorites_and_copy_count.sql`, com indices por `user_id + is_favorite` e por ultima copia.
+- API de respostas salvas revisada: `PATCH /api/saved-responses/[id]` agora permite favoritar/desfavoritar e registrar copia, sempre filtrando por `id` + `user_id` autenticado.
+- Biblioteca revisada: filtro rapido Todos/Favoritos, filtros combinados por categoria/origem/busca, ordenacao simples e cards com titulo, categoria, origem, favorito, data, contador de copias e acoes.
+- Dashboard revisado: bloco "Respostas favoritas" mostra ate 3 favoritas do usuario com botao copiar e estado vazio quando nao ha favoritas.
+- Tracking adicionado sem conteudo sensivel: `saved_response_favorite`, `saved_response_unfavorite`, `saved_response_filter_favorites`, `saved_response_sort_change`, `saved_response_copy` e `saved_response_search` usam apenas categoria, origem, favorito e acao.
+- Testes revisados para filtro de favoritas, busca combinada, ordenacao, favoritar propria resposta, bloquear favorita de outro usuario e registrar copia.
+- Pendencias restantes: aplicar `0015_saved_response_favorites_and_copy_count.sql` no Supabase real/staging e validar manualmente com dois usuarios.
+- Nota estimada atualizada: 97/100 para a etapa pos-1.0 de organizacao da biblioteca, condicionada a migration aplicada e validacao real de RLS em staging/producao.
+
 ## Mapa tecnico
 
 - Framework: Next.js 16 com App Router em `src/app`.

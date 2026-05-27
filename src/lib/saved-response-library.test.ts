@@ -11,6 +11,9 @@ const baseItem: SavedResponse = {
   title: "Resposta de pagamento",
   content: "Aceitamos Pix e cartao.",
   category: "Pagamento",
+  is_favorite: false,
+  copy_count: 0,
+  last_copied_at: null,
   created_at: "2026-05-26T12:00:00.000Z",
   updated_at: "2026-05-26T12:00:00.000Z"
 };
@@ -36,6 +39,29 @@ describe("saved response library helpers", () => {
 
     expect(filterSavedResponses(items, { category: "Entrega" }).map((item) => item.id)).toEqual(["44444444-4444-4444-8444-444444444444"]);
     expect(filterSavedResponses(items, { source: "ai_generated" }).map((item) => item.id)).toEqual(["55555555-5555-4555-8555-555555555555"]);
+  });
+
+  it("filtra favoritas com busca, categoria e origem combinadas", () => {
+    const items: SavedResponse[] = [
+      { ...baseItem, is_favorite: true, source: "manual", category: "Pagamento", content: "Aceitamos Pix." },
+      { ...baseItem, id: "44444444-4444-4444-8444-444444444444", is_favorite: false, source: "manual", category: "Pagamento", content: "Aceitamos cartao." },
+      { ...baseItem, id: "55555555-5555-4555-8555-555555555555", is_favorite: true, source: "template", category: "Entrega", content: "Entrega por bairro." }
+    ];
+
+    expect(filterSavedResponses(items, { favorite: "favorites", source: "manual", category: "Pagamento", search: "pix" }).map((item) => item.id)).toEqual([
+      "33333333-3333-4333-8333-333333333333"
+    ]);
+  });
+
+  it("ordena por mais recentes e favoritos primeiro", () => {
+    const items: SavedResponse[] = [
+      { ...baseItem, id: "old", created_at: "2026-05-20T12:00:00.000Z", updated_at: "2026-05-20T12:00:00.000Z", is_favorite: false },
+      { ...baseItem, id: "new", created_at: "2026-05-27T12:00:00.000Z", updated_at: "2026-05-27T12:00:00.000Z", is_favorite: false },
+      { ...baseItem, id: "favorite", created_at: "2026-05-21T12:00:00.000Z", updated_at: "2026-05-21T12:00:00.000Z", is_favorite: true }
+    ];
+
+    expect(filterSavedResponses(items, { sort: "recent" }).map((item) => item.id)).toEqual(["new", "favorite", "old"]);
+    expect(filterSavedResponses(items, { sort: "favorites" }).map((item) => item.id)).toEqual(["favorite", "new", "old"]);
   });
 
   it("infere origem quando registros antigos ainda nao tem source", () => {
