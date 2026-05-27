@@ -36,6 +36,19 @@ O projeto esta em release candidate aprovado para producao controlada e preparad
 
 O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de priorizacao, revisao semanal, backlog de crescimento, experimentos pequenos e bloco simples de gargalo no admin para orientar melhorias com dados reais.
 
+## Seguranca do repositorio privado - 2026-05-27
+
+- Decisao registrada: o repositorio do AtendeZap IA deve permanecer privado no GitHub neste momento.
+- `.gitignore` revisado para cobrir arquivos `.env`, `.env.local`, `.env.production`, `.env.development`, `.env.development.local`, `.env.test.local`, `.env*.local`, `.vercel`, certificados/chaves locais, outputs de build, coverage, `.next`, `dist`, `build` e `node_modules`.
+- `git ls-files` foi revisado para arquivos de ambiente; apenas `.env.example` esta versionado, e `.env.local` permanece ignorado/local.
+- `.env.example` foi revisado para manter somente nomes de variaveis e placeholders vazios, sem chaves reais.
+- Script `scripts/check-secrets.js` criado e conectado a `npm run check:secrets` para procurar padroes comuns de Stripe, OpenAI, Supabase, Resend e chaves privadas em arquivos versionados.
+- Documentacao criada: `docs/private-repo-security-checklist.md`, `docs/private-deploy.md` e `docs/repository-visibility.md`.
+- README atualizado com secao de seguranca do repositorio privado.
+- Fronteira client/server revisada por busca: `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` e `RESEND_API_KEY` seguem em codigo server-side, rotas API, libs de servidor, testes ou documentacao, sem uso em Client Components.
+- Se uma chave real ja tiver sido exposta fora desta auditoria, a recomendacao operacional e revogar/rotacionar no painel do servico, atualizar `.env.local` e Vercel, e revisar historico Git conforme necessidade.
+- Pendencias restantes: ativar secret scanning no GitHub se disponivel, revisar permissoes de colaboradores e executar auditoria de historico antes de qualquer decisao futura de publicidade.
+
 ## Biblioteca de respostas salvas - 2026-05-26
 
 - Estrutura criada: tabela `saved_responses`, migration `0012_saved_responses.sql`, RLS por `user_id`, indices por usuario, data e categoria, e indice unico parcial para evitar duplicar a mesma resposta gerada na biblioteca do usuario.

@@ -195,6 +195,15 @@ npm test
 - Nunca enviar `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` ou `RESEND_API_KEY` para o navegador.
 - Manter webhooks, APIs privadas, admin e RLS como fronteiras de seguranca.
 
+## Seguranca do repositorio
+
+- Este projeto deve permanecer privado por enquanto.
+- Nunca commitar `.env.local`, `.env`, arquivos `.pem`, `.key`, `.cert` ou tokens pessoais.
+- Use `.env.example` apenas como modelo, sempre sem valores reais.
+- Configure secrets reais somente em `.env.local` e nas variaveis de ambiente da Vercel.
+- Rode `npm run check:secrets` antes de qualquer push.
+- Se qualquer chave for exposta, rotacione a chave no servico, atualize `.env.local` e atualize as variaveis na Vercel.
+
 ## Escopo fora da 1.0
 
 - Envio automatico direto pelo WhatsApp.

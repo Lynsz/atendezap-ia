@@ -51,6 +51,30 @@ O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 
 
 Ainda nao e recomendavel escalar trafego pago ou rodar anuncios maiores antes de validar Stripe, Supabase, Resend, OpenAI, tracking, dominio, admin e suporte no ambiente real.
 
+## Seguranca do repositorio privado
+
+Status: repositorio deve permanecer privado no GitHub.
+
+O que foi feito:
+
+- `.gitignore` revisado para evitar commit acidental de `.env`, `.env.local`, envs por ambiente, `.vercel`, arquivos `.pem`, `.key`, `.cert`, outputs de build, coverage e dependencias.
+- Verificacao de arquivos versionados confirmou que `.env.local` nao esta rastreado; apenas `.env.example` aparece entre arquivos de ambiente versionados.
+- `.env.example` revisado para placeholders vazios, sem valores reais.
+- Criado `scripts/check-secrets.js` e atualizado `npm run check:secrets`.
+- Criados `docs/private-repo-security-checklist.md`, `docs/private-deploy.md` e `docs/repository-visibility.md`.
+- README atualizado com regras de seguranca do repositorio privado.
+- Uso de variaveis sensiveis revisado por busca; chaves privadas seguem em codigo server-side, testes ou documentacao, nao em Client Components.
+
+Pendencias:
+
+- Ativar secret scanning no GitHub, se disponivel.
+- Revisar permissoes de colaboradores periodicamente.
+- Fazer auditoria de historico Git e rotacao de chaves antes de qualquer decisao futura de tornar qualquer parte publica.
+
+Recomendacao:
+
+Manter o repositorio privado. Se alguma chave real tiver sido exposta em qualquer canal, revogar/rotacionar no painel do servico, atualizar `.env.local` e Vercel e nao confiar na chave antiga.
+
 ## O que esta validado
 
 - Landing: rota `/` carrega no build/e2e, CTAs principais apontam para `/cadastro`, `/demo` e `/ebook`.
