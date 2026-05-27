@@ -49,6 +49,17 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Se uma chave real ja tiver sido exposta fora desta auditoria, a recomendacao operacional e revogar/rotacionar no painel do servico, atualizar `.env.local` e Vercel, e revisar historico Git conforme necessidade.
 - Pendencias restantes: ativar secret scanning no GitHub se disponivel, revisar permissoes de colaboradores e executar auditoria de historico antes de qualquer decisao futura de publicidade.
 
+## Esteira de validacao privada - 2026-05-27
+
+- Scripts do `package.json` revisados: `lint`, `typecheck`, `build`, `test` e `check:secrets` existem e continuam usando npm.
+- Script local `validate` criado para rodar `check:secrets`, `lint`, `typecheck`, `build` e `test` em sequencia.
+- GitHub Action criada em `.github/workflows/validate.yml`, rodando em pull requests e pushes para `main`.
+- A action usa `npm ci`, nao usa secrets reais, nao le `.env.local` e define apenas placeholders publicos seguros para build.
+- Documentacao criada: `docs/validation-workflow.md`, `docs/pre-push-checklist.md`, `docs/pre-deploy-checklist.md` e `docs/env-safety.md`.
+- README atualizado com a rotina `npm run validate` antes de push/deploy.
+- `scripts/check-secrets.js` revisado para ignorar `.git`, `node_modules`, `.next`, `.vercel`, `dist`, `build` e `coverage`, retornar exit code 1 em achados e nao imprimir valores completos.
+- Pendencias restantes: ativar branch protection no GitHub privado para exigir a action verde antes de merge em `main`, se a rotina operacional permitir.
+
 ## Biblioteca de respostas salvas - 2026-05-26
 
 - Estrutura criada: tabela `saved_responses`, migration `0012_saved_responses.sql`, RLS por `user_id`, indices por usuario, data e categoria, e indice unico parcial para evitar duplicar a mesma resposta gerada na biblioteca do usuario.

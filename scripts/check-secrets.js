@@ -5,6 +5,7 @@ const ignoredPathPatterns = [
   /^\.git\//,
   /^node_modules\//,
   /^\.next\//,
+  /^\.vercel\//,
   /^dist\//,
   /^build\//,
   /^coverage\//,

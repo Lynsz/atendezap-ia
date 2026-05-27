@@ -129,6 +129,7 @@ Comandos auxiliares:
 npm run check
 npm run test:all
 npm run check:secrets
+npm run validate
 npm run stripe:setup-products
 ```
 
@@ -145,6 +146,18 @@ Quando a mudanca tocar validacao, webhook, prompt, geracao, assinatura, limite o
 ```bash
 npm test
 ```
+
+## Validacao antes de push/deploy
+
+Antes de push ou deploy, rode:
+
+```bash
+npm run validate
+```
+
+Esse comando executa `check:secrets`, `lint`, `typecheck`, `build` e `test`.
+
+A GitHub Action de validacao roda em pull requests e pushes para `main`, sem secrets reais e sem ler `.env.local`. O repositorio deve continuar privado.
 
 ## Rotas principais
 

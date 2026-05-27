@@ -75,6 +75,24 @@ Recomendacao:
 
 Manter o repositorio privado. Se alguma chave real tiver sido exposta em qualquer canal, revogar/rotacionar no painel do servico, atualizar `.env.local` e Vercel e nao confiar na chave antiga.
 
+## Esteira de validacao antes de push/deploy
+
+Status: validacao automatica simples adicionada para o repositorio privado.
+
+O que foi feito:
+
+- Criado `npm run validate` com `check:secrets`, `lint`, `typecheck`, `build` e `test`.
+- Criada GitHub Action em `.github/workflows/validate.yml` para pull requests e pushes para `main`.
+- A action usa `npm ci`, placeholders publicos seguros e nao recebe secrets reais.
+- Criados `docs/validation-workflow.md`, `docs/pre-push-checklist.md`, `docs/pre-deploy-checklist.md` e `docs/env-safety.md`.
+- README atualizado para orientar `npm run validate` antes de push/deploy.
+- `scripts/check-secrets.js` revisado para cobrir os diretorios ignorados e manter saida sem valores completos.
+
+Pendencias:
+
+- Configurar branch protection no GitHub privado, se desejado, exigindo a action verde antes de merge.
+- Manter secrets reais apenas em `.env.local` e Vercel, fora do workflow.
+
 ## O que esta validado
 
 - Landing: rota `/` carrega no build/e2e, CTAs principais apontam para `/cadastro`, `/demo` e `/ebook`.
