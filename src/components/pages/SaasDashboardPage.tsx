@@ -8,6 +8,7 @@ import {
   BriefcaseBusiness,
   CheckCircle2,
   Clipboard,
+  Copy,
   CreditCard,
   Edit3,
   LogOut,
@@ -29,6 +30,7 @@ import { businessTypeOptions, getBusinessExamples, getBusinessTemplate, getBusin
 import { copyResponseText } from "@/lib/clipboard";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
+import { filterSavedResponses, getSavedResponseSource, getSavedResponseSourceLabel, type SavedResponseSourceFilter } from "@/lib/saved-response-library";
 import { savedResponseCategories } from "@/lib/saved-responses";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
 import {
@@ -39,7 +41,7 @@ import {
 } from "@/lib/templates/whatsapp-templates";
 import { trackEvent } from "@/lib/tracking";
 import { generateCustomerResponse } from "@/services/ai";
-import { deleteSavedResponse, listSavedResponses, saveResponseToLibrary, updateSavedResponse } from "@/services/saved-responses";
+import { deleteSavedResponse, duplicateSavedResponse, listSavedResponses, saveResponseToLibrary, updateSavedResponse } from "@/services/saved-responses";
 import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, SavedResponse, Subscription } from "@/types/mvp";
 
 type DashboardTab = "assistant" | "business" | "history" | "library" | "templates" | "customers" | "billing";
@@ -252,7 +254,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [savingResponseId, setSavingResponseId] = useState<string | null>(null);
   const [editingSavedResponseId, setEditingSavedResponseId] = useState<string | null>(null);
   const [savedResponseDraft, setSavedResponseDraft] = useState<SavedResponseDraft>(emptySavedResponseDraft);
+  const [manualSavedResponseDraft, setManualSavedResponseDraft] = useState<SavedResponseDraft>(emptySavedResponseDraft);
+  const [showManualSavedResponseForm, setShowManualSavedResponseForm] = useState(false);
+  const [creatingManualSavedResponse, setCreatingManualSavedResponse] = useState(false);
+  const [duplicatingSavedResponseId, setDuplicatingSavedResponseId] = useState<string | null>(null);
   const [savedResponseSearch, setSavedResponseSearch] = useState("");
+  const [savedResponseCategoryFilter, setSavedResponseCategoryFilter] = useState("Todas");
+  const [savedResponseSourceFilter, setSavedResponseSourceFilter] = useState<SavedResponseSourceFilter>("all");
   const [templateBusinessTypeFilter, setTemplateBusinessTypeFilter] = useState("Todos");
   const [templateCategoryFilter, setTemplateCategoryFilter] = useState("Todas");
   const [templateSearch, setTemplateSearch] = useState("");
@@ -579,7 +587,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     }
   }, [savedResponsesLoaded]);
 
-  async function handleSaveGeneratedResponse(input: { responseId?: string | null; sourceTemplateId?: string | null; content: string; title?: string | null; category?: string | null }) {
+  async function handleSaveGeneratedResponse(input: { responseId?: string | null; sourceTemplateId?: string | null; content: string; title?: string | null; category?: string | null; source?: "ai_generated" | "template" | "manual" }) {
     setError("");
 
     if (!input.responseId && !input.content.trim()) {
@@ -592,6 +600,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       const result = await saveResponseToLibrary({
         response_id: input.responseId || undefined,
         source_template_id: input.sourceTemplateId || undefined,
+        source: input.source || (input.sourceTemplateId ? "template" : input.responseId ? "ai_generated" : "manual"),
         title: input.title || undefined,
         content: input.content,
         category: input.category || undefined
@@ -608,8 +617,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         });
       } else {
         trackEvent("saved_response_create", {
-          source: input.responseId ? "generated_response" : "manual",
-          category: result.savedResponse.category || "sem_categoria"
+          source: input.responseId ? "ai_generated" : "manual",
+          category: result.savedResponse.category || "sem_categoria",
+          action: "create"
         });
       }
       showFeedback(result.alreadySaved ? "Resposta já estava salva." : "Resposta salva na biblioteca.");
@@ -631,17 +641,24 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
 
   async function handleUpdateSavedResponse(item: SavedResponse) {
     setError("");
+    const content = savedResponseDraft.content.trim();
+    if (!content) {
+      setError("Informe o conteudo da resposta salva.");
+      return;
+    }
     try {
       const updated = await updateSavedResponse(item.id, {
         title: savedResponseDraft.title.trim() || null,
         category: savedResponseDraft.category || null,
-        content: savedResponseDraft.content.trim()
+        content
       });
       setSavedResponses((current) => current.map((savedResponse) => (savedResponse.id === updated.id ? updated : savedResponse)));
       setEditingSavedResponseId(null);
       setSavedResponseDraft(emptySavedResponseDraft);
       trackEvent("saved_response_edit", {
-        category: updated.category || "sem_categoria"
+        category: updated.category || "sem_categoria",
+        source: getSavedResponseSource(updated),
+        action: "edit"
       });
       showFeedback("Resposta salva atualizada.");
     } catch (updateError) {
@@ -651,21 +668,77 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
 
   async function handleDeleteSavedResponse(item: SavedResponse) {
     setError("");
+    if (!window.confirm("Tem certeza que deseja excluir esta resposta salva?")) return;
     try {
       await deleteSavedResponse(item.id);
       setSavedResponses((current) => current.filter((savedResponse) => savedResponse.id !== item.id));
       trackEvent("saved_response_delete", {
-        category: item.category || "sem_categoria"
+        category: item.category || "sem_categoria",
+        source: getSavedResponseSource(item),
+        action: "delete"
       });
-      showFeedback("Resposta removida da biblioteca.");
+      showFeedback("Resposta excluida da biblioteca.");
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : "Não foi possível remover a resposta salva agora.");
+    }
+  }
+
+  async function handleCreateManualSavedResponse() {
+    setError("");
+    const content = manualSavedResponseDraft.content.trim();
+    if (!content) {
+      setError("Informe o conteudo da resposta salva.");
+      return;
+    }
+
+    setCreatingManualSavedResponse(true);
+    try {
+      const result = await saveResponseToLibrary({
+        source: "manual",
+        title: manualSavedResponseDraft.title.trim() || undefined,
+        content,
+        category: manualSavedResponseDraft.category || undefined
+      });
+      setSavedResponses((current) => [result.savedResponse, ...current.filter((item) => item.id !== result.savedResponse.id)]);
+      setSavedResponsesLoaded(true);
+      setManualSavedResponseDraft(emptySavedResponseDraft);
+      setShowManualSavedResponseForm(false);
+      trackEvent("saved_response_create_manual", {
+        category: result.savedResponse.category || "sem_categoria",
+        source: "manual",
+        action: "create_manual"
+      });
+      showFeedback("Resposta manual criada na biblioteca.");
+    } catch (createError) {
+      setError(createError instanceof Error ? createError.message : "Não foi possível criar a resposta salva agora.");
+    } finally {
+      setCreatingManualSavedResponse(false);
+    }
+  }
+
+  async function handleDuplicateSavedResponse(item: SavedResponse) {
+    setError("");
+    setDuplicatingSavedResponseId(item.id);
+    try {
+      const duplicated = await duplicateSavedResponse(item.id);
+      setSavedResponses((current) => [duplicated, ...current]);
+      trackEvent("saved_response_duplicate", {
+        category: item.category || "sem_categoria",
+        source: getSavedResponseSource(item),
+        action: "duplicate"
+      });
+      showFeedback("Resposta duplicada.");
+    } catch (duplicateError) {
+      setError(duplicateError instanceof Error ? duplicateError.message : "Não foi possível duplicar a resposta salva agora.");
+    } finally {
+      setDuplicatingSavedResponseId(null);
     }
   }
 
   async function handleSaveTemplate(template: WhatsAppTemplate) {
     await handleSaveGeneratedResponse({
       sourceTemplateId: template.id,
+      source: "template",
       title: template.title,
       content: template.content,
       category: template.category
@@ -685,6 +758,35 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     trackEvent("template_filter_change", {
       filter: "category",
       category: value
+    });
+  }
+
+  function handleSavedResponseSearch(value: string) {
+    setSavedResponseSearch(value);
+    if (value.trim().length >= 2 || value.length === 0) {
+      trackEvent("saved_response_search", {
+        action: "search",
+        source: savedResponseSourceFilter,
+        category: savedResponseCategoryFilter
+      });
+    }
+  }
+
+  function handleSavedResponseCategoryFilter(value: string) {
+    setSavedResponseCategoryFilter(value);
+    trackEvent("saved_response_filter", {
+      action: "filter_category",
+      category: value,
+      source: savedResponseSourceFilter
+    });
+  }
+
+  function handleSavedResponseSourceFilter(value: SavedResponseSourceFilter) {
+    setSavedResponseSourceFilter(value);
+    trackEvent("saved_response_filter", {
+      action: "filter_source",
+      source: value,
+      category: savedResponseCategoryFilter
     });
   }
 
@@ -779,12 +881,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     if (updateError) setError("Não conseguimos atualizar o cliente.");
   }
 
-  async function copyText(value: string, source: "generated" | "history" | "library" | "template" = "generated", template?: WhatsAppTemplate) {
+  async function copyText(value: string, source: "generated" | "history" | "library" | "template" = "generated", template?: WhatsAppTemplate, savedResponse?: SavedResponse) {
     try {
       await copyResponseText(value);
       if (source === "library") {
         trackEvent("saved_response_copy", {
-          source: "library"
+          category: savedResponse?.category || "sem_categoria",
+          source: savedResponse ? getSavedResponseSource(savedResponse) : "library",
+          action: "copy"
         });
       }
       if (source === "template" && template) {
@@ -949,12 +1053,10 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     }
   }, [tab]);
 
-  const filteredSavedResponses = savedResponses.filter((item) => {
-    const search = savedResponseSearch.trim().toLowerCase();
-    if (!search) return true;
-    return [item.title, item.category, item.content]
-      .filter(Boolean)
-      .some((value) => String(value).toLowerCase().includes(search));
+  const filteredSavedResponses = filterSavedResponses(savedResponses, {
+    search: savedResponseSearch,
+    category: savedResponseCategoryFilter,
+    source: savedResponseSourceFilter
   });
 
   const savedGeneratedResponseIds = new Set(savedResponses.map((item) => item.response_id).filter(Boolean) as string[]);
@@ -1749,21 +1851,80 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                 <h2 className="text-xl font-black text-white">Biblioteca de respostas</h2>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Salve respostas úteis, organize por categoria simples e copie rapidamente quando a pergunta voltar.</p>
               </div>
-              <button type="button" onClick={() => loadSavedResponses({ force: true })} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15">
-                <RefreshCw className="h-3.5 w-3.5" />
-                Atualizar
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={() => setShowManualSavedResponseForm((current) => !current)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-emerald-400 px-4 text-xs font-black text-slate-950 hover:bg-emerald-300">
+                  <Plus className="h-3.5 w-3.5" />
+                  Nova resposta
+                </button>
+                <button type="button" onClick={() => loadSavedResponses({ force: true })} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15">
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Atualizar
+                </button>
+              </div>
             </div>
 
-            <label className="mt-5 flex min-h-11 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-300">
-              <Search className="h-4 w-4 text-slate-500" />
-              <input
-                value={savedResponseSearch}
-                onChange={(event) => setSavedResponseSearch(event.target.value)}
-                className="w-full bg-transparent outline-none placeholder:text-slate-500"
-                placeholder="Buscar por título, categoria ou conteúdo"
-              />
-            </label>
+            {showManualSavedResponseForm ? (
+              <div className="mt-5 grid gap-3 rounded-md border border-emerald-400/20 bg-emerald-400/5 p-4">
+                <div className="grid gap-3 md:grid-cols-2">
+                  <label className="grid gap-2 text-sm font-bold text-slate-300">
+                    Título
+                    <input value={manualSavedResponseDraft.title} maxLength={120} onChange={(event) => setManualSavedResponseDraft((current) => ({ ...current, title: event.target.value }))} className="field-input" placeholder="Ex.: Resposta sobre orçamento" />
+                  </label>
+                  <label className="grid gap-2 text-sm font-bold text-slate-300">
+                    Categoria
+                    <select value={manualSavedResponseDraft.category} onChange={(event) => setManualSavedResponseDraft((current) => ({ ...current, category: event.target.value }))} className="field-input">
+                      <option value="">Sem categoria</option>
+                      {savedResponseCategories.map((category) => (
+                        <option value={category} key={category}>{category}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <label className="grid gap-2 text-sm font-bold text-slate-300">
+                  Conteúdo
+                  <textarea value={manualSavedResponseDraft.content} maxLength={5000} onChange={(event) => setManualSavedResponseDraft((current) => ({ ...current, content: event.target.value }))} className="field-input min-h-32 resize-none py-3" placeholder="Cole ou escreva a mensagem que você já usa no WhatsApp." />
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" onClick={handleCreateManualSavedResponse} disabled={creatingManualSavedResponse} className="rounded-md bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60">
+                    {creatingManualSavedResponse ? "Criando..." : "Criar resposta salva"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowManualSavedResponseForm(false);
+                      setManualSavedResponseDraft(emptySavedResponseDraft);
+                    }}
+                    className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-200 hover:bg-white/15"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_220px_180px]">
+              <label className="flex min-h-11 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-slate-300">
+                <Search className="h-4 w-4 text-slate-500" />
+                <input
+                  value={savedResponseSearch}
+                  onChange={(event) => handleSavedResponseSearch(event.target.value)}
+                  className="w-full bg-transparent outline-none placeholder:text-slate-500"
+                  placeholder="Buscar por título, categoria ou conteúdo"
+                />
+              </label>
+              <select value={savedResponseCategoryFilter} onChange={(event) => handleSavedResponseCategoryFilter(event.target.value)} className="field-input">
+                <option value="Todas">Todas as categorias</option>
+                {savedResponseCategories.map((category) => (
+                  <option value={category} key={category}>{category}</option>
+                ))}
+              </select>
+              <select value={savedResponseSourceFilter} onChange={(event) => handleSavedResponseSourceFilter(event.target.value as SavedResponseSourceFilter)} className="field-input">
+                <option value="all">Todas as origens</option>
+                <option value="ai_generated">IA</option>
+                <option value="template">Template</option>
+                <option value="manual">Manual</option>
+              </select>
+            </div>
 
             <div className="mt-5 grid gap-3">
               {loadingSavedResponses ? (
@@ -1773,13 +1934,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               ) : filteredSavedResponses.length ? (
                 filteredSavedResponses.map((item) => {
                   const isEditing = editingSavedResponseId === item.id;
+                  const itemSource = getSavedResponseSource(item);
                   return (
                     <article className="rounded-md border border-white/10 bg-white/[0.04] p-4" key={item.id}>
                       {isEditing ? (
                         <div className="grid gap-3">
                           <label className="grid gap-2 text-sm font-bold text-slate-300">
                             Título
-                            <input value={savedResponseDraft.title} onChange={(event) => setSavedResponseDraft((current) => ({ ...current, title: event.target.value }))} className="field-input" />
+                            <input value={savedResponseDraft.title} maxLength={120} onChange={(event) => setSavedResponseDraft((current) => ({ ...current, title: event.target.value }))} className="field-input" />
                           </label>
                           <label className="grid gap-2 text-sm font-bold text-slate-300">
                             Categoria
@@ -1792,7 +1954,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                           </label>
                           <label className="grid gap-2 text-sm font-bold text-slate-300">
                             Resposta
-                            <textarea value={savedResponseDraft.content} onChange={(event) => setSavedResponseDraft((current) => ({ ...current, content: event.target.value }))} className="field-input min-h-36 resize-none py-3" />
+                            <textarea value={savedResponseDraft.content} maxLength={5000} onChange={(event) => setSavedResponseDraft((current) => ({ ...current, content: event.target.value }))} className="field-input min-h-36 resize-none py-3" />
                           </label>
                           <div className="flex flex-wrap gap-2">
                             <button type="button" onClick={() => handleUpdateSavedResponse(item)} className="rounded-md bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
@@ -1817,18 +1979,26 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                               <h3 className="font-black text-white">{item.title || "Resposta salva"}</h3>
                               <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold text-slate-400">
                                 <span>{item.category || "Sem categoria"}</span>
+                                <span>{getSavedResponseSourceLabel(itemSource)}</span>
                                 <span>{formatDate(item.created_at)}</span>
                               </div>
                             </div>
                           </div>
                           <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{item.content}</p>
                           <div className="mt-4 flex flex-wrap gap-2">
-                            <button type="button" onClick={() => copyText(item.content, "library")} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
+                            <button type="button" onClick={() => copyText(item.content, "library", undefined, item)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
                             <button type="button" onClick={() => startEditingSavedResponse(item)} className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-200">
                               <Edit3 className="h-3.5 w-3.5" />
                               Editar
                             </button>
-                            <button type="button" onClick={() => handleDeleteSavedResponse(item)} className="rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-200">Remover</button>
+                            <button type="button" onClick={() => handleDuplicateSavedResponse(item)} disabled={duplicatingSavedResponseId === item.id} className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-200 disabled:cursor-not-allowed disabled:opacity-60">
+                              <Copy className="h-3.5 w-3.5" />
+                              {duplicatingSavedResponseId === item.id ? "Duplicando..." : "Duplicar"}
+                            </button>
+                            <button type="button" onClick={() => handleDeleteSavedResponse(item)} className="inline-flex items-center gap-2 rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-200">
+                              <Trash2 className="h-3.5 w-3.5" />
+                              Excluir
+                            </button>
                           </div>
                         </>
                       )}
@@ -1838,8 +2008,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               ) : (
                 <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
                   <Star className="mx-auto mb-4 h-8 w-8 text-slate-500" />
-                  <p className="font-bold text-slate-200">Você ainda não salvou nenhuma resposta.</p>
-                  <p className="mt-2">Gere uma resposta com IA e clique em “Salvar resposta” para reutilizar depois.</p>
+                  <p className="font-bold text-slate-200">Você ainda não tem respostas salvas.</p>
+                  <p className="mt-2">Gere uma resposta com IA, salve um template pronto ou crie uma resposta manual para reutilizar depois.</p>
                   <button type="button" onClick={() => setTab("assistant")} className="mt-4 rounded-md bg-emerald-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
                     Gerar resposta
                   </button>

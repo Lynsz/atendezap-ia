@@ -4,6 +4,7 @@ import type { SavedResponse } from "@/types/mvp";
 type SaveResponseInput = {
   response_id?: string;
   source_template_id?: string;
+  source?: "ai_generated" | "template" | "manual";
   title?: string;
   content?: string;
   category?: string;
@@ -86,4 +87,17 @@ export async function deleteSavedResponse(id: string) {
   });
 
   return parseJsonResponse<{ deleted: boolean; savedResponse?: Pick<SavedResponse, "id" | "response_id"> }>(response, "Nao foi possivel remover a resposta salva agora.");
+}
+
+export async function duplicateSavedResponse(id: string) {
+  const token = await getAccessToken();
+  const response = await fetch(`/api/saved-responses/${id}/duplicate`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await parseJsonResponse<{ savedResponse: SavedResponse }>(response, "Nao foi possivel duplicar a resposta salva agora.");
+  return data.savedResponse;
 }

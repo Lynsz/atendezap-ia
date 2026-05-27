@@ -62,6 +62,18 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias restantes: aplicar `0013_saved_response_templates.sql` no Supabase real/staging, validar `/dashboard/templates` no deploy e, se necessario no futuro, persistir eventos internos de copia de template.
 - Nota estimada atualizada: 97/100 para a etapa pos-1.0 de templates prontos, condicionada a migrations aplicadas e validacao real de RLS em staging/producao.
 
+## Personalizacao da biblioteca - 2026-05-26
+
+- Biblioteca editavel revisada: o usuario pode criar resposta manual, editar titulo/conteudo/categoria, duplicar, copiar, filtrar e excluir respostas salvas.
+- Schema/migration: `saved_responses` recebeu `source` com valores `ai_generated`, `template` e `manual`, backfill seguro e indice por origem via `0014_saved_responses_source.sql`.
+- API adicionada: `POST /api/saved-responses/[id]/duplicate`, autenticada, sem aceitar `user_id` do client e filtrando por `id` + `user_id`.
+- UX revisada: biblioteca ganhou CTA "Nova resposta", filtros por categoria e origem, busca simples, confirmacao antes de excluir e estado vazio atualizado.
+- Integracao com templates: templates salvos podem ser personalizados ou duplicados dentro da biblioteca privada do usuario, sem alterar o catalogo estatico.
+- Tracking adicionado sem conteudo das respostas: `saved_response_create_manual`, `saved_response_duplicate`, `saved_response_filter` e `saved_response_search`, alem dos eventos existentes de copia/edicao/exclusao.
+- Seguranca revisada: RLS segue por `auth.uid()`, APIs usam usuario autenticado, duplicacao nao preserva `source_template_id` para evitar colisao do indice unico e nao duplica dados para outro usuario.
+- Pendencias restantes: aplicar `0014_saved_responses_source.sql` no Supabase real/staging e validar manualmente criacao, edicao, duplicacao e exclusao com dois usuarios.
+- Nota estimada atualizada: 97/100 para a etapa pos-1.0 de biblioteca editavel, condicionada a migrations aplicadas e validacao real de RLS em staging/producao.
+
 ## Mapa tecnico
 
 - Framework: Next.js 16 com App Router em `src/app`.

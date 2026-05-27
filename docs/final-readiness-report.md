@@ -656,6 +656,33 @@ A biblioteca esta dentro do escopo pos-1.0 e melhora reutilizacao sem transforma
 
 Nota estimada atualizada: 97/100 para operacao controlada pos-1.0, condicionada a validacao real de Supabase/RLS e provedores em staging/producao.
 
+## Personalizacao da biblioteca de respostas - 2026-05-26
+
+Status: melhoria pos-1.0 implementada para adaptar respostas/templates salvos ao atendimento real do usuario, sem CRM, automacao ou envio direto para WhatsApp.
+
+O que foi feito:
+
+- Biblioteca editavel: criar resposta manual, editar titulo/conteudo/categoria, duplicar, copiar, filtrar e excluir respostas salvas.
+- `saved_responses` recebeu campo `source` com origem `ai_generated`, `template` ou `manual`, backfill seguro e indice por origem.
+- Criada migration incremental `supabase/migrations/0014_saved_responses_source.sql`.
+- Criada API autenticada `POST /api/saved-responses/[id]/duplicate`, sempre usando o usuario da sessao.
+- Dashboard ganhou CTA "Nova resposta", filtros por categoria/origem, confirmacao antes de excluir e estado vazio atualizado.
+- Templates salvos podem ser personalizados ou duplicados na biblioteca privada do usuario.
+- Tracking adicionado sem enviar conteudo das respostas para analytics.
+- Documentacao atualizada em `docs/saved-responses.md`, `docs/whatsapp-templates.md`, `docs/roadmap-post-1.0.md` e `docs/project-audit.md`.
+
+Pendencias:
+
+- Aplicar `supabase/migrations/0014_saved_responses_source.sql` no Supabase real/staging.
+- Validar com dois usuarios reais que um nao cria, edita, duplica ou exclui respostas do outro.
+- Validar `/dashboard/biblioteca` em Vercel depois do deploy.
+
+Recomendacao atualizada:
+
+A biblioteca editavel aumenta utilidade diaria sem mudar o escopo do produto. A producao controlada continua recomendada ate migrations, RLS e fluxo real em staging/producao serem validados.
+
+Nota estimada atualizada: 97/100 para operacao controlada pos-1.0, condicionada a validacao real de Supabase/RLS e provedores em staging/producao.
+
 ## Templates prontos para WhatsApp - 2026-05-26
 
 Status: melhoria pos-1.0 implementada para acelerar o primeiro uso com mensagens prontas por nicho, sem CRM, automacao ou envio automatico.

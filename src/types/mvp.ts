@@ -54,6 +54,7 @@ export type SavedResponse = {
   user_id: string;
   response_id: string | null;
   source_template_id?: string | null;
+  source?: "ai_generated" | "template" | "manual" | null;
   title: string | null;
   content: string;
   category: string | null;

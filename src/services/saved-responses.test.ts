@@ -66,4 +66,41 @@ describe("saved responses service", () => {
     );
     vi.unstubAllGlobals();
   });
+
+  it("duplicateSavedResponse chama a API autenticada", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          savedResponse: {
+            id: "44444444-4444-4444-8444-444444444444",
+            user_id: "11111111-1111-4111-8111-111111111111",
+            response_id: null,
+            source_template_id: null,
+            source: "template",
+            title: "Resposta (Copia)",
+            content: "Conteudo",
+            category: "Preco",
+            created_at: "2026-05-26T12:00:00.000Z",
+            updated_at: "2026-05-26T12:00:00.000Z"
+          }
+        }),
+        { status: 201 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { duplicateSavedResponse } = await import("./saved-responses");
+    await duplicateSavedResponse("33333333-3333-4333-8333-333333333333");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/saved-responses/33333333-3333-4333-8333-333333333333/duplicate",
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          Authorization: "Bearer test-token"
+        })
+      })
+    );
+    vi.unstubAllGlobals();
+  });
 });

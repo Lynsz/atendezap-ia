@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
       title: "Qual o preço?",
       content: "O valor depende do serviço. Posso te passar as opções.",
       category: "Preco",
+      source: "ai_generated",
       created_at: "2026-05-26T12:00:00.000Z",
       updated_at: "2026-05-26T12:00:00.000Z"
     }
@@ -144,6 +145,7 @@ describe("/api/saved-responses", () => {
     expect(mocks.insertPayload).toMatchObject({
       user_id: "11111111-1111-4111-8111-111111111111",
       response_id: "22222222-2222-4222-8222-222222222222",
+      source: "ai_generated",
       category: "Preco"
     });
     expect(mocks.tableFilters).toEqual(
@@ -199,6 +201,38 @@ describe("/api/saved-responses", () => {
       title: "Informar taxa de entrega",
       category: "Entrega"
     });
+    expect(mocks.insertPayload).toMatchObject({
+      source: "template"
+    });
+  });
+
+  it("cria resposta manual na biblioteca do usuario autenticado", async () => {
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/saved-responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          title: "Resposta manual",
+          content: "Mensagem que ja uso no WhatsApp.",
+          category: "Informacoes gerais",
+          source: "manual"
+        })
+      })
+    );
+
+    expect(response.status).toBe(201);
+    expect(mocks.insertPayload).toMatchObject({
+      user_id: "11111111-1111-4111-8111-111111111111",
+      response_id: null,
+      source_template_id: null,
+      source: "manual",
+      title: "Resposta manual",
+      category: "Informacoes gerais"
+    });
   });
 
   it("nao salva resposta original de outro usuario", async () => {
@@ -241,5 +275,26 @@ describe("/api/saved-responses", () => {
     const body = await response.json();
     expect(response.status).toBe(400);
     expect(body.error).toContain("categoria");
+  });
+
+  it("rejeita conteudo vazio sem resposta original", async () => {
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/saved-responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          title: "Vazia",
+          content: "",
+          category: "Outro"
+        })
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.insertPayload).toBeNull();
   });
 });

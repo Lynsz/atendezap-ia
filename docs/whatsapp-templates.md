@@ -20,6 +20,7 @@ Dar mensagens prontas para o usuario comecar mais rapido, mesmo antes de gerar m
 - Copiar template.
 - Salvar template na propria biblioteca.
 - Adaptar manualmente antes de enviar.
+- Editar, renomear, duplicar e categorizar depois de salvar na biblioteca.
 - Usar como base para atendimento no WhatsApp.
 - Filtrar por nicho, categoria e busca simples.
 
@@ -37,7 +38,15 @@ Dar mensagens prontas para o usuario comecar mais rapido, mesmo antes de gerar m
 - Quando o usuario salva um template, o item fica em `saved_responses` vinculado ao `user_id` autenticado.
 - O client nao envia `user_id`.
 - `source_template_id` evita salvar o mesmo template duas vezes na biblioteca do mesmo usuario.
+- Depois de salvo, a personalizacao acontece apenas no item da biblioteca do usuario.
 - Conteudo completo do template nao vai para analytics.
+
+## Personalizacao
+
+- Template salvo pode ser editado pelo usuario na biblioteca.
+- Template salvo pode ser duplicado para criar variações sem alterar o item original.
+- A copia permanece privada e vinculada ao proprio usuario.
+- Excluir um template salvo remove apenas o item da biblioteca, nao o catalogo estatico.
 
 ## Tracking
 
@@ -53,7 +62,6 @@ Os eventos enviam apenas `templateId`, `businessType`, `category` ou estado do f
 
 ## Pendencias futuras
 
-- Templates editaveis por usuario.
 - Templates favoritos.
 - Templates por campanha.
 - Templates por objecao.

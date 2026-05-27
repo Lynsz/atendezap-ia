@@ -21,6 +21,7 @@ test.describe("protecao sem login", () => {
     { path: "/api/ai/response-feedback", method: "post" as const, body: { responseId: "22222222-2222-4222-8222-222222222222", rating: "positive" } },
     { path: "/api/saved-responses", method: "get" as const },
     { path: "/api/saved-responses", method: "post" as const, body: { content: "Resposta" } },
+    { path: "/api/saved-responses/33333333-3333-4333-8333-333333333333/duplicate", method: "post" as const, body: {} },
     { path: "/api/stripe/create-checkout-session", method: "post" as const, body: { planId: "starter" } },
     { path: "/api/stripe/create-portal-session", method: "post" as const, body: {} },
     { path: "/api/admin/overview", method: "get" as const },

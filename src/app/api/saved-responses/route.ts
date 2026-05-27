@@ -4,7 +4,7 @@ import { z } from "zod";
 import { AppError } from "@/lib/errors";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
-import { createSavedResponseSchema } from "@/lib/saved-responses";
+import { createSavedResponseSchema, inferSavedResponseSource } from "@/lib/saved-responses";
 
 export const runtime = "nodejs";
 
@@ -189,6 +189,7 @@ export async function POST(request: Request) {
     if (!content) {
       return NextResponse.json({ error: "Informe o conteudo da resposta para salvar." }, { status: 400 });
     }
+    const source = inferSavedResponseSource(payload);
 
     const { data: savedResponse, error: insertError } = await supabase
       .from("saved_responses")
@@ -196,6 +197,7 @@ export async function POST(request: Request) {
         user_id: user.id,
         response_id: payload.response_id || null,
         source_template_id: payload.source_template_id || null,
+        source,
         title: payload.title || (generatedResponse ? defaultTitleFromGeneratedResponse(generatedResponse) : "Resposta salva"),
         content,
         category: payload.category || null
@@ -208,7 +210,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Nao foi possivel salvar a resposta agora." }, { status: 500 });
     }
 
-    serverLog({ event: "saved_response_created", route: "/api/saved-responses", userId: user.id, status: "ok", metadata: { category: payload.category || "sem_categoria" } });
+    serverLog({ event: "saved_response_created", route: "/api/saved-responses", userId: user.id, status: "ok", metadata: { category: payload.category || "sem_categoria", source } });
     return NextResponse.json({ savedResponse, alreadySaved: false }, { status: 201 });
   } catch (error) {
     return jsonError(error, "/api/saved-responses", userId);
