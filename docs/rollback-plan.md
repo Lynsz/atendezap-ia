@@ -1,6 +1,35 @@
-# Plano de rollback
+# Plano de Rollback - AtendeZap IA
 
 Use este plano quando uma falha impedir compra, acesso, geracao de IA ou operacao basica. Em caso de duvida, pause trafego pago antes de investigar.
+
+## Quando fazer rollback
+
+- erro 500 em producao
+- login quebrado
+- checkout quebrado
+- webhook quebrado
+- IA quebrada para todos
+- dados entre usuarios expostos
+- admin exposto
+- build com erro critico
+
+## Como fazer rollback na Vercel
+
+- acessar Vercel
+- abrir projeto
+- ir em Deployments
+- escolher ultimo deploy estavel
+- clicar em Promote to Production ou opcao equivalente
+- validar producao apos rollback
+
+## Apos rollback
+
+- pausar anuncios, se necessario
+- documentar incidente
+- abrir item no incident-log
+- corrigir em branch separada
+- validar em staging
+- redeploy somente apos validacao
 
 ## Se deploy quebrar
 

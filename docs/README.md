@@ -4,12 +4,17 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 
 ## Operacao
 
+- [environments](environments.md)
 - [operations-1.0](operations-1.0.md)
 - [production-readiness](production-readiness.md)
+- [staging-checklist](staging-checklist.md)
+- [production-deploy-checklist](production-deploy-checklist.md)
+- [post-deploy-smoke-test](post-deploy-smoke-test.md)
 - [go-live-checklist](go-live-checklist.md)
 - [monitoring](monitoring.md)
 - [support](support.md)
 - [rollback-plan](rollback-plan.md)
+- [health-check](health-check.md)
 - [weekly-maintenance-checklist](weekly-maintenance-checklist.md)
 - [incident-response](incident-response.md)
 - [incident-log](incident-log.md)
@@ -18,6 +23,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 
 ## Integracoes
 
+- [vercel-env-vars](vercel-env-vars.md)
 - [stripe](stripe-setup.md)
 - [supabase](supabase-setup.md)
 - [openai](openai-production.md)

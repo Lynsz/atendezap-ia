@@ -60,6 +60,20 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - `scripts/check-secrets.js` revisado para ignorar `.git`, `node_modules`, `.next`, `.vercel`, `dist`, `build` e `coverage`, retornar exit code 1 em achados e nao imprimir valores completos.
 - Pendencias restantes: ativar branch protection no GitHub privado para exigir a action verde antes de merge em `main`, se a rotina operacional permitir.
 
+## Fluxo staging para producao privado - 2026-05-27
+
+- Repositorio permanece privado; nenhuma instrucao foi adicionada para torna-lo publico.
+- Documentacao de ambientes criada em `docs/environments.md`, separando Local, Preview/Staging e Producao.
+- Checklist de staging criado em `docs/staging-checklist.md`, cobrindo paginas publicas, auth, onboarding, IA, Stripe, Resend e seguranca.
+- Checklist de producao criado em `docs/production-deploy-checklist.md`, com pre-requisitos, variaveis na Vercel, Stripe, Supabase, OpenAI, Resend e verificacoes apos deploy.
+- Plano de rollback revisado em `docs/rollback-plan.md`, com criterios de rollback, passos na Vercel e rotina apos rollback.
+- Smoke test pos-deploy criado em `docs/post-deploy-smoke-test.md`.
+- Health check revisado em `/api/health` para retornar `status`, `environment`, `version` e `timestamp`, sem secrets, dados de usuario ou chamadas externas.
+- Documentacao do health check criada em `docs/health-check.md`.
+- Variaveis da Vercel documentadas em `docs/vercel-env-vars.md`, separando variaveis publicas `NEXT_PUBLIC_*` e privadas server-side.
+- README e `docs/README.md` atualizados com o fluxo privado de deploy, staging, producao, rollback e health check.
+- Pendencias restantes: executar os checklists no ambiente real de Preview/Staging e Producao, configurar branch protection se desejado e validar provedores reais antes de promover para producao.
+
 ## Biblioteca de respostas salvas - 2026-05-26
 
 - Estrutura criada: tabela `saved_responses`, migration `0012_saved_responses.sql`, RLS por `user_id`, indices por usuario, data e categoria, e indice unico parcial para evitar duplicar a mesma resposta gerada na biblioteca do usuario.

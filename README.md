@@ -159,6 +159,16 @@ Esse comando executa `check:secrets`, `lint`, `typecheck`, `build` e `test`.
 
 A GitHub Action de validacao roda em pull requests e pushes para `main`, sem secrets reais e sem ler `.env.local`. O repositorio deve continuar privado.
 
+## Deploy privado e ambientes
+
+- O repositorio continua privado no GitHub.
+- Use a Vercel conectada ao repositorio privado.
+- Valide localmente com `npm run validate` antes de qualquer push ou deploy.
+- Valide o Preview/Staging antes de promover qualquer mudanca para producao.
+- Configure secrets reais apenas no painel da Vercel e no `.env.local` local.
+- `.env.local` nunca deve ir para o Git.
+- Use `docs/staging-checklist.md`, `docs/production-deploy-checklist.md` e `docs/post-deploy-smoke-test.md` antes de producao.
+
 ## Rotas principais
 
 - `/`: landing page.

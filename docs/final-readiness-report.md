@@ -93,6 +93,28 @@ Pendencias:
 - Configurar branch protection no GitHub privado, se desejado, exigindo a action verde antes de merge.
 - Manter secrets reais apenas em `.env.local` e Vercel, fora do workflow.
 
+## Fluxo staging para producao privado
+
+Status: processo operacional documentado para testar em staging antes de qualquer promocao para producao.
+
+O que foi feito:
+
+- Criado `docs/environments.md` para separar Local, Preview/Staging e Producao.
+- Criado `docs/staging-checklist.md` para validar deploy Preview/Staging.
+- Criado `docs/production-deploy-checklist.md` para controlar promocao para producao.
+- Revisado `docs/rollback-plan.md` com gatilhos de rollback, passos na Vercel e rotina apos rollback.
+- Criado `docs/post-deploy-smoke-test.md` para validacao rapida apos deploy.
+- Revisado `/api/health` para incluir versao sem expor dados sensiveis.
+- Criado `docs/health-check.md`.
+- Criado `docs/vercel-env-vars.md` para separar variaveis publicas e privadas por ambiente.
+- README e `docs/README.md` atualizados com os links e orientacao de deploy privado.
+
+Pendencias:
+
+- Executar checklist de staging em um Preview real da Vercel.
+- Validar provedores reais ou sandbox conforme ambiente: Supabase, Stripe, OpenAI, Resend e tracking.
+- Promover para producao somente apos staging validado e `npm run validate` verde.
+
 ## O que esta validado
 
 - Landing: rota `/` carrega no build/e2e, CTAs principais apontam para `/cadastro`, `/demo` e `/ebook`.
