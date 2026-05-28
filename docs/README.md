@@ -17,6 +17,9 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [lgpd-compliance](lgpd-compliance.md)
 - [data-export-process](data-export-process.md)
 - [data-deletion-process](data-deletion-process.md)
+- [support-workflow](support-workflow.md)
+- [product-faq](product-faq.md)
+- [internal-support-playbook](internal-support-playbook.md)
 - [critical-api-security-review](critical-api-security-review.md)
 - [environments](environments.md)
 - [operations-1.0](operations-1.0.md)
@@ -95,7 +98,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Retencao e qualidade: use `retention-plan.md`, `ai-response-quality-plan.md`, `ai-business-templates.md`, `saved-responses.md` e `whatsapp-templates.md`.
 - Seguranca: use `SECURITY.md` na raiz como fonte completa; `docs/security.md` e `docs/security-checklist.md` sao entradas auxiliares.
 - Campanhas: use `first-paid-campaign-plan.md`, `second-campaign-analysis.md`, `scale-decision-matrix.md` e `cautious-scale-plan.md`.
-- Suporte: use `support.md`, `support-messages.md` e `launch-bugs.md`.
+- Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
 
 ## Observacao sobre documentos legados
 

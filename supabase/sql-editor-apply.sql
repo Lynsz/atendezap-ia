@@ -120,10 +120,20 @@ create table if not exists public.kits (
 
 create table if not exists public.support_requests (
   id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
   email text,
-  message text,
+  category text not null default 'Outro',
+  subject text not null default 'Solicitacao de suporte',
+  message text not null,
+  status text not null default 'pending',
+  priority text not null default 'medium',
+  admin_notes text,
   metadata jsonb,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  constraint support_requests_category_check check (category in ('Duvida', 'Bug', 'Assinatura', 'Cobranca', 'Geracao de resposta', 'Conta/Login', 'Sugestao', 'Outro')),
+  constraint support_requests_status_check check (status in ('pending', 'in_progress', 'resolved', 'rejected')),
+  constraint support_requests_priority_check check (priority in ('low', 'medium', 'high'))
 );
 
 create table if not exists public.events (
@@ -138,6 +148,10 @@ create index if not exists generated_responses_user_id_idx on public.generated_r
 create index if not exists generated_responses_business_id_idx on public.generated_responses(business_id);
 create index if not exists customers_user_id_idx on public.customers(user_id);
 create index if not exists subscriptions_user_id_idx on public.subscriptions(user_id);
+create index if not exists support_requests_user_id_idx on public.support_requests(user_id);
+create index if not exists support_requests_status_idx on public.support_requests(status);
+create index if not exists support_requests_priority_idx on public.support_requests(priority);
+create index if not exists support_requests_created_at_idx on public.support_requests(created_at desc);
 create unique index if not exists subscriptions_user_id_unique_idx on public.subscriptions(user_id);
 create index if not exists subscriptions_stripe_customer_id_idx on public.subscriptions(stripe_customer_id);
 create index if not exists subscriptions_stripe_subscription_id_idx on public.subscriptions(stripe_subscription_id);
@@ -177,6 +191,11 @@ create trigger set_customers_updated_at
 drop trigger if exists set_subscriptions_updated_at on public.subscriptions;
 create trigger set_subscriptions_updated_at
   before update on public.subscriptions
+  for each row execute function public.set_updated_at();
+
+drop trigger if exists set_support_requests_updated_at on public.support_requests;
+create trigger set_support_requests_updated_at
+  before update on public.support_requests
   for each row execute function public.set_updated_at();
 
 create or replace function public.handle_new_user()
@@ -239,6 +258,8 @@ drop policy if exists "purchasers_no_client_access" on public.purchasers;
 drop policy if exists "orders_no_client_access" on public.orders;
 drop policy if exists "kits_no_client_access" on public.kits;
 drop policy if exists "support_requests_no_client_access" on public.support_requests;
+drop policy if exists "support_requests_select_own" on public.support_requests;
+drop policy if exists "support_requests_insert_own" on public.support_requests;
 drop policy if exists "events_no_client_access" on public.events;
 
 create policy "profiles_select_own" on public.profiles for select to authenticated using ((select auth.uid()) = id);
@@ -268,7 +289,8 @@ create policy "plans_select_public" on public.plans for select to anon, authenti
 create policy "purchasers_no_client_access" on public.purchasers for all to anon, authenticated using (false) with check (false);
 create policy "orders_no_client_access" on public.orders for all to anon, authenticated using (false) with check (false);
 create policy "kits_no_client_access" on public.kits for all to anon, authenticated using (false) with check (false);
-create policy "support_requests_no_client_access" on public.support_requests for all to anon, authenticated using (false) with check (false);
+create policy "support_requests_select_own" on public.support_requests for select to authenticated using ((select auth.uid()) = user_id);
+create policy "support_requests_insert_own" on public.support_requests for insert to authenticated with check ((select auth.uid()) = user_id);
 create policy "events_no_client_access" on public.events for all to anon, authenticated using (false) with check (false);
 
 grant usage on schema public to anon, authenticated;
@@ -277,7 +299,9 @@ revoke all privileges on public.subscriptions from anon, authenticated;
 grant select on public.subscriptions to authenticated;
 revoke all privileges on public.plans from anon, authenticated;
 grant select on public.plans to anon, authenticated;
-revoke all on public.purchasers, public.orders, public.kits, public.support_requests, public.events from anon, authenticated;
+revoke all on public.purchasers, public.orders, public.kits, public.events from anon, authenticated;
+revoke all on public.support_requests from anon, authenticated;
+grant select, insert on public.support_requests to authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;
 
 insert into public.plans (name, price, response_limit)

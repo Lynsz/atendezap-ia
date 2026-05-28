@@ -1242,14 +1242,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                 onClick={() => {
                   trackEvent("support_cta_click", {
                     source: "dashboard_header",
-                    destination: "support"
+                    destination: "dashboard_help"
                   });
-                  router.push("/suporte");
+                  router.push("/dashboard/ajuda");
                 }}
                 className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/5 px-4 text-sm font-bold text-slate-200 hover:bg-white/10"
               >
                 <MessageCircle className="h-4 w-4" />
-                Suporte
+                Ajuda
               </button>
               <button
                 type="button"

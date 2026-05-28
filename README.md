@@ -30,6 +30,7 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 - Admin protegido.
 - Metricas basicas, feedback e tracking.
 - Area de privacidade no dashboard para solicitacoes de exportacao/exclusao.
+- Central de ajuda no dashboard com FAQ e solicitacoes simples de suporte.
 - Paginas legais.
 
 ## Stack usada
@@ -178,6 +179,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/safe-migrations.md` e `docs/rls-review-checklist.md` antes de alterar schema, policies ou dados criticos.
 - Use `docs/stripe-reconciliation.md` quando houver divergencia entre Stripe e Supabase.
 - Use `docs/data-retention.md` para orientar retencao e limpeza futura de dados.
+- Use `docs/support-workflow.md`, `docs/product-faq.md` e `docs/internal-support-playbook.md` para suporte simples, FAQ e operacao interna.
 - Use `docs/safe-logging.md` para revisar o que pode ou nao ir para logs.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
@@ -196,9 +198,11 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `/cadastro` e `/login`: autenticacao.
 - `/dashboard`: produto logado.
 - `/dashboard/privacidade`: privacidade, exportacao e exclusao de dados.
+- `/dashboard/ajuda`: FAQ e solicitacoes simples de suporte.
 - `/assinatura`: assinatura e portal.
 - `/admin`: painel protegido.
 - `/feedback`: coleta de feedback.
+- `/suporte`: suporte publico simples.
 - `/termos` e `/privacidade`: paginas legais.
 
 ## Documentacao importante
@@ -218,6 +222,9 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/stripe-reconciliation.md`: reconciliacao Stripe/Supabase.
 - `docs/data-retention.md`: retencao de dados.
 - `docs/data-inventory.md`: inventario de dados pessoais e operacionais.
+- `docs/support-workflow.md`: fluxo de suporte simples.
+- `docs/product-faq.md`: FAQ do produto.
+- `docs/internal-support-playbook.md`: playbook interno de suporte.
 - `docs/privacy-policy.md`: politica de privacidade operacional.
 - `docs/terms-of-use.md`: termos de uso operacional.
 - `docs/lgpd-compliance.md`: base LGPD inicial.

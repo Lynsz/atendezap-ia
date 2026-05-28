@@ -10,6 +10,7 @@
 - leads
 - app_events
 - data_requests
+- support_requests
 - admin-related tables, se existirem
 
 ## Regras esperadas

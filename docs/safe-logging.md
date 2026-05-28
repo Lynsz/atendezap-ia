@@ -27,6 +27,7 @@
 - Campos como prompt, resposta, conteudo, payload e mensagem sao omitidos.
 - Eventos de analytics em `src/lib/tracking.ts` removem campos sensiveis como e-mail, pergunta, resposta, mensagem, token, secret e dados de pagamento.
 - Notas internas de solicitacoes de dados devem registrar apenas andamento operacional, sem dados sensiveis.
+- Logs de suporte registram apenas evento, rota, status, categoria/prioridade e usuario mascarado quando aplicavel; nao registram mensagem completa, e-mail completo, dados de pagamento ou secrets.
 
 ## Objetivo
 Logs devem ajudar a investigar falhas sem vazar dados.

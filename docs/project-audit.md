@@ -638,3 +638,19 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Mensagens de erro documentadas em `docs/error-messages.md`; rotas criticas mantem respostas amigaveis sem stack trace.
 - Pendencias restantes: validar painel operacional em Vercel com dados reais, revisar logs de producao depois do primeiro deploy e configurar alertas externos se o volume justificar.
 - Nota estimada mantida: 97/100 para operacao controlada; monitoramento automatico mais avancado fica como melhoria futura.
+
+## Suporte simples e central de ajuda - 2026-05-28
+
+- Fluxo de suporte criado em `docs/support-workflow.md`, com tipos de solicitacao, prioridades e processo interno.
+- FAQ do produto criada em `docs/product-faq.md` e refletida na pagina protegida `/dashboard/ajuda`.
+- Playbook interno criado em `docs/internal-support-playbook.md`.
+- Tabela `support_requests` evoluida por migration incremental `supabase/migrations/0017_support_requests_workflow.sql`, com RLS por usuario autenticado, status controlados, prioridades e notas internas.
+- APIs criadas: `/api/support` para criacao/listagem simples e `/api/admin/support/[id]` para atualizacao admin protegida.
+- Pagina de ajuda no dashboard criada com formulario, FAQ, historico de solicitacoes e estados de loading, erro, sucesso e vazio.
+- Pagina publica `/suporte` revisada com formulario simples, placeholder `SUPPORT_EMAIL`, links legais e aviso para nao enviar dados sensiveis.
+- Admin de suporte criado como secao simples no painel protegido, com contato mascarado, categoria, assunto, status, prioridade e nota interna.
+- Tracking seguro adicionado para suporte e FAQ sem enviar mensagem completa, e-mail ou dados sensiveis.
+- Logs seguros adicionados para criacao/falha de suporte e atualizacao admin sem expor conteudo completo ou stack trace para usuario.
+- README, `docs/README.md`, `docs/safe-logging.md`, `docs/critical-api-security-review.md` e `docs/rls-review-checklist.md` atualizados.
+- Pendencias restantes: aplicar a migration em Supabase staging/producao, validar RLS usuario A vs usuario B, configurar `SUPPORT_EMAIL` se desejado e manter notas internas sem dados sensiveis.
+- Nota estimada mantida: 97/100 para operacao controlada, condicionada a migration aplicada e validacao real de RLS/admin.

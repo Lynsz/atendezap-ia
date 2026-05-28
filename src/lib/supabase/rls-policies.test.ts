@@ -63,6 +63,17 @@ describe("politicas RLS criticas", () => {
     expect(ebookMigration).toContain("revoke all on public.ebook_leads from anon, authenticated");
   });
 
+  it("mantem solicitacoes de suporte isoladas por usuario autenticado", () => {
+    const migration = readRepoFile("supabase/migrations/0017_support_requests_workflow.sql");
+
+    expect(migration).toContain('create policy "support_requests_select_own"');
+    expect(migration).toContain('create policy "support_requests_insert_own"');
+    expect(migration).toContain("using ((select auth.uid()) = user_id)");
+    expect(migration).toContain("with check ((select auth.uid()) = user_id)");
+    expect(migration).toContain("revoke all on public.support_requests from anon, authenticated");
+    expect(migration).toContain("grant select, insert on public.support_requests to authenticated");
+  });
+
   it("mantem admin protegido por requireAdmin", () => {
     const admin = readRepoFile("src/lib/admin.ts");
     const overviewRoute = readRepoFile("src/app/api/admin/overview/route.ts");

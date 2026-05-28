@@ -73,7 +73,12 @@ export type TrackingEventName =
   | "feedback_success"
   | "feedback_error"
   | "feedback_cta_click"
-  | "support_cta_click";
+  | "support_cta_click"
+  | "support_page_view"
+  | "support_request_created"
+  | "support_request_failed"
+  | "help_faq_view"
+  | "help_contact_click";
 
 export type TrackingProperties = Record<string, string | number | boolean | null | undefined>;
 

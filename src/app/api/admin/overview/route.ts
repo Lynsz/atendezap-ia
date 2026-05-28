@@ -79,6 +79,27 @@ type FeedbackRow = {
   created_at: string;
 };
 
+type SupportRequestRow = {
+  id: string;
+  user_id: string | null;
+  email: string | null;
+  category: string;
+  subject: string;
+  message: string;
+  status: string;
+  priority: string;
+  admin_notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+function maskEmail(email?: string | null) {
+  if (!email) return null;
+  const [local, domain] = email.split("@");
+  if (!local || !domain) return "[email]";
+  return `${local.slice(0, 2)}***@${domain}`;
+}
+
 function getPeriodStart(period: PeriodFilter) {
   const now = new Date();
   if (period === "today") {
@@ -156,7 +177,8 @@ export async function GET(request: Request) {
       skippedEmailEventsResult,
       allLeadEmailsResult,
       monthlyUsageResult,
-      feedbackResult
+      feedbackResult,
+      supportRequestsResult
     ] = await Promise.all([
       supabase.from("ebook_leads").select("id", { count: "exact", head: true }),
       supabase.from("ebook_leads").select("id", { count: "exact", head: true }).gte("created_at", getPeriodStart("7d") || ""),
@@ -172,12 +194,14 @@ export async function GET(request: Request) {
       supabase.from("lead_email_events").select("id", { count: "exact", head: true }).eq("status", "skipped_not_configured"),
       supabase.from("ebook_leads").select("email"),
       supabase.from("generated_responses").select("user_id, created_at").gte("created_at", getCurrentMonthStart()).limit(5000),
-      supabase.from("user_feedback").select("id, user_id, name, email, type, message, page, source, context, campaign, status, created_at").order("created_at", { ascending: false }).limit(50)
+      supabase.from("user_feedback").select("id, user_id, name, email, type, message, page, source, context, campaign, status, created_at").order("created_at", { ascending: false }).limit(50),
+      supabase.from("support_requests").select("id, user_id, email, category, subject, message, status, priority, admin_notes, created_at, updated_at").order("created_at", { ascending: false }).limit(50)
     ]);
 
     const profiles = (profilesResult.data || []) as ProfileRow[];
     const subscriptions = (subscriptionsResult.data || []) as SubscriptionRow[];
     const feedback = (feedbackResult.data || []) as FeedbackRow[];
+    const supportRequests = (supportRequestsResult.data || []) as SupportRequestRow[];
     const profileById = new Map(profiles.map((profile) => [profile.id, profile]));
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
     const leadEmails = new Set(((allLeadEmailsResult.data || []) as Array<{ email: string | null }>).map((lead) => lead.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -287,6 +311,11 @@ export async function GET(request: Request) {
       leads: hydratedLeads,
       subscriptions: subscriptionsWithProfiles,
       feedback,
+      supportRequests: supportRequests.map((item) => ({
+        ...item,
+        user_email_masked: maskEmail(item.email || (item.user_id ? profileById.get(item.user_id)?.email : null)),
+        user_id_short: item.user_id ? (item.user_id.length > 12 ? `${item.user_id.slice(0, 8)}...${item.user_id.slice(-4)}` : item.user_id) : null
+      })),
       filterOptions: {
         businessTypes: [...new Set(leads.map((lead) => lead.business_type).filter(Boolean))],
         utmSources: [...new Set(leads.map((lead) => lead.utm_source).filter(Boolean))],

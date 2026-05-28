@@ -106,6 +106,37 @@ Manter o repositorio privado e seguir com producao controlada. A etapa cria base
 
 Nota estimada mantida: 97/100 para operacao controlada.
 
+## Suporte simples e central de ajuda
+
+Status: estrutura inicial implementada para usuarios encontrarem respostas basicas e enviarem solicitacoes simples, sem CRM, chat em tempo real ou integracao com WhatsApp.
+
+O que foi feito:
+
+- Criado `docs/support-workflow.md` com tipos de solicitacao, prioridades e processo interno.
+- Criado `docs/product-faq.md` e refletida a FAQ principal na rota protegida `/dashboard/ajuda`.
+- Criado `docs/internal-support-playbook.md` com procedimentos para plano pago nao liberado, IA sem gerar, login, cobranca/cancelamento e exportacao/exclusao.
+- Criada migration `supabase/migrations/0017_support_requests_workflow.sql` para evoluir `support_requests` com categoria, assunto, status, prioridade, notas internas, RLS e grants controlados.
+- Criada API `/api/support` para listar solicitacoes do proprio usuario e criar solicitacoes autenticadas ou publicas com e-mail.
+- Criada API admin `/api/admin/support/[id]` para atualizar status, prioridade e nota interna via `requireAdmin`.
+- Criada central `/dashboard/ajuda` com FAQ, formulario, lista de solicitacoes e estados de carregamento, sucesso, erro e vazio.
+- Revisada pagina publica `/suporte` para formulario simples, placeholder de `SUPPORT_EMAIL`, links legais e aviso para nao enviar dados sensiveis.
+- Admin protegido passou a exibir solicitacoes recentes de suporte com contato mascarado, status, prioridade e nota interna.
+- Tracking e logs de suporte foram adicionados sem enviar mensagem completa, e-mail, dados de pagamento ou secrets.
+- Testes cobrem criacao autenticada/publica, visitante sem e-mail, listagem isolada, validacoes, falha de e-mail opcional e update admin.
+
+Pendencias:
+
+- Aplicar `0017_support_requests_workflow.sql` no Supabase real/staging.
+- Validar usuario A vs usuario B em staging/producao.
+- Configurar `SUPPORT_EMAIL` na Vercel se notificacao interna por e-mail for desejada.
+- Revisar periodicamente as notas internas para garantir que nao recebam dados sensiveis.
+
+Recomendacao atualizada:
+
+Manter o repositorio privado e seguir com suporte assíncrono simples. A etapa melhora operacao e onboarding sem criar CRM, chat ou WhatsApp direto.
+
+Nota estimada mantida: 97/100 para operacao controlada.
+
 ## Resumo executivo
 
 O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 usuarios reais e para uma campanha pequena de validacao com orcamento baixo, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. Alem da validacao local de release, agora existe um canal simples de feedback, lista no admin, roteiro de entrevista, mensagens de suporte, triagem rapida de bugs, metricas internas, pagina direta para campanha e relatorio de validacao comercial.

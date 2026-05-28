@@ -1,8 +1,9 @@
 import { Card } from "@/components/card";
 import { SupportForm } from "@/components/support-form";
+import Link from "next/link";
 
 export default function SupportPage() {
-  const supportEmail = process.env.SUPPORT_EMAIL || "suporte@atendezapia.com.br";
+  const supportEmail = process.env.SUPPORT_EMAIL || "SUPPORT_EMAIL";
 
   return (
     <main className="mx-auto grid max-w-5xl gap-8 px-4 py-14 md:grid-cols-[0.8fr_1.2fr]">
@@ -15,6 +16,14 @@ export default function SupportPage() {
           </a>
           . Nao prometemos atendimento instantaneo, mas acompanhamos as solicitacoes para ajudar no acesso ao produto.
         </p>
+        <p className="mt-4 leading-7 text-slate-600">
+          Nao envie senhas, dados de cartao, tokens ou informacoes sensiveis pelo formulario.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3 text-sm font-black">
+          <Link className="text-brand-700 hover:underline" href="/termos">Termos</Link>
+          <Link className="text-brand-700 hover:underline" href="/privacidade">Privacidade</Link>
+          <Link className="text-brand-700 hover:underline" href="/dashboard/ajuda">Ajuda no dashboard</Link>
+        </div>
       </div>
       <Card>
         <SupportForm />

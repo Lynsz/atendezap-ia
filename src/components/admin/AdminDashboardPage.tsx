@@ -5,6 +5,7 @@ import type { FormEvent, ReactNode } from "react";
 import { BarChart3, CheckCircle2, Download, Filter, Lock, Mail, MessageSquare, RefreshCw, Search, ShieldCheck, Users } from "lucide-react";
 import { getDataRequestStatusLabel, getDataRequestTypeLabel, type DataRequestStatus } from "@/lib/data-requests";
 import { supabase } from "@/lib/supabase/browser";
+import { supportPriorities, supportPriorityLabel, supportStatuses, supportStatusLabel, type SupportPriority, type SupportStatus } from "@/lib/support";
 
 type PeriodFilter = "today" | "7d" | "30d" | "all";
 
@@ -72,6 +73,22 @@ type AdminDataRequest = {
   updated_at: string;
 };
 
+type AdminSupportRequest = {
+  id: string;
+  user_id: string | null;
+  user_id_short: string | null;
+  user_email_masked: string | null;
+  email: string | null;
+  category: string;
+  subject: string;
+  message: string;
+  status: SupportStatus;
+  priority: SupportPriority;
+  admin_notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 type AdminPayload = {
   metrics: {
     totalLeads: number;
@@ -91,6 +108,7 @@ type AdminPayload = {
   leads: AdminLead[];
   subscriptions: AdminSubscription[];
   feedback: AdminFeedback[];
+  supportRequests: AdminSupportRequest[];
   filterOptions: {
     businessTypes: string[];
     utmSources: string[];
@@ -460,6 +478,8 @@ export default function AdminDashboardPage() {
   const [dataRequests, setDataRequests] = useState<AdminDataRequest[]>([]);
   const [updatingDataRequestId, setUpdatingDataRequestId] = useState("");
   const [dataRequestNotes, setDataRequestNotes] = useState<Record<string, string>>({});
+  const [updatingSupportRequestId, setUpdatingSupportRequestId] = useState("");
+  const [supportNotes, setSupportNotes] = useState<Record<string, string>>({});
 
   const loadAdminData = useCallback(async () => {
     setLoading(true);
@@ -540,6 +560,7 @@ export default function AdminDashboardPage() {
       setDataRequestNotes(
         Object.fromEntries((dataRequestsPayload.dataRequests || []).map((item) => [item.id, item.notes || ""]))
       );
+      setSupportNotes(Object.fromEntries((payload.supportRequests || []).map((item) => [item.id, item.admin_notes || ""])));
     } catch {
       setError("Não foi possível carregar a área admin agora.");
     } finally {
@@ -651,6 +672,53 @@ export default function AdminDashboardPage() {
       setError("Nao foi possivel atualizar a solicitacao agora.");
     } finally {
       setUpdatingDataRequestId("");
+    }
+  }
+
+  async function updateSupportRequest(requestId: string, updates: { status?: SupportStatus; priority?: SupportPriority }) {
+    setUpdatingSupportRequestId(requestId);
+    setError("");
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        setAccessDenied(true);
+        setError("Faca login com um e-mail administrador para atualizar suporte.");
+        return;
+      }
+
+      const response = await fetch(`/api/admin/support/${requestId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...updates,
+          admin_notes: supportNotes[requestId] || null
+        })
+      });
+      const result = (await response.json().catch(() => ({}))) as { supportRequest?: AdminSupportRequest; error?: string };
+
+      if (!response.ok || !result.supportRequest) {
+        setError(result.error || "Nao foi possivel atualizar a solicitacao de suporte.");
+        return;
+      }
+
+      setData((current) =>
+        current
+          ? {
+              ...current,
+              supportRequests: current.supportRequests.map((item) => (item.id === requestId ? { ...item, ...result.supportRequest } : item))
+            }
+          : current
+      );
+    } catch {
+      setError("Nao foi possivel atualizar a solicitacao de suporte agora.");
+    } finally {
+      setUpdatingSupportRequestId("");
     }
   }
 
@@ -1052,6 +1120,87 @@ export default function AdminDashboardPage() {
                 <ShieldCheck className="mx-auto mb-4 h-8 w-8 text-slate-500" />
                 <p className="font-bold text-slate-200">Nenhuma solicitacao de dados aberta.</p>
                 <p className="mt-2">Pedidos de exportacao e exclusao criados pelos usuarios aparecerao aqui.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+          <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Suporte</p>
+              <h2 className="mt-2 text-2xl font-black text-white">Solicitacoes recentes</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">Acompanhe pedidos simples de ajuda sem criar conversa, CRM ou chat em tempo real.</p>
+            </div>
+            <MessageSquare className="h-9 w-9 text-emerald-300" />
+          </div>
+
+          <div className="grid gap-3">
+            {data?.supportRequests?.length ? (
+              data.supportRequests.map((item) => (
+                <article className="rounded-lg border border-white/10 bg-white/[0.04] p-4" key={item.id}>
+                  <div className="grid gap-4 xl:grid-cols-[1.1fr_1fr_auto] xl:items-start">
+                    <div>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-black text-emerald-200">{item.category}</span>
+                        <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(item.status)}`}>{supportStatusLabel(item.status)}</span>
+                        <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(item.priority)}`}>{supportPriorityLabel(item.priority)}</span>
+                      </div>
+                      <h3 className="mt-3 font-black text-white">{item.subject}</h3>
+                      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">{summarizeMessage(item.message)}</p>
+                      <div className="mt-3 flex flex-wrap gap-3 text-xs font-bold text-slate-500">
+                        <span>{item.user_email_masked || item.user_id_short || "Visitante sem usuario"}</span>
+                        <span>Criada: {formatDate(item.created_at)}</span>
+                      </div>
+                    </div>
+                    <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+                      Nota interna
+                      <textarea
+                        value={supportNotes[item.id] || ""}
+                        onChange={(event) => setSupportNotes((current) => ({ ...current, [item.id]: event.target.value }))}
+                        className="field-input min-h-20 resize-none py-3 normal-case"
+                        maxLength={1000}
+                        placeholder="Sem dados sensiveis. Registre apenas andamento operacional."
+                      />
+                    </label>
+                    <div className="grid gap-2 xl:min-w-56">
+                      <select
+                        value={item.status}
+                        onChange={(event) => void updateSupportRequest(item.id, { status: event.target.value as SupportStatus })}
+                        disabled={updatingSupportRequestId === item.id}
+                        className="field-input"
+                      >
+                        {supportStatuses.map((status) => (
+                          <option value={status} key={status}>{supportStatusLabel(status)}</option>
+                        ))}
+                      </select>
+                      <select
+                        value={item.priority}
+                        onChange={(event) => void updateSupportRequest(item.id, { priority: event.target.value as SupportPriority })}
+                        disabled={updatingSupportRequestId === item.id}
+                        className="field-input"
+                      >
+                        {supportPriorities.map((priority) => (
+                          <option value={priority} key={priority}>{supportPriorityLabel(priority)}</option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => void updateSupportRequest(item.id, {})}
+                        disabled={updatingSupportRequestId === item.id}
+                        className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-white/[0.06] px-3 text-xs font-black text-slate-100 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Salvar nota
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
+                <MessageSquare className="mx-auto mb-4 h-8 w-8 text-slate-500" />
+                <p className="font-bold text-slate-200">Nenhuma solicitacao de suporte aberta.</p>
+                <p className="mt-2">Pedidos enviados por usuarios ou visitantes aparecerao aqui.</p>
               </div>
             )}
           </div>
