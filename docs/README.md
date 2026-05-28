@@ -4,6 +4,14 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 
 ## Operacao
 
+- [backup-strategy](backup-strategy.md)
+- [disaster-recovery](disaster-recovery.md)
+- [monthly-backup-checklist](monthly-backup-checklist.md)
+- [safe-migrations](safe-migrations.md)
+- [rls-review-checklist](rls-review-checklist.md)
+- [stripe-reconciliation](stripe-reconciliation.md)
+- [data-retention](data-retention.md)
+- [critical-api-security-review](critical-api-security-review.md)
 - [environments](environments.md)
 - [operations-1.0](operations-1.0.md)
 - [production-readiness](production-readiness.md)
@@ -65,6 +73,10 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Operacao 1.0: use `operations-1.0.md`, `weekly-maintenance-checklist.md`, `incident-response.md`, `incident-log.md` e `internal-faq.md`.
 - Stripe: use `stripe-setup.md` para setup, `stripe-env.md` para variaveis e `stripe-validation-checklist.md` para validacao.
 - Supabase: use `supabase-setup.md`, `supabase-security.md` e `supabase-production-checklist.md`.
+- Backup e recuperacao: use `backup-strategy.md`, `disaster-recovery.md` e `monthly-backup-checklist.md`.
+- Migrations e RLS: use `safe-migrations.md`, `rls-review-checklist.md` e `critical-api-security-review.md`.
+- Stripe/Supabase: use `stripe-reconciliation.md` para reconciliar divergencias operacionais.
+- Retencao: use `data-retention.md` para orientar limpeza futura e dados que nao devem ir para analytics/logs.
 - OpenAI: use `openai-production.md` para producao e custo.
 - Resend: use `resend-setup.md`, `emails.md` e `email-funnel-checklist.md`.
 - Tracking: use `tracking.md` como fonte principal; `tracking-setup.md` e `tracking-production.md` complementam validacao.

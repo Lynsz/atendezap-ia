@@ -173,6 +173,10 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 
 - O projeto permanece privado e sem secrets no Git.
 - Use `docs/production-monitoring.md` para a rotina minima de acompanhamento em producao.
+- Use `docs/backup-strategy.md`, `docs/disaster-recovery.md` e `docs/monthly-backup-checklist.md` para backup, recuperacao e revisao mensal.
+- Use `docs/safe-migrations.md` e `docs/rls-review-checklist.md` antes de alterar schema, policies ou dados criticos.
+- Use `docs/stripe-reconciliation.md` quando houver divergencia entre Stripe e Supabase.
+- Use `docs/data-retention.md` para orientar retencao e limpeza futura de dados.
 - Use `docs/safe-logging.md` para revisar o que pode ou nao ir para logs.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
@@ -204,6 +208,14 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/stability-criteria.md`: criterios de estabilidade.
 - `docs/incident-response.md`: resposta a incidentes.
 - `docs/incident-log.md`: modelo de registro de incidentes.
+- `docs/backup-strategy.md`: estrategia de backup.
+- `docs/disaster-recovery.md`: plano de recuperacao.
+- `docs/monthly-backup-checklist.md`: checklist mensal de backup.
+- `docs/safe-migrations.md`: regras para migrations seguras.
+- `docs/rls-review-checklist.md`: checklist de revisao de RLS.
+- `docs/stripe-reconciliation.md`: reconciliacao Stripe/Supabase.
+- `docs/data-retention.md`: retencao de dados.
+- `docs/critical-api-security-review.md`: revisao operacional das APIs criticas.
 - `docs/cost-monitoring.md`: monitoramento de custos.
 - `docs/retention-plan.md`: plano inicial de retencao.
 - `docs/ai-response-quality-plan.md`: qualidade das respostas com IA.

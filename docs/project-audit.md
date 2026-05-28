@@ -2,7 +2,7 @@
 
 ## Nota geral
 
-96/100
+97/100
 
 ## Status versao 1.0
 
@@ -35,6 +35,22 @@ Nota estimada atualizada: 96/100. A nota permanece estavel porque a operacao foi
 O projeto esta em release candidate aprovado para producao controlada e preparado para 3 a 5 primeiros usuarios e uma campanha pequena de validacao: funil publico, pagina direta de campanha, auth, dashboard SaaS, IA server-side, Stripe, Supabase, Resend, tracking, admin, feedback, metricas internas, relatorio de campanha, docs, testes, staging e playbooks de operacao estao encaminhados. A validacao local passou em lint, typecheck, build, testes unitarios e e2e, sem bloqueador de codigo nas rotas principais revisadas. Ainda falta executar o deploy final/staging real, validar checkout com Stripe test/live mode, testar RLS contra Supabase real e confirmar Resend, OpenAI, tracking, dominio, admin, feedback e metricas no ambiente final.
 
 O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de priorizacao, revisao semanal, backlog de crescimento, experimentos pequenos e bloco simples de gargalo no admin para orientar melhorias com dados reais.
+
+## Backup, recuperacao e seguranca de dados - 2026-05-28
+
+- Estrategia de backup criada em `docs/backup-strategy.md`, cobrindo dados criticos, dados que nao devem ir para o Git, Supabase, Stripe, Resend e OpenAI.
+- Plano de recuperacao criado em `docs/disaster-recovery.md`, com cenarios de banco indisponivel, dados corrompidos, webhook Stripe falho, deploy quebrado e chave vazada.
+- Checklist mensal criado em `docs/monthly-backup-checklist.md`, incluindo Supabase, Stripe, Vercel e seguranca.
+- Migrations seguras documentadas em `docs/safe-migrations.md`, reforcando alteracoes incrementais, backup antes de producao, validacao de RLS e bloqueio de operacoes perigosas sem plano.
+- Checklist de RLS criado em `docs/rls-review-checklist.md`, com tabelas criticas e testes esperados para isolamento entre usuarios.
+- Reconciliacao Stripe/Supabase documentada em `docs/stripe-reconciliation.md`, mantendo Stripe como fonte de verdade financeira e Supabase como estado local da aplicacao.
+- Retencao de dados documentada em `docs/data-retention.md`, com principios de minimizacao, ausencia de secrets e melhorias futuras.
+- APIs criticas revisadas e registradas em `docs/critical-api-security-review.md`: IA, historico, respostas salvas, feedbacks, assinatura, checkout, portal Stripe, webhook Stripe, leads/ebook e admin.
+- Teste estatico de RLS criado em `src/lib/supabase/rls-policies.test.ts`, cobrindo isolamento de historico, respostas salvas, feedbacks, assinatura somente leitura, leads/eventos sem acesso direto e admin protegido por `requireAdmin`.
+- README e `docs/README.md` atualizados com os novos documentos operacionais.
+- Repositorio permanece privado; nenhum dump, dado real de usuario, `.env.local` ou secret real foi adicionado.
+- Pendencias restantes: validar backups reais conforme plano Supabase contratado, testar restauracao em ambiente seguro, executar teste real de RLS com dois usuarios em staging/producao e manter registro de incidentes quando houver reconciliacao manual.
+- Nota estimada atualizada: 97/100 para operacao controlada, condicionada a validacao real de backup/restauracao, RLS e provedores em staging/producao.
 
 ## Seguranca do repositorio privado - 2026-05-27
 

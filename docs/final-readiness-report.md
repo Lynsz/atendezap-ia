@@ -2,7 +2,7 @@
 
 ## Nota atual estimada
 
-96/100.
+97/100.
 
 ## Status
 
@@ -44,6 +44,36 @@ O admin foi revisado e continua suficiente para a fase atual: leads, usuarios, a
 Pendencias restantes: alertas automaticos, dashboard financeiro, relatorios de churn/retencao e monitoramento avancado seguem no roadmap pos-1.0. Ferramentas externas como Vercel, Supabase, Stripe, Resend, OpenAI, GA4 e Meta ainda precisam ser acompanhadas nos respectivos paineis.
 
 Nota estimada atualizada: 96/100. A operacao esta documentada, mas a maturidade operacional ainda depende de uso real, incidentes reais registrados, custos reais acompanhados e validacao continua dos provedores.
+
+## Backup, recuperacao e seguranca de dados
+
+Status: etapa operacional implementada para reduzir risco de perda de dados, orientar restauracao e revisar RLS sem tornar o repositorio publico.
+
+O que foi feito:
+
+- Criado `docs/backup-strategy.md` com dados criticos, dados proibidos no Git e responsabilidades de Supabase, Stripe, Resend e OpenAI.
+- Criado `docs/disaster-recovery.md` com resposta a banco indisponivel, dados corrompidos, webhook Stripe falho, deploy quebrado e chave vazada.
+- Criado `docs/monthly-backup-checklist.md` para revisao mensal de Supabase, Stripe, Vercel e seguranca.
+- Criado `docs/safe-migrations.md` para orientar migrations incrementais, backup antes de producao, teste em staging e revisao de RLS.
+- Criado `docs/rls-review-checklist.md` para validar isolamento de profiles, subscriptions, historico, respostas salvas, feedbacks, leads e eventos.
+- Criado `docs/stripe-reconciliation.md` para tratar divergencias entre Stripe e Supabase.
+- Criado `docs/data-retention.md` com principios de minimizacao, logs seguros e futuras rotinas de exportacao/exclusao.
+- Criado `docs/critical-api-security-review.md` registrando revisao de IA, historico, respostas salvas, feedbacks, assinatura, checkout, portal Stripe, webhook Stripe, leads/ebook e admin.
+- Criado teste estatico `src/lib/supabase/rls-policies.test.ts` para proteger policies criticas contra regressao.
+- README e `docs/README.md` atualizados com os novos documentos.
+
+Pendencias:
+
+- Confirmar plano e retencao de backup no Supabase real.
+- Testar restauracao em ambiente seguro antes de depender do procedimento em producao.
+- Validar RLS com dois usuarios reais em staging/producao.
+- Registrar reconciliacoes manuais em `docs/incident-log.md`.
+
+Recomendacao atualizada:
+
+Manter o repositorio privado e seguir com producao controlada. A etapa melhora protecao de dados e recuperacao operacional, mas nao substitui validacao real de backup, restauracao, RLS e provedores.
+
+Nota estimada atualizada: 97/100 para operacao controlada, condicionada a validacao real de backup/restauracao, RLS e provedores em staging/producao.
 
 ## Resumo executivo
 
