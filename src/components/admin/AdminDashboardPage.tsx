@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
-import { BarChart3, CheckCircle2, Download, Filter, Lock, Mail, MessageSquare, RefreshCw, Search, Users } from "lucide-react";
+import { BarChart3, CheckCircle2, Download, Filter, Lock, Mail, MessageSquare, RefreshCw, Search, ShieldCheck, Users } from "lucide-react";
+import { getDataRequestStatusLabel, getDataRequestTypeLabel, type DataRequestStatus } from "@/lib/data-requests";
 import { supabase } from "@/lib/supabase/browser";
 
 type PeriodFilter = "today" | "7d" | "30d" | "all";
@@ -59,6 +60,18 @@ type AdminFeedback = {
   created_at: string;
 };
 
+type AdminDataRequest = {
+  id: string;
+  user_id: string;
+  user_id_short: string;
+  user_email_masked: string | null;
+  type: string;
+  status: DataRequestStatus;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 type AdminPayload = {
   metrics: {
     totalLeads: number;
@@ -86,6 +99,10 @@ type AdminPayload = {
   notes: {
     conversion: string;
   };
+};
+
+type AdminDataRequestsPayload = {
+  dataRequests: AdminDataRequest[];
 };
 
 type ProductMetricsPayload = {
@@ -246,7 +263,13 @@ function statusClass(status?: string | null) {
   if (normalized === "active" || normalized === "trial" || normalized === "trialing" || normalized === "sent") {
     return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
   }
-  if (normalized === "failed" || normalized === "canceled") {
+  if (normalized === "completed") {
+    return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
+  }
+  if (normalized === "processing") {
+    return "border-sky-400/30 bg-sky-400/10 text-sky-100";
+  }
+  if (normalized === "failed" || normalized === "canceled" || normalized === "rejected") {
     return "border-red-400/30 bg-red-500/10 text-red-200";
   }
   if (normalized === "pending" || normalized === "past_due" || normalized === "skipped" || normalized === "skipped_not_configured") {
@@ -434,6 +457,9 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState("");
   const [accessDenied, setAccessDenied] = useState(false);
   const [updatingFeedbackId, setUpdatingFeedbackId] = useState("");
+  const [dataRequests, setDataRequests] = useState<AdminDataRequest[]>([]);
+  const [updatingDataRequestId, setUpdatingDataRequestId] = useState("");
+  const [dataRequestNotes, setDataRequestNotes] = useState<Record<string, string>>({});
 
   const loadAdminData = useCallback(async () => {
     setLoading(true);
@@ -456,7 +482,7 @@ export default function AdminDashboardPage() {
         if (value) params.set(key, value);
       });
 
-      const [response, metricsResponse, campaignResponse] = await Promise.all([
+      const [response, metricsResponse, campaignResponse, dataRequestsResponse] = await Promise.all([
         fetch(`/api/admin/overview?${params.toString()}`, {
           headers: {
             Authorization: `Bearer ${token}`
@@ -471,11 +497,17 @@ export default function AdminDashboardPage() {
           headers: {
             Authorization: `Bearer ${token}`
           }
+        }),
+        fetch("/api/admin/data-requests", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         })
       ]);
       const payload = (await response.json().catch(() => ({}))) as AdminPayload & { error?: string };
       const metricsPayload = (await metricsResponse.json().catch(() => ({}))) as ProductMetricsPayload & { error?: string };
       const campaignPayload = (await campaignResponse.json().catch(() => ({}))) as CampaignReportPayload & { error?: string };
+      const dataRequestsPayload = (await dataRequestsResponse.json().catch(() => ({}))) as AdminDataRequestsPayload & { error?: string };
 
       if (!response.ok) {
         setAccessDenied(response.status === 401 || response.status === 403);
@@ -495,9 +527,19 @@ export default function AdminDashboardPage() {
         return;
       }
 
+      if (!dataRequestsResponse.ok) {
+        setAccessDenied(dataRequestsResponse.status === 401 || dataRequestsResponse.status === 403);
+        setError(dataRequestsPayload.error || "Nao foi possivel carregar as solicitacoes de dados.");
+        return;
+      }
+
       setData(payload);
       setProductMetrics(metricsPayload);
       setCampaignReport(campaignPayload);
+      setDataRequests(dataRequestsPayload.dataRequests || []);
+      setDataRequestNotes(
+        Object.fromEntries((dataRequestsPayload.dataRequests || []).map((item) => [item.id, item.notes || ""]))
+      );
     } catch {
       setError("Não foi possível carregar a área admin agora.");
     } finally {
@@ -568,6 +610,47 @@ export default function AdminDashboardPage() {
       setError("Não foi possível atualizar o feedback agora.");
     } finally {
       setUpdatingFeedbackId("");
+    }
+  }
+
+  async function updateDataRequestStatus(requestId: string, status: DataRequestStatus) {
+    setUpdatingDataRequestId(requestId);
+    setError("");
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      if (!token) {
+        setAccessDenied(true);
+        setError("Faca login com um e-mail administrador para atualizar solicitacoes.");
+        return;
+      }
+
+      const response = await fetch("/api/admin/data-requests", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          id: requestId,
+          status,
+          notes: dataRequestNotes[requestId] || null
+        })
+      });
+      const result = (await response.json().catch(() => ({}))) as { dataRequest?: AdminDataRequest; error?: string };
+
+      if (!response.ok || !result.dataRequest) {
+        setError(result.error || "Nao foi possivel atualizar a solicitacao.");
+        return;
+      }
+
+      setDataRequests((current) => current.map((item) => (item.id === requestId ? { ...item, ...result.dataRequest } : item)));
+    } catch {
+      setError("Nao foi possivel atualizar a solicitacao agora.");
+    } finally {
+      setUpdatingDataRequestId("");
     }
   }
 
@@ -911,6 +994,68 @@ export default function AdminDashboardPage() {
             </div>
           </section>
         ) : null}
+
+        <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+          <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Privacidade e LGPD</p>
+              <h2 className="mt-2 text-2xl font-black text-white">Solicitacoes de dados</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">Acompanhe pedidos de exportacao e exclusao. O processamento inicial deve ser manual e documentado.</p>
+            </div>
+            <ShieldCheck className="h-9 w-9 text-emerald-300" />
+          </div>
+
+          <div className="grid gap-3">
+            {dataRequests.length ? (
+              dataRequests.map((item) => (
+                <article className="rounded-lg border border-white/10 bg-white/[0.04] p-4" key={item.id}>
+                  <div className="grid gap-4 xl:grid-cols-[1.1fr_1fr_auto] xl:items-start">
+                    <div>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-black text-emerald-200">{getDataRequestTypeLabel(item.type)}</span>
+                        <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(item.status)}`}>{getDataRequestStatusLabel(item.status)}</span>
+                      </div>
+                      <p className="mt-3 text-sm font-black text-white">{item.user_email_masked || item.user_id_short}</p>
+                      <div className="mt-3 flex flex-wrap gap-3 text-xs font-bold text-slate-500">
+                        <span>Criada: {formatDate(item.created_at)}</span>
+                        <span>Atualizada: {formatDate(item.updated_at)}</span>
+                      </div>
+                    </div>
+                    <label className="grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+                      Nota interna
+                      <textarea
+                        value={dataRequestNotes[item.id] || ""}
+                        onChange={(event) => setDataRequestNotes((current) => ({ ...current, [item.id]: event.target.value }))}
+                        className="field-input min-h-20 resize-none py-3 normal-case"
+                        maxLength={1000}
+                        placeholder="Sem dados sensiveis. Registre apenas andamento operacional."
+                      />
+                    </label>
+                    <div className="grid gap-2 sm:grid-cols-3 xl:min-w-48 xl:grid-cols-1">
+                      {(["processing", "completed", "rejected"] as const).map((status) => (
+                        <button
+                          type="button"
+                          key={`${item.id}-${status}`}
+                          onClick={() => void updateDataRequestStatus(item.id, status)}
+                          disabled={updatingDataRequestId === item.id || item.status === status}
+                          className="inline-flex min-h-10 items-center justify-center rounded-md border border-white/10 bg-white/[0.06] px-3 text-xs font-black text-slate-100 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {getDataRequestStatusLabel(status)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
+                <ShieldCheck className="mx-auto mb-4 h-8 w-8 text-slate-500" />
+                <p className="font-bold text-slate-200">Nenhuma solicitacao de dados aberta.</p>
+                <p className="mt-2">Pedidos de exportacao e exclusao criados pelos usuarios aparecerao aqui.</p>
+              </div>
+            )}
+          </div>
+        </section>
 
         <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
           <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">

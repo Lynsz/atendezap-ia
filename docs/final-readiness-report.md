@@ -75,6 +75,37 @@ Manter o repositorio privado e seguir com producao controlada. A etapa melhora p
 
 Nota estimada atualizada: 97/100 para operacao controlada, condicionada a validacao real de backup/restauracao, RLS e provedores em staging/producao.
 
+## Privacidade, LGPD e controle de dados
+
+Status: base inicial implementada para o usuario entender dados armazenados e solicitar exportacao ou exclusao com seguranca.
+
+O que foi feito:
+
+- Criado `docs/data-inventory.md` com dados armazenados, obrigatorios, opcionais, sensiveis e dados enviados para Stripe, Resend, OpenAI e analytics.
+- Criado `docs/privacy-policy.md` e revisada a pagina `/privacidade`.
+- Criado `docs/terms-of-use.md` e revisada a pagina `/termos`.
+- Criado `docs/lgpd-compliance.md` com principios, direitos do usuario e pendencias futuras.
+- Criada migration `supabase/migrations/0016_data_requests.sql` para `data_requests`, com tipos `export`/`deletion`, status controlados e RLS por usuario.
+- Criada API autenticada `/api/data-requests` para usuario criar e listar apenas as proprias solicitacoes.
+- Criada pagina protegida `/dashboard/privacidade` com resumo dos dados, links legais, botao de exportacao, botao de exclusao e historico de solicitacoes.
+- Criada API admin `/api/admin/data-requests` e secao simples no admin para acompanhar, anotar e atualizar solicitacoes.
+- Criados `docs/data-export-process.md` e `docs/data-deletion-process.md` para processo manual seguro.
+- Tracking revisado para remover e-mail, perguntas, respostas, mensagens e outros campos sensiveis antes de analytics.
+- Logs revisados e `docs/safe-logging.md` atualizado.
+
+Pendencias:
+
+- Aplicar `0016_data_requests.sql` no Supabase real/staging.
+- Validar usuario A vs usuario B em staging/producao.
+- Definir e revisar juridicamente a politica final, se necessario.
+- Automatizar exportacao/exclusao somente depois de processo seguro validado.
+
+Recomendacao atualizada:
+
+Manter o repositorio privado e seguir com producao controlada. A etapa cria base operacional para LGPD, mas a execucao real ainda depende de processo manual, validacao em ambiente real e revisao juridica antes de escala.
+
+Nota estimada mantida: 97/100 para operacao controlada.
+
 ## Resumo executivo
 
 O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 usuarios reais e para uma campanha pequena de validacao com orcamento baixo, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. Alem da validacao local de release, agora existe um canal simples de feedback, lista no admin, roteiro de entrevista, mensagens de suporte, triagem rapida de bugs, metricas internas, pagina direta para campanha e relatorio de validacao comercial.

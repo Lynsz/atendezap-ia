@@ -52,6 +52,21 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias restantes: validar backups reais conforme plano Supabase contratado, testar restauracao em ambiente seguro, executar teste real de RLS com dois usuarios em staging/producao e manter registro de incidentes quando houver reconciliacao manual.
 - Nota estimada atualizada: 97/100 para operacao controlada, condicionada a validacao real de backup/restauracao, RLS e provedores em staging/producao.
 
+## Privacidade, LGPD e controle de dados - 2026-05-28
+
+- Inventario de dados criado em `docs/data-inventory.md`, cobrindo usuarios, onboarding, leads, assinaturas, IA, respostas salvas, feedbacks, eventos, logs, admin e integracoes externas.
+- Politica de privacidade operacional criada em `docs/privacy-policy.md` e pagina publica `/privacidade` revisada para explicar Supabase, Stripe, OpenAI, Resend, analytics, exportacao, exclusao e uso manual das respostas.
+- Termos de uso operacionais criados em `docs/terms-of-use.md` e pagina publica `/termos` revisada com uso permitido, limitacoes da IA, proibicoes, planos, Stripe, cancelamento, limites mensais e disponibilidade.
+- Documentacao LGPD criada em `docs/lgpd-compliance.md`, incluindo principios, direitos do usuario e pendencias futuras.
+- Solicitacoes de exportacao/exclusao criadas com tabela `data_requests`, migration `0016_data_requests.sql`, RLS por usuario, API autenticada `/api/data-requests` e pagina protegida `/dashboard/privacidade`.
+- Admin protegido ganhou secao "Solicitacoes de dados" via `/api/admin/data-requests`, com e-mail mascarado, status, nota interna e acoes simples para `processing`, `completed` e `rejected`.
+- Processos manuais documentados em `docs/data-export-process.md` e `docs/data-deletion-process.md`.
+- Tracking revisado: `src/lib/tracking.ts` agora remove tambem propriedades de e-mail antes de enviar eventos, alem de perguntas, respostas, mensagens, tokens, secrets e dados de pagamento.
+- Logs revisados e `docs/safe-logging.md` atualizado para reforcar analytics seguro e notas internas sem dados sensiveis.
+- Testes adicionados para solicitacoes de usuario, admin protegido, status invalido, RLS estatica e sanitizacao de analytics.
+- Pendencias restantes: aplicar `0016_data_requests.sql` no Supabase real/staging, validar solicitacoes com dois usuarios, definir e revisar juridicamente politicas finais, automatizar exportacao/exclusao apenas quando houver processo seguro e revisar periodicamente eventos/analytics.
+- Nota estimada mantida: 97/100 para operacao controlada, agora com base inicial LGPD/privacidade, condicionada a validacao real de RLS e processo operacional em staging/producao.
+
 ## Seguranca do repositorio privado - 2026-05-27
 
 - Decisao registrada: o repositorio do AtendeZap IA deve permanecer privado no GitHub neste momento.

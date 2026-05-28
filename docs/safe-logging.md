@@ -25,6 +25,8 @@
 - IDs de usuario sao mascarados nos logs.
 - E-mails e chaves sensiveis sao mascarados ou omitidos.
 - Campos como prompt, resposta, conteudo, payload e mensagem sao omitidos.
+- Eventos de analytics em `src/lib/tracking.ts` removem campos sensiveis como e-mail, pergunta, resposta, mensagem, token, secret e dados de pagamento.
+- Notas internas de solicitacoes de dados devem registrar apenas andamento operacional, sem dados sensiveis.
 
 ## Objetivo
 Logs devem ajudar a investigar falhas sem vazar dados.

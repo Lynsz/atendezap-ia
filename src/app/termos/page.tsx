@@ -5,7 +5,7 @@ const supportEmail = process.env.SUPPORT_EMAIL || "suporte@atendezapia.com.br";
 export const metadata = {
   title: "Termos de Uso",
   description:
-    "Termos de uso do AtendeZap IA, incluindo regras de assinatura, limites mensais, uso de IA e responsabilidades do usuário.",
+    "Termos de uso do AtendeZap IA, incluindo uso permitido, limites da IA, planos, Stripe, cancelamento, limites mensais e suporte.",
   alternates: {
     canonical: "/termos"
   }
@@ -15,42 +15,47 @@ const sections = [
   {
     title: "1. Sobre o AtendeZap IA",
     content:
-      "O AtendeZap IA é um produto digital para ajudar pessoas, autônomos, prestadores de serviço e pequenos negócios a criarem respostas mais rápidas e profissionais para atendimento pelo WhatsApp."
+      "O AtendeZap IA ajuda pessoas, autonomos, prestadores de servico e pequenos negocios a criarem sugestoes de respostas para atendimento pelo WhatsApp. O usuario copia, ajusta e envia manualmente."
   },
   {
-    title: "2. Cadastro e acesso",
+    title: "2. Uso permitido",
     content:
-      "Para usar recursos privados, o usuário deve criar uma conta com informações verdadeiras e manter seus dados de acesso protegidos. O uso da conta é pessoal e não deve ser compartilhado com terceiros sem autorização."
+      "O usuario pode cadastrar contexto do negocio, gerar respostas com IA, salvar respostas uteis, copiar mensagens e acompanhar o uso mensal conforme o plano contratado."
   },
   {
-    title: "3. Planos, cobrança e limites",
+    title: "3. Limitacoes da IA",
     content:
-      "Os planos do AtendeZap IA são cobrados via Stripe conforme a opção escolhida. Cada plano pode ter limite mensal de uso, exibido no dashboard. O Plano Pro pode ter primeiro mês por R$ 29 para novos usuários e, depois, segue o valor mensal informado na página de preços."
+      "A IA pode errar. O usuario deve revisar toda resposta antes de enviar, especialmente quando houver precos, prazos, disponibilidade, garantias, dados pessoais, saude, financas ou contratos."
   },
   {
-    title: "4. Cancelamento e alterações",
+    title: "4. Uso proibido",
     content:
-      "O usuário pode cancelar sua assinatura conforme as regras disponíveis no fluxo de cobrança da Stripe. O AtendeZap IA pode alterar planos, preços e funcionalidades, mantendo comunicação clara quando a mudança afetar usuários ativos."
+      "E proibido usar o produto para spam, fraude, atividade ilegal, assedio, violacao de direitos, conteudo abusivo, exploracao tecnica do servico ou exposicao indevida de dados pessoais."
   },
   {
-    title: "5. Uso de respostas geradas por IA",
+    title: "5. Planos, cobranca e limites",
     content:
-      "As respostas geradas por inteligência artificial servem como apoio. O usuário é responsável por revisar, adaptar e validar qualquer mensagem antes de enviar a clientes, especialmente quando envolver preços, prazos, garantias, saúde, finanças, contratos ou dados pessoais."
+      "Planos e cobrancas sao processados via Stripe. Cada plano pode ter limite mensal de respostas. O dashboard pode bloquear novas geracoes quando o limite for atingido."
   },
   {
-    title: "6. Uso proibido",
+    title: "6. Cancelamento",
     content:
-      "É proibido usar o AtendeZap IA para spam, fraude, assédio, conteúdo ilegal, violação de direitos de terceiros, tentativa de exploração técnica do serviço ou qualquer uso que prejudique outros usuários, clientes ou a operação da plataforma."
+      "O cancelamento deve ser feito pelo portal Stripe ou pelo fluxo indicado no produto. Em caso de divergencia, a Stripe deve ser consultada como fonte de verdade financeira."
   },
   {
-    title: "7. Disponibilidade do serviço",
+    title: "7. Disponibilidade",
     content:
-      "Buscamos manter o serviço disponível, mas podem ocorrer indisponibilidades por manutenção, falhas de provedores, ajustes técnicos ou eventos fora do nosso controle. Não há promessa de resultado financeiro, aumento de vendas ou receita."
+      "O servico pode ficar indisponivel por manutencao, falhas de provedores externos, incidentes de infraestrutura ou ajustes tecnicos. Nao ha garantia de resultado financeiro, vendas ou conversao."
   },
   {
-    title: "8. Contato",
+    title: "8. Privacidade e dados",
     content:
-      "Dúvidas sobre estes termos, assinatura ou uso do serviço podem ser enviadas para o e-mail de suporte informado abaixo."
+      "O tratamento de dados segue a politica de privacidade. O usuario pode solicitar exportacao ou exclusao de dados, respeitando verificacoes de identidade, assinatura e obrigacoes legais ou financeiras."
+  },
+  {
+    title: "9. Contato",
+    content:
+      "Duvidas sobre uso, assinatura, privacidade ou suporte devem ser enviadas ao e-mail de suporte informado abaixo."
   }
 ];
 
@@ -61,8 +66,7 @@ export default function TermsPage() {
         <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Legal</p>
         <h1 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-5xl">Termos de Uso</h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">
-          Estes termos explicam as regras básicas para usar o AtendeZap IA. Eles não substituem orientação jurídica
-          específica, mas deixam claro como o produto funciona nesta fase.
+          Estes termos explicam as regras basicas para usar o AtendeZap IA. Eles nao substituem orientacao juridica especifica.
         </p>
 
         <div className="mt-10 grid gap-5">
@@ -82,9 +86,9 @@ export default function TermsPage() {
             </a>
           </p>
           <p className="mt-2">
-            Veja também a{" "}
+            Veja tambem a{" "}
             <Link className="font-black text-brand-700 hover:underline" href="/privacidade">
-              Política de Privacidade
+              Politica de Privacidade
             </Link>
             .
           </p>

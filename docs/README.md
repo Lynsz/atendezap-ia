@@ -11,6 +11,12 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [rls-review-checklist](rls-review-checklist.md)
 - [stripe-reconciliation](stripe-reconciliation.md)
 - [data-retention](data-retention.md)
+- [data-inventory](data-inventory.md)
+- [privacy-policy](privacy-policy.md)
+- [terms-of-use](terms-of-use.md)
+- [lgpd-compliance](lgpd-compliance.md)
+- [data-export-process](data-export-process.md)
+- [data-deletion-process](data-deletion-process.md)
 - [critical-api-security-review](critical-api-security-review.md)
 - [environments](environments.md)
 - [operations-1.0](operations-1.0.md)
@@ -64,6 +70,10 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 ## Seguranca e testes
 
 - [security](security.md)
+- [privacy-policy](privacy-policy.md)
+- [terms-of-use](terms-of-use.md)
+- [lgpd-compliance](lgpd-compliance.md)
+- [data-inventory](data-inventory.md)
 - [testing](testing.md)
 - [stability-criteria](stability-criteria.md)
 
@@ -77,6 +87,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Migrations e RLS: use `safe-migrations.md`, `rls-review-checklist.md` e `critical-api-security-review.md`.
 - Stripe/Supabase: use `stripe-reconciliation.md` para reconciliar divergencias operacionais.
 - Retencao: use `data-retention.md` para orientar limpeza futura e dados que nao devem ir para analytics/logs.
+- Privacidade/LGPD: use `data-inventory.md`, `privacy-policy.md`, `terms-of-use.md`, `lgpd-compliance.md`, `data-export-process.md` e `data-deletion-process.md`.
 - OpenAI: use `openai-production.md` para producao e custo.
 - Resend: use `resend-setup.md`, `emails.md` e `email-funnel-checklist.md`.
 - Tracking: use `tracking.md` como fonte principal; `tracking-setup.md` e `tracking-production.md` complementam validacao.

@@ -3,9 +3,9 @@ import Link from "next/link";
 const supportEmail = process.env.SUPPORT_EMAIL || "suporte@atendezapia.com.br";
 
 export const metadata = {
-  title: "Política de Privacidade",
+  title: "Politica de Privacidade",
   description:
-    "Política de privacidade do AtendeZap IA sobre coleta de dados, entrega do ebook, comunicações, pagamentos via Stripe e tracking opcional.",
+    "Politica de privacidade do AtendeZap IA sobre dados coletados, Supabase, Stripe, OpenAI, Resend, analytics e direitos do usuario.",
   alternates: {
     canonical: "/privacidade"
   }
@@ -13,44 +13,49 @@ export const metadata = {
 
 const sections = [
   {
-    title: "1. Dados que podemos coletar",
+    title: "1. Quais dados coletamos",
     content:
-      "Podemos coletar nome, e-mail, WhatsApp quando informado, tipo de atuação, dados do negócio, informações de cadastro, uso do produto, plano contratado e dados técnicos necessários para manter o serviço funcionando."
+      "Podemos coletar e-mail, id interno, dados de perfil, onboarding, informacoes do negocio, perguntas usadas para gerar respostas, respostas geradas, respostas salvas, feedbacks, leads do ebook, UTMs, dados locais de assinatura e eventos internos seguros."
   },
   {
-    title: "2. Como usamos os dados",
+    title: "2. Para que usamos os dados",
     content:
-      "Usamos os dados para entregar o ebook, criar e manter a conta, enviar comunicações sobre o AtendeZap IA, operar o dashboard, processar assinaturas, prestar suporte e melhorar a experiência do usuário."
+      "Usamos os dados para criar e proteger a conta, operar o dashboard, gerar respostas com IA, manter historico e respostas salvas, controlar limite mensal, processar assinatura, enviar e-mails transacionais, prestar suporte e acompanhar metricas operacionais."
   },
   {
-    title: "3. Ebook, leads e comunicações",
+    title: "3. Supabase",
     content:
-      "Quando uma pessoa solicita o ebook, podemos salvar os dados enviados no formulário e as UTMs da campanha para entender a origem do lead. Também podemos enviar o material por e-mail e comunicações relacionadas ao produto."
+      "Usamos Supabase para autenticacao, banco de dados e controle de acesso. As tabelas principais usam RLS para que cada usuario acesse apenas seus proprios dados quando aplicavel."
   },
   {
-    title: "4. Cookies, UTMs e tracking",
+    title: "4. Stripe",
     content:
-      "Podemos usar cookies, localStorage ou tecnologias similares para preservar UTMs e medir o funil. Google Analytics 4 e Meta Pixel só carregam quando configurados no ambiente. Esses recursos ajudam a medir visitas, leads e intenção de compra."
+      "Pagamentos e assinaturas sao processados pela Stripe. O AtendeZap IA nao armazena numero completo de cartao. Guardamos apenas estado local de plano, status e identificadores Stripe necessarios para operar a assinatura."
   },
   {
-    title: "5. Pagamentos",
+    title: "5. OpenAI",
     content:
-      "Pagamentos e assinaturas são processados pela Stripe. O AtendeZap IA não armazena dados completos de cartão no navegador nem no banco da aplicação. Dados de cobrança ficam sujeitos também às políticas da Stripe."
+      "Usamos OpenAI para gerar sugestoes de resposta. O backend envia o contexto necessario para a geracao. Evite inserir dados sensiveis desnecessarios nas perguntas e informacoes do negocio."
   },
   {
-    title: "6. Provedores usados",
+    title: "6. Resend",
     content:
-      "Podemos usar Supabase para autenticação e banco de dados, OpenAI para geração de respostas, Resend para envio de e-mails, Stripe para pagamentos e ferramentas de analytics quando configuradas."
+      "Usamos Resend para envio de e-mails transacionais, como entrega de materiais e comunicacoes relacionadas ao produto. Logs de envio devem ser consultados no painel do provedor quando necessario."
   },
   {
-    title: "7. Segurança e retenção",
+    title: "7. Analytics e tracking",
     content:
-      "Mantemos apenas dados necessários para operar o serviço, entregar materiais, prestar suporte e cumprir obrigações básicas. Aplicamos controles para não expor chaves secretas no front-end e restringir acesso administrativo."
+      "Analytics e pixels, quando configurados, recebem apenas metadados seguros como evento, origem, plano, categoria, tipo de negocio e UTMs. Nao enviamos e-mail, telefone, mensagem do cliente, resposta completa da IA, tokens, chaves ou dados de pagamento para analytics."
   },
   {
-    title: "8. Solicitação de remoção",
+    title: "8. Exportacao e exclusao",
     content:
-      "Você pode solicitar acesso, correção ou remoção dos seus dados entrando em contato pelo e-mail de suporte. Algumas informações podem precisar ser mantidas por obrigações legais, antifraude ou registro financeiro."
+      "Usuarios podem solicitar exportacao ou exclusao de dados pelo dashboard ou suporte. Nesta fase, o atendimento pode ser manual para confirmar identidade, assinatura e obrigacoes legais ou financeiras antes de qualquer acao."
+  },
+  {
+    title: "9. Como o produto funciona",
+    content:
+      "O AtendeZap IA gera sugestoes de respostas para o usuario copiar, ajustar e enviar manualmente. O produto nao envia mensagens automaticamente pelo WhatsApp."
   }
 ];
 
@@ -59,10 +64,9 @@ export default function PrivacyPage() {
     <main className="bg-slate-50">
       <section className="mx-auto max-w-4xl px-4 py-14 md:py-20">
         <p className="text-sm font-black uppercase tracking-[0.22em] text-brand-700">Privacidade</p>
-        <h1 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-5xl">Política de Privacidade</h1>
+        <h1 className="mt-3 text-3xl font-black tracking-tight text-ink md:text-5xl">Politica de Privacidade</h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">
-          Esta política resume como o AtendeZap IA trata dados pessoais em páginas públicas, captura de leads, cadastro,
-          assinatura, envio de e-mails e uso do produto.
+          Esta politica resume como o AtendeZap IA trata dados pessoais em paginas publicas, captura de leads, cadastro, assinatura, envio de e-mails e uso do produto.
         </p>
 
         <div className="mt-10 grid gap-5">
@@ -82,7 +86,14 @@ export default function PrivacyPage() {
             </a>
           </p>
           <p className="mt-2">
-            Veja também os{" "}
+            Usuarios logados tambem podem acessar{" "}
+            <Link className="font-black text-brand-700 hover:underline" href="/dashboard/privacidade">
+              Privacidade no dashboard
+            </Link>
+            .
+          </p>
+          <p className="mt-2">
+            Veja tambem os{" "}
             <Link className="font-black text-brand-700 hover:underline" href="/termos">
               Termos de Uso
             </Link>

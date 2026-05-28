@@ -9,6 +9,7 @@
 - ai_response_feedback
 - leads
 - app_events
+- data_requests
 - admin-related tables, se existirem
 
 ## Regras esperadas

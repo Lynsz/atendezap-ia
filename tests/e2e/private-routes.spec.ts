@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("protecao sem login", () => {
-  for (const path of ["/dashboard", "/dashboard/biblioteca", "/dashboard/templates", "/assinatura", "/admin"]) {
+  for (const path of ["/dashboard", "/dashboard/biblioteca", "/dashboard/templates", "/dashboard/privacidade", "/assinatura", "/admin"]) {
     test(`${path} redireciona ou bloqueia acesso anonimo`, async ({ page }) => {
       await page.goto(path);
 
@@ -22,11 +22,14 @@ test.describe("protecao sem login", () => {
     { path: "/api/saved-responses", method: "get" as const },
     { path: "/api/saved-responses", method: "post" as const, body: { content: "Resposta" } },
     { path: "/api/saved-responses/33333333-3333-4333-8333-333333333333/duplicate", method: "post" as const, body: {} },
+    { path: "/api/data-requests", method: "get" as const },
+    { path: "/api/data-requests", method: "post" as const, body: { type: "export" } },
     { path: "/api/stripe/create-checkout-session", method: "post" as const, body: { planId: "starter" } },
     { path: "/api/stripe/create-portal-session", method: "post" as const, body: {} },
     { path: "/api/admin/overview", method: "get" as const },
     { path: "/api/admin/metrics", method: "get" as const },
     { path: "/api/admin/campaign-report", method: "get" as const },
+    { path: "/api/admin/data-requests", method: "get" as const },
     { path: "/api/admin/leads", method: "get" as const },
     { path: "/api/admin/subscriptions", method: "get" as const },
     { path: "/api/admin/export-leads", method: "get" as const }

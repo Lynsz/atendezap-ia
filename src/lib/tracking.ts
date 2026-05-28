@@ -98,7 +98,7 @@ declare global {
 
 const UTM_STORAGE_KEY = "atendezap_ia_utm_attribution_v1";
 const ATTRIBUTION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
-const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem)/i;
+const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem|email|mail)/i;
 
 type StoredAttribution = UtmPayload & {
   source?: string;

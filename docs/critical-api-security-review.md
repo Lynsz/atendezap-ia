@@ -14,9 +14,11 @@ Registrar a revisao operacional das rotas sensiveis ligadas a IA, dados do usuar
 - `/api/stripe/webhook`
 - `/api/ebook-lead`
 - `/api/feedback`
+- `/api/data-requests`
 - `/api/admin/overview`
 - `/api/admin/metrics`
 - `/api/admin/campaign-report`
+- `/api/admin/data-requests`
 
 ## Resultado da revisao
 - Rotas de dashboard e biblioteca exigem sessao Supabase valida.
@@ -26,6 +28,8 @@ Registrar a revisao operacional das rotas sensiveis ligadas a IA, dados do usuar
 - Checkout e portal Stripe exigem usuario autenticado.
 - Webhook Stripe valida assinatura antes de processar eventos.
 - Lead/ebook e feedback publico usam Zod, rate limit e service role apenas no servidor.
+- Solicitacoes de dados sao autenticadas, usam `user.id` da sessao, ficam pendentes para processo manual e possuem RLS por usuario.
+- Admin de solicitacoes de dados passa por `requireAdmin`, mascara e-mail e nao retorna dados exportados ou conteudo sensivel.
 - Erros retornam mensagens amigaveis; stack trace nao e enviado ao usuario.
 - Logs usam `serverLog`, que mascara e-mails, user ids, secrets e campos de conteudo.
 

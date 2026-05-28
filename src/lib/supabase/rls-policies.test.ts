@@ -75,4 +75,15 @@ describe("politicas RLS criticas", () => {
     expect(metricsRoute).toContain("requireAdmin(request)");
     expect(campaignRoute).toContain("requireAdmin(request)");
   });
+
+  it("mantem solicitacoes de dados isoladas por usuario", () => {
+    const migration = readRepoFile("supabase/migrations/0016_data_requests.sql");
+
+    expect(migration).toContain("alter table public.data_requests enable row level security");
+    expect(migration).toContain('create policy "data_requests_select_own"');
+    expect(migration).toContain('create policy "data_requests_insert_own"');
+    expect(migration).toContain("using ((select auth.uid()) = user_id)");
+    expect(migration).toContain("with check ((select auth.uid()) = user_id)");
+    expect(migration).toContain("grant select, insert on public.data_requests to authenticated");
+  });
 });

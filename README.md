@@ -29,6 +29,7 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 - Dashboard de assinatura.
 - Admin protegido.
 - Metricas basicas, feedback e tracking.
+- Area de privacidade no dashboard para solicitacoes de exportacao/exclusao.
 - Paginas legais.
 
 ## Stack usada
@@ -194,6 +195,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `/precos`: planos.
 - `/cadastro` e `/login`: autenticacao.
 - `/dashboard`: produto logado.
+- `/dashboard/privacidade`: privacidade, exportacao e exclusao de dados.
 - `/assinatura`: assinatura e portal.
 - `/admin`: painel protegido.
 - `/feedback`: coleta de feedback.
@@ -215,6 +217,12 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/rls-review-checklist.md`: checklist de revisao de RLS.
 - `docs/stripe-reconciliation.md`: reconciliacao Stripe/Supabase.
 - `docs/data-retention.md`: retencao de dados.
+- `docs/data-inventory.md`: inventario de dados pessoais e operacionais.
+- `docs/privacy-policy.md`: politica de privacidade operacional.
+- `docs/terms-of-use.md`: termos de uso operacional.
+- `docs/lgpd-compliance.md`: base LGPD inicial.
+- `docs/data-export-process.md`: processo manual de exportacao.
+- `docs/data-deletion-process.md`: processo manual de exclusao.
 - `docs/critical-api-security-review.md`: revisao operacional das APIs criticas.
 - `docs/cost-monitoring.md`: monitoramento de custos.
 - `docs/retention-plan.md`: plano inicial de retencao.
