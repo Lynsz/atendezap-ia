@@ -137,6 +137,34 @@ Manter o repositorio privado e seguir com suporte assíncrono simples. A etapa m
 
 Nota estimada mantida: 97/100 para operacao controlada.
 
+## Ativação e retenção inicial
+
+Status: etapa implementada para orientar o usuário novo até a primeira resposta útil e melhorar visibilidade agregada de ativação sem criar CRM, automação complexa ou integração com WhatsApp.
+
+O que foi feito:
+
+- Checklist "Primeiros passos" criado no dashboard principal com onboarding, primeira resposta, cópia, salvamento, templates, favoritos e planos.
+- Estado inicial do dashboard melhorado com a chamada "Comece gerando sua primeira resposta" e exemplos comuns de perguntas.
+- Recomendações pós-primeira resposta adicionadas para copiar, salvar, testar outro exemplo, ver templates, favoritar e conhecer planos.
+- Eventos seguros `activation_*` adicionados sem conteúdo de pergunta, resposta, e-mail ou dados sensíveis.
+- Admin ganhou seção "Ativação" com métricas agregadas de usuários novos, onboardings, primeiras respostas, respostas salvas, cópias, favoritos, ativos em 7 dias, checkouts e assinaturas.
+- Templates de e-mails de ativação adicionados em `src/lib/email.ts`, sem envio automático novo.
+- Criados `docs/activation-emails.md` e `docs/user-activation.md`.
+- `docs/retention-plan.md`, `docs/tracking.md`, README e `docs/README.md` atualizados.
+- Testes adicionados para checklist, eventos de ativação, métricas agregadas e templates de e-mail.
+
+Pendências:
+
+- Validar comportamento do checklist com usuários reais em staging/producao.
+- Definir regra operacional antes de qualquer envio automático de e-mail de ativação.
+- Acompanhar se os passos reduzem abandono entre cadastro, onboarding e primeira resposta.
+
+Recomendacao atualizada:
+
+Manter a ativação simples e orientada à primeira resposta útil. Não escalar para automações de retenção antes de haver dados reais de abandono e consentimento operacional claro.
+
+Nota estimada mantida: 97/100 para operacao controlada.
+
 ## Resumo executivo
 
 O AtendeZap IA esta tecnicamente pronto para uma liberacao controlada com 3 a 5 usuarios reais e para uma campanha pequena de validacao com orcamento baixo, desde que as configuracoes externas de producao/staging estejam preenchidas e validadas no ambiente final. Alem da validacao local de release, agora existe um canal simples de feedback, lista no admin, roteiro de entrevista, mensagens de suporte, triagem rapida de bugs, metricas internas, pagina direta para campanha e relatorio de validacao comercial.

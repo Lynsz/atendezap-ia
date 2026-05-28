@@ -51,4 +51,40 @@ describe("tracking seguro", () => {
     expect(payload.resposta).toBeUndefined();
     expect(payload.email).toBeUndefined();
   });
+
+  it("mantem eventos de ativacao sem conteudo de resposta", async () => {
+    const gtag = vi.fn();
+    vi.stubGlobal("window", {
+      location: { pathname: "/dashboard", search: "" },
+      localStorage: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn()
+      },
+      gtag
+    });
+    vi.stubGlobal("document", { title: "AtendeZap IA" });
+
+    const { trackEvent } = await import("./tracking");
+    trackEvent("activation_response_copied", {
+      source: "generated",
+      step: "response_copied",
+      category: "atendimento",
+      businessType: "Delivery",
+      answer: "resposta completa",
+      question: "pergunta do cliente",
+      email: "cliente@example.com"
+    });
+
+    const payload = gtag.mock.calls[0][2] as Record<string, unknown>;
+    expect(payload).toMatchObject({
+      source: "generated",
+      step: "response_copied",
+      category: "atendimento",
+      businessType: "Delivery"
+    });
+    expect(payload.answer).toBeUndefined();
+    expect(payload.question).toBeUndefined();
+    expect(payload.email).toBeUndefined();
+  });
 });

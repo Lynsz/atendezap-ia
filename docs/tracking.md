@@ -45,6 +45,14 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `onboarding_started`: inicio do onboarding.
 - `onboarding_completed`: onboarding finalizado.
 - `first_response_generated`: primeira resposta gerada no dashboard.
+- `activation_onboarding_completed`: etapa de onboarding concluida no checklist inicial.
+- `activation_first_response_generated`: primeira resposta gerada na ativacao.
+- `activation_response_copied`: usuario copiou uma resposta sem enviar conteudo da resposta.
+- `activation_response_saved`: usuario salvou uma resposta na biblioteca.
+- `activation_template_viewed`: usuario abriu templates prontos.
+- `activation_template_saved`: usuario salvou um template na biblioteca.
+- `activation_favorite_created`: usuario marcou uma resposta como favorita.
+- `activation_pricing_viewed`: usuario abriu planos/pricing a partir da ativacao.
 - `subscription_active`: dashboard carregado com assinatura ativa.
 - `feedback_submit`: envio de feedback.
 - `feedback_success`: feedback salvo.

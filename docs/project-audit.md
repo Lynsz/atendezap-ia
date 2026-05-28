@@ -654,3 +654,18 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - README, `docs/README.md`, `docs/safe-logging.md`, `docs/critical-api-security-review.md` e `docs/rls-review-checklist.md` atualizados.
 - Pendencias restantes: aplicar a migration em Supabase staging/producao, validar RLS usuario A vs usuario B, configurar `SUPPORT_EMAIL` se desejado e manter notas internas sem dados sensiveis.
 - Nota estimada mantida: 97/100 para operacao controlada, condicionada a migration aplicada e validacao real de RLS/admin.
+
+## Ativacao e retencao inicial - 2026-05-28
+
+- Fluxo atual auditado: cadastro, onboarding no dashboard, primeira resposta, biblioteca, templates, favoritos, assinatura, tracking, admin, Resend e `docs/retention-plan.md`.
+- Checklist de ativacao criado no dashboard principal com sete passos: concluir onboarding, gerar primeira resposta, copiar resposta, salvar resposta util, ver templates, favoritar resposta e conhecer planos.
+- Estado de usuario novo revisado para orientar a primeira resposta com exemplos comuns: valor, atendimento hoje, entrega, formas de pagamento e agendamento.
+- Recomendacoes pos-primeira resposta criadas para copiar, salvar, testar outro exemplo, ver templates, favoritar e conhecer planos sem forcar checkout.
+- Eventos seguros `activation_onboarding_completed`, `activation_first_response_generated`, `activation_response_copied`, `activation_response_saved`, `activation_template_viewed`, `activation_template_saved`, `activation_favorite_created` e `activation_pricing_viewed` adicionados sem conteudo de pergunta/resposta/e-mail.
+- Admin ganhou secao "Ativacao" com metricas agregadas de novos usuarios, onboardings, primeiras respostas, respostas salvas, copias, favoritos, usuarios ativos 7 dias, checkouts e assinaturas.
+- Templates de e-mails de ativacao criados em `src/lib/email.ts`, apenas como templates/documentacao; nenhum envio automatico novo foi criado.
+- Criados `docs/activation-emails.md` e `docs/user-activation.md`.
+- `docs/retention-plan.md`, `docs/tracking.md`, README, `docs/README.md` e `docs/final-readiness-report.md` atualizados.
+- Testes adicionados/revisados para checklist, eventos seguros, templates de e-mail e metricas agregadas do admin.
+- Pendencias restantes: validar mobile e comportamento real em staging/producao, definir regra operacional antes de enviar e-mails automaticos e acompanhar abandono entre cadastro, onboarding e primeira resposta.
+- Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real de ativacao/retenção inicial.

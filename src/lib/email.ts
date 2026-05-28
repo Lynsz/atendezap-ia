@@ -12,6 +12,7 @@ export type EmailSendResult = {
 };
 
 export type LeadEmailTemplateKey = "ebook_delivery" | "manual_pain" | "value_demo" | "pro_offer";
+export type ActivationEmailTemplateKey = "welcome" | "first_response" | "templates_ready";
 
 type SendEmailInput = {
   to: string;
@@ -30,6 +31,14 @@ type LeadEmailTemplate = {
   subject: string;
   ctaLabel: string;
   description: string;
+};
+
+type ActivationEmailTemplate = {
+  key: ActivationEmailTemplateKey;
+  subject: string;
+  ctaLabel: string;
+  description: string;
+  path: string;
 };
 
 export const leadEmailTemplates: Record<LeadEmailTemplateKey, LeadEmailTemplate> = {
@@ -56,6 +65,30 @@ export const leadEmailTemplates: Record<LeadEmailTemplateKey, LeadEmailTemplate>
     subject: "Comece com o Plano Pro por R$ 29 no primeiro mes",
     ctaLabel: "Assinar Plano Pro",
     description: "Apresenta a oferta permanente do Pro para novos usuarios."
+  }
+};
+
+export const activationEmailTemplates: Record<ActivationEmailTemplateKey, ActivationEmailTemplate> = {
+  welcome: {
+    key: "welcome",
+    subject: "Bem-vinda ao AtendeZap IA",
+    ctaLabel: "Acessar dashboard",
+    description: "Recepciona o usuario novo e orienta a configurar o atendimento.",
+    path: "/dashboard"
+  },
+  first_response: {
+    key: "first_response",
+    subject: "Comece pela sua primeira resposta",
+    ctaLabel: "Gerar primeira resposta",
+    description: "Leva o usuario para colar uma pergunta comum e gerar valor rapido.",
+    path: "/dashboard"
+  },
+  templates_ready: {
+    key: "templates_ready",
+    subject: "Use modelos prontos para responder mais rápido",
+    ctaLabel: "Ver templates prontos",
+    description: "Apresenta a biblioteca de templates como atalho de ativacao.",
+    path: "/dashboard/templates"
   }
 };
 
@@ -197,6 +230,85 @@ AtendeZap IA`,
                 </p>
                 <p style="font-size:14px;color:#475569;">Tambem pode ver os <a href="${pricingUrl}" style="color:#047857;font-weight:700;">planos</a> ou <a href="${signupUrl}" style="color:#047857;font-weight:700;">criar sua conta</a>.</p>
                 <p style="font-size:13px;color:#64748b;">Este e-mail foi enviado porque ${escapeHtml(email)} solicitou o guia gratuito do AtendeZap IA.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
+  };
+}
+
+export function buildActivationEmail(templateKey: ActivationEmailTemplateKey, name?: string | null) {
+  const template = activationEmailTemplates[templateKey];
+  const firstName = name?.trim().split(/\s+/)[0] || "tudo bem";
+  const ctaUrl = `${getPublicAppUrl()}${template.path}`;
+  const safeFirstName = escapeHtml(firstName);
+
+  const bodyByTemplate: Record<ActivationEmailTemplateKey, { title: string; paragraphs: string[] }> = {
+    welcome: {
+      title: "Bem-vinda ao AtendeZap IA",
+      paragraphs: [
+        "O primeiro passo e configurar o seu atendimento no dashboard.",
+        "Depois, cole uma pergunta comum de cliente e a IA vai gerar uma sugestao de resposta para voce copiar, ajustar e enviar manualmente pelo WhatsApp."
+      ]
+    },
+    first_response: {
+      title: "Comece pela sua primeira resposta",
+      paragraphs: [
+        "Use uma pergunta simples, como: Qual o valor? Voces atendem hoje? Tem entrega? Quais formas de pagamento?",
+        "A resposta gerada deve ser revisada por voce antes de enviar ao cliente."
+      ]
+    },
+    templates_ready: {
+      title: "Use modelos prontos para responder mais rapido",
+      paragraphs: [
+        "Os templates prontos ajudam voce a responder perguntas frequentes sem comecar do zero.",
+        "Voce pode copiar um modelo, ajustar para o seu negocio ou salvar na biblioteca para reutilizar depois."
+      ]
+    }
+  };
+
+  const content = bodyByTemplate[templateKey];
+  const text = `Ola, ${firstName}.
+
+${content.title}
+
+${content.paragraphs.join("\n\n")}
+
+${template.ctaLabel}:
+${ctaUrl}
+
+AtendeZap IA`;
+  const paragraphs = content.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("");
+
+  return {
+    eventType: `activation_${template.key}`,
+    subject: template.subject,
+    text,
+    html: `<!doctype html>
+<html lang="pt-BR">
+  <body style="margin:0;background:#f8fafc;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f8fafc;padding:24px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+            <tr>
+              <td style="padding:28px 28px 12px;">
+                <p style="margin:0 0 10px;color:#047857;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Ativacao</p>
+                <h1 style="margin:0;color:#0f172a;font-size:28px;line-height:1.2;">${escapeHtml(content.title)}</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 28px 24px;color:#334155;font-size:16px;line-height:1.65;">
+                <p>Ola, ${safeFirstName}.</p>
+                ${paragraphs}
+                <p style="margin:26px 0;">
+                  <a href="${ctaUrl}" style="display:inline-block;background:#059669;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;padding:12px 18px;">${escapeHtml(template.ctaLabel)}</a>
+                </p>
+                <p style="font-size:13px;color:#64748b;">O AtendeZap IA gera respostas para voce copiar, ajustar e enviar manualmente. Ele nao envia mensagens automaticamente pelo WhatsApp.</p>
               </td>
             </tr>
           </table>

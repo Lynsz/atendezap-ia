@@ -142,6 +142,17 @@ type ProductMetricsPayload = {
   };
   activation: {
     definition: string;
+    newUsersLast7Days: number;
+    onboardingCompletedLast7Days: number;
+    firstResponsesGenerated: number;
+    firstResponsesLast7Days: number;
+    responsesSaved: number;
+    usersWithSavedResponses: number;
+    usersWithCopiedResponse: number;
+    usersWithFavoriteResponse: number;
+    activeUsersLast7Days: number;
+    checkoutStartedUsers: number;
+    activeSubscriptions: number;
     activatedUsers: number;
     activationRate: number;
     averageHoursToActivation: number | null;
@@ -777,6 +788,38 @@ export default function AdminDashboardPage() {
             Regra simples baseada em leads, cadastros, onboarding, primeira resposta, checkout e assinatura. Use como triagem inicial antes de decidir a próxima melhoria.
           </p>
         </section>
+
+        {productMetrics ? (
+          <section className="mb-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Ativação</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Primeiros passos dos usuários</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  Métricas agregadas para entender se usuários novos configuram o produto, geram a primeira resposta, salvam mensagens e voltam a usar. Não mostra conteúdo de respostas.
+                </p>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-slate-300">
+                Últimos 7 dias e total
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Usuários novos 7 dias" value={productMetrics.activation.newUsersLast7Days} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Onboardings 7 dias" value={productMetrics.activation.onboardingCompletedLast7Days} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Primeiras respostas" value={productMetrics.activation.firstResponsesGenerated} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Primeiras respostas 7 dias" value={productMetrics.activation.firstResponsesLast7Days} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Respostas salvas" value={productMetrics.activation.responsesSaved} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Usuários que copiaram" value={productMetrics.activation.usersWithCopiedResponse} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Usuários ativos 7 dias" value={productMetrics.activation.activeUsersLast7Days} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Checkouts iniciados" value={productMetrics.activation.checkoutStartedUsers} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Templates salvos" value={productMetrics.usage.totalSavedTemplates} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Usuários com favoritas" value={productMetrics.activation.usersWithFavoriteResponse} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Assinaturas novas/ativas" value={productMetrics.activation.activeSubscriptions} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Taxa de ativação" value={`${productMetrics.activation.activationRate}%`} icon={<BarChart3 className="h-5 w-5" />} />
+            </div>
+          </section>
+        ) : null}
 
         {productMetrics ? (
           <section className="mb-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">

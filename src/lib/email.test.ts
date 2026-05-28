@@ -92,4 +92,23 @@ describe("email transacional", () => {
       error: "Domain not verified"
     });
   });
+
+  it("cria templates de ativacao sem secrets nem conteudo de respostas", async () => {
+    const { buildActivationEmail } = await import("./email");
+    const welcome = buildActivationEmail("welcome", "Maria Cliente");
+    const firstResponse = buildActivationEmail("first_response", "Maria Cliente");
+    const templatesReady = buildActivationEmail("templates_ready", "Maria Cliente");
+
+    expect(welcome.subject).toBe("Bem-vinda ao AtendeZap IA");
+    expect(firstResponse.subject).toBe("Comece pela sua primeira resposta");
+    expect(templatesReady.subject).toBe("Use modelos prontos para responder mais rápido");
+    expect(welcome.text).toContain("copiar, ajustar e enviar manualmente");
+    expect(firstResponse.text).toContain("Qual o valor?");
+    expect(templatesReady.text).toContain("templates prontos");
+
+    for (const email of [welcome, firstResponse, templatesReady]) {
+      expect(`${email.text} ${email.html}`).not.toMatch(/RESEND_API_KEY|OPENAI_API_KEY|SUPABASE_SERVICE_ROLE_KEY|sk_live|sk_test|cartao|senha/i);
+      expect(`${email.text} ${email.html}`).not.toMatch(/conteudo completo da resposta|prompt do usuario/i);
+    }
+  });
 });

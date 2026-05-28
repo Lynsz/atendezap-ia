@@ -31,6 +31,7 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 - Metricas basicas, feedback e tracking.
 - Area de privacidade no dashboard para solicitacoes de exportacao/exclusao.
 - Central de ajuda no dashboard com FAQ e solicitacoes simples de suporte.
+- Checklist de ativacao no dashboard para primeiros passos.
 - Paginas legais.
 
 ## Stack usada
@@ -180,6 +181,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/stripe-reconciliation.md` quando houver divergencia entre Stripe e Supabase.
 - Use `docs/data-retention.md` para orientar retencao e limpeza futura de dados.
 - Use `docs/support-workflow.md`, `docs/product-faq.md` e `docs/internal-support-playbook.md` para suporte simples, FAQ e operacao interna.
+- Use `docs/user-activation.md`, `docs/activation-emails.md` e `docs/retention-plan.md` para ativacao e retencao inicial.
 - Use `docs/safe-logging.md` para revisar o que pode ou nao ir para logs.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
@@ -225,6 +227,9 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/support-workflow.md`: fluxo de suporte simples.
 - `docs/product-faq.md`: FAQ do produto.
 - `docs/internal-support-playbook.md`: playbook interno de suporte.
+- `docs/user-activation.md`: definicao e objetivos de ativacao.
+- `docs/activation-emails.md`: e-mails simples de ativacao.
+- `docs/retention-plan.md`: plano de retencao inicial.
 - `docs/privacy-policy.md`: politica de privacidade operacional.
 - `docs/terms-of-use.md`: termos de uso operacional.
 - `docs/lgpd-compliance.md`: base LGPD inicial.

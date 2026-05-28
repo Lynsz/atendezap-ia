@@ -147,6 +147,14 @@ const responseGoalOptions = ["Responder em até 5 minutos", "Responder em até 1
 
 const toneOptions = ["Profissional", "Simpático", "Direto", "Vendedor", "Acolhedor"];
 
+const firstResponseExampleQuestions = [
+  "Qual o valor?",
+  "Vocês atendem hoje?",
+  "Tem entrega?",
+  "Quais formas de pagamento?",
+  "Como faço para agendar?"
+];
+
 const emptySavedResponseDraft: SavedResponseDraft = {
   title: "",
   category: "",
@@ -289,6 +297,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [currentPlan, setCurrentPlan] = useState<Plan | null>(null);
   const [monthlyUsage, setMonthlyUsage] = useState(0);
+  const [hasCopiedResponseThisSession, setHasCopiedResponseThisSession] = useState(false);
+  const [hasViewedTemplatesThisSession, setHasViewedTemplatesThisSession] = useState(false);
+  const [hasViewedPricingThisSession, setHasViewedPricingThisSession] = useState(false);
   const trackedActiveSubscriptionRef = useRef(false);
   const trackedDashboardOnboardingRef = useRef(false);
 
@@ -453,6 +464,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         source: "dashboard",
         business_type: payload.business_type
       });
+      trackEvent("activation_onboarding_completed", {
+        source: "dashboard",
+        businessType: payload.business_type,
+        step: "onboarding"
+      });
       setTab("assistant");
       setQuestion(getBusinessExamples(payload.business_type)[0] || "Qual o valor do servico?");
     }
@@ -558,6 +574,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             source: "dashboard",
             response_type: responseType
           });
+          trackEvent("activation_first_response_generated", {
+            source: "dashboard",
+            businessType: businessDraft.business_type,
+            category: responseType,
+            plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+            step: "first_response"
+          });
         }
       }
       showFeedback("Resposta salva no histórico.");
@@ -635,11 +658,23 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           templateId: input.sourceTemplateId,
           category: result.savedResponse.category || "sem_categoria"
         });
+        trackEvent("activation_template_saved", {
+          source: "dashboard",
+          category: result.savedResponse.category || "sem_categoria",
+          businessType: businessDraft.business_type,
+          step: "template_saved"
+        });
       } else {
         trackEvent("saved_response_create", {
           source: input.responseId ? "ai_generated" : "manual",
           category: result.savedResponse.category || "sem_categoria",
           action: "create"
+        });
+        trackEvent("activation_response_saved", {
+          source: input.responseId ? "ai_generated" : "manual",
+          category: result.savedResponse.category || "sem_categoria",
+          businessType: businessDraft.business_type,
+          step: "response_saved"
         });
       }
       showFeedback(result.alreadySaved ? "Resposta já estava salva." : "Resposta salva na biblioteca.");
@@ -768,6 +803,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         isFavorite: Boolean(updated.is_favorite),
         action: nextFavorite ? "favorite" : "unfavorite"
       });
+      if (nextFavorite) {
+        trackEvent("activation_favorite_created", {
+          category: updated.category || "sem_categoria",
+          source: getSavedResponseSource(updated),
+          step: "favorite_created"
+        });
+      }
       showFeedback(nextFavorite ? "Resposta marcada como favorita." : "Resposta removida dos favoritos.");
     } catch (favoriteError) {
       setError(favoriteError instanceof Error ? favoriteError.message : "Não foi possível atualizar o favorito agora.");
@@ -944,6 +986,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   async function copyText(value: string, source: "generated" | "history" | "library" | "template" = "generated", template?: WhatsAppTemplate, savedResponse?: SavedResponse) {
     try {
       await copyResponseText(value);
+      setHasCopiedResponseThisSession(true);
+      trackEvent("activation_response_copied", {
+        source,
+        category: savedResponse?.category || template?.category || responseType,
+        businessType: template?.businessType || businessDraft.business_type,
+        step: "response_copied"
+      });
       if (source === "library") {
         if (savedResponse) {
           void recordSavedResponseCopy(savedResponse.id)
@@ -985,6 +1034,29 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       source: "generated_response"
     });
     router.push("/feedback?source=generated_response");
+  }
+
+  function handleViewPricing(destination = "/plans") {
+    setHasViewedPricingThisSession(true);
+    trackEvent("activation_pricing_viewed", {
+      source: "dashboard",
+      plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+      businessType: businessDraft.business_type,
+      step: "pricing_viewed"
+    });
+    router.push(destination);
+  }
+
+  function navigateActivationStep(target: DashboardTab | "pricing") {
+    if (target === "pricing") {
+      handleViewPricing("/plans");
+      return;
+    }
+    if (target === "templates") {
+      setHasViewedTemplatesThisSession(true);
+    }
+    setTab(target);
+    setError("");
   }
 
   async function manageStripeSubscription() {
@@ -1134,8 +1206,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       trackEvent("templates_view", {
         source: "dashboard"
       });
+      trackEvent("activation_template_viewed", {
+        source: "dashboard",
+        businessType: businessDraft.business_type,
+        step: "templates_viewed"
+      });
     }
-  }, [tab]);
+  }, [businessDraft.business_type, tab]);
 
   const filteredSavedResponses = filterSavedResponses(savedResponses, {
     search: savedResponseSearch,
@@ -1157,6 +1234,66 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   });
   const recommendedTemplates = getRecommendedWhatsAppTemplates(business?.business_type || business?.business_area || businessDraft.business_type, 4);
   const shouldShowTemplateRecommendations = tab === "assistant" && (!history.length || monthlyUsage <= 2);
+  const hasFirstResponse = history.length > 0;
+  const assistantExampleQuestions = hasFirstResponse ? exampleQuestions : firstResponseExampleQuestions;
+  const hasSavedResponse = savedResponses.length > 0;
+  const hasFavoriteResponse = savedResponses.some((item) => item.is_favorite);
+  const hasCopiedResponse = hasCopiedResponseThisSession || savedResponses.some((item) => (item.copy_count || 0) > 0);
+  const hasViewedTemplates = hasViewedTemplatesThisSession || savedTemplateIds.size > 0 || tab === "templates";
+  const hasViewedPricing = hasViewedPricingThisSession || activeSubscription || tab === "billing";
+  const activationStepCount = [
+    Boolean(business?.onboarding_completed),
+    hasFirstResponse,
+    hasCopiedResponse,
+    hasSavedResponse,
+    hasViewedTemplates,
+    hasFavoriteResponse,
+    hasViewedPricing
+  ].filter(Boolean).length;
+  const activationSteps: Array<{ label: string; done: boolean; target: "business" | "assistant" | "library" | "templates" | "billing" | "pricing"; detail: string }> = [
+    {
+      label: "Concluir onboarding",
+      done: Boolean(business?.onboarding_completed),
+      target: "business",
+      detail: "Configure o contexto para respostas melhores."
+    },
+    {
+      label: "Gerar primeira resposta",
+      done: hasFirstResponse,
+      target: "assistant",
+      detail: "Cole uma pergunta real do cliente."
+    },
+    {
+      label: "Copiar uma resposta",
+      done: hasCopiedResponse,
+      target: "assistant",
+      detail: "Revise e copie para enviar manualmente."
+    },
+    {
+      label: "Salvar uma resposta útil",
+      done: hasSavedResponse,
+      target: "assistant",
+      detail: "Guarde mensagens boas na biblioteca."
+    },
+    {
+      label: "Ver templates prontos",
+      done: hasViewedTemplates,
+      target: "templates",
+      detail: "Use modelos por nicho para começar rápido."
+    },
+    {
+      label: "Marcar uma resposta como favorita",
+      done: hasFavoriteResponse,
+      target: "library",
+      detail: "Deixe respostas frequentes à mão."
+    },
+    {
+      label: "Conhecer os planos",
+      done: hasViewedPricing,
+      target: "pricing",
+      detail: "Veja limites mensais antes de escalar o uso."
+    }
+  ];
   const overviewCards = [
     {
       label: "Plano atual",
@@ -1437,7 +1574,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               <p>
                 Respostas usadas neste mês: <strong>{monthlyUsage} / {responseLimit}</strong>. Se precisar responder mais clientes, escolha um plano com limite maior.
               </p>
-            <button type="button" onClick={() => router.push("/plans")} className="rounded-md bg-emerald-300 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-200">
+            <button type="button" onClick={() => handleViewPricing("/plans")} className="rounded-md bg-emerald-300 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-200">
               Ver planos
             </button>
           </div>
@@ -1459,6 +1596,41 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               <p className="mt-2 text-xs leading-5 text-slate-400">{card.detail}</p>
             </article>
           ))}
+        </section>
+
+        <section className="mb-5 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Primeiros passos</p>
+              <h2 className="mt-2 text-xl font-black text-white">Ative seu atendimento com IA</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                Complete os passos essenciais para gerar valor rápido: configurar o contexto, criar a primeira resposta, copiar ou salvar uma mensagem e conhecer templates.
+              </p>
+            </div>
+            <span className="inline-flex min-h-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-4 text-xs font-black text-slate-200">
+              {activationStepCount}/{activationSteps.length} concluídos
+            </span>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-7">
+            {activationSteps.map((step) => (
+              <button
+                key={step.label}
+                type="button"
+                onClick={() => navigateActivationStep(step.target)}
+                className={`min-h-32 rounded-lg border p-3 text-left transition ${
+                  step.done
+                    ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-50"
+                    : "border-white/10 bg-white/[0.04] text-slate-200 hover:bg-white/[0.07]"
+                }`}
+              >
+                <span className={`mb-3 flex h-8 w-8 items-center justify-center rounded-full ${step.done ? "bg-emerald-300 text-slate-950" : "bg-white/10 text-slate-400"}`}>
+                  <CheckCircle2 className="h-4 w-4" />
+                </span>
+                <span className="block text-sm font-black">{step.label}</span>
+                <span className="mt-2 block text-xs leading-5 text-slate-400">{step.detail}</span>
+              </button>
+            ))}
+          </div>
         </section>
 
         <section className="mb-5 rounded-lg border border-white/10 bg-[#101821] p-4 shadow-xl shadow-black/20">
@@ -1509,12 +1681,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             ["Preços", "plans", CreditCard]
           ].map(([label, target, Icon]) => (
             target === "plans" ? (
-              <button key={label as string} type="button" onClick={() => router.push("/plans")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-black text-slate-100 hover:bg-white/10">
+              <button key={label as string} type="button" onClick={() => handleViewPricing("/plans")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-black text-slate-100 hover:bg-white/10">
                 <Icon className="h-4 w-4" />
                 {label as string}
               </button>
             ) : (
-              <button key={label as string} type="button" onClick={() => setTab(target as DashboardTab)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-black text-slate-100 hover:bg-white/10">
+              <button key={label as string} type="button" onClick={() => navigateActivationStep(target as DashboardTab)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-4 text-sm font-black text-slate-100 hover:bg-white/10">
                 <Icon className="h-4 w-4" />
                 {label as string}
               </button>
@@ -1536,6 +1708,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               key={id as string}
               type="button"
               onClick={() => {
+                if (id === "templates") setHasViewedTemplatesThisSession(true);
                 setTab(id as DashboardTab);
                 setError("");
               }}
@@ -1566,7 +1739,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                     Gerenciar assinatura
                   </button>
                 ) : (
-                  <button type="button" onClick={() => router.push("/precos")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-black text-slate-950 hover:bg-slate-100">
+                  <button type="button" onClick={() => handleViewPricing("/precos")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-black text-slate-950 hover:bg-slate-100">
                     <CreditCard className="h-4 w-4" />
                     Escolher plano
                   </button>
@@ -1750,14 +1923,18 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         {tab === "assistant" ? (
           <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
             <form onSubmit={handleGenerateResponse} className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
-              <h2 className="text-xl font-black text-white">Responder cliente</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-400">Cole a mensagem recebida no WhatsApp e escolha o objetivo. A IA gera uma sugestão para você revisar, copiar e enviar manualmente.</p>
+              <h2 className="text-xl font-black text-white">{hasFirstResponse ? "Responder cliente" : "Comece gerando sua primeira resposta"}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">
+                {hasFirstResponse
+                  ? "Cole a mensagem recebida no WhatsApp e escolha o objetivo. A IA gera uma sugestão para você revisar, copiar e enviar manualmente."
+                  : "Digite uma pergunta comum que seus clientes fazem no WhatsApp. A IA vai criar uma sugestão para você copiar, ajustar e enviar."}
+              </p>
               <label className="mt-5 grid gap-2 text-sm font-bold text-slate-300">
                 Pergunta do cliente
                 <textarea value={question} onChange={(event) => setQuestion(event.target.value)} className="field-input min-h-40 resize-none py-3" placeholder="Ex.: Oi, quanto custa e tem horário hoje?" />
               </label>
               <div className="mt-3 flex flex-wrap gap-2">
-                {exampleQuestions.map((example) => (
+                {assistantExampleQuestions.map((example) => (
                   <button key={example} type="button" onClick={() => setQuestion(example)} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 hover:bg-white/10">
                     {example}
                   </button>
@@ -1805,6 +1982,34 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               {generatedAnswer ? (
                 <>
                   <p className="whitespace-pre-wrap rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm leading-7 text-emerald-50">{generatedAnswer}</p>
+                  <div className="mt-4 rounded-lg border border-emerald-300/20 bg-emerald-300/10 p-4">
+                    <h3 className="text-sm font-black text-emerald-50">Próximos passos</h3>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button type="button" onClick={() => copyText(generatedAnswer, "generated")} className="inline-flex min-h-9 items-center justify-center rounded-md bg-white px-3 text-xs font-black text-slate-950">
+                        Copiar resposta
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer })}
+                        disabled={savingResponseId === (generatedResponseId || "generated") || Boolean(generatedResponseId && savedGeneratedResponseIds.has(generatedResponseId))}
+                        className="inline-flex min-h-9 items-center justify-center rounded-md border border-emerald-400/30 bg-[#101821] px-3 text-xs font-black text-emerald-100 disabled:opacity-60"
+                      >
+                        {generatedResponseId && savedGeneratedResponseIds.has(generatedResponseId) ? "Resposta salva" : "Salvar na biblioteca"}
+                      </button>
+                      <button type="button" onClick={() => setQuestion(assistantExampleQuestions[1] || firstResponseExampleQuestions[1])} className="inline-flex min-h-9 items-center justify-center rounded-md border border-white/10 bg-white/10 px-3 text-xs font-black text-slate-100">
+                        Testar outro exemplo
+                      </button>
+                      <button type="button" onClick={() => navigateActivationStep("templates")} className="inline-flex min-h-9 items-center justify-center rounded-md border border-white/10 bg-white/10 px-3 text-xs font-black text-slate-100">
+                        Ver templates prontos
+                      </button>
+                      <button type="button" onClick={() => navigateActivationStep("library")} className="inline-flex min-h-9 items-center justify-center rounded-md border border-white/10 bg-white/10 px-3 text-xs font-black text-slate-100">
+                        Marcar favorita
+                      </button>
+                      <button type="button" onClick={() => navigateActivationStep("pricing")} className="inline-flex min-h-9 items-center justify-center rounded-md border border-white/10 bg-white/10 px-3 text-xs font-black text-slate-100">
+                        Conhecer planos
+                      </button>
+                    </div>
+                  </div>
                   <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] p-4">
                     <p className="text-sm font-bold leading-6 text-slate-200">
                       A resposta ajudou? Copie, ajuste se precisar e envie manualmente pelo WhatsApp.
@@ -1855,7 +2060,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                 <div className="flex min-h-72 flex-col items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] p-6 text-center text-sm leading-6 text-slate-400">
                   <MessageCircle className="mb-4 h-8 w-8 text-slate-500" />
                   <p className="font-bold text-slate-200">A resposta pronta para copiar aparecerá aqui.</p>
-                  <p className="mt-2 max-w-sm">Cole uma pergunta real do cliente e escolha o objetivo da mensagem. Depois revise, copie e envie pelo WhatsApp.</p>
+                  <p className="mt-2 max-w-sm">Digite uma pergunta comum de cliente. Depois revise, copie, salve se for útil e envie manualmente pelo WhatsApp.</p>
                 </div>
               )}
             </article>

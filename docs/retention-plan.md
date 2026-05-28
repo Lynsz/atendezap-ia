@@ -39,3 +39,30 @@ Entender se usuarios voltam a usar o produto depois do primeiro acesso.
 - Usar Supabase para conferir historico por usuario quando houver suporte individual.
 - Usar Stripe para cancelamentos, pagamentos falhos e status de assinatura.
 - Usar feedbacks para entender motivos qualitativos de abandono.
+
+## Métricas de ativação
+- cadastro concluído
+- onboarding concluído
+- primeira resposta gerada
+- resposta copiada
+- resposta salva
+- template salvo
+- retorno em 7 dias
+- checkout iniciado
+- assinatura ativa
+
+## Sinais de risco
+- cadastro sem onboarding
+- onboarding sem primeira resposta
+- primeira resposta sem retorno
+- checkout abandonado
+- feedback negativo
+- suporte aberto logo após cadastro
+
+## Ações recomendadas
+- melhorar orientação do dashboard
+- melhorar exemplos
+- melhorar templates
+- melhorar e-mail de onboarding
+- revisar pricing
+- revisar qualidade da IA

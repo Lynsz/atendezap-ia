@@ -62,6 +62,8 @@ type SavedResponseMetricRow = {
   user_id: string | null;
   source_template_id?: string | null;
   category?: string | null;
+  copy_count?: number | null;
+  is_favorite?: boolean | null;
   created_at: string;
 };
 
@@ -202,7 +204,7 @@ export async function GET(request: Request) {
       supabase.from("subscriptions").select("user_id, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
       supabase.from("user_feedback").select("type, status, created_at").limit(10000),
       supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000),
-      supabase.from("saved_responses").select("user_id, source_template_id, category, created_at").limit(20000),
+      supabase.from("saved_responses").select("user_id, source_template_id, category, copy_count, is_favorite, created_at").limit(20000),
       supabase.from("events").select("event_name, created_at").limit(20000),
       supabase.from("stripe_webhook_events").select("event_type, processed_at, created_at").limit(10000)
     ]);
@@ -248,6 +250,8 @@ export async function GET(request: Request) {
     const negativeAiFeedback = aiResponseFeedback.filter((item) => item.rating === "negative");
     const aiFeedbackInPeriod = aiResponseFeedback.filter((item) => isAtOrAfter(item.created_at, periodStart));
     const savedResponseUsers = new Set(savedResponses.map((item) => item.user_id).filter(Boolean) as string[]);
+    const copiedResponseUsers = new Set(savedResponses.filter((item) => (item.copy_count || 0) > 0).map((item) => item.user_id).filter(Boolean) as string[]);
+    const favoriteResponseUsers = new Set(savedResponses.filter((item) => item.is_favorite).map((item) => item.user_id).filter(Boolean) as string[]);
     const recentAiComments = aiResponseFeedback
       .filter((item) => item.comment?.trim())
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -330,6 +334,17 @@ export async function GET(request: Request) {
       },
       activation: {
         definition: "Usuario ativado = concluiu onboarding e gerou pelo menos 1 resposta.",
+        newUsersLast7Days: profiles.filter((profile) => isAtOrAfter(profile.created_at, sevenDaysStart)).length,
+        onboardingCompletedLast7Days: businesses.filter((business) => business.onboarding_completed && isAtOrAfter(business.updated_at || business.created_at, sevenDaysStart)).length,
+        firstResponsesGenerated: usersWithFirstResponse,
+        firstResponsesLast7Days: [...firstResponseAtByUser.values()].filter((createdAt) => isAtOrAfter(createdAt, sevenDaysStart)).length,
+        responsesSaved: savedResponses.length,
+        usersWithSavedResponses: savedResponseUsers.size,
+        usersWithCopiedResponse: copiedResponseUsers.size,
+        usersWithFavoriteResponse: favoriteResponseUsers.size,
+        activeUsersLast7Days: activeUsers7Days.size,
+        checkoutStartedUsers: checkoutStartedUsers.size,
+        activeSubscriptions: activeSubscriptions.length,
         activatedUsers,
         activationRate: percent(activatedUsers, totalUsers),
         averageHoursToActivation: average(activationHours)
