@@ -49,6 +49,27 @@ Pendencias:
 
 Nota estimada mantida: 97/100 para producao controlada, condicionada a validacao real do admin e dos provedores.
 
+## Ciclo de assinatura e churn
+
+Status: ciclo de assinatura revisado para tratar melhor status Stripe/Supabase, pagamentos falhos, cancelamento e feedback de churn sem criar cobrança fora da Stripe.
+
+O que foi feito:
+
+- Webhook Stripe revisado para manter os eventos essenciais: checkout concluído, assinatura criada/atualizada/deletada, pagamento bem-sucedido e pagamento falho.
+- Status local agora diferencia `active`, `trialing`, `past_due`, `unpaid`, `canceled`, `incomplete`, `incomplete_expired` e `paused`.
+- `/assinatura` mostra plano, status, limite mensal, uso, renovação, portal Stripe, avisos de pagamento falho e aviso de cancelamento.
+- Feedback opcional de cancelamento criado com tabela `cancellation_feedback`, API autenticada e RLS por usuário.
+- Admin passou a expor agregados de assinaturas e churn: ativas, canceladas, `past_due`, pagamentos com falha, novos assinantes, cancelamentos recentes e motivos agregados.
+- Criados `docs/subscription-lifecycle.md`, `docs/failed-payments.md` e `docs/churn-analysis.md`.
+
+Pendências:
+
+- Aplicar `supabase/migrations/0018_cancellation_feedback.sql` no Supabase real/staging.
+- Validar no Stripe test mode a troca de plano, cancelamento pelo portal, dunning e `invoice.payment_failed`.
+- Confirmar que o Customer Portal está configurado no Stripe para atualização de método de pagamento, troca/cancelamento conforme regra do produto.
+
+Nota estimada mantida: 97/100 para produção controlada.
+
 ## Operacao continua 1.0
 
 A operacao 1.0 esta documentada para manter o produto estavel apos o lancamento:

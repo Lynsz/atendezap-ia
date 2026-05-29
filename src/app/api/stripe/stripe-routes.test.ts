@@ -464,6 +464,43 @@ describe("Stripe API routes", () => {
     );
   });
 
+  it("preserva status Stripe de pagamento vencido sem liberar como ativo", async () => {
+    mocks.constructEvent.mockReturnValue({
+      id: "evt_subscription_unpaid",
+      type: "customer.subscription.updated",
+      data: {
+        object: {
+          id: "sub_unpaid",
+          status: "unpaid",
+          customer: "cus_test",
+          metadata: { user_id: "11111111-1111-4111-8111-111111111111", plan: "pro" },
+          items: { data: [{ price: { id: "price_pro" } }] },
+          cancel_at_period_end: false
+        }
+      }
+    });
+
+    const { POST } = await import("./webhook/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": "valid" },
+        body: "{}"
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.upsertSubscription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        plan: "pro",
+        status: "unpaid",
+        subscription_status: "unpaid",
+        monthly_limit: 600
+      }),
+      { onConflict: "user_id" }
+    );
+  });
+
   it("processa webhook sem user_id sem quebrar quando nao ha assinatura salva", async () => {
     mocks.constructEvent.mockReturnValue({
       id: "evt_missing_user",

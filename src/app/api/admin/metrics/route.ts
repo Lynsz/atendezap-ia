@@ -86,6 +86,11 @@ type SupportRequestMetricRow = {
   created_at: string;
 };
 
+type CancellationFeedbackMetricRow = {
+  reason: string | null;
+  created_at: string;
+};
+
 const metricsQuerySchema = z.object({
   period: z.enum(["today", "7d", "30d", "all"]).optional().default("30d")
 });
@@ -217,7 +222,8 @@ export async function GET(request: Request) {
       savedResponsesResult,
       eventsResult,
       stripeWebhookEventsResult,
-      supportRequestsResult
+      supportRequestsResult,
+      cancellationFeedbackResult
     ] = await Promise.all([
       supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign").limit(10000),
       supabase.from("profiles").select("id, email, created_at").limit(10000),
@@ -229,7 +235,8 @@ export async function GET(request: Request) {
       supabase.from("saved_responses").select("user_id, source_template_id, category, copy_count, is_favorite, created_at").limit(20000),
       supabase.from("events").select("event_name, created_at").limit(20000),
       supabase.from("stripe_webhook_events").select("event_type, processed_at, created_at").limit(10000),
-      supabase.from("support_requests").select("status, created_at").limit(10000)
+      supabase.from("support_requests").select("status, created_at").limit(10000),
+      supabase.from("cancellation_feedback").select("reason, created_at").limit(10000)
     ]);
 
     const availability = {
@@ -243,7 +250,8 @@ export async function GET(request: Request) {
       savedResponses: resultAvailable(savedResponsesResult),
       events: resultAvailable(eventsResult),
       stripeWebhookEvents: resultAvailable(stripeWebhookEventsResult),
-      supportRequests: resultAvailable(supportRequestsResult)
+      supportRequests: resultAvailable(supportRequestsResult),
+      cancellationFeedback: resultAvailable(cancellationFeedbackResult)
     };
 
     const leads = (leadsResult.data || []) as LeadMetricRow[];
@@ -257,6 +265,7 @@ export async function GET(request: Request) {
     const events = (eventsResult.data || []) as EventMetricRow[];
     const stripeWebhookEvents = (stripeWebhookEventsResult.data || []) as StripeWebhookEventMetricRow[];
     const supportRequests = (supportRequestsResult.data || []) as SupportRequestMetricRow[];
+    const cancellationFeedback = (cancellationFeedbackResult.data || []) as CancellationFeedbackMetricRow[];
     const savedTemplates = savedResponses.filter((item) => item.source_template_id);
 
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -334,6 +343,10 @@ export async function GET(request: Request) {
     const savedOrCopiedUsers = new Set([...savedResponseUsers, ...copiedResponseUsers]);
     const responseUserCount = Object.keys(responseCountsByUser).length;
     const canceledSubscriptions = subscriptions.filter((subscription) => subscription.status?.toLowerCase() === "canceled");
+    const pastDueSubscriptions = subscriptions.filter((subscription) => subscription.status?.toLowerCase() === "past_due");
+    const failedPaymentSubscriptions = subscriptions.filter((subscription) => subscription.status?.toLowerCase() === "past_due" || subscription.status?.toLowerCase() === "unpaid");
+    const newSubscribersLast30Days = subscriptions.filter((subscription) => isActiveSubscription(subscription.status) && isAtOrAfter(subscription.created_at, thirtyDaysStart)).length;
+    const cancellationsLast30Days = canceledSubscriptions.filter((subscription) => isAtOrAfter(subscription.created_at, thirtyDaysStart)).length;
     const estimatedMrr = activeSubscriptions.reduce((sum, subscription) => sum + (typeof subscription.price === "number" ? subscription.price : 0), 0);
     const activeSubscriptionsByPlan = Object.entries(
       activeSubscriptions.reduce<Record<string, number>>((accumulator, subscription) => {
@@ -438,8 +451,17 @@ export async function GET(request: Request) {
         checkoutStartedUsers: checkoutStartedUsers.size,
         activeSubscriptions: activeSubscriptions.length,
         canceledSubscriptions: canceledSubscriptions.length,
+        pastDueSubscriptions: pastDueSubscriptions.length,
+        failedPaymentSubscriptions: failedPaymentSubscriptions.length,
+        newSubscribersLast30Days,
+        cancellationsLast30Days,
         activeSubscriptionsByPlan,
         estimatedMrr: estimatedMrr > 0 ? Number(estimatedMrr.toFixed(2)) : null
+      },
+      churn: {
+        cancellationFeedbacks: cancellationFeedback.length,
+        cancellationFeedbacksLast30Days: cancellationFeedback.filter((item) => isAtOrAfter(item.created_at, thirtyDaysStart)).length,
+        cancellationReasons: topBreakdown(cancellationFeedback.map((item) => ({ label: cleanCampaignValue(item.reason) })), 8)
       },
       supportQuality: {
         supportRequestsPeriod: supportRequests.filter((item) => isAtOrAfter(item.created_at, periodStart)).length,

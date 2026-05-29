@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { AppError, errorResponse } from "@/lib/errors";
+import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -72,7 +73,10 @@ export async function POST(request: Request) {
       return_url: `${getAppUrl()}/assinatura`
     });
 
-    serverLog({ event: "stripe_portal_created", route: "/api/stripe/create-portal-session", userId: user.id, status: "ok" });
+    await logEvent("portal_session_created", {
+      source: "billing_page"
+    });
+    serverLog({ event: "portal_session_created", route: "/api/stripe/create-portal-session", userId: user.id, status: "ok" });
     return Response.json({ ok: true, url: portalSession.url });
   } catch (error) {
     serverLog({ level: "warn", event: "stripe_portal_failed", route: "/api/stripe/create-portal-session", userId, error });

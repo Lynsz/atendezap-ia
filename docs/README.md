@@ -10,6 +10,9 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [safe-migrations](safe-migrations.md)
 - [rls-review-checklist](rls-review-checklist.md)
 - [stripe-reconciliation](stripe-reconciliation.md)
+- [subscription-lifecycle](subscription-lifecycle.md)
+- [failed-payments](failed-payments.md)
+- [churn-analysis](churn-analysis.md)
 - [data-retention](data-retention.md)
 - [data-inventory](data-inventory.md)
 - [privacy-policy](privacy-policy.md)
@@ -99,6 +102,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Backup e recuperacao: use `backup-strategy.md`, `disaster-recovery.md` e `monthly-backup-checklist.md`.
 - Migrations e RLS: use `safe-migrations.md`, `rls-review-checklist.md` e `critical-api-security-review.md`.
 - Stripe/Supabase: use `stripe-reconciliation.md` para reconciliar divergencias operacionais.
+- Assinaturas e churn: use `subscription-lifecycle.md`, `failed-payments.md` e `churn-analysis.md`.
 - Retencao: use `data-retention.md` para orientar limpeza futura e dados que nao devem ir para analytics/logs.
 - Privacidade/LGPD: use `data-inventory.md`, `privacy-policy.md`, `terms-of-use.md`, `lgpd-compliance.md`, `data-export-process.md` e `data-deletion-process.md`.
 - OpenAI: use `openai-production.md` para producao e custo.

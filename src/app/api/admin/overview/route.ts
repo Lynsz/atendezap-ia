@@ -56,6 +56,9 @@ type SubscriptionRow = {
   plan_name: string | null;
   plan: string | null;
   status: string | null;
+  subscription_status?: string | null;
+  last_payment_status?: string | null;
+  cancel_at_period_end?: boolean | null;
   provider_customer_id: string | null;
   provider_subscription_id: string | null;
   monthly_limit: number | null;
@@ -186,7 +189,7 @@ export async function GET(request: Request) {
       supabase.from("profiles").select("id, email, name, created_at"),
       supabase
         .from("subscriptions")
-        .select("id, user_id, plan_name, plan, status, provider_customer_id, provider_subscription_id, monthly_limit, current_period_end, created_at, updated_at")
+        .select("id, user_id, plan_name, plan, status, subscription_status, last_payment_status, cancel_at_period_end, provider_customer_id, provider_subscription_id, monthly_limit, current_period_end, created_at, updated_at")
         .order("updated_at", { ascending: false })
         .limit(200),
       supabase.from("lead_email_events").select("id", { count: "exact", head: true }).eq("status", "sent"),

@@ -143,6 +143,27 @@ create table if not exists public.events (
   created_at timestamptz default now()
 );
 
+create table if not exists public.cancellation_feedback (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  subscription_id uuid references public.subscriptions(id) on delete set null,
+  reason text not null,
+  comment text,
+  created_at timestamptz default now(),
+  constraint cancellation_feedback_reason_check check (
+    reason in (
+      'preco',
+      'nao_entendi_produto',
+      'usei_pouco',
+      'respostas_nao_foram_boas',
+      'faltou_integracao_whatsapp',
+      'encontrei_outra_solucao',
+      'problema_tecnico',
+      'outro'
+    )
+  )
+);
+
 create index if not exists businesses_user_id_idx on public.businesses(user_id);
 create index if not exists generated_responses_user_id_idx on public.generated_responses(user_id);
 create index if not exists generated_responses_business_id_idx on public.generated_responses(business_id);
@@ -164,6 +185,10 @@ create unique index if not exists orders_kiwify_order_id_unique_idx on public.or
 create index if not exists kits_order_id_idx on public.kits(order_id);
 create index if not exists kits_customer_id_idx on public.kits(customer_id);
 create index if not exists events_event_name_idx on public.events(event_name);
+create index if not exists cancellation_feedback_user_id_idx on public.cancellation_feedback(user_id);
+create index if not exists cancellation_feedback_subscription_id_idx on public.cancellation_feedback(subscription_id) where subscription_id is not null;
+create index if not exists cancellation_feedback_reason_idx on public.cancellation_feedback(reason);
+create index if not exists cancellation_feedback_created_at_idx on public.cancellation_feedback(created_at desc);
 
 create or replace function public.set_updated_at()
 returns trigger as $$
@@ -234,6 +259,7 @@ alter table public.orders enable row level security;
 alter table public.kits enable row level security;
 alter table public.support_requests enable row level security;
 alter table public.events enable row level security;
+alter table public.cancellation_feedback enable row level security;
 
 drop policy if exists "profiles_select_own" on public.profiles;
 drop policy if exists "profiles_insert_own" on public.profiles;
@@ -261,6 +287,8 @@ drop policy if exists "support_requests_no_client_access" on public.support_requ
 drop policy if exists "support_requests_select_own" on public.support_requests;
 drop policy if exists "support_requests_insert_own" on public.support_requests;
 drop policy if exists "events_no_client_access" on public.events;
+drop policy if exists "cancellation_feedback_select_own" on public.cancellation_feedback;
+drop policy if exists "cancellation_feedback_insert_own" on public.cancellation_feedback;
 
 create policy "profiles_select_own" on public.profiles for select to authenticated using ((select auth.uid()) = id);
 create policy "profiles_insert_own" on public.profiles for insert to authenticated with check ((select auth.uid()) = id);
@@ -292,6 +320,8 @@ create policy "kits_no_client_access" on public.kits for all to anon, authentica
 create policy "support_requests_select_own" on public.support_requests for select to authenticated using ((select auth.uid()) = user_id);
 create policy "support_requests_insert_own" on public.support_requests for insert to authenticated with check ((select auth.uid()) = user_id);
 create policy "events_no_client_access" on public.events for all to anon, authenticated using (false) with check (false);
+create policy "cancellation_feedback_select_own" on public.cancellation_feedback for select to authenticated using ((select auth.uid()) = user_id);
+create policy "cancellation_feedback_insert_own" on public.cancellation_feedback for insert to authenticated with check ((select auth.uid()) = user_id);
 
 grant usage on schema public to anon, authenticated;
 grant select, insert, update, delete on public.profiles, public.businesses, public.generated_responses, public.customers to authenticated;
@@ -302,6 +332,8 @@ grant select on public.plans to anon, authenticated;
 revoke all on public.purchasers, public.orders, public.kits, public.events from anon, authenticated;
 revoke all on public.support_requests from anon, authenticated;
 grant select, insert on public.support_requests to authenticated;
+revoke all on public.cancellation_feedback from anon, authenticated;
+grant select, insert on public.cancellation_feedback to authenticated;
 revoke execute on function public.handle_new_user() from anon, authenticated, public;
 
 insert into public.plans (name, price, response_limit)

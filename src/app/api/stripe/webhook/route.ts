@@ -146,6 +146,24 @@ async function updateSubscriptionFromStripe(
   if (error) {
     throw new AppError("Não foi possível atualizar a assinatura pelo webhook Stripe.", 500);
   }
+
+  await logEvent("subscription_status_updated", {
+    source: "stripe_webhook",
+    plan: plan.id,
+    status: internalStatus,
+    stripe_status: subscription.status
+  });
+  serverLog({
+    event: "subscription_status_updated",
+    route: "/api/stripe/webhook",
+    userId,
+    status: "ok",
+    metadata: {
+      plan: plan.id,
+      status: internalStatus,
+      stripe_status: subscription.status
+    }
+  });
 }
 
 async function updateSubscriptionFromCheckoutSession(session: Stripe.Checkout.Session, eventId: string) {
@@ -174,6 +192,13 @@ async function updateSubscriptionFromCheckoutSession(session: Stripe.Checkout.Se
 async function updatePaymentStatusFromInvoice(invoice: Stripe.Invoice, eventId: string, paymentStatus: string) {
   const subscriptionId = getStringId((invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription | null }).subscription);
   if (!subscriptionId) return;
+
+  if (paymentStatus === "failed") {
+    await logEvent("failed_payment_received", {
+      source: "stripe_webhook"
+    });
+    serverLog({ level: "warn", event: "failed_payment_received", route: "/api/stripe/webhook", metadata: { has_subscription: true } });
+  }
 
   const stripeSubscription = await getStripe().subscriptions.retrieve(subscriptionId);
   await updateSubscriptionFromStripe(stripeSubscription, eventId, paymentStatus);
@@ -211,6 +236,8 @@ export async function POST(request: Request) {
     } catch {
       throw new AppError("Webhook Stripe invalido.", 400);
     }
+
+    serverLog({ event: "webhook_received", route: "/api/stripe/webhook", status: "ok", metadata: { provider: "stripe", event_type: event.type } });
 
     const shouldProcess = await markEventProcessed(event);
     if (!shouldProcess) {

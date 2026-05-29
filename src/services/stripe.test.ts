@@ -103,10 +103,11 @@ describe("Stripe service helpers", () => {
     expect(mapStripeSubscriptionStatus("active")).toBe("active");
     expect(mapStripeSubscriptionStatus("trialing")).toBe("trialing");
     expect(mapStripeSubscriptionStatus("past_due")).toBe("past_due");
-    expect(mapStripeSubscriptionStatus("unpaid")).toBe("past_due");
+    expect(mapStripeSubscriptionStatus("unpaid")).toBe("unpaid");
     expect(mapStripeSubscriptionStatus("canceled")).toBe("canceled");
-    expect(mapStripeSubscriptionStatus("incomplete")).toBe("pending");
-    expect(mapStripeSubscriptionStatus("paused")).toBe("inactive");
+    expect(mapStripeSubscriptionStatus("incomplete")).toBe("incomplete");
+    expect(mapStripeSubscriptionStatus("incomplete_expired")).toBe("incomplete_expired");
+    expect(mapStripeSubscriptionStatus("paused")).toBe("paused");
     expect(mapStripeSubscriptionStatus("unknown")).toBe("pending");
   });
 

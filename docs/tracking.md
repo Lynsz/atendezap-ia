@@ -40,6 +40,12 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `checkout_click`: clique em um plano.
 - `checkout_started`: sessao Stripe criada com sucesso.
 - `checkout_error`: falha ao iniciar checkout.
+- `subscription_page_view`: visualizacao da pagina de assinatura.
+- `stripe_portal_opened`: abertura do portal Stripe.
+- `failed_payment_notice_viewed`: aviso de pagamento falho exibido.
+- `cancellation_feedback_submitted`: feedback opcional de cancelamento enviado.
+- `subscription_status_changed`: reservado para mudancas de status agregadas, sem ids Stripe.
+- `plan_limit_reached`: reservado para limite mensal atingido.
 - `signup_started`: inicio de cadastro.
 - `signup_completed`: cadastro criado.
 - `onboarding_started`: inicio do onboarding.

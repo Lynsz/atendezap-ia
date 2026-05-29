@@ -179,6 +179,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/backup-strategy.md`, `docs/disaster-recovery.md` e `docs/monthly-backup-checklist.md` para backup, recuperacao e revisao mensal.
 - Use `docs/safe-migrations.md` e `docs/rls-review-checklist.md` antes de alterar schema, policies ou dados criticos.
 - Use `docs/stripe-reconciliation.md` quando houver divergencia entre Stripe e Supabase.
+- Use `docs/subscription-lifecycle.md`, `docs/failed-payments.md` e `docs/churn-analysis.md` para ciclo de assinatura, pagamentos falhos e churn.
 - Use `docs/data-retention.md` para orientar retencao e limpeza futura de dados.
 - Use `docs/support-workflow.md`, `docs/product-faq.md` e `docs/internal-support-playbook.md` para suporte simples, FAQ e operacao interna.
 - Use `docs/user-activation.md`, `docs/activation-emails.md` e `docs/retention-plan.md` para ativacao e retencao inicial.
@@ -223,6 +224,9 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/safe-migrations.md`: regras para migrations seguras.
 - `docs/rls-review-checklist.md`: checklist de revisao de RLS.
 - `docs/stripe-reconciliation.md`: reconciliacao Stripe/Supabase.
+- `docs/subscription-lifecycle.md`: ciclo de vida da assinatura.
+- `docs/failed-payments.md`: tratamento de pagamentos falhos.
+- `docs/churn-analysis.md`: analise simples de churn.
 - `docs/data-retention.md`: retencao de dados.
 - `docs/data-inventory.md`: inventario de dados pessoais e operacionais.
 - `docs/support-workflow.md`: fluxo de suporte simples.

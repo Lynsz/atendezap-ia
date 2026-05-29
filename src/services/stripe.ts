@@ -110,16 +110,17 @@ export function mapStripeSubscriptionStatus(status?: StripeSubscriptionStatus | 
     case "trialing":
       return "trialing";
     case "past_due":
-    case "unpaid":
       return "past_due";
+    case "unpaid":
+      return "unpaid";
     case "canceled":
       return "canceled";
     case "incomplete":
-      return "pending";
+      return "incomplete";
     case "incomplete_expired":
-      return "inactive";
+      return "incomplete_expired";
     case "paused":
-      return "inactive";
+      return "paused";
     default:
       return "pending";
   }

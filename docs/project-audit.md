@@ -31,6 +31,19 @@ Recomendacao atualizada: manter producao controlada e campanhas pequenas como ro
 - Pendencias restantes: validar os contadores com dados reais em staging/producao, conferir que todos os eventos internos desejados estao sendo persistidos e continuar usando GA4/Meta/Stripe para visitantes, custos e detalhes financeiros externos.
 - Nota estimada atualizada: 97/100 para producao controlada, condicionada a validacao real do admin e dos provedores.
 
+## Ciclo de assinatura e churn - 2026-05-29
+
+- Billing auditado: Checkout, Customer Portal, webhook Stripe, `subscriptions`, limites por plano, `/assinatura`, admin e docs de Stripe.
+- Webhook Stripe segue validando assinatura, registrando evento processado de forma idempotente por `provider_event_id` e tratando `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded` e `invoice.payment_failed`.
+- Status local de assinatura preserva melhor os estados `active`, `trialing`, `past_due`, `unpaid`, `canceled`, `incomplete`, `incomplete_expired` e `paused`.
+- `/assinatura` agora mostra mensagens claras para assinatura ativa, pagamento pendente/falho, cancelamento e cancelamento agendado, sem exibir cartão ou dados sensíveis de pagamento.
+- Feedback de cancelamento criado com tabela `cancellation_feedback`, RLS por usuário, API autenticada e formulário opcional na página de assinatura.
+- Admin ganhou agregados simples de churn/assinaturas: pagamentos com falha, `past_due`, novos assinantes, cancelamentos recentes e motivos de cancelamento agregados.
+- Logs/eventos seguros revisados para webhook recebido/processado/falho, status de assinatura atualizado, pagamento falho recebido e portal criado, sem logar payload completo do Stripe.
+- Documentação criada: `docs/subscription-lifecycle.md`, `docs/failed-payments.md` e `docs/churn-analysis.md`.
+- Pendências restantes: aplicar `0018_cancellation_feedback.sql` em staging/produção, validar Customer Portal real, validar troca de plano real com Stripe e conferir dunning/retentativas conforme configuração da Stripe.
+- Nota estimada atualizada: 97/100 para produção controlada, condicionada à validação real de Stripe/Supabase em staging/produção.
+
 ## Operacao 1.0
 
 A operacao continua da versao 1.0 agora esta documentada em `docs/operations-1.0.md`, com rotinas diaria, semanal e mensal para logs, provedores, feedbacks, leads, usuarios, assinaturas, custos, bugs e campanhas.

@@ -1,13 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import Link from "next/link";
 import { AlertCircle, BadgeDollarSign, CalendarClock, CheckCircle2, CreditCard, MessageCircle, RefreshCw, ShieldCheck, Wallet } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
 import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
+import { cancellationFeedbackReasonLabels, cancellationFeedbackReasons, type CancellationFeedbackReason } from "@/lib/cancellation-feedback";
 import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { isSupabaseBrowserConfigured, supabase } from "@/lib/supabase/browser";
+import { trackEvent } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 import type { Subscription } from "@/types/mvp";
 
@@ -34,10 +37,36 @@ function statusLabel(status?: string | null) {
   if (normalizedStatus === "active") return "Ativa";
   if (normalizedStatus === "trial" || normalizedStatus === "trialing") return "Teste";
   if (normalizedStatus === "pending") return "Pendente";
+  if (normalizedStatus === "incomplete") return "Pagamento incompleto";
+  if (normalizedStatus === "incomplete_expired") return "Pagamento expirado";
   if (normalizedStatus === "past_due") return "Pagamento pendente";
+  if (normalizedStatus === "unpaid") return "Pagamento vencido";
+  if (normalizedStatus === "paused") return "Pausada";
   if (normalizedStatus === "canceled") return "Cancelada";
   if (normalizedStatus === "inactive") return "Inativa";
   return "Sem assinatura ativa";
+}
+
+function statusMessage(status?: string | null) {
+  const normalizedStatus = status?.toLowerCase();
+  if (normalizedStatus === "active") return "Sua assinatura está ativa.";
+  if (normalizedStatus === "trial" || normalizedStatus === "trialing") return "Sua assinatura está em período de teste.";
+  if (normalizedStatus === "pending" || normalizedStatus === "incomplete") return "Seu checkout foi iniciado, mas a assinatura ainda não foi confirmada pela Stripe.";
+  if (normalizedStatus === "past_due" || normalizedStatus === "unpaid") return "Identificamos um problema no pagamento. Atualize sua forma de pagamento para evitar interrupções.";
+  if (normalizedStatus === "incomplete_expired") return "O checkout expirou antes da confirmação do pagamento. Você pode escolher um plano novamente.";
+  if (normalizedStatus === "paused") return "Sua assinatura está pausada na Stripe. Acesse o portal para revisar o status.";
+  if (normalizedStatus === "canceled") return "Sua assinatura foi cancelada. Você pode escolher um plano novamente quando quiser.";
+  return "Escolha um plano para liberar mais respostas mensais.";
+}
+
+function paymentStatusLabel(status?: string | null) {
+  const normalizedStatus = status?.toLowerCase();
+  if (normalizedStatus === "succeeded" || normalizedStatus === "paid") return "Pagamento confirmado";
+  if (normalizedStatus === "failed") return "Pagamento falhou";
+  if (normalizedStatus === "checkout_created") return "Checkout iniciado";
+  if (normalizedStatus === "open") return "Fatura aberta";
+  if (normalizedStatus === "pending") return "Pendente";
+  return "Não informado";
 }
 
 function statusClass(status?: string | null) {
@@ -64,6 +93,10 @@ function BillingContent() {
   const [monthlyUsage, setMonthlyUsage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [feedbackReason, setFeedbackReason] = useState<CancellationFeedbackReason>("preco");
+  const [feedbackComment, setFeedbackComment] = useState("");
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
   const [error, setError] = useState("");
 
   const currentPlanId = normalizePlanId(subscription?.plan || subscription?.plan_name);
@@ -72,6 +105,10 @@ function BillingContent() {
   const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
   const usagePercent = monthlyLimit > 0 ? Math.min(100, Math.round((monthlyUsage / monthlyLimit) * 100)) : 0;
   const activeSubscription = isActiveStatus(subscription?.status);
+  const normalizedStatus = subscription?.status?.toLowerCase();
+  const hasPaymentProblem = normalizedStatus === "past_due" || normalizedStatus === "unpaid" || subscription?.last_payment_status === "failed";
+  const isCanceled = normalizedStatus === "canceled";
+  const isCancellationScheduled = Boolean(subscription?.cancel_at_period_end);
   const canManageStripeSubscription =
     subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id || subscription.stripe_customer_id);
 
@@ -119,6 +156,23 @@ function BillingContent() {
     });
   }, [loadBilling]);
 
+  useEffect(() => {
+    if (!loading) {
+      trackEvent("subscription_page_view", {
+        status: subscription?.status || "none",
+        plan: currentPlanId || "none"
+      });
+    }
+  }, [currentPlanId, loading, subscription?.status]);
+
+  useEffect(() => {
+    if (hasPaymentProblem) {
+      trackEvent("failed_payment_notice_viewed", {
+        status: subscription?.status || "unknown"
+      });
+    }
+  }, [hasPaymentProblem, subscription?.status]);
+
   async function openStripePortal() {
     setError("");
     setPortalLoading(true);
@@ -146,11 +200,62 @@ function BillingContent() {
         return;
       }
 
+      trackEvent("stripe_portal_opened", {
+        source: "billing_page",
+        status: subscription?.status || "unknown"
+      });
       window.location.href = result.url;
     } catch {
       setError("Não foi possível abrir o portal da Stripe agora.");
     } finally {
       setPortalLoading(false);
+    }
+  }
+
+  async function submitCancellationFeedback(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setFeedbackSubmitting(true);
+
+    try {
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        setError("Sessão não encontrada. Faça login novamente.");
+        return;
+      }
+
+      const response = await fetch("/api/cancellation-feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          subscriptionId: subscription?.id || null,
+          reason: feedbackReason,
+          comment: feedbackComment
+        })
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string };
+
+      if (!response.ok) {
+        setError(result.error || "Não foi possível enviar seu feedback agora.");
+        return;
+      }
+
+      setFeedbackSent(true);
+      setFeedbackComment("");
+      trackEvent("cancellation_feedback_submitted", {
+        reason: feedbackReason,
+        status: subscription?.status || "unknown"
+      });
+    } catch {
+      setError("Não foi possível enviar seu feedback agora.");
+    } finally {
+      setFeedbackSubmitting(false);
     }
   }
 
@@ -204,7 +309,7 @@ function BillingContent() {
                 </p>
                 <h2 className="text-3xl font-black text-white">{activeSubscription && currentPlan ? currentPlan.name : "Sem plano ativo"}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                  {currentPlan ? currentPlan.description : "Assine um plano para aumentar seu limite mensal de respostas com IA."}
+                  {statusMessage(subscription?.status)}
                 </p>
               </div>
               <span className={cn("inline-flex w-fit rounded-full border px-3 py-1 text-xs font-black", statusClass(subscription?.status))}>
@@ -227,9 +332,27 @@ function BillingContent() {
               </div>
               <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Pagamento</p>
-                <p className="mt-2 font-black text-white">{subscription?.last_payment_status || "Não informado"}</p>
+                <p className="mt-2 font-black text-white">{paymentStatusLabel(subscription?.last_payment_status)}</p>
               </div>
             </div>
+
+            {hasPaymentProblem ? (
+              <div className="mt-6 rounded-md border border-amber-400/30 bg-amber-400/10 p-4 text-sm font-bold leading-6 text-amber-100">
+                Identificamos um problema no pagamento. Abra o portal Stripe para atualizar a forma de pagamento e evitar interrupções no uso do plano.
+              </div>
+            ) : null}
+
+            {isCanceled ? (
+              <div className="mt-6 rounded-md border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold leading-6 text-red-100">
+                Sua assinatura foi cancelada. As respostas já salvas continuam na sua conta, e você pode escolher um plano novamente quando quiser.
+              </div>
+            ) : null}
+
+            {isCancellationScheduled ? (
+              <div className="mt-6 rounded-md border border-amber-400/30 bg-amber-400/10 p-4 text-sm font-bold leading-6 text-amber-100">
+                O cancelamento está agendado na Stripe. O acesso ao plano segue até o fim do período atual, salvo mudança no portal.
+              </div>
+            ) : null}
 
             <div className="mt-6">
               <div className="flex items-center justify-between gap-3 text-sm">
@@ -290,6 +413,41 @@ function BillingContent() {
                 O dashboard e esta página leem a mesma assinatura em `subscriptions`, sincronizada pelo webhook da Stripe.
               </p>
             </div>
+            {subscription ? (
+              <form onSubmit={submitCancellationFeedback} className="rounded-lg border border-white/10 bg-[#101821] p-5">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Cancelamento</p>
+                <h2 className="mt-2 text-xl font-black text-white">Antes de sair, conte o motivo</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-400">
+                  {isCanceled ? "Seu feedback ajuda a melhorar o AtendeZap IA." : "O cancelamento real continua sendo feito no portal Stripe. Este feedback é opcional."}
+                </p>
+                <label className="mt-4 grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+                  Motivo
+                  <select value={feedbackReason} onChange={(event) => setFeedbackReason(event.target.value as CancellationFeedbackReason)} className="field-input">
+                    {cancellationFeedbackReasons.map((reason) => (
+                      <option key={reason} value={reason}>
+                        {cancellationFeedbackReasonLabels[reason]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="mt-4 grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
+                  Comentário opcional
+                  <textarea
+                    value={feedbackComment}
+                    onChange={(event) => setFeedbackComment(event.target.value.slice(0, 500))}
+                    className="field-input min-h-24 resize-none py-3 normal-case"
+                    placeholder="Não envie dados sensíveis ou dados de pagamento."
+                  />
+                </label>
+                <button
+                  type="submit"
+                  disabled={feedbackSubmitting || feedbackSent}
+                  className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-white px-5 text-sm font-black text-slate-950 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {feedbackSent ? "Feedback enviado" : feedbackSubmitting ? "Enviando..." : "Enviar feedback"}
+                </button>
+              </form>
+            ) : null}
           </aside>
         </div>
 

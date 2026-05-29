@@ -25,6 +25,7 @@ test.describe("protecao sem login", () => {
     { path: "/api/data-requests", method: "get" as const },
     { path: "/api/data-requests", method: "post" as const, body: { type: "export" } },
     { path: "/api/support", method: "get" as const },
+    { path: "/api/cancellation-feedback", method: "post" as const, body: { reason: "preco" } },
     { path: "/api/stripe/create-checkout-session", method: "post" as const, body: { planId: "starter" } },
     { path: "/api/stripe/create-portal-session", method: "post" as const, body: {} },
     { path: "/api/admin/overview", method: "get" as const },

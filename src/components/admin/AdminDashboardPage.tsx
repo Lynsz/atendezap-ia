@@ -37,6 +37,9 @@ type AdminSubscription = {
   plan_name: string | null;
   plan: string | null;
   status: string | null;
+  subscription_status?: string | null;
+  last_payment_status?: string | null;
+  cancel_at_period_end?: boolean | null;
   provider_customer_id: string | null;
   provider_subscription_id: string | null;
   monthly_limit: number | null;
@@ -137,6 +140,7 @@ type ProductMetricsPayload = {
     events: boolean;
     stripeWebhookEvents: boolean;
     supportRequests: boolean;
+    cancellationFeedback: boolean;
   };
   funnel: {
     totalLeads: number;
@@ -212,8 +216,17 @@ type ProductMetricsPayload = {
     checkoutStartedUsers: number;
     activeSubscriptions: number;
     canceledSubscriptions: number;
+    pastDueSubscriptions: number;
+    failedPaymentSubscriptions: number;
+    newSubscribersLast30Days: number;
+    cancellationsLast30Days: number;
     activeSubscriptionsByPlan: Array<{ label: string; count: number }>;
     estimatedMrr: number | null;
+  };
+  churn: {
+    cancellationFeedbacks: number;
+    cancellationFeedbacksLast30Days: number;
+    cancellationReasons: Array<{ label: string; count: number }>;
   };
   supportQuality: {
     supportRequestsPeriod: number;
@@ -467,6 +480,8 @@ function exportInternalMetricsCsv(metrics: ProductMetricsPayload) {
     ["receita", "checkouts_iniciados", metrics.availability.subscriptions ? metrics.revenue.checkoutStartedUsers : "nao_disponivel"],
     ["receita", "assinaturas_ativas", metrics.availability.subscriptions ? metrics.revenue.activeSubscriptions : "nao_disponivel"],
     ["receita", "assinaturas_canceladas", metrics.availability.subscriptions ? metrics.revenue.canceledSubscriptions : "nao_disponivel"],
+    ["receita", "pagamentos_com_falha", metrics.availability.subscriptions ? metrics.revenue.failedPaymentSubscriptions : "nao_disponivel"],
+    ["churn", "feedbacks_cancelamento_30_dias", metrics.availability.cancellationFeedback ? metrics.churn.cancellationFeedbacksLast30Days : "nao_disponivel"],
     ["suporte", "solicitacoes_abertas", metrics.availability.supportRequests ? metrics.supportQuality.openSupportRequests : "nao_disponivel"],
     ["qualidade", "feedbacks_negativos_recentes", metrics.availability.feedback && metrics.availability.aiResponseFeedback ? metrics.supportQuality.recentNegativeFeedbacks : "nao_disponivel"]
   ];
@@ -654,6 +669,8 @@ export default function AdminDashboardPage() {
     return {
       active: subscriptions.filter((subscription) => ["active", "trial", "trialing"].includes(subscription.status?.toLowerCase() || "")),
       canceled: subscriptions.filter((subscription) => subscription.status?.toLowerCase() === "canceled"),
+      pastDue: subscriptions.filter((subscription) => subscription.status?.toLowerCase() === "past_due"),
+      failedPayment: subscriptions.filter((subscription) => ["past_due", "unpaid"].includes(subscription.status?.toLowerCase() || "") || subscription.last_payment_status?.toLowerCase() === "failed"),
       pending: subscriptions.filter((subscription) => ["pending", "past_due", "unpaid", "incomplete"].includes(subscription.status?.toLowerCase() || ""))
     };
   }, [data]);
@@ -882,6 +899,8 @@ export default function AdminDashboardPage() {
               <MetricCard label="Checkouts iniciados" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.checkoutStartedUsers)} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Assinaturas ativas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.activeSubscriptions)} icon={<CheckCircle2 className="h-5 w-5" />} />
               <MetricCard label="Assinaturas canceladas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.canceledSubscriptions)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Pagamentos com falha" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.failedPaymentSubscriptions)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Cancelamentos 30 dias" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.cancellationsLast30Days)} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Feedbacks negativos recentes" value={availableValue(productMetrics.availability.feedback && productMetrics.availability.aiResponseFeedback, productMetrics.supportQuality.recentNegativeFeedbacks)} icon={<MessageSquare className="h-5 w-5" />} />
               <MetricCard label="Suporte aberto" value={availableValue(productMetrics.availability.supportRequests, productMetrics.supportQuality.openSupportRequests)} icon={<MessageSquare className="h-5 w-5" />} />
             </div>
@@ -1048,9 +1067,16 @@ export default function AdminDashboardPage() {
                   <ConversionLine label="Checkouts iniciados" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.checkoutStartedUsers)} />
                   <ConversionLine label="Assinaturas ativas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.activeSubscriptions)} />
                   <ConversionLine label="Assinaturas canceladas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.canceledSubscriptions)} />
+                  <ConversionLine label="Past due" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.pastDueSubscriptions)} />
+                  <ConversionLine label="Pagamentos com falha" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.failedPaymentSubscriptions)} />
+                  <ConversionLine label="Novos assinantes 30 dias" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.newSubscribersLast30Days)} />
+                  <ConversionLine label="Cancelamentos 30 dias" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.cancellationsLast30Days)} />
                   <ConversionLine label="MRR estimado" value={productMetrics.revenue.estimatedMrr === null ? "Não disponível" : `R$ ${productMetrics.revenue.estimatedMrr}`} />
                   {(productMetrics.revenue.activeSubscriptionsByPlan.length ? productMetrics.revenue.activeSubscriptionsByPlan : [{ label: "sem_dados", count: 0 }]).slice(0, 3).map((item) => (
                     <ConversionLine key={`plan-${item.label}`} label={`Plano: ${item.label}`} value={item.count} />
+                  ))}
+                  {(productMetrics.churn.cancellationReasons.length ? productMetrics.churn.cancellationReasons : [{ label: "sem_dados", count: 0 }]).slice(0, 3).map((item) => (
+                    <ConversionLine key={`cancel-reason-${item.label}`} label={`Motivo: ${item.label}`} value={availableValue(productMetrics.availability.cancellationFeedback, item.count)} />
                   ))}
                 </div>
               </div>
@@ -1509,10 +1535,11 @@ export default function AdminDashboardPage() {
                     </div>
                     <div className="mt-4 grid gap-3 text-sm text-slate-300 md:grid-cols-2 xl:grid-cols-3">
                       <Info label="Plano" value={subscription.plan || subscription.plan_name || "-"} />
+                      <Info label="Status Stripe" value={subscription.subscription_status || subscription.status || "-"} />
+                      <Info label="Pagamento" value={subscription.last_payment_status || "-"} />
                       <Info label="Limite mensal" value={subscription.monthly_limit ?? "-"} />
                       <Info label="Uso atual" value={subscription.monthly_usage} />
-                      <Info label="Stripe customer" value={subscription.provider_customer_id || "-"} />
-                      <Info label="Stripe subscription" value={subscription.provider_subscription_id || "-"} />
+                      <Info label="Cancelamento agendado" value={subscription.cancel_at_period_end ? "Sim" : "Não"} />
                       <Info label="Renovacao/fim" value={formatDate(subscription.current_period_end)} />
                       <Info label="Criada em" value={formatDate(subscription.created_at)} />
                       <Info label="Atualizada em" value={formatDate(subscription.updated_at)} />
@@ -1544,6 +1571,8 @@ export default function AdminDashboardPage() {
             <div className="mt-5 grid gap-3 text-sm">
               <ConversionLine label="Ativas" value={subscriptionGroups.active.length} />
               <ConversionLine label="Canceladas" value={subscriptionGroups.canceled.length} />
+              <ConversionLine label="Past due" value={subscriptionGroups.pastDue.length} />
+              <ConversionLine label="Pagamento falhou" value={subscriptionGroups.failedPayment.length} />
               <ConversionLine label="Pendentes" value={subscriptionGroups.pending.length} />
             </div>
           </div>

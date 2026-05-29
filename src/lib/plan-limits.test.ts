@@ -19,6 +19,10 @@ describe("getPlanResponseLimit", () => {
   it("nao libera limite pago para assinatura pendente, vencida ou cancelada", () => {
     expect(getPlanResponseLimit("Pro", "pending")).toBe(30);
     expect(getPlanResponseLimit("Pro", "past_due")).toBe(30);
+    expect(getPlanResponseLimit("Pro", "unpaid")).toBe(30);
+    expect(getPlanResponseLimit("Pro", "incomplete")).toBe(30);
+    expect(getPlanResponseLimit("Pro", "incomplete_expired")).toBe(30);
+    expect(getPlanResponseLimit("Pro", "paused")).toBe(30);
     expect(getPlanResponseLimit("Premium", "canceled")).toBe(30);
   });
 });
