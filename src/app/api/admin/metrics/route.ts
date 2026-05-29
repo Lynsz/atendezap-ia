@@ -36,6 +36,9 @@ type ResponseMetricRow = {
 
 type SubscriptionMetricRow = {
   user_id: string | null;
+  plan?: string | null;
+  plan_name?: string | null;
+  price?: number | null;
   status: string | null;
   acquisition_source?: string | null;
   funnel_source?: string | null;
@@ -78,6 +81,11 @@ type StripeWebhookEventMetricRow = {
   created_at: string;
 };
 
+type SupportRequestMetricRow = {
+  status: string | null;
+  created_at: string;
+};
+
 const metricsQuerySchema = z.object({
   period: z.enum(["today", "7d", "30d", "all"]).optional().default("30d")
 });
@@ -116,6 +124,11 @@ function isUnresolvedFeedback(status?: string | null) {
   return normalized === "new" || normalized === "reviewing";
 }
 
+function isOpenSupportRequest(status?: string | null) {
+  const normalized = status?.toLowerCase();
+  return normalized === "pending" || normalized === "in_progress";
+}
+
 function percent(numerator: number, denominator: number) {
   if (!denominator) return 0;
   return Number(((numerator / denominator) * 100).toFixed(1));
@@ -147,6 +160,14 @@ function getSubscriptionCampaign(subscription: SubscriptionMetricRow) {
   const metadata = subscription.metadata || {};
   const campaign = typeof metadata.utm_campaign === "string" ? metadata.utm_campaign : null;
   return cleanCampaignValue(campaign || subscription.funnel_source || subscription.acquisition_source);
+}
+
+function planLabel(subscription: SubscriptionMetricRow) {
+  return subscription.plan || subscription.plan_name || "sem_plano";
+}
+
+function resultAvailable(result: { error?: unknown }) {
+  return !result.error;
 }
 
 function jsonError(error: unknown) {
@@ -195,19 +216,35 @@ export async function GET(request: Request) {
       aiResponseFeedbackResult,
       savedResponsesResult,
       eventsResult,
-      stripeWebhookEventsResult
+      stripeWebhookEventsResult,
+      supportRequestsResult
     ] = await Promise.all([
       supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign").limit(10000),
       supabase.from("profiles").select("id, email, created_at").limit(10000),
       supabase.from("businesses").select("user_id, onboarding_completed, created_at, updated_at").limit(10000),
       supabase.from("generated_responses").select("user_id, created_at").limit(20000),
-      supabase.from("subscriptions").select("user_id, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
+      supabase.from("subscriptions").select("user_id, plan, plan_name, price, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
       supabase.from("user_feedback").select("type, status, created_at").limit(10000),
       supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000),
       supabase.from("saved_responses").select("user_id, source_template_id, category, copy_count, is_favorite, created_at").limit(20000),
       supabase.from("events").select("event_name, created_at").limit(20000),
-      supabase.from("stripe_webhook_events").select("event_type, processed_at, created_at").limit(10000)
+      supabase.from("stripe_webhook_events").select("event_type, processed_at, created_at").limit(10000),
+      supabase.from("support_requests").select("status, created_at").limit(10000)
     ]);
+
+    const availability = {
+      leads: resultAvailable(leadsResult),
+      profiles: resultAvailable(profilesResult),
+      businesses: resultAvailable(businessesResult),
+      generatedResponses: resultAvailable(responsesResult),
+      subscriptions: resultAvailable(subscriptionsResult),
+      feedback: resultAvailable(feedbackResult),
+      aiResponseFeedback: resultAvailable(aiResponseFeedbackResult),
+      savedResponses: resultAvailable(savedResponsesResult),
+      events: resultAvailable(eventsResult),
+      stripeWebhookEvents: resultAvailable(stripeWebhookEventsResult),
+      supportRequests: resultAvailable(supportRequestsResult)
+    };
 
     const leads = (leadsResult.data || []) as LeadMetricRow[];
     const profiles = (profilesResult.data || []) as ProfileMetricRow[];
@@ -219,6 +256,7 @@ export async function GET(request: Request) {
     const savedResponses = (savedResponsesResult.data || []) as SavedResponseMetricRow[];
     const events = (eventsResult.data || []) as EventMetricRow[];
     const stripeWebhookEvents = (stripeWebhookEventsResult.data || []) as StripeWebhookEventMetricRow[];
+    const supportRequests = (supportRequestsResult.data || []) as SupportRequestMetricRow[];
     const savedTemplates = savedResponses.filter((item) => item.source_template_id);
 
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -293,7 +331,19 @@ export async function GET(request: Request) {
     const usersWithFirstResponse = firstResponseUsers.size;
     const activatedUsers = activatedUserIds.length;
     const totalResponses = responses.length;
+    const savedOrCopiedUsers = new Set([...savedResponseUsers, ...copiedResponseUsers]);
     const responseUserCount = Object.keys(responseCountsByUser).length;
+    const canceledSubscriptions = subscriptions.filter((subscription) => subscription.status?.toLowerCase() === "canceled");
+    const estimatedMrr = activeSubscriptions.reduce((sum, subscription) => sum + (typeof subscription.price === "number" ? subscription.price : 0), 0);
+    const activeSubscriptionsByPlan = Object.entries(
+      activeSubscriptions.reduce<Record<string, number>>((accumulator, subscription) => {
+        const label = planLabel(subscription);
+        accumulator[label] = (accumulator[label] || 0) + 1;
+        return accumulator;
+      }, {})
+    )
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
     const leadEmailsByCampaign = leads.reduce<Record<string, Set<string>>>((accumulator, lead) => {
       const campaign = cleanCampaignValue(lead.utm_campaign);
       if (!accumulator[campaign]) accumulator[campaign] = new Set<string>();
@@ -317,12 +367,14 @@ export async function GET(request: Request) {
         label: period === "today" ? "Hoje" : period === "7d" ? "Ultimos 7 dias" : period === "30d" ? "Ultimos 30 dias" : "Todos",
         start: periodStart?.toISOString() || null
       },
+      availability,
       funnel: {
         totalLeads: leads.length,
         periodLeads: leads.filter((lead) => isAtOrAfter(lead.created_at, periodStart)).length,
         totalUsers,
         completedOnboardingUsers,
         usersWithFirstResponse,
+        usersWithSavedOrCopiedResponse: savedOrCopiedUsers.size,
         activatedUsers,
         checkoutStartedUsers: checkoutStartedUsers.size,
         activeSubscriptions: activeSubscriptions.length,
@@ -381,6 +433,20 @@ export async function GET(request: Request) {
           aiResponseFeedback.filter((item) => item.rating === "negative" && isAtOrAfter(item.created_at, thirtyDaysStart)).length +
           feedback.filter((item) => ["bug", "dificuldade_uso"].includes(item.type || "") && isAtOrAfter(item.created_at, thirtyDaysStart)).length,
         activeSubscriptions: activeSubscriptions.length
+      },
+      revenue: {
+        checkoutStartedUsers: checkoutStartedUsers.size,
+        activeSubscriptions: activeSubscriptions.length,
+        canceledSubscriptions: canceledSubscriptions.length,
+        activeSubscriptionsByPlan,
+        estimatedMrr: estimatedMrr > 0 ? Number(estimatedMrr.toFixed(2)) : null
+      },
+      supportQuality: {
+        supportRequestsPeriod: supportRequests.filter((item) => isAtOrAfter(item.created_at, periodStart)).length,
+        openSupportRequests: supportRequests.filter((item) => isOpenSupportRequest(item.status)).length,
+        recentNegativeFeedbacks:
+          aiResponseFeedback.filter((item) => item.rating === "negative" && isAtOrAfter(item.created_at, thirtyDaysStart)).length +
+          feedback.filter((item) => ["bug", "dificuldade_uso"].includes(item.type || "") && isAtOrAfter(item.created_at, thirtyDaysStart)).length
       },
       aiQuality: {
         totalFeedbacks: aiResponseFeedback.length,

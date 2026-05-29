@@ -125,12 +125,26 @@ type AdminDataRequestsPayload = {
 
 type ProductMetricsPayload = {
   period: { value: PeriodFilter; label: string; start: string | null };
+  availability: {
+    leads: boolean;
+    profiles: boolean;
+    businesses: boolean;
+    generatedResponses: boolean;
+    subscriptions: boolean;
+    feedback: boolean;
+    aiResponseFeedback: boolean;
+    savedResponses: boolean;
+    events: boolean;
+    stripeWebhookEvents: boolean;
+    supportRequests: boolean;
+  };
   funnel: {
     totalLeads: number;
     periodLeads: number;
     totalUsers: number;
     completedOnboardingUsers: number;
     usersWithFirstResponse: number;
+    usersWithSavedOrCopiedResponse: number;
     activatedUsers: number;
     checkoutStartedUsers: number;
     activeSubscriptions: number;
@@ -193,6 +207,18 @@ type ProductMetricsPayload = {
     stripeWebhookFailuresToday: number;
     recentNegativeFeedbacks: number;
     activeSubscriptions: number;
+  };
+  revenue: {
+    checkoutStartedUsers: number;
+    activeSubscriptions: number;
+    canceledSubscriptions: number;
+    activeSubscriptionsByPlan: Array<{ label: string; count: number }>;
+    estimatedMrr: number | null;
+  };
+  supportQuality: {
+    supportRequestsPeriod: number;
+    openSupportRequests: number;
+    recentNegativeFeedbacks: number;
   };
   aiQuality: {
     totalFeedbacks: number;
@@ -428,6 +454,33 @@ function exportCampaignReportCsv(report: CampaignReportPayload) {
   URL.revokeObjectURL(url);
 }
 
+function exportInternalMetricsCsv(metrics: ProductMetricsPayload) {
+  const rows = [
+    ["categoria", "metrica", "valor"],
+    ["aquisicao", "leads_periodo", metrics.availability.leads ? metrics.funnel.periodLeads : "nao_disponivel"],
+    ["aquisicao", "cadastros", metrics.availability.profiles ? metrics.funnel.totalUsers : "nao_disponivel"],
+    ["ativacao", "onboarding_concluido", metrics.availability.businesses ? metrics.funnel.completedOnboardingUsers : "nao_disponivel"],
+    ["ativacao", "primeira_resposta", metrics.availability.generatedResponses ? metrics.funnel.usersWithFirstResponse : "nao_disponivel"],
+    ["ativacao", "resposta_salva_ou_copiada", metrics.availability.savedResponses ? metrics.funnel.usersWithSavedOrCopiedResponse : "nao_disponivel"],
+    ["uso", "respostas_7_dias", metrics.availability.generatedResponses ? metrics.usage.responsesLast7Days : "nao_disponivel"],
+    ["uso", "usuarios_ativos_7_dias", metrics.availability.generatedResponses ? metrics.usage.activeUsersLast7Days : "nao_disponivel"],
+    ["receita", "checkouts_iniciados", metrics.availability.subscriptions ? metrics.revenue.checkoutStartedUsers : "nao_disponivel"],
+    ["receita", "assinaturas_ativas", metrics.availability.subscriptions ? metrics.revenue.activeSubscriptions : "nao_disponivel"],
+    ["receita", "assinaturas_canceladas", metrics.availability.subscriptions ? metrics.revenue.canceledSubscriptions : "nao_disponivel"],
+    ["suporte", "solicitacoes_abertas", metrics.availability.supportRequests ? metrics.supportQuality.openSupportRequests : "nao_disponivel"],
+    ["qualidade", "feedbacks_negativos_recentes", metrics.availability.feedback && metrics.availability.aiResponseFeedback ? metrics.supportQuality.recentNegativeFeedbacks : "nao_disponivel"]
+  ];
+  const blob = new Blob([rows.map((row) => row.map(csvEscape).join(",")).join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `atendezap-internal-metrics-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 function getLikelyBottleneck(report: CampaignReportPayload | null, metrics: ProductMetricsPayload | null) {
   const funnel = report
     ? {
@@ -474,6 +527,15 @@ function getLikelyBottleneck(report: CampaignReportPayload | null, metrics: Prod
     return "Gargalo provável: preço, confiança ou checkout.";
   }
   return "Ainda não há dados suficientes para conclusão.";
+}
+
+function availableValue(available: boolean, value: string | number) {
+  return available ? value : "Não disponível";
+}
+
+function stageRate(current: number, previous: number) {
+  if (!previous) return "Não disponível";
+  return `${Number(((current / previous) * 100).toFixed(1))}%`;
 }
 
 export default function AdminDashboardPage() {
@@ -793,30 +855,35 @@ export default function AdminDashboardPage() {
           <section className="mb-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
             <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Ativação</p>
-                <h2 className="mt-2 text-2xl font-black text-white">Primeiros passos dos usuários</h2>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Relatórios</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Saúde do produto e do negócio</h2>
                 <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
-                  Métricas agregadas para entender se usuários novos configuram o produto, geram a primeira resposta, salvam mensagens e voltam a usar. Não mostra conteúdo de respostas.
+                  Visão agregada de aquisição, ativação, uso, receita e suporte. Não mostra conteúdo completo de respostas, dados de pagamento ou secrets.
                 </p>
               </div>
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-slate-300">
-                Últimos 7 dias e total
-              </span>
+              <button
+                type="button"
+                onClick={() => exportInternalMetricsCsv(productMetrics)}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-black text-slate-950 hover:bg-slate-100"
+              >
+                <Download className="h-4 w-4" />
+                Exportar métricas CSV
+              </button>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <MetricCard label="Usuários novos 7 dias" value={productMetrics.activation.newUsersLast7Days} icon={<Users className="h-5 w-5" />} />
-              <MetricCard label="Onboardings 7 dias" value={productMetrics.activation.onboardingCompletedLast7Days} icon={<CheckCircle2 className="h-5 w-5" />} />
-              <MetricCard label="Primeiras respostas" value={productMetrics.activation.firstResponsesGenerated} icon={<MessageSquare className="h-5 w-5" />} />
-              <MetricCard label="Primeiras respostas 7 dias" value={productMetrics.activation.firstResponsesLast7Days} icon={<MessageSquare className="h-5 w-5" />} />
-              <MetricCard label="Respostas salvas" value={productMetrics.activation.responsesSaved} icon={<BarChart3 className="h-5 w-5" />} />
-              <MetricCard label="Usuários que copiaram" value={productMetrics.activation.usersWithCopiedResponse} icon={<BarChart3 className="h-5 w-5" />} />
-              <MetricCard label="Usuários ativos 7 dias" value={productMetrics.activation.activeUsersLast7Days} icon={<Users className="h-5 w-5" />} />
-              <MetricCard label="Checkouts iniciados" value={productMetrics.activation.checkoutStartedUsers} icon={<BarChart3 className="h-5 w-5" />} />
-              <MetricCard label="Templates salvos" value={productMetrics.usage.totalSavedTemplates} icon={<BarChart3 className="h-5 w-5" />} />
-              <MetricCard label="Usuários com favoritas" value={productMetrics.activation.usersWithFavoriteResponse} icon={<BarChart3 className="h-5 w-5" />} />
-              <MetricCard label="Assinaturas novas/ativas" value={productMetrics.activation.activeSubscriptions} icon={<CheckCircle2 className="h-5 w-5" />} />
-              <MetricCard label="Taxa de ativação" value={`${productMetrics.activation.activationRate}%`} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Usuários totais" value={availableValue(productMetrics.availability.profiles, productMetrics.funnel.totalUsers)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Usuários novos 7 dias" value={availableValue(productMetrics.availability.profiles, productMetrics.activation.newUsersLast7Days)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Leads 7 dias" value={availableValue(productMetrics.availability.leads, metrics?.leadsLast7Days ?? 0)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Onboardings concluídos" value={availableValue(productMetrics.availability.businesses, productMetrics.funnel.completedOnboardingUsers)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Respostas geradas 7 dias" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.usage.responsesLast7Days)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Respostas salvas" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.responsesSaved)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Usuários ativos 7 dias" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.activation.activeUsersLast7Days)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Checkouts iniciados" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.checkoutStartedUsers)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Assinaturas ativas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.activeSubscriptions)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Assinaturas canceladas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.canceledSubscriptions)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Feedbacks negativos recentes" value={availableValue(productMetrics.availability.feedback && productMetrics.availability.aiResponseFeedback, productMetrics.supportQuality.recentNegativeFeedbacks)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Suporte aberto" value={availableValue(productMetrics.availability.supportRequests, productMetrics.supportQuality.openSupportRequests)} icon={<MessageSquare className="h-5 w-5" />} />
             </div>
           </section>
         ) : null}
@@ -900,10 +967,18 @@ export default function AdminDashboardPage() {
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                 <h3 className="text-lg font-black text-white">Funil</h3>
                 <div className="mt-4 grid gap-3">
-                  <ConversionLine label="Lead -> cadastro" value={`${productMetrics.funnel.leadToSignupRate}%`} />
-                  <ConversionLine label="Cadastro -> onboarding" value={`${productMetrics.funnel.signupToOnboardingRate}%`} />
-                  <ConversionLine label="Onboarding -> primeira resposta" value={`${productMetrics.funnel.onboardingToFirstResponseRate}%`} />
-                  <ConversionLine label="Cadastro -> assinatura ativa" value={`${productMetrics.funnel.signupToActiveSubscriptionRate}%`} />
+                  <ConversionLine label="Leads" value={availableValue(productMetrics.availability.leads, productMetrics.funnel.periodLeads)} />
+                  <ConversionLine label="Cadastros" value={availableValue(productMetrics.availability.profiles, productMetrics.funnel.totalUsers)} />
+                  <ConversionLine label="Onboarding concluído" value={availableValue(productMetrics.availability.businesses, productMetrics.funnel.completedOnboardingUsers)} />
+                  <ConversionLine label="Primeira resposta" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.funnel.usersWithFirstResponse)} />
+                  <ConversionLine label="Resposta salva/copiada" value={availableValue(productMetrics.availability.savedResponses, productMetrics.funnel.usersWithSavedOrCopiedResponse)} />
+                  <ConversionLine label="Checkout iniciado" value={availableValue(productMetrics.availability.subscriptions, productMetrics.funnel.checkoutStartedUsers)} />
+                  <ConversionLine label="Assinatura ativa" value={availableValue(productMetrics.availability.subscriptions, productMetrics.funnel.activeSubscriptions)} />
+                  <ConversionLine label="Lead -> cadastro" value={stageRate(productMetrics.funnel.totalUsers, productMetrics.funnel.periodLeads || productMetrics.funnel.totalLeads)} />
+                  <ConversionLine label="Cadastro -> onboarding" value={stageRate(productMetrics.funnel.completedOnboardingUsers, productMetrics.funnel.totalUsers)} />
+                  <ConversionLine label="Onboarding -> primeira resposta" value={stageRate(productMetrics.funnel.usersWithFirstResponse, productMetrics.funnel.completedOnboardingUsers)} />
+                  <ConversionLine label="Primeira resposta -> salva/copiada" value={stageRate(productMetrics.funnel.usersWithSavedOrCopiedResponse, productMetrics.funnel.usersWithFirstResponse)} />
+                  <ConversionLine label="Checkout -> assinatura" value={stageRate(productMetrics.funnel.activeSubscriptions, productMetrics.funnel.checkoutStartedUsers)} />
                 </div>
                 <p className="mt-4 rounded-md border border-amber-400/20 bg-amber-400/10 p-3 text-xs font-bold leading-5 text-amber-100">
                   {productMetrics.notes.leadToSignup}
@@ -963,6 +1038,19 @@ export default function AdminDashboardPage() {
                   <ConversionLine label="Templates salvos" value={productMetrics.usage.totalSavedTemplates} />
                   {(productMetrics.usage.savedTemplatesByCategory.length ? productMetrics.usage.savedTemplatesByCategory : [{ label: "sem_dados", count: 0 }]).slice(0, 3).map((item) => (
                     <ConversionLine key={`template-${item.label}`} label={`Categoria: ${item.label}`} value={item.count} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+                <h3 className="text-lg font-black text-white">Receita</h3>
+                <div className="mt-4 grid gap-3">
+                  <ConversionLine label="Checkouts iniciados" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.checkoutStartedUsers)} />
+                  <ConversionLine label="Assinaturas ativas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.activeSubscriptions)} />
+                  <ConversionLine label="Assinaturas canceladas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.canceledSubscriptions)} />
+                  <ConversionLine label="MRR estimado" value={productMetrics.revenue.estimatedMrr === null ? "Não disponível" : `R$ ${productMetrics.revenue.estimatedMrr}`} />
+                  {(productMetrics.revenue.activeSubscriptionsByPlan.length ? productMetrics.revenue.activeSubscriptionsByPlan : [{ label: "sem_dados", count: 0 }]).slice(0, 3).map((item) => (
+                    <ConversionLine key={`plan-${item.label}`} label={`Plano: ${item.label}`} value={item.count} />
                   ))}
                 </div>
               </div>

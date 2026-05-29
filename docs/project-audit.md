@@ -18,6 +18,19 @@ Pendencias conhecidas seguem principalmente externas/operacionais: validacao man
 
 Recomendacao atualizada: manter producao controlada e campanhas pequenas como rotina de validacao. Nao escalar investimento enquanto `docs/second-campaign-analysis.md` nao tiver dados reais suficientes, enquanto a matriz de decisao nao estiver verde e enquanto houver qualquer P0/P1 aberto.
 
+## Relatorios internos de negocio - 2026-05-29
+
+- Admin protegido ganhou visao interna de "Relatorios" para acompanhar aquisicao, ativacao, uso, receita, suporte e qualidade com dados agregados.
+- Funil interno passou a mostrar etapas absolutas e taxas simples: leads, cadastros, onboarding concluido, primeira resposta, resposta salva/copiada, checkout iniciado e assinatura ativa.
+- Diagnostico simples do funil permanece deterministico, sem IA, apontando gargalos em leads, cadastro, onboarding, primeira resposta, pricing/oferta ou checkout.
+- Metricas indisponiveis por tabela ausente passam a ser tratadas como "Nao disponivel" no admin, sem quebrar a tela.
+- Exportacao CSV simples foi adicionada para metricas internas agregadas e mantida para relatorio de campanha/leads; nao exporta conteudo completo de respostas, secrets ou dados de pagamento.
+- Documentacao criada: `docs/internal-metrics.md`, `docs/weekly-business-review.md`, `docs/business-health-criteria.md` e `docs/monthly-business-report-template.md`.
+- README e `docs/README.md` foram atualizados com os novos documentos.
+- Testes revisados para admin metrics, bloqueio por `requireAdmin`, indisponibilidade de tabela opcional e diagnostico de gargalo com dados simulados.
+- Pendencias restantes: validar os contadores com dados reais em staging/producao, conferir que todos os eventos internos desejados estao sendo persistidos e continuar usando GA4/Meta/Stripe para visitantes, custos e detalhes financeiros externos.
+- Nota estimada atualizada: 97/100 para producao controlada, condicionada a validacao real do admin e dos provedores.
+
 ## Operacao 1.0
 
 A operacao continua da versao 1.0 agora esta documentada em `docs/operations-1.0.md`, com rotinas diaria, semanal e mensal para logs, provedores, feedbacks, leads, usuarios, assinaturas, custos, bugs e campanhas.

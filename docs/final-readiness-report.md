@@ -27,6 +27,28 @@ Nota estimada atualizada: 96/100. A nota nao sobe nesta consolidacao porque a et
 
 Recomendacao sobre escala cautelosa: manter a decisao de nao escalar ainda sem dados reais preenchidos em `docs/second-campaign-analysis.md`, matriz de escala verde e ausencia de bugs P0/P1. Campanhas pequenas continuam aceitaveis somente com monitoramento diario e baixo orcamento.
 
+## Relatorios internos de negocio
+
+Status: relatorios internos simples implementados no admin protegido, sem BI complexo, sem expor conteudo completo de respostas e sem dados de pagamento.
+
+O que foi feito:
+
+- Secao "Relatorios" no admin para aquisicao, ativacao, uso, receita, suporte e qualidade.
+- Funil com numeros absolutos e taxas simples para leads, cadastros, onboarding, primeira resposta, resposta salva/copiada, checkout e assinatura.
+- Diagnostico deterministico do funil para apontar gargalos comuns sem usar IA.
+- Filtro de periodo reaproveitado: hoje, ultimos 7 dias, ultimos 30 dias e todos.
+- Tratamento de metricas indisponiveis quando tabela opcional ainda nao existe.
+- Exportacao CSV agregada para metricas internas, alem dos CSVs existentes de campanha/leads.
+- Documentos criados: `docs/internal-metrics.md`, `docs/weekly-business-review.md`, `docs/business-health-criteria.md` e `docs/monthly-business-report-template.md`.
+
+Pendencias:
+
+- Validar os contadores com dados reais em staging/producao.
+- Conferir persistencia real de eventos internos para checkout, falhas e uso.
+- Manter visitantes, gasto de midia e analise financeira detalhada fora do app, nos provedores correspondentes.
+
+Nota estimada mantida: 97/100 para producao controlada, condicionada a validacao real do admin e dos provedores.
+
 ## Operacao continua 1.0
 
 A operacao 1.0 esta documentada para manter o produto estavel apos o lancamento:

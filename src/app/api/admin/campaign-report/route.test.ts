@@ -109,4 +109,45 @@ describe("GET /api/admin/campaign-report", () => {
 
     expect(response.status).toBe(403);
   });
+
+  it("retorna diagnostico simples com dados simulados de gargalo", async () => {
+    const now = new Date().toISOString();
+    const rows: Record<string, unknown[]> = {
+      ebook_leads: Array.from({ length: 10 }, (_, index) => ({
+        email: `lead${index}@example.com`,
+        created_at: now,
+        utm_source: "meta",
+        utm_campaign: "gargalo",
+        utm_content: "criativo"
+      })),
+      profiles: [],
+      businesses: [],
+      generated_responses: [],
+      subscriptions: [],
+      user_feedback: [],
+      events: []
+    };
+    mocks.requireAdmin.mockResolvedValueOnce({
+      user: { id: "admin-id" },
+      supabase: {
+        from: vi.fn((table: string) => ({
+          select: vi.fn(() => ({
+            limit: vi.fn(() => ({ data: rows[table] || [], error: null }))
+          }))
+        }))
+      }
+    });
+
+    const { GET } = await import("./route");
+    const response = await GET(
+      new Request("https://app.example.test/api/admin/campaign-report?period=7d&utm_source=meta&utm_campaign=gargalo", {
+        headers: { Authorization: "Bearer token" }
+      })
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.metrics.totalLeads).toBe(10);
+    expect(body.interpretation).toContain("lead para cadastro");
+  });
 });

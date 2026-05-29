@@ -35,7 +35,7 @@ function createMetricsSupabase() {
       { user_id: "user_1", created_at: new Date().toISOString() }
     ],
     subscriptions: [
-      { user_id: "user_1", status: "active", stripe_checkout_session_id: "cs_test", created_at: new Date().toISOString() }
+      { user_id: "user_1", plan: "pro", plan_name: "Pro", price: 97, status: "active", stripe_checkout_session_id: "cs_test", created_at: new Date().toISOString() }
     ],
     user_feedback: [
       { type: "bug", status: "new", created_at: new Date().toISOString() },
@@ -54,6 +54,10 @@ function createMetricsSupabase() {
     ],
     stripe_webhook_events: [
       { event_type: "checkout.session.completed", processed_at: new Date().toISOString(), created_at: new Date().toISOString() }
+    ],
+    support_requests: [
+      { status: "pending", created_at: new Date().toISOString() },
+      { status: "resolved", created_at: new Date().toISOString() }
     ]
   };
 
@@ -102,8 +106,44 @@ describe("GET /api/admin/metrics", () => {
     expect(body.activation.usersWithCopiedResponse).toBe(1);
     expect(body.activation.usersWithFavoriteResponse).toBe(1);
     expect(body.usage.totalSavedTemplates).toBe(1);
+    expect(body.availability.supportRequests).toBe(true);
+    expect(body.funnel.usersWithSavedOrCopiedResponse).toBe(1);
+    expect(body.revenue.activeSubscriptions).toBe(1);
+    expect(body.revenue.estimatedMrr).toBe(97);
+    expect(body.revenue.activeSubscriptionsByPlan).toEqual([{ label: "pro", count: 1 }]);
+    expect(body.supportQuality.openSupportRequests).toBe(1);
     expect(body.leads).toBeUndefined();
     expect(body.profiles).toBeUndefined();
+  });
+
+  it("mantem metricas carregaveis quando uma tabela opcional esta indisponivel", async () => {
+    mocks.requireAdmin.mockResolvedValueOnce({
+      user: { id: "admin-id" },
+      supabase: {
+        from: vi.fn((table: string) => ({
+          select: vi.fn(() => ({
+            limit: vi.fn(() =>
+              table === "support_requests"
+                ? { data: null, error: { message: "relation does not exist" } }
+                : { data: [], error: null }
+            )
+          }))
+        }))
+      }
+    });
+
+    const { GET } = await import("./route");
+    const response = await GET(
+      new Request("https://app.example.test/api/admin/metrics?period=7d", {
+        headers: { Authorization: "Bearer token" }
+      })
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.availability.supportRequests).toBe(false);
+    expect(body.supportQuality.openSupportRequests).toBe(0);
+    expect(body.funnel.totalLeads).toBe(0);
   });
 
   it("bloqueia usuario comum via requireAdmin", async () => {

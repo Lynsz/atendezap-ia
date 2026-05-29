@@ -22,6 +22,10 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [internal-support-playbook](internal-support-playbook.md)
 - [user-activation](user-activation.md)
 - [activation-emails](activation-emails.md)
+- [internal-metrics](internal-metrics.md)
+- [weekly-business-review](weekly-business-review.md)
+- [business-health-criteria](business-health-criteria.md)
+- [monthly-business-report-template](monthly-business-report-template.md)
 - [critical-api-security-review](critical-api-security-review.md)
 - [environments](environments.md)
 - [operations-1.0](operations-1.0.md)
@@ -59,6 +63,10 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [version-1.0](version-1.0.md)
 - [roadmap-post-1.0](roadmap-post-1.0.md)
 - [product-metrics](product-metrics.md)
+- [internal-metrics](internal-metrics.md)
+- [weekly-business-review](weekly-business-review.md)
+- [business-health-criteria](business-health-criteria.md)
+- [monthly-business-report-template](monthly-business-report-template.md)
 - [feedback](first-users-feedback.md)
 - [retention-plan](retention-plan.md)
 - [ai-response-quality-plan](ai-response-quality-plan.md)
@@ -98,6 +106,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Tracking: use `tracking.md` como fonte principal; `tracking-setup.md` e `tracking-production.md` complementam validacao.
 - Custos: use `cost-monitoring.md` junto com dashboards dos provedores.
 - Retencao e qualidade: use `user-activation.md`, `activation-emails.md`, `retention-plan.md`, `ai-response-quality-plan.md`, `ai-business-templates.md`, `saved-responses.md` e `whatsapp-templates.md`.
+- Relatorios internos: use `internal-metrics.md`, `weekly-business-review.md`, `business-health-criteria.md` e `monthly-business-report-template.md`.
 - Seguranca: use `SECURITY.md` na raiz como fonte completa; `docs/security.md` e `docs/security-checklist.md` sao entradas auxiliares.
 - Campanhas: use `first-paid-campaign-plan.md`, `second-campaign-analysis.md`, `scale-decision-matrix.md` e `cautious-scale-plan.md`.
 - Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
