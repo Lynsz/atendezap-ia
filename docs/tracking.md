@@ -21,6 +21,12 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `campaign_signup_cta_click`: clique da pagina de campanha para cadastro.
 - `campaign_pricing_cta_click`: clique da pagina de campanha para planos.
 - `campaign_pro_cta_click`: clique da pagina de campanha na oferta do Pro.
+- `niche_page_view`: abertura de pagina publica por nicho.
+- `niche_demo_cta_click`: clique de pagina por nicho para demo.
+- `niche_signup_cta_click`: clique de pagina por nicho para cadastro.
+- `niche_ebook_cta_click`: clique de pagina por nicho para ebook.
+- `niche_pricing_cta_click`: clique de pagina por nicho para planos.
+- `niche_faq_opened`: abertura de FAQ em pagina por nicho.
 - `plan_click`: clique em um plano.
 - `demo_view`: abertura da demo publica.
 - `demo_response_success`: demo gerou resposta ou fallback controlado.
@@ -92,6 +98,8 @@ O app captura e preserva por ate 30 dias:
 As UTMs ficam em `localStorage` na chave `atendezap_ia_utm_attribution_v1`. O formulario do ebook e o checkout Stripe usam as UTMs atuais da URL ou, se nao houver, as UTMs salvas.
 
 No checkout, o backend inclui em metadata da Stripe apenas campos de atribuicao seguros: UTMs, `funnel`, `source` e `plan`. Nunca envie senha, cartao, token, perguntas privadas ou conteudo gerado em metadata.
+
+Nas paginas por nicho, os eventos enviam apenas metadados seguros como `niche`, `cta`, `source` e `faq_index`. Nao envie pergunta do cliente, resposta gerada, e-mail ou dados sensiveis.
 
 Na segunda campanha, use `utm_content` para diferenciar variacoes como `demo_criativo_1`, `ebook_criativo_1`, `landing_criativo_1` e `pro_29_criativo_1`.
 

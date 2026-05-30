@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import Link from "next/link";
 import Script from "next/script";
 import { TrackingProvider } from "@/components/tracking/TrackingProvider";
+import { NICHE_SLUGS, NICHES } from "@/config/niches";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
@@ -117,9 +118,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </header>
         {children}
         <footer className="border-t border-slate-200 bg-white">
-          <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-slate-600 md:flex-row md:items-center md:justify-between">
+          <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm text-slate-600 md:grid-cols-[1fr_1.6fr_auto] md:items-start">
             <p>© {new Date().getFullYear()} AtendeZap IA. Produto digital independente.</p>
-            <div className="flex gap-4">
+            <div>
+              <p className="mb-3 font-black text-ink">Feito para quem atende pelo WhatsApp</p>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                {NICHE_SLUGS.map((slug) => (
+                  <Link href={NICHES[slug].route} className="hover:text-brand-700" key={slug}>
+                    {NICHES[slug].name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-4 md:justify-end">
               <Link href="/termos" className="hover:text-brand-700">
                 Termos
               </Link>

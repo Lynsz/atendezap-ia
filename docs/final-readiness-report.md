@@ -1017,3 +1017,26 @@ Pendencias:
 - Considerar idempotencia por request se repeticoes de envio aparecerem em producao.
 
 Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real em staging/producao.
+
+## Paginas publicas por nicho - 2026-05-30
+
+Status: etapa implementada para testar campanhas com mensagens mais especificas por tipo de atendimento.
+
+O que foi feito:
+
+- Criada configuracao central de nichos em `src/config/niches.ts`.
+- Criadas paginas publicas em `/para/delivery`, `/para/estetica`, `/para/assistencia-tecnica`, `/para/lojas`, `/para/restaurantes`, `/para/prestadores-de-servico` e `/para/autonomos`.
+- Criado componente reutilizavel de landing por nicho com CTA para demo, cadastro, ebook e planos.
+- FAQs por nicho reforcam que o AtendeZap IA nao envia mensagens automaticamente pelo WhatsApp.
+- SEO basico por nicho criado com title, description, canonical e Open Graph.
+- Tracking seguro de nicho adicionado sem e-mail, pergunta, resposta ou dados sensiveis.
+- Rodape ganhou links discretos para os nichos.
+- Criados `docs/niche-campaign-utm-links.md`, `docs/niche-copy-guide.md` e `docs/niche-campaign-plan.md`.
+
+Pendencias:
+
+- Validar visitantes e custo por nicho no GA4/Meta Ads.
+- Usar UTMs para comparar leads, checkouts e assinaturas no admin.
+- Ajustar copy apenas depois de dados reais por nicho.
+
+Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real de campanhas.

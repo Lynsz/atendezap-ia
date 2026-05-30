@@ -665,6 +665,19 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias restantes: persistir tokens/modelo por resposta se a estimativa de custo interna passar a ser necessaria; avaliar idempotencia por request se houver repeticao frequente; validar Upstash em producao para rate limit distribuido.
 - Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real em staging/producao.
 
+## Paginas publicas por nicho - 2026-05-30
+
+- Criada configuracao central em `src/config/niches.ts` para delivery, estetica, assistencia tecnica, lojas, restaurantes, prestadores de servico e autonomos.
+- Criada rota publica dinamica `/para/[slug]` com paginas segmentadas, metadados, canonical e 404 para nicho invalido.
+- Criado componente reutilizavel `src/components/marketing/NicheLandingPage.tsx` com hero, dores, exemplos, resposta segura, como funciona, beneficios, templates recomendados, CTA e FAQ.
+- Copy reforca que o AtendeZap IA gera respostas para copiar, ajustar e enviar; nao promete integracao direta, envio automatico pelo WhatsApp, CRM ou automacao complexa.
+- Tracking seguro adicionado: `niche_page_view`, `niche_demo_cta_click`, `niche_signup_cta_click`, `niche_ebook_cta_click`, `niche_pricing_cta_click` e `niche_faq_opened`.
+- Rodape recebeu links discretos para paginas por nicho em "Feito para quem atende pelo WhatsApp".
+- Documentacao criada: `docs/niche-campaign-utm-links.md`, `docs/niche-copy-guide.md` e `docs/niche-campaign-plan.md`.
+- Admin existente continua usando UTMs e campanhas; visitantes por nicho devem ser analisados em GA4/Meta Ads, enquanto leads/checkouts/assinaturas dependem das UTMs preservadas.
+- Pendencias restantes: validar campanhas reais por nicho, comparar custo por lead/cadastro e ajustar copy apenas com evidencia.
+- Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real de campanhas.
+
 ## Monitoramento minimo de producao - 2026-05-27
 
 - Monitoramento minimo criado em `docs/production-monitoring.md`, com rotina diaria, semanal e alertas criticos.

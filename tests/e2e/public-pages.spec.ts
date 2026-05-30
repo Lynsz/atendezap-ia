@@ -7,6 +7,13 @@ const publicPages = [
   { path: "/ebook/obrigado", text: /guia gratuito/i, cta: /Acessar guia gratuito/i },
   { path: "/ebook/guia", text: /WhatsApp/i, cta: /AtendeZap IA|precos|demo/i },
   { path: "/demo", text: /Demonstracao gratuita|Teste como o AtendeZap IA/i, cta: /Gerar resposta de exemplo/i },
+  { path: "/para/delivery", text: /Delivery|respostas rapidas/i, cta: /Testar demo gratis|Criar minha conta/i },
+  { path: "/para/estetica", text: /Estetica|respostas mais claras/i, cta: /Testar demo gratis|Criar minha conta/i },
+  { path: "/para/assistencia-tecnica", text: /Assistencia tecnica|orcamentos/i, cta: /Testar demo gratis|Criar minha conta/i },
+  { path: "/para/lojas", text: /Lojas|vendem pelo WhatsApp/i, cta: /Testar demo gratis|Criar minha conta/i },
+  { path: "/para/restaurantes", text: /Restaurantes|cardapio/i, cta: /Testar demo gratis|Criar minha conta/i },
+  { path: "/para/prestadores-de-servico", text: /Prestadores de servico|orcamento/i, cta: /Testar demo gratis|Criar minha conta/i },
+  { path: "/para/autonomos", text: /Autonomos|trabalhando sozinho/i, cta: /Testar demo gratis|Criar minha conta/i },
   { path: "/feedback", text: /Ajude a melhorar|Enviar feedback/i, cta: /Enviar feedback/i },
   { path: "/suporte", text: /Suporte|Como podemos ajudar/i, cta: /Enviar suporte|Privacidade|Termos/i },
   { path: "/login", text: /Entrar|login|e-mail/i, cta: /Entrar|acessar/i },
@@ -33,5 +40,10 @@ test.describe("paginas publicas", () => {
 
     expect(response.status()).toBe(200);
     expect(body.status).toBe("ok");
+  });
+
+  test("nicho invalido retorna 404", async ({ page }) => {
+    const response = await page.goto("/para/nicho-invalido");
+    expect(response?.status()).toBe(404);
   });
 });

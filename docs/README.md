@@ -53,6 +53,9 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [ai-cost-control](ai-cost-control.md)
 - [plan-limits](plan-limits.md)
 - [rate-limits](rate-limits.md)
+- [niche-campaign-utm-links](niche-campaign-utm-links.md)
+- [niche-copy-guide](niche-copy-guide.md)
+- [niche-campaign-plan](niche-campaign-plan.md)
 - [internal-faq](internal-faq.md)
 
 ## Integracoes
@@ -116,6 +119,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Relatorios internos: use `internal-metrics.md`, `weekly-business-review.md`, `business-health-criteria.md` e `monthly-business-report-template.md`.
 - Seguranca: use `SECURITY.md` na raiz como fonte completa; `docs/security.md` e `docs/security-checklist.md` sao entradas auxiliares.
 - Campanhas: use `first-paid-campaign-plan.md`, `second-campaign-analysis.md`, `scale-decision-matrix.md` e `cautious-scale-plan.md`.
+- Campanhas por nicho: use `niche-campaign-utm-links.md`, `niche-copy-guide.md` e `niche-campaign-plan.md`.
 - Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
 
 ## Observacao sobre documentos legados
