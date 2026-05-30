@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
-import { enforceRateLimit } from "@/lib/rate-limit";
+import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { getAppUrl, getStripe } from "@/services/stripe";
 
@@ -48,6 +48,7 @@ async function authenticateRequest(request: Request) {
 export async function POST(request: Request) {
   let userId: string | null = null;
   try {
+    assertRequestSize(request, 2_048);
     await enforceRateLimit({ request, route: "api:stripe-portal:ip", limit: 20, windowMs: 10 * 60_000 });
     const user = await authenticateRequest(request);
     userId = user.id;

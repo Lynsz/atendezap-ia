@@ -3,6 +3,7 @@ import { z } from "zod";
 import { AppError } from "@/lib/errors";
 import { requireAdmin } from "@/lib/admin";
 import { serverLog } from "@/lib/logger";
+import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -39,6 +40,7 @@ type SubscriptionMetricRow = {
   plan?: string | null;
   plan_name?: string | null;
   price?: number | null;
+  monthly_limit?: number | null;
   status: string | null;
   acquisition_source?: string | null;
   funnel_source?: string | null;
@@ -229,7 +231,7 @@ export async function GET(request: Request) {
       supabase.from("profiles").select("id, email, created_at").limit(10000),
       supabase.from("businesses").select("user_id, onboarding_completed, created_at, updated_at").limit(10000),
       supabase.from("generated_responses").select("user_id, created_at").limit(20000),
-      supabase.from("subscriptions").select("user_id, plan, plan_name, price, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
+      supabase.from("subscriptions").select("user_id, plan, plan_name, price, monthly_limit, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
       supabase.from("user_feedback").select("type, status, created_at").limit(10000),
       supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000),
       supabase.from("saved_responses").select("user_id, source_template_id, category, copy_count, is_favorite, created_at").limit(20000),
@@ -291,6 +293,32 @@ export async function GET(request: Request) {
       if (response.user_id) accumulator[response.user_id] = (accumulator[response.user_id] || 0) + 1;
       return accumulator;
     }, {});
+    const monthlyResponseCountsByUser = responses
+      .filter((response) => isAtOrAfter(response.created_at, new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1))))
+      .reduce<Record<string, number>>((accumulator, response) => {
+        if (response.user_id) accumulator[response.user_id] = (accumulator[response.user_id] || 0) + 1;
+        return accumulator;
+      }, {});
+    const usersNearLimit = activeSubscriptions.filter((subscription) => {
+      if (!subscription.user_id) return false;
+      const limit = subscription.monthly_limit || getPlanResponseLimit(subscription.plan || subscription.plan_name, subscription.status);
+      const used = monthlyResponseCountsByUser[subscription.user_id] || 0;
+      return limit > 0 && used >= limit * 0.8 && used < limit;
+    });
+    const usersAtLimit = activeSubscriptions.filter((subscription) => {
+      if (!subscription.user_id) return false;
+      const limit = subscription.monthly_limit || getPlanResponseLimit(subscription.plan || subscription.plan_name, subscription.status);
+      const used = monthlyResponseCountsByUser[subscription.user_id] || 0;
+      return limit > 0 && used >= limit;
+    });
+    const topUsageUsers = Object.entries(monthlyResponseCountsByUser)
+      .map(([user_id, responses_used]) => ({
+        user_id,
+        user_id_short: user_id.length > 12 ? `${user_id.slice(0, 8)}...${user_id.slice(-4)}` : user_id,
+        responses_used
+      }))
+      .sort((a, b) => b.responses_used - a.responses_used)
+      .slice(0, 5);
     const activeUsers7Days = new Set(responses.filter((response) => isAtOrAfter(response.created_at, sevenDaysStart)).map((response) => response.user_id).filter(Boolean) as string[]);
     const activeUsers30Days = new Set(responses.filter((response) => isAtOrAfter(response.created_at, thirtyDaysStart)).map((response) => response.user_id).filter(Boolean) as string[]);
     const positiveAiFeedback = aiResponseFeedback.filter((item) => item.rating === "positive");
@@ -426,7 +454,12 @@ export async function GET(request: Request) {
         periodSavedResponses: savedResponses.filter((item) => isAtOrAfter(item.created_at, periodStart)).length,
         usersWithSavedResponses: savedResponseUsers.size,
         totalSavedTemplates: savedTemplates.length,
-        savedTemplatesByCategory: topBreakdown(savedTemplates.map((item) => ({ label: cleanCampaignValue(item.category) })), 8)
+        savedTemplatesByCategory: topBreakdown(savedTemplates.map((item) => ({ label: cleanCampaignValue(item.category) })), 8),
+        usersNearLimit: usersNearLimit.length,
+        usersAtLimit: usersAtLimit.length,
+        topUsageUsers,
+        aiCostEstimate: null,
+        aiCostEstimateNote: "Estimativa indisponivel sem tokens salvos; confira o custo real no painel da OpenAI."
       },
       feedback: {
         totalFeedbacks: feedback.length,

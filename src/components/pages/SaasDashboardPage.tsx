@@ -302,6 +302,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [hasViewedPricingThisSession, setHasViewedPricingThisSession] = useState(false);
   const trackedActiveSubscriptionRef = useRef(false);
   const trackedDashboardOnboardingRef = useRef(false);
+  const trackedUsageWarningRef = useRef(false);
+  const trackedUsageReachedRef = useRef(false);
 
   const supabase = useMemo(() => (isSupabaseBrowserConfigured() ? supabaseBrowserClient : null), []);
 
@@ -1175,6 +1177,27 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       });
     }
   }, [subscription]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (hasReachedMonthlyLimit && !trackedUsageReachedRef.current) {
+      trackedUsageReachedRef.current = true;
+      trackEvent("usage_limit_reached", {
+        source: "dashboard",
+        plan: currentPlanId || "none",
+        usage_percent: usagePercent
+      });
+      return;
+    }
+    if (isNearMonthlyLimit && !trackedUsageWarningRef.current) {
+      trackedUsageWarningRef.current = true;
+      trackEvent("usage_limit_warning_viewed", {
+        source: "dashboard",
+        plan: currentPlanId || "none",
+        usage_percent: usagePercent
+      });
+    }
+  }, [currentPlanId, hasReachedMonthlyLimit, isNearMonthlyLimit, loading, usagePercent]);
 
   useEffect(() => {
     if (!loading && shouldShowOnboarding && !trackedDashboardOnboardingRef.current) {

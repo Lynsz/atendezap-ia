@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPlanResponseLimit } from "@/lib/plan-limits";
+import { DEMO_DAILY_LIMIT, getPlanLimitDescription, getPlanResponseLimit } from "@/lib/plan-limits";
 
 describe("getPlanResponseLimit", () => {
   it("aplica os limites mensais do MVP por plano", () => {
@@ -14,6 +14,11 @@ describe("getPlanResponseLimit", () => {
   it("usa free como fallback seguro", () => {
     expect(getPlanResponseLimit(null, null)).toBe(30);
     expect(getPlanResponseLimit("plano-inexistente")).toBe(30);
+  });
+
+  it("expose descricao centralizada de limite e limite da demo", () => {
+    expect(getPlanLimitDescription("Pro")).toEqual({ plan: "pro", monthlyResponseLimit: 600 });
+    expect(DEMO_DAILY_LIMIT).toBe(6);
   });
 
   it("nao libera limite pago para assinatura pendente, vencida ou cancelada", () => {

@@ -652,6 +652,19 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Pendencias restantes: aplicar migration `0011_ai_response_feedback.sql` no Supabase real, revisar feedbacks reais semanalmente e evoluir templates apenas com evidencia de uso.
 - Nota operacional estimada atualizada: 97/100 para a etapa de qualidade da IA; escala ampla continua condicionada a dados reais, estabilidade e ausencia de P0/P1.
 
+## Limites de uso, custo de IA e abuso - 2026-05-30
+
+- Fonte de limites revisada: `src/config/plans.ts` continua como fonte dos planos Starter, Pro e Premium; `src/lib/plan-limits.ts` centraliza fallback free/trial e limite da demo.
+- Geracao autenticada revisada em `/api/ai/generate-response`: assinatura/status e uso sao verificados antes da chamada OpenAI, com ciclo por assinatura quando houver `current_period_start/current_period_end` e fallback por mes calendario.
+- Uso mensal continua derivado de `generated_responses`; respostas so contam depois de geracao e persistencia bem-sucedidas. Falhas antes da resposta nao incrementam uso.
+- Demo publica preservada sem login e com rate limit por IP, mensagem amigavel e fallback local quando OpenAI nao estiver configurada.
+- Rate limits revisados em geracao de IA, demo, leads, suporte, feedbacks, data requests, checkout e portal Stripe usando `src/lib/rate-limit.ts`.
+- Admin recebeu metricas agregadas de usuarios perto do limite, usuarios no limite, maiores usuarios por volume e custo OpenAI indisponivel quando tokens nao sao salvos.
+- Tracking seguro revisado com eventos de limite e abuso sem pergunta, resposta, e-mail ou dados sensiveis.
+- Documentacao criada: `docs/ai-cost-control.md`, `docs/plan-limits.md` e `docs/rate-limits.md`.
+- Pendencias restantes: persistir tokens/modelo por resposta se a estimativa de custo interna passar a ser necessaria; avaliar idempotencia por request se houver repeticao frequente; validar Upstash em producao para rate limit distribuido.
+- Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real em staging/producao.
+
 ## Monitoramento minimo de producao - 2026-05-27
 
 - Monitoramento minimo criado em `docs/production-monitoring.md`, com rotina diaria, semanal e alertas criticos.

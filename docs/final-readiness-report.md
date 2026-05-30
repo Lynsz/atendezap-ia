@@ -995,3 +995,25 @@ Recomendacao atualizada:
 O AtendeZap IA tem monitoramento minimo suficiente para producao controlada. A rotina ainda depende de checagem operacional diaria; alertas automaticos mais sofisticados devem ser adicionados apenas quando houver volume real.
 
 Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real em staging/producao e revisao dos logs depois do deploy.
+
+## Limites de uso, custo de IA e abuso - 2026-05-30
+
+Status: etapa implementada para reduzir custo desnecessario de OpenAI e abuso sem exigir login na demo publica.
+
+O que foi feito:
+
+- Limites por plano mantidos centralizados em `src/config/plans.ts` e fallback free/demo documentado em `src/lib/plan-limits.ts`.
+- API de geracao autenticada verifica assinatura, status, ciclo e limite antes de chamar OpenAI.
+- Ciclo de uso usa periodo da assinatura quando disponivel e mes calendario como fallback.
+- Uso mensal continua contando apenas respostas persistidas com sucesso em `generated_responses`; falhas antes da geracao nao contam.
+- Demo publica segue protegida por rate limit e mensagem clara para limite de testes gratuitos.
+- Admin ganhou visibilidade agregada de usuarios perto/no limite, maiores usuarios por volume e nota de custo OpenAI indisponivel sem tokens.
+- Novos docs: `docs/ai-cost-control.md`, `docs/plan-limits.md` e `docs/rate-limits.md`.
+
+Pendencias:
+
+- Salvar tokens/modelo por resposta se for necessario calcular custo estimado interno.
+- Validar rate limit distribuido com Upstash no ambiente real.
+- Considerar idempotencia por request se repeticoes de envio aparecerem em producao.
+
+Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real em staging/producao.

@@ -5,15 +5,18 @@ import { AppError } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { generateResponseSchema } from "@/lib/mvp-validators";
-import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
+import {
+  MONTHLY_LIMIT_EXCEEDED_MESSAGE,
+  TEMPORARY_AI_ERROR_MESSAGE,
+  getSubscriptionPlanName,
+  getSubscriptionStatus,
+  getUsageCycle,
+  getUsageLimit,
+  getUsageSnapshot
+} from "@/lib/usage-limits";
 
 export const runtime = "nodejs";
-
-function getCurrentMonthStart() {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
-}
 
 function isUsableSubscriptionStatus(status?: string | null) {
   const normalized = status?.trim().toLowerCase();
@@ -91,26 +94,40 @@ export async function POST(request: Request) {
 
     const { data: subscription } = await supabase
       .from("subscriptions")
-      .select("plan_name, plan, status, subscription_status, monthly_limit")
+      .select("id, plan_name, plan, status, subscription_status, monthly_limit, current_period_start, current_period_end")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    const planName = subscription?.plan || subscription?.plan_name;
-    const subscriptionStatus = subscription?.subscription_status || subscription?.status;
-    const hasPaidPlan = Boolean(planName && planName !== "free");
+    const planName = getSubscriptionPlanName(subscription);
+    const subscriptionStatus = getSubscriptionStatus(subscription);
     if (!isUsableSubscriptionStatus(subscriptionStatus)) {
-      return NextResponse.json({ error: inactiveSubscriptionMessage(subscriptionStatus, hasPaidPlan) }, { status: 403 });
+      await logEvent("ai_generation_blocked_by_limit", {
+        source: "dashboard",
+        reason: "subscription_inactive",
+        plan: planName || "sem_plano",
+        status: subscriptionStatus || "sem_status"
+      });
+      serverLog({
+        level: "warn",
+        event: "ai_generation_blocked",
+        route: "/api/ai/generate-response",
+        userId: user.id,
+        status: 403,
+        metadata: { reason: "subscription_inactive", plan: planName || "sem_plano", subscription_status: subscriptionStatus || "sem_status" }
+      });
+      return NextResponse.json({ error: inactiveSubscriptionMessage(subscriptionStatus, Boolean(planName && planName !== "free")) }, { status: 403 });
     }
 
-    const limit = subscription?.monthly_limit || getPlanResponseLimit(planName, subscriptionStatus);
-    const monthStart = getCurrentMonthStart();
+    const limit = getUsageLimit(subscription);
+    const cycle = getUsageCycle(subscription);
     const { count, error: countError } = await supabase
       .from("generated_responses")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
-      .gte("created_at", monthStart);
+      .gte("created_at", cycle.periodStart)
+      .lt("created_at", cycle.periodEnd);
 
     if (countError) {
       serverLog({ level: "warn", event: "ai_usage_count_failed", route: "/api/ai/generate-response", userId: user.id, error: countError });
@@ -118,18 +135,35 @@ export async function POST(request: Request) {
     }
 
     const used = count ?? 0;
-    if (used >= limit) {
-      return NextResponse.json(
-        {
-          error: "Você atingiu o limite de respostas do seu plano neste mês. Faça upgrade para continuar usando.",
-          usage: {
-            used,
-            limit,
-            remaining: 0
-          }
-        },
-        { status: 403 }
-      );
+    const usage = getUsageSnapshot(used, limit, cycle);
+    serverLog({
+      event: "ai_limit_checked",
+      route: "/api/ai/generate-response",
+      userId: user.id,
+      status: "ok",
+      metadata: { plan: planName || "sem_plano", used: usage.used, limit: usage.limit, cycle_source: usage.cycleSource }
+    });
+    if (usage.reachedLimit) {
+      await logEvent("usage_limit_reached", {
+        source: "dashboard",
+        plan: planName || "sem_plano",
+        used: usage.used,
+        limit: usage.limit
+      });
+      await logEvent("ai_generation_blocked_by_limit", {
+        source: "dashboard",
+        reason: "monthly_limit",
+        plan: planName || "sem_plano"
+      });
+      serverLog({
+        level: "warn",
+        event: "ai_limit_exceeded",
+        route: "/api/ai/generate-response",
+        userId: user.id,
+        status: 403,
+        metadata: { plan: planName || "sem_plano", used: usage.used, limit: usage.limit }
+      });
+      return NextResponse.json({ error: MONTHLY_LIMIT_EXCEEDED_MESSAGE, usage }, { status: 403 });
     }
 
     const requestedBusinessId = payload.data.businessData.id || payload.data.businessId;
@@ -180,7 +214,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const nextUsed = used + 1;
+    const nextUsage = getUsageSnapshot(used + 1, limit, cycle);
+    if (nextUsage.nearLimit) {
+      await logEvent("usage_limit_warning_viewed", {
+        source: "dashboard",
+        plan: planName || "sem_plano",
+        used: nextUsage.used,
+        limit: nextUsage.limit
+      });
+    }
     await logEvent("ai_generation_succeeded", {
       source: "dashboard",
       response_type: payload.data.responseType,
@@ -193,11 +235,7 @@ export async function POST(request: Request) {
       mode,
       savedResponse,
       savedResponseId: savedResponse.id,
-      usage: {
-        used: nextUsed,
-        limit,
-        remaining: Math.max(limit - nextUsed, 0)
-      }
+      usage: nextUsage
     });
   } catch (error) {
     await logEvent("ai_generation_failed", {
@@ -208,6 +246,6 @@ export async function POST(request: Request) {
     if (error instanceof AppError) {
       return NextResponse.json({ error: error.message }, { status: error.status });
     }
-    return NextResponse.json({ error: "Não foi possível gerar a resposta agora. Tente novamente em instantes." }, { status: 500 });
+    return NextResponse.json({ error: TEMPORARY_AI_ERROR_MESSAGE }, { status: 500 });
   }
 }

@@ -185,6 +185,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/user-activation.md`, `docs/activation-emails.md` e `docs/retention-plan.md` para ativacao e retencao inicial.
 - Use `docs/internal-metrics.md`, `docs/weekly-business-review.md`, `docs/business-health-criteria.md` e `docs/monthly-business-report-template.md` para revisar crescimento, funil, receita e saude do negocio.
 - Use `docs/safe-logging.md` para revisar o que pode ou nao ir para logs.
+- Use `docs/ai-cost-control.md`, `docs/plan-limits.md` e `docs/rate-limits.md` para limites de IA, custo e prevencao de abuso.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
 - Use `docs/error-messages.md` para manter mensagens amigaveis e sem stack trace.
@@ -246,6 +247,9 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/data-deletion-process.md`: processo manual de exclusao.
 - `docs/critical-api-security-review.md`: revisao operacional das APIs criticas.
 - `docs/cost-monitoring.md`: monitoramento de custos.
+- `docs/ai-cost-control.md`: controle de custos da IA.
+- `docs/plan-limits.md`: limites por plano e ciclo de uso.
+- `docs/rate-limits.md`: protecao das APIs sensiveis.
 - `docs/retention-plan.md`: plano inicial de retencao.
 - `docs/ai-response-quality-plan.md`: qualidade das respostas com IA.
 - `docs/internal-faq.md`: FAQ operacional interna.

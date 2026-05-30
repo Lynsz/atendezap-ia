@@ -1,4 +1,5 @@
 import { AppError } from "@/lib/errors";
+import { serverLog } from "@/lib/logger";
 
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
@@ -138,6 +139,18 @@ export async function enforceRateLimit({ request, route, identifier, limit, wind
   const result = await checkRateLimitAsync(`${route}:${rateIdentity}`, limit, windowMs);
 
   if (!result.allowed) {
+    serverLog({
+      level: "warn",
+      event: route.includes("demo") ? "demo_rate_limited" : "rate_limit_triggered",
+      route,
+      status: 429,
+      metadata: {
+        backend: result.backend,
+        limit: result.limit,
+        retry_after: result.retryAfter,
+        identity_type: identifier ? "user" : "ip"
+      }
+    });
     throw new AppError(message, 429);
   }
 

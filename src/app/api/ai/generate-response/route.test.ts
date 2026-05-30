@@ -2,7 +2,7 @@
 
 const mocks = vi.hoisted(() => ({
   responseCount: 30,
-  subscription: { plan_name: "free", status: "trial" },
+  subscription: { plan_name: "free", status: "trial", current_period_start: null, current_period_end: null },
   createClient: vi.fn(),
   generateCustomerResponseWithAi: vi.fn(),
   tableFilters: [] as Array<{ table: string; column: string; value: unknown }>,
@@ -21,6 +21,7 @@ type QueryChain = {
   select: ReturnType<typeof vi.fn>;
   eq: ReturnType<typeof vi.fn>;
   gte: ReturnType<typeof vi.fn>;
+  lt: ReturnType<typeof vi.fn>;
   order: ReturnType<typeof vi.fn>;
   limit: ReturnType<typeof vi.fn>;
   maybeSingle: ReturnType<typeof vi.fn>;
@@ -36,6 +37,7 @@ function createChain(table: string, terminal: () => Promise<Record<string, unkno
       return chain;
     });
   chain.gte = vi.fn(() => chain);
+  chain.lt = vi.fn(() => chain);
   chain.order = vi.fn(() => chain);
   chain.limit = vi.fn(() => chain);
   chain.maybeSingle = vi.fn(terminal);
@@ -66,7 +68,8 @@ function createSupabaseMock() {
           data: { id: "response_1", user_id: "11111111-1111-4111-8111-111111111111" },
           error: null
         }));
-        chain.gte.mockImplementation(async () => ({ count: mocks.responseCount, error: null }) as never);
+        chain.gte.mockImplementation(() => chain);
+        chain.lt.mockImplementation(async () => ({ count: mocks.responseCount, error: null }) as never);
         return chain;
       }
 
@@ -94,7 +97,7 @@ describe("POST /api/ai/generate-response", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-key";
     mocks.responseCount = 30;
-    mocks.subscription = { plan_name: "free", status: "trial" };
+    mocks.subscription = { plan_name: "free", status: "trial", current_period_start: null, current_period_end: null };
     mocks.tableFilters = [];
     mocks.insertPayload = null;
     mocks.createClient.mockReset();
@@ -137,8 +140,8 @@ describe("POST /api/ai/generate-response", () => {
     const body = await response.json();
 
     expect(response.status).toBe(403);
-    expect(body.error).toContain("limite de respostas");
-    expect(body.usage).toEqual({
+    expect(body.error).toContain("limite mensal");
+    expect(body.usage).toMatchObject({
       used: 30,
       limit: 30,
       remaining: 0

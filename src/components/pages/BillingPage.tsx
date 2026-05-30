@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import { AlertCircle, BadgeDollarSign, CalendarClock, CheckCircle2, CreditCard, MessageCircle, RefreshCw, ShieldCheck, Wallet } from "lucide-react";
@@ -98,6 +98,8 @@ function BillingContent() {
   const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [error, setError] = useState("");
+  const trackedUsageWarningRef = useRef(false);
+  const trackedUsageReachedRef = useRef(false);
 
   const currentPlanId = normalizePlanId(subscription?.plan || subscription?.plan_name);
   const currentPlan = currentPlanId ? SAAS_PLANS[currentPlanId] : null;
@@ -172,6 +174,27 @@ function BillingContent() {
       });
     }
   }, [hasPaymentProblem, subscription?.status]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (usagePercent >= 100 && !trackedUsageReachedRef.current) {
+      trackedUsageReachedRef.current = true;
+      trackEvent("usage_limit_reached", {
+        source: "billing_page",
+        plan: currentPlanId || "none",
+        usage_percent: usagePercent
+      });
+      return;
+    }
+    if (usagePercent >= 80 && !trackedUsageWarningRef.current) {
+      trackedUsageWarningRef.current = true;
+      trackEvent("usage_limit_warning_viewed", {
+        source: "billing_page",
+        plan: currentPlanId || "none",
+        usage_percent: usagePercent
+      });
+    }
+  }, [currentPlanId, loading, usagePercent]);
 
   async function openStripePortal() {
     setError("");

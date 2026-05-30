@@ -50,6 +50,9 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [incident-response](incident-response.md)
 - [incident-log](incident-log.md)
 - [cost-monitoring](cost-monitoring.md)
+- [ai-cost-control](ai-cost-control.md)
+- [plan-limits](plan-limits.md)
+- [rate-limits](rate-limits.md)
 - [internal-faq](internal-faq.md)
 
 ## Integracoes
@@ -108,7 +111,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - OpenAI: use `openai-production.md` para producao e custo.
 - Resend: use `resend-setup.md`, `emails.md` e `email-funnel-checklist.md`.
 - Tracking: use `tracking.md` como fonte principal; `tracking-setup.md` e `tracking-production.md` complementam validacao.
-- Custos: use `cost-monitoring.md` junto com dashboards dos provedores.
+- Custos e limites: use `cost-monitoring.md`, `ai-cost-control.md`, `plan-limits.md` e `rate-limits.md` junto com dashboards dos provedores.
 - Retencao e qualidade: use `user-activation.md`, `activation-emails.md`, `retention-plan.md`, `ai-response-quality-plan.md`, `ai-business-templates.md`, `saved-responses.md` e `whatsapp-templates.md`.
 - Relatorios internos: use `internal-metrics.md`, `weekly-business-review.md`, `business-health-criteria.md` e `monthly-business-report-template.md`.
 - Seguranca: use `SECURITY.md` na raiz como fonte completa; `docs/security.md` e `docs/security-checklist.md` sao entradas auxiliares.

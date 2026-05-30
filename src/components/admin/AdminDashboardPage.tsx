@@ -188,6 +188,11 @@ type ProductMetricsPayload = {
     usersWithSavedResponses: number;
     totalSavedTemplates: number;
     savedTemplatesByCategory: Array<{ label: string; count: number }>;
+    usersNearLimit: number;
+    usersAtLimit: number;
+    topUsageUsers: Array<{ user_id: string; user_id_short: string; responses_used: number }>;
+    aiCostEstimate: number | null;
+    aiCostEstimateNote: string;
   };
   feedback: {
     totalFeedbacks: number;
@@ -477,6 +482,9 @@ function exportInternalMetricsCsv(metrics: ProductMetricsPayload) {
     ["ativacao", "resposta_salva_ou_copiada", metrics.availability.savedResponses ? metrics.funnel.usersWithSavedOrCopiedResponse : "nao_disponivel"],
     ["uso", "respostas_7_dias", metrics.availability.generatedResponses ? metrics.usage.responsesLast7Days : "nao_disponivel"],
     ["uso", "usuarios_ativos_7_dias", metrics.availability.generatedResponses ? metrics.usage.activeUsersLast7Days : "nao_disponivel"],
+    ["uso", "usuarios_perto_limite", metrics.availability.generatedResponses && metrics.availability.subscriptions ? metrics.usage.usersNearLimit : "nao_disponivel"],
+    ["uso", "usuarios_no_limite", metrics.availability.generatedResponses && metrics.availability.subscriptions ? metrics.usage.usersAtLimit : "nao_disponivel"],
+    ["custo_ia", "estimativa", metrics.usage.aiCostEstimate === null ? "indisponivel" : metrics.usage.aiCostEstimate],
     ["receita", "checkouts_iniciados", metrics.availability.subscriptions ? metrics.revenue.checkoutStartedUsers : "nao_disponivel"],
     ["receita", "assinaturas_ativas", metrics.availability.subscriptions ? metrics.revenue.activeSubscriptions : "nao_disponivel"],
     ["receita", "assinaturas_canceladas", metrics.availability.subscriptions ? metrics.revenue.canceledSubscriptions : "nao_disponivel"],
@@ -1014,6 +1022,15 @@ export default function AdminDashboardPage() {
                   <ConversionLine label="MÃ©dia por usuÃ¡rio" value={productMetrics.usage.averageResponsesPerUser} />
                   <ConversionLine label="UsuÃ¡rios ativos 7 dias" value={productMetrics.usage.activeUsersLast7Days} />
                   <ConversionLine label="UsuÃ¡rios ativos 30 dias" value={productMetrics.usage.activeUsersLast30Days} />
+                  <ConversionLine label="UsuÃ¡rios perto do limite" value={productMetrics.usage.usersNearLimit} />
+                  <ConversionLine label="UsuÃ¡rios no limite" value={productMetrics.usage.usersAtLimit} />
+                  <ConversionLine label="Custo estimado OpenAI" value={productMetrics.usage.aiCostEstimate === null ? "IndisponÃ­vel" : `R$ ${productMetrics.usage.aiCostEstimate}`} />
+                  <p className="rounded-md border border-amber-400/20 bg-amber-400/10 p-3 text-xs font-bold leading-5 text-amber-100">
+                    {productMetrics.usage.aiCostEstimateNote}
+                  </p>
+                  {(productMetrics.usage.topUsageUsers.length ? productMetrics.usage.topUsageUsers : [{ user_id: "sem_dados", user_id_short: "sem_dados", responses_used: 0 }]).slice(0, 3).map((item) => (
+                    <ConversionLine key={`top-usage-${item.user_id}`} label={`Top uso: ${item.user_id_short}`} value={item.responses_used} />
+                  ))}
                 </div>
               </div>
 

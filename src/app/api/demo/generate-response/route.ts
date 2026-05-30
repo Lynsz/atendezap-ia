@@ -2,8 +2,11 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { businessTypeOptions, formatBusinessTemplateForPrompt, getBusinessTemplate } from "@/lib/ai/business-templates";
 import { AppError, errorResponse } from "@/lib/errors";
+import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
+import { DEMO_DAILY_LIMIT, DEMO_WINDOW_MS } from "@/lib/plan-limits";
+import { DEMO_LIMIT_EXCEEDED_MESSAGE } from "@/lib/usage-limits";
 
 export const runtime = "nodejs";
 
@@ -55,9 +58,9 @@ export async function POST(request: Request) {
     const rate = await enforceRateLimit({
       request,
       route: "api:demo-generate-response",
-      limit: 6,
-      windowMs: 10 * 60_000,
-      message: "Voce gerou muitas respostas em pouco tempo. Aguarde alguns minutos e tente novamente."
+      limit: DEMO_DAILY_LIMIT,
+      windowMs: DEMO_WINDOW_MS,
+      message: DEMO_LIMIT_EXCEEDED_MESSAGE
     });
 
     const body = demoSchema.parse(await request.json());
@@ -103,6 +106,11 @@ export async function POST(request: Request) {
       mode: completion.choices[0]?.message?.content ? "openai" : "fallback_empty_openai_response"
     });
   } catch (error) {
+    if (error instanceof AppError && error.status === 429) {
+      await logEvent("demo_limit_reached", {
+        source: "public_demo"
+      });
+    }
     serverLog({ level: "warn", event: "demo_response_failed", route: "/api/demo/generate-response", error });
     if (error instanceof AppError) return errorResponse(error);
     if (error instanceof z.ZodError) {
