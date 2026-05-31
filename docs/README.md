@@ -65,6 +65,16 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [product-backlog](product-backlog.md)
 - [user-interview-script](user-interview-script.md)
 - [monthly-feedback-report-template](monthly-feedback-report-template.md)
+- [sprint-workflow](sprint-workflow.md)
+- [sprint-planning-template](sprint-planning-template.md)
+- [sprint-review-template](sprint-review-template.md)
+- [release-process](release-process.md)
+- [release-notes-template](release-notes-template.md)
+- [versioning](versioning.md)
+- [sprint-intake-criteria](sprint-intake-criteria.md)
+- [release-readiness-checklist](release-readiness-checklist.md)
+- [roadmap-management](roadmap-management.md)
+- [monthly-operating-calendar](monthly-operating-calendar.md)
 - [internal-faq](internal-faq.md)
 
 ## Integracoes
@@ -96,6 +106,16 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [product-backlog](product-backlog.md)
 - [user-interview-script](user-interview-script.md)
 - [monthly-feedback-report-template](monthly-feedback-report-template.md)
+- [sprint-workflow](sprint-workflow.md)
+- [sprint-planning-template](sprint-planning-template.md)
+- [sprint-review-template](sprint-review-template.md)
+- [release-process](release-process.md)
+- [release-notes-template](release-notes-template.md)
+- [versioning](versioning.md)
+- [sprint-intake-criteria](sprint-intake-criteria.md)
+- [release-readiness-checklist](release-readiness-checklist.md)
+- [roadmap-management](roadmap-management.md)
+- [monthly-operating-calendar](monthly-operating-calendar.md)
 
 ## Campanhas
 
@@ -140,6 +160,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Campanhas por nicho: use `niche-campaign-utm-links.md`, `niche-copy-guide.md` e `niche-campaign-plan.md`.
 - Registro manual de campanhas: use `campaign-results-workflow.md`, `post-campaign-analysis-template.md`, `campaign-decision-criteria.md` e `monthly-campaign-report-template.md`.
 - Feedback e backlog: use `feedback-workflow.md`, `product-prioritization.md`, `product-backlog.md`, `user-interview-script.md` e `monthly-feedback-report-template.md`.
+- Sprint, release e roadmap: use `sprint-workflow.md`, `sprint-planning-template.md`, `sprint-review-template.md`, `release-process.md`, `release-notes-template.md`, `versioning.md`, `sprint-intake-criteria.md`, `release-readiness-checklist.md`, `roadmap-management.md` e `monthly-operating-calendar.md`.
 - Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
 
 ## Observacao sobre documentos legados

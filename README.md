@@ -31,6 +31,7 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 - Metricas basicas, relatorios internos, feedback e tracking.
 - Registro interno admin-only de campanhas, resultados manuais, UTMs, criativos, diagnostico simples e comparacao por nicho/canal.
 - Registro interno de insights de produto para feedbacks, bugs, churn, suporte, campanhas e backlog.
+- Fluxo interno de sprint, release, versionamento e roadmap pós-1.0.
 - Area de privacidade no dashboard para solicitacoes de exportacao/exclusao.
 - Central de ajuda no dashboard com FAQ e solicitacoes simples de suporte.
 - Checklist de ativacao no dashboard para primeiros passos.
@@ -191,6 +192,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/niche-campaign-utm-links.md`, `docs/niche-copy-guide.md` e `docs/niche-campaign-plan.md` para campanhas por nicho.
 - Use `docs/campaign-results-workflow.md`, `docs/post-campaign-analysis-template.md`, `docs/campaign-decision-criteria.md` e `docs/monthly-campaign-report-template.md` para registrar resultados manuais e decidir proximos testes.
 - Use `docs/feedback-workflow.md`, `docs/product-prioritization.md`, `docs/product-backlog.md`, `docs/user-interview-script.md` e `docs/monthly-feedback-report-template.md` para transformar feedback em backlog.
+- Use `docs/sprint-workflow.md`, `docs/release-process.md`, `docs/release-readiness-checklist.md`, `docs/versioning.md`, `docs/roadmap-management.md` e `docs/monthly-operating-calendar.md` para planejar sprints e releases.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
 - Use `docs/error-messages.md` para manter mensagens amigaveis e sem stack trace.
@@ -267,6 +269,16 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/product-backlog.md`: backlog pós-feedback.
 - `docs/user-interview-script.md`: roteiro de entrevista com usuários.
 - `docs/monthly-feedback-report-template.md`: template mensal de feedback.
+- `docs/sprint-workflow.md`: fluxo de sprint.
+- `docs/sprint-planning-template.md`: template de planejamento de sprint.
+- `docs/sprint-review-template.md`: template de revisão de sprint.
+- `docs/release-process.md`: processo de release.
+- `docs/release-notes-template.md`: template de release notes.
+- `docs/versioning.md`: padrão simples de versionamento.
+- `docs/sprint-intake-criteria.md`: critérios para entrar na sprint.
+- `docs/release-readiness-checklist.md`: checklist de prontidão para release.
+- `docs/roadmap-management.md`: gestão simples do roadmap.
+- `docs/monthly-operating-calendar.md`: calendário operacional mensal.
 - `docs/retention-plan.md`: plano inicial de retencao.
 - `docs/ai-response-quality-plan.md`: qualidade das respostas com IA.
 - `docs/internal-faq.md`: FAQ operacional interna.

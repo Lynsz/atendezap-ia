@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased]
+
+### Adicionado
+
+-
+
+### Melhorado
+
+-
+
+### Corrigido
+
+-
+
+### Segurança
+
+-
+
+### Documentação
+
+-
+
 ## 1.0.0
 
 ### Adicionado

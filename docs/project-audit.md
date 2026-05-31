@@ -45,6 +45,22 @@ Recomendacao atualizada: manter producao controlada e campanhas pequenas como ro
 - Pendências restantes: aplicar `supabase/migrations/0020_product_insights.sql` em staging/producao, validar com admin real, revisar mensalmente o backlog e manter o registro apenas como triagem simples.
 - Nota estimada mantida: 97/100 para operação controlada, condicionada à validação real de Supabase/admin em staging/producao.
 
+## Sprints, releases e execução do roadmap - 2026-05-31
+
+- Fluxo de sprint criado para organizar ciclos curtos de melhoria com foco em estabilidade, ativação, conversão e retenção.
+- Templates criados para planejamento e revisão de sprint: `docs/sprint-planning-template.md` e `docs/sprint-review-template.md`.
+- Processo de release criado em `docs/release-process.md`, com etapas antes, durante e depois do deploy.
+- Template de release notes criado em `docs/release-notes-template.md`.
+- Versionamento simples documentado em `docs/versioning.md`, inspirado em SemVer.
+- Critérios de entrada na sprint criados em `docs/sprint-intake-criteria.md`.
+- Checklist de prontidão para release criado em `docs/release-readiness-checklist.md`.
+- Gestão simples de roadmap criada em `docs/roadmap-management.md`, reaproveitando `product_insights` no admin sem criar ferramenta complexa.
+- Calendário operacional mensal criado em `docs/monthly-operating-calendar.md`.
+- Admin de Insights ganhou visão "Roadmap" com itens planejados, em progresso, entregues e rejeitados, filtráveis pelos mesmos campos de insights.
+- `CHANGELOG.md` ganhou seção `[Unreleased]` para versões futuras, sem remover histórico.
+- Pendências restantes: preencher templates com dados reais de sprint/release, manter `CHANGELOG.md` atualizado por entrega e validar releases em staging antes de produção.
+- Nota estimada mantida: 97/100 para operação controlada, condicionada à disciplina operacional e validação real em staging/producao.
+
 ## Relatorios internos de negocio - 2026-05-29
 
 - Admin protegido ganhou visao interna de "Relatorios" para acompanhar aquisicao, ativacao, uso, receita, suporte e qualidade com dados agregados.

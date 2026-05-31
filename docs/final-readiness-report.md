@@ -70,6 +70,33 @@ Pendências:
 
 Nota estimada mantida: 97/100 para produção controlada, condicionada à validação real do admin e da migration.
 
+## Sprints, releases e roadmap
+
+Status: processo interno simples criado para planejar, executar, validar e lançar melhorias pós-1.0 sem ferramenta externa complexa.
+
+O que foi feito:
+
+- Criado `docs/sprint-workflow.md`.
+- Criados `docs/sprint-planning-template.md` e `docs/sprint-review-template.md`.
+- Criado `docs/release-process.md`.
+- Criado `docs/release-notes-template.md`.
+- Criado `docs/versioning.md`.
+- Criado `docs/sprint-intake-criteria.md`.
+- Criado `docs/release-readiness-checklist.md`.
+- Criado `docs/roadmap-management.md`.
+- Criado `docs/monthly-operating-calendar.md`.
+- `CHANGELOG.md` passou a ter seção `[Unreleased]`.
+- Admin de Insights ganhou visão simples de Roadmap baseada em `product_insights`, com planejados, em progresso, entregues e rejeitados.
+
+Pendências:
+
+- Preencher os templates com ciclos reais.
+- Atualizar `CHANGELOG.md` a cada release.
+- Validar staging, smoke test, health check e logs antes de produção.
+- Não usar esse fluxo como substituto para incident response quando houver P0/P1.
+
+Nota estimada mantida: 97/100 para produção controlada, condicionada à disciplina operacional e validação real em staging/producao.
+
 ## Relatorios internos de negocio
 
 Status: relatorios internos simples implementados no admin protegido, sem BI complexo, sem expor conteudo completo de respostas e sem dados de pagamento.

@@ -212,6 +212,15 @@ export default function ProductInsightsSection({
     churnReasons: 0,
     campaignLearnings: 0
   };
+  const roadmapGroups = useMemo(() => {
+    const insights = payload?.insights || [];
+    return {
+      planned: insights.filter((insight) => insight.status === "planned"),
+      inProgress: insights.filter((insight) => insight.status === "in_progress"),
+      shipped: insights.filter((insight) => insight.status === "shipped"),
+      rejected: insights.filter((insight) => insight.status === "rejected")
+    };
+  }, [payload]);
 
   const quickSources = useMemo(() => {
     const supportItems: QuickInsightSource[] = supportRequests.slice(0, 3).map((item) => ({
@@ -383,6 +392,20 @@ export default function ProductInsightsSection({
         </ul>
       </div>
 
+      <div className="mb-5 rounded-lg border border-white/10 bg-white/[0.04] p-4">
+        <div className="mb-4">
+          <p className="text-xs font-black uppercase tracking-wide text-slate-500">Roadmap</p>
+          <h3 className="text-lg font-black text-white">Execução do roadmap</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-400">Visão simples baseada nos insights de produto. Use os filtros abaixo para refinar por tipo, severidade, status e área de impacto.</p>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <RoadmapColumn title="Planejado" items={roadmapGroups.planned} />
+          <RoadmapColumn title="Em progresso" items={roadmapGroups.inProgress} />
+          <RoadmapColumn title="Entregue" items={roadmapGroups.shipped} />
+          <RoadmapColumn title="Rejeitado" items={roadmapGroups.rejected} />
+        </div>
+      </div>
+
       <div className="grid gap-5 xl:grid-cols-[0.85fr_1.15fr]">
         <div className="grid gap-4">
           <form onSubmit={submitInsight} className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
@@ -532,6 +555,31 @@ function InsightCard({ label, value }: { label: string; value: number }) {
       <p className="text-xs font-black uppercase tracking-wide text-slate-500">{label}</p>
       <p className="mt-1 text-2xl font-black text-white">{value}</p>
     </article>
+  );
+}
+
+function RoadmapColumn({ title, items }: { title: string; items: ProductInsight[] }) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-[#0b1118] p-3">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="text-sm font-black text-white">{title}</p>
+        <span className="rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-black text-slate-300">{items.length}</span>
+      </div>
+      <div className="grid gap-2">
+        {items.length ? (
+          items.slice(0, 5).map((item) => (
+            <div className="rounded-md border border-white/10 bg-white/[0.04] p-3" key={item.id}>
+              <p className="text-sm font-black leading-5 text-slate-100">{item.title}</p>
+              <p className="mt-1 text-xs font-bold text-slate-500">
+                {productInsightSeverityLabel(item.severity)} · {productInsightImpactAreaLabel(item.impact_area)} · {productInsightTypeLabel(item.type)}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p className="rounded-md border border-dashed border-white/10 p-3 text-xs font-bold leading-5 text-slate-500">Nenhum item neste status.</p>
+        )}
+      </div>
+    </div>
   );
 }
 

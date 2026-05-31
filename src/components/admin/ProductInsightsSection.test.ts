@@ -21,6 +21,17 @@ describe("ProductInsightsSection", () => {
     expect(component).toContain("Filtrar insights");
   });
 
+  it("mantem visao simples de roadmap sem board complexo", () => {
+    const component = readRepoFile("src/components/admin/ProductInsightsSection.tsx");
+
+    expect(component).toContain("Execução do roadmap");
+    expect(component).toContain("Planejado");
+    expect(component).toContain("Em progresso");
+    expect(component).toContain("Entregue");
+    expect(component).toContain("Rejeitado");
+    expect(component).not.toContain("drag");
+  });
+
   it("permite criar insight a partir de suporte e feedback sem copiar conteudo completo", () => {
     const component = readRepoFile("src/components/admin/ProductInsightsSection.tsx");
 
