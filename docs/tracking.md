@@ -74,8 +74,14 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `admin_campaign_updated`: campanha interna atualizada por admin, sem observacoes completas.
 - `admin_campaign_result_recorded`: resultado manual agregado registrado por admin.
 - `admin_campaign_decision_updated`: decisao final da campanha atualizada por admin.
+- `product_insight_created`: insight de produto criado por admin, sem descrição completa.
+- `product_insight_updated`: insight de produto atualizado por admin.
+- `product_insight_status_changed`: status de insight alterado por admin.
+- `product_backlog_reviewed`: reservado para revisão manual do backlog.
 
 Eventos `admin_campaign_*` são eventos internos persistidos via tabela `events`, não eventos enviados ao GA4/Meta pelo client. A metadata deve ficar limitada a status, canal, nicho, ids tecnicos e flags agregadas.
+
+Eventos `product_insight_*` também são internos/admin. Não enviar e-mail, descrição completa, resposta completa, dados de pagamento, secrets ou payload de suporte.
 
 ## Mapeamento externo
 

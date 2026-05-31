@@ -80,6 +80,18 @@ describe("politicas RLS criticas", () => {
     expect(campaignResultsRoute).toContain("requireAdmin(request)");
   });
 
+  it("mantem insights de produto sem acesso direto pelo client", () => {
+    const migration = readRepoFile("supabase/migrations/0020_product_insights.sql");
+    const insightsRoute = readRepoFile("src/app/api/admin/product-insights/route.ts");
+    const insightUpdateRoute = readRepoFile("src/app/api/admin/product-insights/[id]/route.ts");
+
+    expect(migration).toContain("alter table public.product_insights enable row level security");
+    expect(migration).toContain('create policy "product_insights_no_client_access"');
+    expect(migration).toContain("revoke all on public.product_insights from anon, authenticated");
+    expect(insightsRoute).toContain("requireAdmin(request)");
+    expect(insightUpdateRoute).toContain("requireAdmin(request)");
+  });
+
   it("mantem solicitacoes de suporte isoladas por usuario autenticado", () => {
     const migration = readRepoFile("supabase/migrations/0017_support_requests_workflow.sql");
 

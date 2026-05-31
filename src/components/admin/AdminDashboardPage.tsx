@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { BarChart3, CheckCircle2, Download, Filter, Lock, Mail, MessageSquare, RefreshCw, Search, ShieldCheck, Users } from "lucide-react";
 import CampaignAdminSection from "@/components/admin/CampaignAdminSection";
+import ProductInsightsSection from "@/components/admin/ProductInsightsSection";
 import { getDataRequestStatusLabel, getDataRequestTypeLabel, type DataRequestStatus } from "@/lib/data-requests";
 import { supabase } from "@/lib/supabase/browser";
 import { supportPriorities, supportPriorityLabel, supportStatuses, supportStatusLabel, type SupportPriority, type SupportStatus } from "@/lib/support";
@@ -868,6 +869,13 @@ export default function AdminDashboardPage() {
         </header>
 
         {error ? <div className="mb-5 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">{error}</div> : null}
+
+        <ProductInsightsSection
+          supportRequests={data?.supportRequests || []}
+          feedback={data?.feedback || []}
+          aiNegativeCount={productMetrics?.aiQuality.negativeFeedbacks || 0}
+          churnFeedbackCount={productMetrics?.churn.cancellationFeedbacks || 0}
+        />
 
         <CampaignAdminSection />
 

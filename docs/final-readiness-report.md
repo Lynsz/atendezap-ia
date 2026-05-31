@@ -49,6 +49,27 @@ Pendências:
 
 Nota estimada mantida: 97/100 para produção controlada, condicionada à validação real do admin e da migration.
 
+## Feedback, insights e backlog
+
+Status: fluxo interno simples implementado para transformar feedbacks, suporte, churn e aprendizados de campanha em prioridades de produto, sem CRM e sem automações complexas.
+
+O que foi feito:
+
+- Fontes existentes auditadas: feedback de IA, suporte, cancelamento, campanhas, eventos, tracking, métricas internas e roadmap.
+- Tabela `product_insights` criada por migration para registrar insights internos com tipo, severidade, status e área de impacto.
+- APIs admin criadas para listar, criar, editar e remover insights, com validação de enums, limite de payload, logs seguros e `requireAdmin`.
+- Seção "Insights de Produto" adicionada ao admin com filtros, cards de agrupamento, diagnóstico simples e criação manual.
+- Botões simples criam rascunhos de insight a partir de suporte, feedback, feedback negativo de IA agregado e churn agregado, sem copiar conteúdo completo.
+- Criados `docs/feedback-workflow.md`, `docs/product-prioritization.md`, `docs/product-backlog.md`, `docs/user-interview-script.md` e `docs/monthly-feedback-report-template.md`.
+
+Pendências:
+
+- Aplicar `supabase/migrations/0020_product_insights.sql` no Supabase real/staging.
+- Validar o admin com usuário administrador real.
+- Preencher `docs/product-backlog.md` somente com aprendizados reais e manter itens fora de escopo fora da execução atual.
+
+Nota estimada mantida: 97/100 para produção controlada, condicionada à validação real do admin e da migration.
+
 ## Relatorios internos de negocio
 
 Status: relatorios internos simples implementados no admin protegido, sem BI complexo, sem expor conteudo completo de respostas e sem dados de pagamento.

@@ -31,6 +31,20 @@ Recomendacao atualizada: manter producao controlada e campanhas pequenas como ro
 - Pendências restantes: aplicar `supabase/migrations/0019_campaign_experiments.sql` em staging/producao, validar a seção admin com dados reais agregados e continuar usando plataformas externas para visitantes/custos detalhados.
 - Nota estimada mantida: 97/100 para operação controlada, condicionada à validação real de Supabase/admin em staging/producao.
 
+## Feedback, insights e backlog - 2026-05-31
+
+- Fontes atuais auditadas: `user_feedback`, `ai_response_feedback`, `support_requests`, `cancellation_feedback`, campanhas, métricas admin, eventos internos, tracking e roadmap.
+- Criada tabela `product_insights` para registrar bugs, melhorias, pedidos de funcionalidade, reclamações, dúvidas, churn, aprendizados de campanha e qualidade de IA.
+- RLS e grants foram definidos sem acesso direto para `anon` e `authenticated`; o acesso operacional fica nas APIs protegidas por `requireAdmin`.
+- APIs admin criadas para listar, criar, editar e remover insights, com filtros por tipo, severidade, status e área de impacto.
+- Admin ganhou seção "Insights de Produto" com formulário manual, filtros, cards de agrupamento, diagnóstico simples e criação de rascunho a partir de suporte, feedback, IA negativa agregada e churn agregado.
+- Diagnóstico permanece determinístico e sem IA, cobrindo sinais recorrentes de qualidade da IA, onboarding, WhatsApp automático, preço/churn e checkout/billing.
+- Tracking/logs internos seguros adicionados: `product_insight_created`, `product_insight_updated`, `product_insight_status_changed` e `product_insight_deleted`, sem descrição completa, e-mail, resposta completa, pagamento ou secrets.
+- Documentação criada: `docs/feedback-workflow.md`, `docs/product-prioritization.md`, `docs/product-backlog.md`, `docs/user-interview-script.md` e `docs/monthly-feedback-report-template.md`.
+- README e `docs/README.md` atualizados com os novos documentos.
+- Pendências restantes: aplicar `supabase/migrations/0020_product_insights.sql` em staging/producao, validar com admin real, revisar mensalmente o backlog e manter o registro apenas como triagem simples.
+- Nota estimada mantida: 97/100 para operação controlada, condicionada à validação real de Supabase/admin em staging/producao.
+
 ## Relatorios internos de negocio - 2026-05-29
 
 - Admin protegido ganhou visao interna de "Relatorios" para acompanhar aquisicao, ativacao, uso, receita, suporte e qualidade com dados agregados.

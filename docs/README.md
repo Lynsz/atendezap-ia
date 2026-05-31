@@ -60,6 +60,11 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [post-campaign-analysis-template](post-campaign-analysis-template.md)
 - [campaign-decision-criteria](campaign-decision-criteria.md)
 - [monthly-campaign-report-template](monthly-campaign-report-template.md)
+- [feedback-workflow](feedback-workflow.md)
+- [product-prioritization](product-prioritization.md)
+- [product-backlog](product-backlog.md)
+- [user-interview-script](user-interview-script.md)
+- [monthly-feedback-report-template](monthly-feedback-report-template.md)
 - [internal-faq](internal-faq.md)
 
 ## Integracoes
@@ -86,6 +91,11 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [ai-business-templates](ai-business-templates.md)
 - [saved-responses](saved-responses.md)
 - [whatsapp-templates](whatsapp-templates.md)
+- [feedback-workflow](feedback-workflow.md)
+- [product-prioritization](product-prioritization.md)
+- [product-backlog](product-backlog.md)
+- [user-interview-script](user-interview-script.md)
+- [monthly-feedback-report-template](monthly-feedback-report-template.md)
 
 ## Campanhas
 
@@ -129,6 +139,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Campanhas: use `first-paid-campaign-plan.md`, `second-campaign-analysis.md`, `scale-decision-matrix.md` e `cautious-scale-plan.md`.
 - Campanhas por nicho: use `niche-campaign-utm-links.md`, `niche-copy-guide.md` e `niche-campaign-plan.md`.
 - Registro manual de campanhas: use `campaign-results-workflow.md`, `post-campaign-analysis-template.md`, `campaign-decision-criteria.md` e `monthly-campaign-report-template.md`.
+- Feedback e backlog: use `feedback-workflow.md`, `product-prioritization.md`, `product-backlog.md`, `user-interview-script.md` e `monthly-feedback-report-template.md`.
 - Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
 
 ## Observacao sobre documentos legados
