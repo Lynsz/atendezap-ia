@@ -9,10 +9,19 @@
 - Matriz de bugs bloqueadores P0/P1/P2.
 - Checklist de aprovacao pre-escala.
 - Relatorio final de QA.
+- Go-live controlado pos-Release Candidate.
+- Checklist de aprovacao do go-live.
+- Plano de deploy do go-live.
+- Monitoramento das primeiras 72 horas.
+- Campanha pequena pos-go-live.
+- Criterios de pausa imediata.
+- Relatorio diario e decisao pos-go-live.
+- Checklist de tracking seguro do go-live.
 
 ### Melhorado
 
 - Processo de release passa a exigir checklist de Release Candidate, QA manual e revisao pre-escala.
+- Admin ganhou secao simples "Go-Live" com cards agregados para acompanhamento controlado.
 
 ### Corrigido
 
@@ -21,6 +30,7 @@
 ### Seguranca
 
 - Criterios de release reforcam repositorio privado, secrets server-side, logs seguros e tracking sem conteudo sensivel.
+- Go-live reforca pausa imediata para falha de checkout, webhook, IA, login, admin, dados expostos, custo anormal ou tracking quebrado.
 
 ### Documentacao
 
@@ -30,6 +40,32 @@
 - `docs/release-blockers.md`
 - `docs/final-qa-report.md`
 - `docs/pre-scale-approval-checklist.md`
+- `docs/controlled-go-live.md`
+- `docs/go-live-approval-checklist.md`
+- `docs/go-live-deploy-plan.md`
+- `docs/first-72-hours-monitoring.md`
+- `docs/post-go-live-small-campaign.md`
+- `docs/emergency-pause-criteria.md`
+- `docs/go-live-daily-report-template.md`
+- `docs/post-go-live-decision.md`
+- `docs/go-live-tracking-checklist.md`
+
+## [1.1.0-rc.2] - em preparacao
+
+### Inclui
+
+- go-live controlado
+- checklists de aprovacao
+- monitoramento primeiras 72h
+- campanha pequena pos-go-live
+- criterios de pausa imediata
+- relatorio diario
+- decisao pos-go-live
+
+### Status
+
+- Release Candidate privada, ainda nao marcada como final.
+- Exige staging verde, smoke test e monitoramento inicial antes de campanha pequena.
 
 ## [1.1.0-rc.1] - em preparacao
 

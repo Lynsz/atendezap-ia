@@ -927,6 +927,36 @@ export default function AdminDashboardPage() {
         ) : null}
 
         {productMetrics ? (
+          <section className="mb-6 rounded-lg border border-emerald-400/20 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Go-Live</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Acompanhamento controlado</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  Cards agregados para acompanhar as primeiras 72 horas. Campos sem fonte persistida aparecem como Nao disponivel.
+                </p>
+              </div>
+              <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-black text-emerald-100">
+                Pos-RC
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Health check" value="Verificar /api/health" icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Novos usuarios hoje" value="Nao disponivel" icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Leads hoje" value={availableValue(productMetrics.availability.leads, productMetrics.operationalHealth.leadsToday)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Primeiras respostas hoje" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.operationalHealth.responsesGeneratedToday)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Checkouts hoje" value={availableValue(productMetrics.availability.subscriptions, productMetrics.operationalHealth.checkoutsStartedToday)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Assinaturas hoje" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Falhas de IA hoje" value={productMetrics.operationalHealth.aiFailuresToday} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Falhas de webhook hoje" value={productMetrics.operationalHealth.stripeWebhookFailuresToday} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Suportes abertos" value={availableValue(productMetrics.availability.supportRequests, productMetrics.supportQuality.openSupportRequests)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Incidentes recentes" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
+            </div>
+          </section>
+        ) : null}
+
+        {productMetrics ? (
           <section className="mb-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
             <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>

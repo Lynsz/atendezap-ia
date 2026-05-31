@@ -41,3 +41,5 @@
 Producao so e considerada saudavel se o fluxo principal funcionar sem erro critico.
 
 Antes de aumentar campanhas, registrar o resultado em `docs/final-qa-report.md` e revisar `docs/pre-scale-approval-checklist.md`.
+
+Para go-live controlado, execute tambem `docs/go-live-deploy-plan.md` e registre alertas em `docs/go-live-daily-report-template.md`.

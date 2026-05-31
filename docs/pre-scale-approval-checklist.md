@@ -32,11 +32,14 @@
 - [ ] incident-log pronto
 - [ ] health check ativo
 - [ ] admin com metricas basicas
+- [ ] go-live controlado executado
+- [ ] primeiras 72 horas monitoradas
 
 ## Campanhas
 
 - [ ] UTMs criadas
 - [ ] criterios de pausa definidos
+- [ ] criterios de pausa imediata revisados
 - [ ] orcamento pequeno inicial
 - [ ] monitoramento diario pronto
 - [ ] custo da IA controlado

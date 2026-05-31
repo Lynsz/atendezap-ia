@@ -1171,3 +1171,40 @@ Decisao recomendada:
 - escalar com cautela apenas sem P0/P1 e com dados suficientes
 
 Nota estimada mantida: 98/100 para producao controlada documentada, condicionada a validacao real em staging/producao.
+
+## Go-live controlado pos-Release Candidate - 2026-05-31
+
+Status: etapa criada para liberar producao controlada e campanha pequena com criterio de pausa antes de qualquer escala.
+
+O que foi feito:
+
+- `docs/controlled-go-live.md` criado.
+- `docs/go-live-approval-checklist.md` criado.
+- `docs/go-live-deploy-plan.md` criado.
+- `docs/first-72-hours-monitoring.md` criado.
+- `docs/post-go-live-small-campaign.md` criado.
+- `docs/emergency-pause-criteria.md` criado.
+- `docs/go-live-daily-report-template.md` criado.
+- `docs/post-go-live-decision.md` criado.
+- `docs/go-live-tracking-checklist.md` criado.
+- Admin recebeu secao "Go-Live" com metricas agregadas e placeholders "Nao disponivel" para campos sem fonte persistida.
+- CHANGELOG atualizado com `1.1.0-rc.2` em preparacao.
+
+Pendencias:
+
+- Executar staging end-to-end.
+- Validar deploy de producao com smoke test.
+- Validar billing, webhook, IA, suporte, tracking e admin no ambiente real.
+- Monitorar as primeiras 72 horas antes de aumentar campanhas.
+- Pausar imediatamente se qualquer criterio de `docs/emergency-pause-criteria.md` ocorrer.
+
+Decisao recomendada:
+
+- manter privado
+- validar staging
+- liberar go-live controlado apenas com checklist verde
+- rodar campanha pequena somente apos smoke test
+- nao escalar antes das primeiras 72 horas
+- escalar com cautela somente sem P0/P1, com custo de IA controlado e tracking confiavel
+
+Nota estimada mantida: 98/100 para producao controlada, condicionada a validacao real em staging/producao e ao monitoramento das primeiras 72 horas.

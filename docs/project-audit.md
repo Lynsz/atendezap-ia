@@ -789,3 +789,19 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - CHANGELOG recebeu `1.1.0-rc.1` como versao em preparacao, sem marcar release final.
 - Decisao recomendada: manter privado, validar staging, liberar apenas campanha pequena depois de staging verde, nao escalar ainda e escalar com cautela apenas sem P0/P1 e com dados suficientes.
 - Nota estimada mantida: 98/100 para producao controlada documentada; campanhas maiores continuam condicionadas a QA manual, integrações reais e ausencia de P0/P1.
+
+## Go-live controlado pos-Release Candidate - 2026-05-31
+
+- Go-live controlado criado em `docs/controlled-go-live.md`, com status, escopo e fora do escopo.
+- Checklist de aprovacao criado em `docs/go-live-approval-checklist.md`, cobrindo codigo, seguranca, produto, billing, operacao e decisao.
+- Plano de deploy criado em `docs/go-live-deploy-plan.md`.
+- Monitoramento das primeiras 72 horas criado em `docs/first-72-hours-monitoring.md`.
+- Plano de campanha pequena criado em `docs/post-go-live-small-campaign.md`.
+- Criterios de pausa imediata criados em `docs/emergency-pause-criteria.md`.
+- Relatorio diario criado em `docs/go-live-daily-report-template.md`.
+- Decisao pos-go-live documentada em `docs/post-go-live-decision.md`.
+- Checklist de tracking seguro criado em `docs/go-live-tracking-checklist.md`.
+- Admin recebeu secao simples "Go-Live" com cards agregados e "Nao disponivel" quando a metrica ainda nao tem fonte persistida.
+- Documentos de RC, deploy, smoke, incidentes, pre-escala e pausa de anuncios atualizados com referencia ao go-live controlado.
+- Status atual: pronto documentalmente para go-live controlado, pendente de validacao real em staging/producao.
+- Nota estimada mantida: 98/100 para producao controlada, sem liberar escala antes das primeiras 72 horas e sem ausencia comprovada de P0/P1.

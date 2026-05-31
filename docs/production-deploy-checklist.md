@@ -4,6 +4,8 @@
 
 - staging validado
 - Release Candidate revisada em `docs/release-candidate.md`
+- Go-live controlado revisado em `docs/controlled-go-live.md`
+- checklist de aprovacao do go-live preenchido
 - checklist da Release Candidate sem P0/P1 bloqueador
 - relatorio final de QA atualizado
 - `npm run validate` passou
@@ -72,4 +74,5 @@ Nao colocar valores reais no documento.
 - revisar logs do Supabase
 - revisar eventos Stripe
 - atualizar `docs/final-qa-report.md`
+- iniciar `docs/first-72-hours-monitoring.md`
 - revisar `docs/pre-scale-approval-checklist.md` antes de aumentar campanhas

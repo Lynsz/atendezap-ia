@@ -2,6 +2,8 @@
 
 Use este documento durante a primeira campanha pequena. A regra e preservar caixa, reputacao e confianca antes de tentar escalar.
 
+Para go-live controlado, use tambem `docs/emergency-pause-criteria.md`.
+
 ## Pausar imediatamente
 
 - checkout quebrado
@@ -49,3 +51,4 @@ Use este documento durante a primeira campanha pequena. A regra e preservar caix
 - Se nao houver dados suficientes, nao aumentar orcamento; preencher `docs/first-campaign-analysis.md` e rodar nova hipotese pequena.
 - Se o gargalo principal estiver claro, corrigir P0/P1 em `docs/post-campaign-improvement-plan.md` antes de nova campanha.
 - Se o tracking estiver incompleto, pausar ate corrigir os eventos principais e UTMs.
+- Se a pausa acontecer nas primeiras 72 horas, registrar tambem em `docs/go-live-daily-report-template.md`.

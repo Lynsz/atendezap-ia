@@ -40,6 +40,8 @@
 ## Pendencias
 
 - Executar `docs/manual-qa-plan.md` em staging.
+- Executar `docs/go-live-approval-checklist.md` antes de liberar producao.
+- Registrar resultado das primeiras 72 horas em `docs/go-live-daily-report-template.md`.
 - Validar Stripe checkout, portal e webhook em modo teste.
 - Validar Supabase Auth, RLS e isolamento usuario A vs usuario B.
 - Validar OpenAI server-side com limite antes da chamada.
@@ -52,4 +54,4 @@
 - liberar release: nao ainda
 - manter em staging: sim, ate QA manual completo
 - corrigir antes de release: somente se surgir P0/P1
-- liberar apenas campanha pequena: sim, depois de staging verde e sem P0/P1
+- liberar apenas campanha pequena: sim, depois de staging verde, go-live controlado aprovado e sem P0/P1

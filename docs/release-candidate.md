@@ -71,6 +71,7 @@ Status atual em 2026-05-31: em preparacao para validacao privada.
 
 - Manter o repositorio privado.
 - Validar staging antes de liberar usuarios novos.
+- Executar `docs/controlled-go-live.md`, `docs/go-live-approval-checklist.md` e `docs/go-live-deploy-plan.md` antes de producao controlada.
 - Rodar apenas campanha pequena apos checkout, webhook, tracking, suporte, logs e admin ficarem verdes.
 - Nao escalar ainda sem dados reais suficientes.
 - Escalar com cautela apenas se nao houver P0/P1 e se os criterios de pausa/escala estiverem documentados.

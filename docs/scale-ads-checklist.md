@@ -2,6 +2,8 @@
 
 Nao aumente orcamento enquanto este checklist nao estiver majoritariamente verde.
 
+Antes de qualquer aumento, conclua `docs/controlled-go-live.md`, `docs/first-72-hours-monitoring.md`, `docs/post-go-live-decision.md` e `docs/pre-scale-approval-checklist.md`.
+
 ## Sinais comerciais
 
 - [ ] campanha pequena gerou leads
@@ -54,6 +56,8 @@ Nao aumente orcamento enquanto este checklist nao estiver majoritariamente verde
 - [ ] checkout testado
 - [ ] suporte minimo pronto
 - [ ] rollback pronto
+- [ ] criterio de pausa imediata revisado
+- [ ] decisao pos-go-live registrada
 
 ## Limite recomendado
 

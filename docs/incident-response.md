@@ -75,3 +75,10 @@ Acao:
 - Ha risco de vazamento de dados.
 
 Use `docs/rollback-plan.md` como guia principal para rollback.
+
+## Durante go-live controlado
+
+- Use `docs/emergency-pause-criteria.md` para decidir pausa imediata.
+- Registre o dia em `docs/go-live-daily-report-template.md`.
+- Se a campanha estiver ativa, pause antes de investigar P0/P1.
+- Retome apenas depois de corrigir, validar em staging e rodar smoke test.
