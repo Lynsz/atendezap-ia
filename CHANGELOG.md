@@ -4,23 +4,51 @@
 
 ### Adicionado
 
--
+- Release Candidate privada `1.1.0-rc.1` documentada para validacao antes de aumentar campanhas.
+- Plano de QA manual ponta a ponta.
+- Matriz de bugs bloqueadores P0/P1/P2.
+- Checklist de aprovacao pre-escala.
+- Relatorio final de QA.
 
 ### Melhorado
 
--
+- Processo de release passa a exigir checklist de Release Candidate, QA manual e revisao pre-escala.
 
 ### Corrigido
 
 -
 
-### Segurança
+### Seguranca
 
--
+- Criterios de release reforcam repositorio privado, secrets server-side, logs seguros e tracking sem conteudo sensivel.
 
-### Documentação
+### Documentacao
 
--
+- `docs/release-candidate.md`
+- `docs/release-candidate-checklist.md`
+- `docs/manual-qa-plan.md`
+- `docs/release-blockers.md`
+- `docs/final-qa-report.md`
+- `docs/pre-scale-approval-checklist.md`
+
+## [1.1.0-rc.1] - em preparacao
+
+### Inclui
+
+- melhorias de UX
+- paginas por nicho
+- controle de uso
+- suporte
+- privacidade
+- relatorios
+- campanhas internas
+- seguranca
+- documentacao
+
+### Status
+
+- Release Candidate privada, ainda nao marcada como final.
+- Exige validacao em staging antes de liberar campanha maior.
 
 ## 1.0.0
 

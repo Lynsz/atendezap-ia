@@ -3,6 +3,9 @@
 ## Pre-requisitos
 
 - staging validado
+- Release Candidate revisada em `docs/release-candidate.md`
+- checklist da Release Candidate sem P0/P1 bloqueador
+- relatorio final de QA atualizado
 - `npm run validate` passou
 - GitHub Action passou
 - sem bugs P0
@@ -68,3 +71,5 @@ Nao colocar valores reais no documento.
 - revisar logs da Vercel
 - revisar logs do Supabase
 - revisar eventos Stripe
+- atualizar `docs/final-qa-report.md`
+- revisar `docs/pre-scale-approval-checklist.md` antes de aumentar campanhas

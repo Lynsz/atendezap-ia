@@ -193,6 +193,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/campaign-results-workflow.md`, `docs/post-campaign-analysis-template.md`, `docs/campaign-decision-criteria.md` e `docs/monthly-campaign-report-template.md` para registrar resultados manuais e decidir proximos testes.
 - Use `docs/feedback-workflow.md`, `docs/product-prioritization.md`, `docs/product-backlog.md`, `docs/user-interview-script.md` e `docs/monthly-feedback-report-template.md` para transformar feedback em backlog.
 - Use `docs/sprint-workflow.md`, `docs/release-process.md`, `docs/release-readiness-checklist.md`, `docs/versioning.md`, `docs/roadmap-management.md` e `docs/monthly-operating-calendar.md` para planejar sprints e releases.
+- Use `docs/release-candidate.md`, `docs/release-candidate-checklist.md`, `docs/manual-qa-plan.md`, `docs/release-blockers.md`, `docs/final-qa-report.md` e `docs/pre-scale-approval-checklist.md` para validar Release Candidate privada antes de aumentar campanhas.
 - Use `docs/ux-polish-checklist.md`, `docs/ux-review.md` e `docs/technical-seo.md` para polimento final de UX, acessibilidade, mobile e SEO tecnico.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
@@ -273,6 +274,12 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/sprint-workflow.md`: fluxo de sprint.
 - `docs/sprint-planning-template.md`: template de planejamento de sprint.
 - `docs/sprint-review-template.md`: template de revisão de sprint.
+- `docs/release-candidate.md`: status e escopo da Release Candidate privada.
+- `docs/release-candidate-checklist.md`: checklist final da Release Candidate.
+- `docs/manual-qa-plan.md`: plano de QA manual ponta a ponta.
+- `docs/release-blockers.md`: matriz P0/P1/P2 para bloquear release ou campanha maior.
+- `docs/final-qa-report.md`: relatorio final de QA por ambiente.
+- `docs/pre-scale-approval-checklist.md`: aprovacao antes de aumentar campanhas.
 - `docs/release-process.md`: processo de release.
 - `docs/release-notes-template.md`: template de release notes.
 - `docs/versioning.md`: padrão simples de versionamento.

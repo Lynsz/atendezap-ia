@@ -3,6 +3,10 @@
 ## Antes de testar
 
 - `npm run validate` passou localmente
+- `docs/release-candidate.md` atualizado
+- `docs/release-candidate-checklist.md` iniciado
+- `docs/manual-qa-plan.md` pronto para execucao
+- `docs/release-blockers.md` revisado
 - GitHub Action passou
 - Preview deploy criado na Vercel
 - variaveis de ambiente configuradas
@@ -60,3 +64,9 @@
 - admin nao abre para usuario comum
 - service role nao aparece no client
 - secrets nao aparecem no bundle
+
+## Fechamento da Release Candidate
+
+- preencher `docs/final-qa-report.md`
+- marcar P0/P1 em `docs/release-blockers.md`
+- revisar `docs/pre-scale-approval-checklist.md` antes de qualquer aumento de campanha

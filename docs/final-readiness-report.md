@@ -1138,3 +1138,36 @@ Recomendacao atualizada:
 O produto esta mais preparado para producao controlada e campanhas pequenas. Continuar sem escala ampla ate checkout, webhook, Supabase, Resend, OpenAI, tracking e logs reais ficarem validados no ambiente final.
 
 Nota estimada atualizada: 98/100 para producao controlada, condicionada a validacao real em staging/producao.
+
+## Release Candidate privada e aprovacao pre-escala - 2026-05-31
+
+Status: etapa de Release Candidate criada para validar estabilidade antes de aumentar campanhas.
+
+O que foi feito:
+
+- `docs/release-candidate.md` atualizado com objetivo, status, escopo, fora do escopo, evidencias obrigatorias e decisao recomendada.
+- `docs/release-candidate-checklist.md` criado para seguranca, produto, billing, operacao e campanhas.
+- `docs/manual-qa-plan.md` criado para QA manual ponta a ponta.
+- `docs/release-blockers.md` criado com P0, P1 e P2.
+- `docs/final-qa-report.md` criado para registrar ambiente, fluxos, bugs, pendencias e decisao.
+- `docs/pre-scale-approval-checklist.md` criado para impedir aumento de campanha sem produto, billing, seguranca, operacao e campanhas verdes.
+- Processo de release, readiness, staging, deploy de producao e smoke pos-deploy atualizados.
+- CHANGELOG atualizado com `1.1.0-rc.1` em preparacao.
+
+Pendencias:
+
+- Executar QA manual em staging.
+- Validar Supabase Auth/RLS com usuarios reais de teste.
+- Validar Stripe checkout, portal e webhook em modo teste.
+- Validar OpenAI, Resend, tracking e admin no ambiente real.
+- Atualizar `docs/final-qa-report.md` apos staging.
+
+Decisao recomendada:
+
+- manter privado
+- validar staging
+- rodar campanha pequena apenas com staging verde
+- nao escalar ainda
+- escalar com cautela apenas sem P0/P1 e com dados suficientes
+
+Nota estimada mantida: 98/100 para producao controlada documentada, condicionada a validacao real em staging/producao.

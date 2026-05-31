@@ -1,34 +1,40 @@
-# Checklist de Prontidão para Release - AtendeZap IA
+# Checklist de Prontidao para Release - AtendeZap IA
 
-## Código
+## Codigo
 
-- npm run validate passou
+- release candidate documentada
+- checklist da release candidate preenchido
+- QA manual planejado
+- bugs P0/P1 revisados
+- `npm run validate` passou
 - lint passou
 - typecheck passou
 - build passou
 - testes passaram
-- sem secrets no código
+- sem secrets no codigo
 
 ## Produto
 
 - fluxo principal testado
 - dashboard testado
-- geração de IA testada
+- geracao de IA testada
 - assinatura testada
 - suporte testado, se alterado
 
-## Segurança
+## Seguranca
 
-- .env.local fora do Git
+- `.env.local` fora do Git
 - service role apenas server-side
 - OpenAI key apenas server-side
 - Stripe secret apenas server-side
-- logs sem dados sensíveis
+- logs sem dados sensiveis
 
-## Produção
+## Producao
 
 - staging validado
-- rollback possível
+- relatorio final de QA atualizado
+- checklist pre-escala revisado antes de aumentar campanhas
+- rollback possivel
 - health check funcionando
 - smoke test pronto
-- documentação atualizada
+- documentacao atualizada

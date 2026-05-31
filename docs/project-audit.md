@@ -776,3 +776,16 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Documentacao criada: `docs/ux-polish-checklist.md`, `docs/ux-review.md` e `docs/technical-seo.md`.
 - Pendencias restantes: validar visualmente no dominio real em mobile/tablet/desktop e conferir Search Console apos deploy.
 - Nota estimada atualizada: 98/100 para producao controlada, condicionada a validacao real de staging/producao e logs limpos.
+
+## Release Candidate privada e aprovacao pre-escala - 2026-05-31
+
+- Release Candidate privada criada em `docs/release-candidate.md`, com status atual em preparacao para validacao privada.
+- Checklist final criado em `docs/release-candidate-checklist.md`, cobrindo seguranca, produto, billing, operacao e campanhas.
+- QA manual ponta a ponta documentado em `docs/manual-qa-plan.md`, cobrindo visitante frio, lead do ebook, usuario pagante, limite atingido, suporte e privacidade.
+- Matriz de bloqueadores criada em `docs/release-blockers.md`, separando P0, P1 e P2.
+- Relatorio final de QA criado em `docs/final-qa-report.md`, com validacao local automatizada aprovada com observacoes e staging/producao pendentes.
+- Checklist pre-escala criado em `docs/pre-scale-approval-checklist.md`.
+- Processo de release, readiness, staging, deploy de producao e smoke pos-deploy passaram a referenciar a Release Candidate.
+- CHANGELOG recebeu `1.1.0-rc.1` como versao em preparacao, sem marcar release final.
+- Decisao recomendada: manter privado, validar staging, liberar apenas campanha pequena depois de staging verde, nao escalar ainda e escalar com cautela apenas sem P0/P1 e com dados suficientes.
+- Nota estimada mantida: 98/100 para producao controlada documentada; campanhas maiores continuam condicionadas a QA manual, integrações reais e ausencia de P0/P1.

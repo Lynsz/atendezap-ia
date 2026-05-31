@@ -7,8 +7,10 @@
 - `/ebook`
 - `/obrigado`
 - `/precos` ou rota equivalente
+- `/suporte`
 - `/termos`
 - `/privacidade`
+- paginas por nicho em `/para/[slug]`
 
 ## Fluxo principal
 
@@ -37,3 +39,5 @@
 ## Criterio de sucesso
 
 Producao so e considerada saudavel se o fluxo principal funcionar sem erro critico.
+
+Antes de aumentar campanhas, registrar o resultado em `docs/final-qa-report.md` e revisar `docs/pre-scale-approval-checklist.md`.
