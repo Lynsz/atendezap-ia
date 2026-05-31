@@ -42,6 +42,48 @@ test.describe("paginas publicas", () => {
     expect(body.status).toBe("ok");
   });
 
+  test("sitemap inclui paginas publicas e exclui areas privadas", async ({ request }) => {
+    const response = await request.get("/sitemap.xml");
+    const body = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(body).toContain("<loc>http://localhost:3000/</loc>");
+    expect(body).toContain("<loc>http://localhost:3000/demo</loc>");
+    expect(body).toContain("<loc>http://localhost:3000/para/delivery</loc>");
+    expect(body).not.toContain("/dashboard");
+    expect(body).not.toContain("/admin");
+    expect(body).not.toContain("/assinatura");
+    expect(body).not.toContain("/api/");
+  });
+
+  test("robots bloqueia rotas privadas e aponta para sitemap", async ({ request }) => {
+    const response = await request.get("/robots.txt");
+    const body = await response.text();
+
+    expect(response.status()).toBe(200);
+    expect(body).toContain("Disallow: /dashboard");
+    expect(body).toContain("Disallow: /admin");
+    expect(body).toContain("Disallow: /assinatura");
+    expect(body).toContain("Disallow: /api");
+    expect(body).toContain("Sitemap: http://localhost:3000/sitemap.xml");
+  });
+
+  test("demo nao exibe stack trace quando API retorna erro interno", async ({ page }) => {
+    await page.route("**/api/demo/generate-response", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Error: segredo interno\\n    at generateResponse (/app/src/internal.ts:10:5)" })
+      });
+    });
+
+    await page.goto("/demo");
+    await page.getByRole("button", { name: /Gerar resposta de exemplo/i }).click();
+
+    await expect(page.getByText(/Nao foi possivel gerar a resposta|Não foi possível gerar a resposta/i)).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(/internal\.ts|at generateResponse|segredo interno/i);
+  });
+
   test("nicho invalido retorna 404", async ({ page }) => {
     const response = await page.goto("/para/nicho-invalido");
     expect(response?.status()).toBe(404);

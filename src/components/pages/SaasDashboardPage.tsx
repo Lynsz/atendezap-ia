@@ -2327,7 +2327,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
 
             <div className="mt-5 grid gap-3">
               {loadingSavedResponses ? (
-                <div className="rounded-md border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-bold text-slate-300">
+                <div className="rounded-md border border-white/10 bg-white/[0.04] p-6 text-center text-sm font-bold text-slate-300" role="status" aria-live="polite">
                   Carregando respostas salvas...
                 </div>
               ) : filteredSavedResponses.length ? (
@@ -2423,7 +2423,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   );
                 })
               ) : (
-                <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400">
+                <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400" data-testid="saved-responses-empty-state">
                   <Star className="mx-auto mb-4 h-8 w-8 text-slate-500" />
                   <p className="font-bold text-slate-200">Você ainda não tem respostas salvas.</p>
                   <p className="mt-2">Gere uma resposta com IA, salve um template pronto ou crie uma resposta manual para reutilizar depois.</p>

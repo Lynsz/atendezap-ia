@@ -21,6 +21,13 @@ type DemoResponse = {
   error?: string;
 };
 
+const GENERIC_DEMO_ERROR = "Não foi possível gerar a resposta agora. Tente novamente em instantes.";
+
+function getSafeDemoError(status: number, result: DemoResponse) {
+  if (status >= 500) return GENERIC_DEMO_ERROR;
+  return result.error || GENERIC_DEMO_ERROR;
+}
+
 export function PublicDemo() {
   const [businessType, setBusinessType] = useState("Prestador de servico");
   const exampleQuestions = useMemo(() => getBusinessExamples(businessType), [businessType]);
@@ -86,7 +93,7 @@ export function PublicDemo() {
       const result = (await response.json().catch(() => ({}))) as DemoResponse;
 
       if (!response.ok || !result.answer) {
-        const message = result.error || "Não foi possível gerar a resposta agora. Tente novamente em instantes.";
+        const message = getSafeDemoError(response.status, result);
         setError(message);
         trackEvent("demo_response_error", {
           business_type: businessType,
@@ -206,7 +213,11 @@ export function PublicDemo() {
               </label>
             </div>
 
-            {error ? <p className="rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm font-bold text-red-100">{error}</p> : null}
+            {error ? (
+              <p className="rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm font-bold text-red-100" role="alert">
+                {error}
+              </p>
+            ) : null}
 
             <button
               type="submit"

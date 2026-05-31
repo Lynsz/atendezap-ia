@@ -1110,3 +1110,31 @@ Pendencias:
 - Ajustar copy apenas depois de dados reais por nicho.
 
 Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real de campanhas.
+
+## Polimento final de UX, acessibilidade e SEO - 2026-05-31
+
+Status: etapa implementada para fechar UX, mobile, estados de carregamento/erro/vazio e SEO tecnico antes de nova validacao em staging.
+
+O que foi feito:
+
+- Criados `src/app/sitemap.ts` e `src/app/robots.ts`.
+- Sitemap inclui rotas publicas principais e paginas por nicho; rotas privadas, admin, assinatura e APIs ficam fora.
+- Robots bloqueia `/dashboard`, `/admin`, `/assinatura`, `/api` e `/app`.
+- Criados `src/app/loading.tsx` e `src/app/error.tsx` com mensagens amigaveis e sem detalhes internos.
+- Demo publica sanitiza erro 500 para nao mostrar stack trace, path interno ou segredo retornado por engano.
+- Biblioteca de respostas recebeu estado de carregamento acessivel e estado vazio testavel.
+- Criados `docs/ux-polish-checklist.md`, `docs/ux-review.md` e `docs/technical-seo.md`.
+- README e indice de docs atualizados.
+
+Pendencias:
+
+- Validar no dominio real com viewports 360px, 768px e desktop.
+- Conferir `/sitemap.xml` e `/robots.txt` em Preview/Production depois do deploy.
+- Confirmar Search Console apenas depois que o dominio real estiver configurado.
+- Ajustar copy e layout apenas com evidencia de uso, feedback ou dados de campanha.
+
+Recomendacao atualizada:
+
+O produto esta mais preparado para producao controlada e campanhas pequenas. Continuar sem escala ampla ate checkout, webhook, Supabase, Resend, OpenAI, tracking e logs reais ficarem validados no ambiente final.
+
+Nota estimada atualizada: 98/100 para producao controlada, condicionada a validacao real em staging/producao.

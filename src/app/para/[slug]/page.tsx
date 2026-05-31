@@ -7,6 +7,8 @@ type NichePageProps = {
   params: Promise<{ slug: string }>;
 };
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return NICHE_SLUGS.map((slug) => ({ slug }));
 }

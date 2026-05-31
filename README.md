@@ -193,6 +193,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/campaign-results-workflow.md`, `docs/post-campaign-analysis-template.md`, `docs/campaign-decision-criteria.md` e `docs/monthly-campaign-report-template.md` para registrar resultados manuais e decidir proximos testes.
 - Use `docs/feedback-workflow.md`, `docs/product-prioritization.md`, `docs/product-backlog.md`, `docs/user-interview-script.md` e `docs/monthly-feedback-report-template.md` para transformar feedback em backlog.
 - Use `docs/sprint-workflow.md`, `docs/release-process.md`, `docs/release-readiness-checklist.md`, `docs/versioning.md`, `docs/roadmap-management.md` e `docs/monthly-operating-calendar.md` para planejar sprints e releases.
+- Use `docs/ux-polish-checklist.md`, `docs/ux-review.md` e `docs/technical-seo.md` para polimento final de UX, acessibilidade, mobile e SEO tecnico.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
 - Use `docs/error-messages.md` para manter mensagens amigaveis e sem stack trace.
@@ -279,6 +280,9 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/release-readiness-checklist.md`: checklist de prontidão para release.
 - `docs/roadmap-management.md`: gestão simples do roadmap.
 - `docs/monthly-operating-calendar.md`: calendário operacional mensal.
+- `docs/ux-polish-checklist.md`: checklist de UX, mobile, acessibilidade, SEO e seguranca.
+- `docs/ux-review.md`: revisao final de UX e pendencias operacionais.
+- `docs/technical-seo.md`: sitemap, robots, metadata e regras de SEO tecnico.
 - `docs/retention-plan.md`: plano inicial de retencao.
 - `docs/ai-response-quality-plan.md`: qualidade das respostas com IA.
 - `docs/internal-faq.md`: FAQ operacional interna.

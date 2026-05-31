@@ -75,6 +75,9 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [release-readiness-checklist](release-readiness-checklist.md)
 - [roadmap-management](roadmap-management.md)
 - [monthly-operating-calendar](monthly-operating-calendar.md)
+- [ux-polish-checklist](ux-polish-checklist.md)
+- [ux-review](ux-review.md)
+- [technical-seo](technical-seo.md)
 - [internal-faq](internal-faq.md)
 
 ## Integracoes
@@ -116,6 +119,9 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [release-readiness-checklist](release-readiness-checklist.md)
 - [roadmap-management](roadmap-management.md)
 - [monthly-operating-calendar](monthly-operating-calendar.md)
+- [ux-polish-checklist](ux-polish-checklist.md)
+- [ux-review](ux-review.md)
+- [technical-seo](technical-seo.md)
 
 ## Campanhas
 
@@ -161,6 +167,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Registro manual de campanhas: use `campaign-results-workflow.md`, `post-campaign-analysis-template.md`, `campaign-decision-criteria.md` e `monthly-campaign-report-template.md`.
 - Feedback e backlog: use `feedback-workflow.md`, `product-prioritization.md`, `product-backlog.md`, `user-interview-script.md` e `monthly-feedback-report-template.md`.
 - Sprint, release e roadmap: use `sprint-workflow.md`, `sprint-planning-template.md`, `sprint-review-template.md`, `release-process.md`, `release-notes-template.md`, `versioning.md`, `sprint-intake-criteria.md`, `release-readiness-checklist.md`, `roadmap-management.md` e `monthly-operating-calendar.md`.
+- UX e SEO tecnico: use `ux-polish-checklist.md`, `ux-review.md` e `technical-seo.md` antes de campanhas ou deploy em dominio real.
 - Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
 
 ## Observacao sobre documentos legados

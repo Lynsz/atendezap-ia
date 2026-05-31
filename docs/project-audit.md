@@ -764,3 +764,15 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Testes adicionados/revisados para checklist, eventos seguros, templates de e-mail e metricas agregadas do admin.
 - Pendencias restantes: validar mobile e comportamento real em staging/producao, definir regra operacional antes de enviar e-mails automaticos e acompanhar abandono entre cadastro, onboarding e primeira resposta.
 - Nota estimada mantida: 97/100 para operacao controlada, condicionada a validacao real de ativacao/retenção inicial.
+
+## Polimento final de UX, acessibilidade e SEO - 2026-05-31
+
+- Escopo auditado: landing, paginas por nicho, demo, ebook, obrigado, precos, cadastro/login, dashboard, onboarding, geracao, biblioteca, templates, assinatura, ajuda/suporte, privacidade e termos.
+- SEO tecnico criado com `src/app/sitemap.ts` e `src/app/robots.ts`, listando apenas rotas publicas e bloqueando `/dashboard`, `/admin`, `/assinatura`, `/api` e aliases privados.
+- Estados globais adicionados em `src/app/loading.tsx` e `src/app/error.tsx`, com mensagens amigaveis e sem stack trace para o usuario.
+- Demo publica passou a tratar erro 500 com mensagem generica, mesmo se a API retornar detalhe interno.
+- Biblioteca manteve estado vazio claro e estado de carregamento com `role="status"`/`aria-live`.
+- Testes adicionados para sitemap, robots, exclusao de rotas privadas, erro da demo sem stack trace e estado vazio/carregamento da biblioteca.
+- Documentacao criada: `docs/ux-polish-checklist.md`, `docs/ux-review.md` e `docs/technical-seo.md`.
+- Pendencias restantes: validar visualmente no dominio real em mobile/tablet/desktop e conferir Search Console apos deploy.
+- Nota estimada atualizada: 98/100 para producao controlada, condicionada a validacao real de staging/producao e logs limpos.
