@@ -138,7 +138,7 @@ Não adicione funcionalidades fora do escopo sem pedido explícito do usuário. 
 
 - Chatbot conectado ao WhatsApp.
 - Integração direta com WhatsApp API.
-- IntegraÃ§Ã£o avanÃ§ada de assinatura fora do fluxo mensal da Kiwify.
+- Integração avançada de assinatura fora do fluxo mensal da Kiwify.
 - Dashboard administrativo complexo.
 - Área de membros avançada.
 - App mobile.
