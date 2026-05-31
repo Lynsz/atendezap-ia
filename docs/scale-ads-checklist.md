@@ -20,6 +20,7 @@ Depois das primeiras 72 horas, revise tambem `docs/post-go-live-72h-report.md`, 
 ## Produto e funil
 
 - [ ] tracking esta confiavel
+- [ ] eventos da campanha otimizada validados, se `utm_campaign=campanha_otimizada_01` estiver em uso
 - [ ] UTMs estao chegando no admin
 - [ ] admin mostra campanha com melhor desempenho
 - [ ] feedbacks principais foram corrigidos
@@ -65,10 +66,13 @@ Depois das primeiras 72 horas, revise tambem `docs/post-go-live-72h-report.md`, 
 - [ ] custo da IA controlado
 - [ ] suporte sem bug critico recorrente
 - [ ] tracking confiavel
+- [ ] `docs/optimized-campaign-report.md` preenchido, se a campanha otimizada foi rodada
 
 ## Limite recomendado
 
 Aumente aos poucos. Se a campanha pequena ainda nao gerou cadastros, onboarding e primeiras respostas com clareza, nao ha base suficiente para escalar.
+
+Para a campanha otimizada, nao aumentar verba se a conclusao ainda for `Sem dados suficientes`, se o custo de IA subir sem ativacao ou se checkout/webhook nao estiverem estaveis.
 
 ## Antes da segunda campanha
 

@@ -12,6 +12,7 @@
 - pagina principal cair
 - suporte receber bug critico recorrente
 - tracking principal estiver quebrado
+- tracking da campanha otimizada nao registrar page view ou CTA com UTM oficial
 - usuarios nao conseguirem ativar apos cadastro
 - custo da IA ficar descontrolado sem conversao
 

@@ -123,4 +123,19 @@ describe("tracking seguro", () => {
     expect(payload.answer).toBeUndefined();
     expect(payload.email).toBeUndefined();
   });
+
+  it("identifica a campanha pequena otimizada pela UTM oficial", async () => {
+    vi.stubGlobal("window", {
+      location: { pathname: "/para/delivery", search: "?utm_campaign=campanha_otimizada_01&utm_content=delivery_criativo_1" },
+      localStorage: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn()
+      }
+    });
+
+    const { isOptimizedSmallCampaign } = await import("./tracking");
+
+    expect(isOptimizedSmallCampaign()).toBe(true);
+  });
 });

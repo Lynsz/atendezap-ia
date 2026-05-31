@@ -196,6 +196,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/release-candidate.md`, `docs/release-candidate-checklist.md`, `docs/manual-qa-plan.md`, `docs/release-blockers.md`, `docs/final-qa-report.md` e `docs/pre-scale-approval-checklist.md` para validar Release Candidate privada antes de aumentar campanhas.
 - Use `docs/controlled-go-live.md`, `docs/go-live-approval-checklist.md`, `docs/go-live-deploy-plan.md`, `docs/first-72-hours-monitoring.md`, `docs/post-go-live-small-campaign.md`, `docs/emergency-pause-criteria.md`, `docs/go-live-daily-report-template.md`, `docs/post-go-live-decision.md` e `docs/go-live-tracking-checklist.md` para o go-live controlado e campanha pequena pos-deploy.
 - Use `docs/post-go-live-72h-report.md`, `docs/post-go-live-diagnosis.md`, `docs/post-go-live-decision-matrix.md`, `docs/post-go-live-fix-plan.md`, `docs/next-small-campaign-plan.md`, `docs/post-go-live-daily-decision.md` e `docs/post-go-live-learnings.md` para decidir manter, pausar, corrigir ou liberar nova campanha pequena apos 72 horas.
+- Use `docs/optimized-small-campaign-plan.md`, `docs/optimized-campaign-utm-links.md`, `docs/optimized-campaign-test-matrix.md`, `docs/optimized-campaign-copy.md`, `docs/optimized-campaign-video-scripts.md`, `docs/optimized-campaign-launch-checklist.md` e `docs/optimized-campaign-report.md` para executar a campanha pequena otimizada sem escalar antes de dados reais.
 - Use `docs/ux-polish-checklist.md`, `docs/ux-review.md` e `docs/technical-seo.md` para polimento final de UX, acessibilidade, mobile e SEO tecnico.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
@@ -298,6 +299,13 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/next-small-campaign-plan.md`: planejamento da proxima campanha pequena.
 - `docs/post-go-live-daily-decision.md`: processo diario de decisao.
 - `docs/post-go-live-learnings.md`: aprendizados e areas de impacto.
+- `docs/optimized-small-campaign-plan.md`: plano da campanha pequena otimizada.
+- `docs/optimized-campaign-utm-links.md`: modelos de links UTM da campanha otimizada.
+- `docs/optimized-campaign-test-matrix.md`: matriz de teste por nicho/criativo.
+- `docs/optimized-campaign-copy.md`: copy permitida e proibida.
+- `docs/optimized-campaign-video-scripts.md`: roteiros curtos para criativos.
+- `docs/optimized-campaign-launch-checklist.md`: checklist antes, durante e depois.
+- `docs/optimized-campaign-report.md`: relatorio manual da campanha otimizada.
 - `docs/release-process.md`: processo de release.
 - `docs/release-notes-template.md`: template de release notes.
 - `docs/versioning.md`: padrão simples de versionamento.

@@ -1244,3 +1244,20 @@ Recomendacao:
 - escalar com cautela somente com sinal positivo, custo controlado e suporte sob controle
 
 Nota estimada mantida: 98/100 para producao controlada; sem dados reais suficientes para aprovar escala cautelosa.
+
+## Campanha pequena otimizada - 2026-05-31
+
+Status: preparada para teste pequeno, sem aprovar escala.
+
+O que foi feito:
+
+- Documentacao criada para plano, UTMs, matriz, copy, videos, checklist e relatorio da campanha otimizada.
+- Eventos `optimized_campaign_page_view` e `optimized_campaign_cta_click` adicionados para URLs com `utm_campaign=campanha_otimizada_01`.
+- Criterios de pausa e pre-escala atualizados para exigir tracking, ativacao, checkout/webhook estavel e custo de IA controlado.
+
+Decisao recomendada:
+
+- manter privado
+- rodar apenas com baixo orcamento
+- nao declarar nicho vencedor sem dados reais
+- nao escalar se a conclusao permanecer `Sem dados suficientes`

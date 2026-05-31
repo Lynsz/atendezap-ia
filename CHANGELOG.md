@@ -23,11 +23,13 @@
 - Plano de correcoes pos-go-live.
 - Plano da proxima campanha pequena.
 - Aprendizados pos-go-live.
+- Campanha pequena otimizada `campanha_otimizada_01`.
 
 ### Melhorado
 
 - Processo de release passa a exigir checklist de Release Candidate, QA manual e revisao pre-escala.
 - Admin ganhou secao simples "Go-Live" com cards agregados para acompanhamento controlado.
+- Tracking client-side passa a emitir eventos seguros da campanha otimizada quando a UTM oficial esta presente.
 
 ### Corrigido
 
@@ -55,6 +57,13 @@
 - `docs/go-live-daily-report-template.md`
 - `docs/post-go-live-decision.md`
 - `docs/go-live-tracking-checklist.md`
+- `docs/optimized-small-campaign-plan.md`
+- `docs/optimized-campaign-utm-links.md`
+- `docs/optimized-campaign-test-matrix.md`
+- `docs/optimized-campaign-copy.md`
+- `docs/optimized-campaign-video-scripts.md`
+- `docs/optimized-campaign-launch-checklist.md`
+- `docs/optimized-campaign-report.md`
 
 ## [1.1.0-rc.2] - em preparacao
 
@@ -88,6 +97,22 @@
 
 - Release Candidate privada, ainda nao marcada como final.
 - Exige dados reais agregados antes de decidir escala cautelosa.
+
+## [1.1.0-rc.4] - em preparacao
+
+### Inclui
+
+- plano de campanha pequena otimizada
+- links UTM para `campanha_otimizada_01`
+- matriz de teste por nicho/criativo
+- copies e roteiros de video sem promessa de automacao no WhatsApp
+- checklist de lancamento e relatorio manual
+- eventos `optimized_campaign_page_view` e `optimized_campaign_cta_click`
+
+### Status
+
+- Continua privado e sem escala.
+- Campanha liberada apenas como teste pequeno, com `Sem dados suficientes` como conclusao inicial ate haver dados reais.
 
 ## [1.1.0-rc.1] - em preparacao
 

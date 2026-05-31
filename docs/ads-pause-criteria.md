@@ -13,6 +13,7 @@ Para go-live controlado, use tambem `docs/emergency-pause-criteria.md`.
 - webhook nao libera assinatura
 - erro 500 em pagina principal
 - custo consumindo sem tracking
+- evento `optimized_campaign_page_view` ou `optimized_campaign_cta_click` ausente na campanha otimizada
 - admin inacessivel para acompanhar campanha
 - dados de usuario expostos ou suspeita de falha de seguranca
 
@@ -54,3 +55,4 @@ Para go-live controlado, use tambem `docs/emergency-pause-criteria.md`.
 - Se a pausa acontecer nas primeiras 72 horas, registrar tambem em `docs/go-live-daily-report-template.md`.
 - Nao escalar se usuarios nao ativam, se checkout/webhook falha, se custo da IA esta descontrolado, se suporte recebe bug critico ou se tracking nao e confiavel.
 - Depois das primeiras 72 horas, use `docs/post-go-live-decision-matrix.md` para decidir manter, pausar, corrigir ou liberar nova campanha pequena.
+- Para a campanha otimizada, use `docs/optimized-campaign-report.md` e mantenha `Sem dados suficientes` se nao houver ativacao, checkout/webhook estavel e primeira resposta gerada.

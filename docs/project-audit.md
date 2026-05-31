@@ -820,3 +820,11 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Status atual: Sem dados suficientes para concluir escala; manter privado e operar com campanha pequena somente apos dados reais agregados.
 - Recomendacao: continuar operacao controlada se nao houver P0/P1, pausar campanha diante de falha critica, corrigir antes de nova campanha quando houver gargalo claro e liberar proxima campanha pequena apenas com tracking confiavel.
 - Nota estimada mantida: 98/100 para producao controlada; escala cautelosa depende de evidencias reais das primeiras 72 horas.
+
+## Campanha pequena otimizada - 2026-05-31
+
+- Campanha `campanha_otimizada_01` preparada como teste pequeno, sem tratar nenhum nicho como vencedor antes de dados reais.
+- Documentacao criada: `docs/optimized-small-campaign-plan.md`, `docs/optimized-campaign-utm-links.md`, `docs/optimized-campaign-test-matrix.md`, `docs/optimized-campaign-copy.md`, `docs/optimized-campaign-video-scripts.md`, `docs/optimized-campaign-launch-checklist.md` e `docs/optimized-campaign-report.md`.
+- Tracking client-side adicionou `optimized_campaign_page_view` e `optimized_campaign_cta_click` quando a UTM oficial esta presente, preservando os eventos originais e sem enviar conteudo sensivel.
+- Criterios de pausa, pre-escala e escala reforcados para bloquear aumento se tracking falhar, se custo de IA subir sem ativacao, se checkout/webhook falharem ou se a conclusao continuar `Sem dados suficientes`.
+- Status atual: pronto para validacao manual e smoke test; nao aprovado para escala.

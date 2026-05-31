@@ -47,6 +47,9 @@
 - [ ] orcamento pequeno inicial
 - [ ] monitoramento diario pronto
 - [ ] custo da IA controlado
+- [ ] evento `optimized_campaign_page_view` validado, se aplicavel
+- [ ] evento `optimized_campaign_cta_click` validado, se aplicavel
+- [ ] relatorio da campanha otimizada preenchido, se aplicavel
 - [ ] nao escalar se usuarios nao ativam
 - [ ] nao escalar se checkout/webhook tem falha
 - [ ] nao escalar se custo da IA esta descontrolado

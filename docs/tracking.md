@@ -21,6 +21,8 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `campaign_signup_cta_click`: clique da pagina de campanha para cadastro.
 - `campaign_pricing_cta_click`: clique da pagina de campanha para planos.
 - `campaign_pro_cta_click`: clique da pagina de campanha na oferta do Pro.
+- `optimized_campaign_page_view`: abertura com `utm_campaign=campanha_otimizada_01`.
+- `optimized_campaign_cta_click`: clique em CTA com `utm_campaign=campanha_otimizada_01`.
 - `niche_page_view`: abertura de pagina publica por nicho.
 - `niche_demo_cta_click`: clique de pagina por nicho para demo.
 - `niche_signup_cta_click`: clique de pagina por nicho para cadastro.
@@ -114,6 +116,8 @@ No checkout, o backend inclui em metadata da Stripe apenas campos de atribuicao 
 Nas paginas por nicho, os eventos enviam apenas metadados seguros como `niche`, `cta`, `source` e `faq_index`. Nao envie pergunta do cliente, resposta gerada, e-mail ou dados sensiveis.
 
 Na segunda campanha, use `utm_content` para diferenciar variacoes como `demo_criativo_1`, `ebook_criativo_1`, `landing_criativo_1` e `pro_29_criativo_1`.
+
+Na campanha pequena otimizada, use `utm_campaign=campanha_otimizada_01`. Quando essa UTM estiver presente, o client dispara tambem `optimized_campaign_page_view` e `optimized_campaign_cta_click` com metadados seguros, preservando os eventos originais da pagina.
 
 ## Como testar sem GA4 ou Meta Pixel
 

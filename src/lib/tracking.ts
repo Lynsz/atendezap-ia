@@ -14,6 +14,8 @@ export type TrackingEventName =
   | "campaign_signup_cta_click"
   | "campaign_pricing_cta_click"
   | "campaign_pro_cta_click"
+  | "optimized_campaign_page_view"
+  | "optimized_campaign_cta_click"
   | "niche_page_view"
   | "niche_demo_cta_click"
   | "niche_signup_cta_click"
@@ -203,6 +205,10 @@ export function getCurrentUtms(): UtmPayload {
     if (value) accumulator[key] = cleanValue(value);
     return accumulator;
   }, {});
+}
+
+export function isOptimizedSmallCampaign() {
+  return getCurrentUtms().utm_campaign === "campanha_otimizada_01";
 }
 
 export function getStoredUtms(): UtmPayload {
