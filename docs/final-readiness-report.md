@@ -1208,3 +1208,39 @@ Decisao recomendada:
 - escalar com cautela somente sem P0/P1, com custo de IA controlado e tracking confiavel
 
 Nota estimada mantida: 98/100 para producao controlada, condicionada a validacao real em staging/producao e ao monitoramento das primeiras 72 horas.
+
+## Analise das primeiras 72 horas pos-go-live - 2026-05-31
+
+Status: artefatos criados para transformar dados agregados das primeiras 72 horas em decisao operacional.
+
+O que foi feito:
+
+- `docs/post-go-live-72h-report.md` criado.
+- `docs/post-go-live-diagnosis.md` criado.
+- `docs/post-go-live-decision-matrix.md` criado.
+- `docs/post-go-live-fix-plan.md` criado.
+- `docs/next-small-campaign-plan.md` criado.
+- `docs/post-go-live-daily-decision.md` criado.
+- `docs/post-go-live-learnings.md` criado.
+- Admin Go-Live recebeu bloco "Resumo 72h".
+- Criterios de escala e pausa foram reforcados.
+- Intake pos-go-live adicionado ao backlog.
+- CHANGELOG atualizado com `1.1.0-rc.3` em preparacao.
+
+Pendencias:
+
+- Preencher relatorio com dados reais agregados.
+- Classificar bugs P0/P1/P2, se existirem.
+- Identificar gargalo principal de ativacao, checkout, assinatura, IA, suporte ou campanha.
+- Decidir entre manter, pausar, corrigir, liberar nova campanha pequena ou escalar com cautela.
+
+Recomendacao:
+
+- manter privado
+- continuar operacao controlada apenas se nao houver P0/P1
+- pausar campanha se houver falha critica
+- corrigir antes de nova campanha se houver gargalo claro
+- liberar proxima campanha pequena apenas com tracking confiavel
+- escalar com cautela somente com sinal positivo, custo controlado e suporte sob controle
+
+Nota estimada mantida: 98/100 para producao controlada; sem dados reais suficientes para aprovar escala cautelosa.

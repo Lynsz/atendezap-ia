@@ -17,6 +17,12 @@
 - Criterios de pausa imediata.
 - Relatorio diario e decisao pos-go-live.
 - Checklist de tracking seguro do go-live.
+- Relatorio 72h pos-go-live.
+- Diagnostico pos-go-live.
+- Matriz de decisao pos-go-live.
+- Plano de correcoes pos-go-live.
+- Plano da proxima campanha pequena.
+- Aprendizados pos-go-live.
 
 ### Melhorado
 
@@ -66,6 +72,22 @@
 
 - Release Candidate privada, ainda nao marcada como final.
 - Exige staging verde, smoke test e monitoramento inicial antes de campanha pequena.
+
+## [1.1.0-rc.3] - em preparacao
+
+### Inclui
+
+- relatorio 72h pos-go-live
+- diagnostico pos-go-live
+- matriz de decisao
+- plano de correcoes
+- plano da proxima campanha pequena
+- aprendizados pos-go-live
+
+### Status
+
+- Release Candidate privada, ainda nao marcada como final.
+- Exige dados reais agregados antes de decidir escala cautelosa.
 
 ## [1.1.0-rc.1] - em preparacao
 

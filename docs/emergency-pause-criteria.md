@@ -12,6 +12,8 @@
 - pagina principal cair
 - suporte receber bug critico recorrente
 - tracking principal estiver quebrado
+- usuarios nao conseguirem ativar apos cadastro
+- custo da IA ficar descontrolado sem conversao
 
 ## Depois de pausar
 
@@ -21,3 +23,4 @@
 - validar em staging
 - rodar smoke test
 - so reativar campanha apos validacao
+- atualizar `docs/post-go-live-72h-report.md` e `docs/post-go-live-daily-decision.md`

@@ -83,6 +83,13 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [go-live-daily-report-template](go-live-daily-report-template.md)
 - [post-go-live-decision](post-go-live-decision.md)
 - [go-live-tracking-checklist](go-live-tracking-checklist.md)
+- [post-go-live-72h-report](post-go-live-72h-report.md)
+- [post-go-live-diagnosis](post-go-live-diagnosis.md)
+- [post-go-live-decision-matrix](post-go-live-decision-matrix.md)
+- [post-go-live-fix-plan](post-go-live-fix-plan.md)
+- [next-small-campaign-plan](next-small-campaign-plan.md)
+- [post-go-live-daily-decision](post-go-live-daily-decision.md)
+- [post-go-live-learnings](post-go-live-learnings.md)
 - [release-process](release-process.md)
 - [release-notes-template](release-notes-template.md)
 - [versioning](versioning.md)
@@ -142,6 +149,13 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [go-live-daily-report-template](go-live-daily-report-template.md)
 - [post-go-live-decision](post-go-live-decision.md)
 - [go-live-tracking-checklist](go-live-tracking-checklist.md)
+- [post-go-live-72h-report](post-go-live-72h-report.md)
+- [post-go-live-diagnosis](post-go-live-diagnosis.md)
+- [post-go-live-decision-matrix](post-go-live-decision-matrix.md)
+- [post-go-live-fix-plan](post-go-live-fix-plan.md)
+- [next-small-campaign-plan](next-small-campaign-plan.md)
+- [post-go-live-daily-decision](post-go-live-daily-decision.md)
+- [post-go-live-learnings](post-go-live-learnings.md)
 - [release-process](release-process.md)
 - [release-notes-template](release-notes-template.md)
 - [versioning](versioning.md)
@@ -196,7 +210,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Campanhas por nicho: use `niche-campaign-utm-links.md`, `niche-copy-guide.md` e `niche-campaign-plan.md`.
 - Registro manual de campanhas: use `campaign-results-workflow.md`, `post-campaign-analysis-template.md`, `campaign-decision-criteria.md` e `monthly-campaign-report-template.md`.
 - Feedback e backlog: use `feedback-workflow.md`, `product-prioritization.md`, `product-backlog.md`, `user-interview-script.md` e `monthly-feedback-report-template.md`.
-- Sprint, release e roadmap: use `sprint-workflow.md`, `sprint-planning-template.md`, `sprint-review-template.md`, `release-candidate.md`, `release-candidate-checklist.md`, `manual-qa-plan.md`, `release-blockers.md`, `final-qa-report.md`, `pre-scale-approval-checklist.md`, `controlled-go-live.md`, `go-live-approval-checklist.md`, `go-live-deploy-plan.md`, `first-72-hours-monitoring.md`, `post-go-live-small-campaign.md`, `emergency-pause-criteria.md`, `go-live-daily-report-template.md`, `post-go-live-decision.md`, `go-live-tracking-checklist.md`, `release-process.md`, `release-notes-template.md`, `versioning.md`, `sprint-intake-criteria.md`, `release-readiness-checklist.md`, `roadmap-management.md` e `monthly-operating-calendar.md`.
+- Sprint, release e roadmap: use `sprint-workflow.md`, `sprint-planning-template.md`, `sprint-review-template.md`, `release-candidate.md`, `release-candidate-checklist.md`, `manual-qa-plan.md`, `release-blockers.md`, `final-qa-report.md`, `pre-scale-approval-checklist.md`, `controlled-go-live.md`, `go-live-approval-checklist.md`, `go-live-deploy-plan.md`, `first-72-hours-monitoring.md`, `post-go-live-small-campaign.md`, `emergency-pause-criteria.md`, `go-live-daily-report-template.md`, `post-go-live-decision.md`, `go-live-tracking-checklist.md`, `post-go-live-72h-report.md`, `post-go-live-diagnosis.md`, `post-go-live-decision-matrix.md`, `post-go-live-fix-plan.md`, `next-small-campaign-plan.md`, `post-go-live-daily-decision.md`, `post-go-live-learnings.md`, `release-process.md`, `release-notes-template.md`, `versioning.md`, `sprint-intake-criteria.md`, `release-readiness-checklist.md`, `roadmap-management.md` e `monthly-operating-calendar.md`.
 - UX e SEO tecnico: use `ux-polish-checklist.md`, `ux-review.md` e `technical-seo.md` antes de campanhas ou deploy em dominio real.
 - Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
 

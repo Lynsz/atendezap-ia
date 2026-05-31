@@ -22,3 +22,17 @@
 - automações avançadas
 - múltiplos atendentes
 - app mobile
+
+# Intake pos-go-live
+
+Use `docs/post-go-live-learnings.md` e `docs/post-go-live-fix-plan.md` como entrada para novos insights de produto. Classifique cada item por area de impacto antes de priorizar:
+
+- activation
+- conversion
+- billing
+- ai_quality
+- support
+- campaign
+- usability
+
+Status atual: Sem dados suficientes. Nao criar conclusoes de produto sem evidencias agregadas do go-live.

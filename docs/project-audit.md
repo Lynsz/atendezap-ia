@@ -805,3 +805,18 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Documentos de RC, deploy, smoke, incidentes, pre-escala e pausa de anuncios atualizados com referencia ao go-live controlado.
 - Status atual: pronto documentalmente para go-live controlado, pendente de validacao real em staging/producao.
 - Nota estimada mantida: 98/100 para producao controlada, sem liberar escala antes das primeiras 72 horas e sem ausencia comprovada de P0/P1.
+
+## Analise das primeiras 72 horas pos-go-live - 2026-05-31
+
+- Analise 72h pos-go-live criada em `docs/post-go-live-72h-report.md`.
+- Diagnostico pos-go-live criado em `docs/post-go-live-diagnosis.md`.
+- Decisao pos-go-live documentada em `docs/post-go-live-decision-matrix.md` e `docs/post-go-live-daily-decision.md`.
+- Plano de correcoes criado em `docs/post-go-live-fix-plan.md`.
+- Proxima campanha pequena planejada em `docs/next-small-campaign-plan.md`.
+- Aprendizados pos-go-live documentados em `docs/post-go-live-learnings.md`.
+- Admin Go-Live recebeu bloco "Resumo 72h" com metricas agregadas e placeholders "Nao disponivel" quando nao houver fonte persistida.
+- Criterios de escala e pausa atualizados para reforcar: nao escalar sem ativacao, checkout/webhook estavel, custo de IA controlado, suporte sob controle e tracking confiavel.
+- Backlog recebeu intake pos-go-live por area de impacto: activation, conversion, billing, ai_quality, support, campaign e usability.
+- Status atual: Sem dados suficientes para concluir escala; manter privado e operar com campanha pequena somente apos dados reais agregados.
+- Recomendacao: continuar operacao controlada se nao houver P0/P1, pausar campanha diante de falha critica, corrigir antes de nova campanha quando houver gargalo claro e liberar proxima campanha pequena apenas com tracking confiavel.
+- Nota estimada mantida: 98/100 para producao controlada; escala cautelosa depende de evidencias reais das primeiras 72 horas.

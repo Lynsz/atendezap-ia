@@ -4,6 +4,7 @@
 
 - [ ] fluxo principal funcionando
 - [ ] primeira resposta funcionando
+- [ ] usuarios ativam depois do cadastro
 - [ ] onboarding claro
 - [ ] pricing claro
 - [ ] paginas por nicho funcionando
@@ -13,6 +14,7 @@
 
 - [ ] checkout funcionando
 - [ ] webhook funcionando
+- [ ] checkout/webhook sem falha recorrente
 - [ ] assinatura atualizando
 - [ ] portal funcionando
 - [ ] limites funcionando
@@ -24,6 +26,7 @@
 - [ ] admin protegido
 - [ ] logs seguros
 - [ ] analytics seguro
+- [ ] tracking confiavel
 
 ## Operacao
 
@@ -34,6 +37,7 @@
 - [ ] admin com metricas basicas
 - [ ] go-live controlado executado
 - [ ] primeiras 72 horas monitoradas
+- [ ] suporte sem bug critico recorrente
 
 ## Campanhas
 
@@ -43,6 +47,9 @@
 - [ ] orcamento pequeno inicial
 - [ ] monitoramento diario pronto
 - [ ] custo da IA controlado
+- [ ] nao escalar se usuarios nao ativam
+- [ ] nao escalar se checkout/webhook tem falha
+- [ ] nao escalar se custo da IA esta descontrolado
 
 ## Decisao
 

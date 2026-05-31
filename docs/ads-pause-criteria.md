@@ -52,3 +52,5 @@ Para go-live controlado, use tambem `docs/emergency-pause-criteria.md`.
 - Se o gargalo principal estiver claro, corrigir P0/P1 em `docs/post-campaign-improvement-plan.md` antes de nova campanha.
 - Se o tracking estiver incompleto, pausar ate corrigir os eventos principais e UTMs.
 - Se a pausa acontecer nas primeiras 72 horas, registrar tambem em `docs/go-live-daily-report-template.md`.
+- Nao escalar se usuarios nao ativam, se checkout/webhook falha, se custo da IA esta descontrolado, se suporte recebe bug critico ou se tracking nao e confiavel.
+- Depois das primeiras 72 horas, use `docs/post-go-live-decision-matrix.md` para decidir manter, pausar, corrigir ou liberar nova campanha pequena.

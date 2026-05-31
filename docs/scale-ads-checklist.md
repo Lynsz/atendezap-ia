@@ -4,6 +4,8 @@ Nao aumente orcamento enquanto este checklist nao estiver majoritariamente verde
 
 Antes de qualquer aumento, conclua `docs/controlled-go-live.md`, `docs/first-72-hours-monitoring.md`, `docs/post-go-live-decision.md` e `docs/pre-scale-approval-checklist.md`.
 
+Depois das primeiras 72 horas, revise tambem `docs/post-go-live-72h-report.md`, `docs/post-go-live-diagnosis.md`, `docs/post-go-live-decision-matrix.md` e `docs/post-go-live-learnings.md`.
+
 ## Sinais comerciais
 
 - [ ] campanha pequena gerou leads
@@ -58,6 +60,11 @@ Antes de qualquer aumento, conclua `docs/controlled-go-live.md`, `docs/first-72-
 - [ ] rollback pronto
 - [ ] criterio de pausa imediata revisado
 - [ ] decisao pos-go-live registrada
+- [ ] usuarios ativam e geram primeira resposta
+- [ ] checkout e webhook sem falha recorrente
+- [ ] custo da IA controlado
+- [ ] suporte sem bug critico recorrente
+- [ ] tracking confiavel
 
 ## Limite recomendado
 

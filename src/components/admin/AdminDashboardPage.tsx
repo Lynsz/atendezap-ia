@@ -953,6 +953,28 @@ export default function AdminDashboardPage() {
               <MetricCard label="Suportes abertos" value={availableValue(productMetrics.availability.supportRequests, productMetrics.supportQuality.openSupportRequests)} icon={<MessageSquare className="h-5 w-5" />} />
               <MetricCard label="Incidentes recentes" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
             </div>
+
+            <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.03] p-4">
+              <div className="mb-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Resumo 72h</p>
+                <p className="mt-2 text-sm leading-6 text-slate-400">
+                  Use este bloco para decidir manter, pausar, corrigir ou liberar a proxima campanha pequena. Nao inclui conteudo de respostas nem dados pessoais.
+                </p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <MetricCard label="Novos usuarios 72h" value="Nao disponivel" icon={<Users className="h-5 w-5" />} />
+                <MetricCard label="Leads 72h" value="Nao disponivel" icon={<Users className="h-5 w-5" />} />
+                <MetricCard label="Onboardings 72h" value="Nao disponivel" icon={<CheckCircle2 className="h-5 w-5" />} />
+                <MetricCard label="Primeiras respostas 72h" value="Nao disponivel" icon={<MessageSquare className="h-5 w-5" />} />
+                <MetricCard label="Checkouts 72h" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Assinaturas 72h" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Suporte aberto" value={availableValue(productMetrics.availability.supportRequests, productMetrics.supportQuality.openSupportRequests)} icon={<MessageSquare className="h-5 w-5" />} />
+                <MetricCard label="Falhas IA 72h" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Falhas Stripe 72h" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Bugs criticos" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Decisao recomendada" value="Sem dados suficientes" icon={<CheckCircle2 className="h-5 w-5" />} />
+              </div>
+            </div>
           </section>
         ) : null}
 
