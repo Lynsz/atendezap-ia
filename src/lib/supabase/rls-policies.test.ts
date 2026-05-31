@@ -63,6 +63,23 @@ describe("politicas RLS criticas", () => {
     expect(ebookMigration).toContain("revoke all on public.ebook_leads from anon, authenticated");
   });
 
+  it("mantem campanhas e resultados sem acesso direto pelo client", () => {
+    const migration = readRepoFile("supabase/migrations/0019_campaign_experiments.sql");
+    const campaignsRoute = readRepoFile("src/app/api/admin/campaigns/route.ts");
+    const campaignUpdateRoute = readRepoFile("src/app/api/admin/campaigns/[id]/route.ts");
+    const campaignResultsRoute = readRepoFile("src/app/api/admin/campaigns/[id]/results/route.ts");
+
+    expect(migration).toContain("alter table public.campaign_experiments enable row level security");
+    expect(migration).toContain("alter table public.campaign_results enable row level security");
+    expect(migration).toContain('create policy "campaign_experiments_no_client_access"');
+    expect(migration).toContain('create policy "campaign_results_no_client_access"');
+    expect(migration).toContain("revoke all on public.campaign_experiments from anon, authenticated");
+    expect(migration).toContain("revoke all on public.campaign_results from anon, authenticated");
+    expect(campaignsRoute).toContain("requireAdmin(request)");
+    expect(campaignUpdateRoute).toContain("requireAdmin(request)");
+    expect(campaignResultsRoute).toContain("requireAdmin(request)");
+  });
+
   it("mantem solicitacoes de suporte isoladas por usuario autenticado", () => {
     const migration = readRepoFile("supabase/migrations/0017_support_requests_workflow.sql");
 

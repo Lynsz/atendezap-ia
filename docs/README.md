@@ -56,6 +56,10 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [niche-campaign-utm-links](niche-campaign-utm-links.md)
 - [niche-copy-guide](niche-copy-guide.md)
 - [niche-campaign-plan](niche-campaign-plan.md)
+- [campaign-results-workflow](campaign-results-workflow.md)
+- [post-campaign-analysis-template](post-campaign-analysis-template.md)
+- [campaign-decision-criteria](campaign-decision-criteria.md)
+- [monthly-campaign-report-template](monthly-campaign-report-template.md)
 - [internal-faq](internal-faq.md)
 
 ## Integracoes
@@ -88,6 +92,10 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [first-paid-campaign-plan](first-paid-campaign-plan.md)
 - [second-campaign-analysis](second-campaign-analysis.md)
 - [cautious-scale-plan](cautious-scale-plan.md)
+- [campaign-results-workflow](campaign-results-workflow.md)
+- [post-campaign-analysis-template](post-campaign-analysis-template.md)
+- [campaign-decision-criteria](campaign-decision-criteria.md)
+- [monthly-campaign-report-template](monthly-campaign-report-template.md)
 
 ## Seguranca e testes
 
@@ -120,6 +128,7 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Seguranca: use `SECURITY.md` na raiz como fonte completa; `docs/security.md` e `docs/security-checklist.md` sao entradas auxiliares.
 - Campanhas: use `first-paid-campaign-plan.md`, `second-campaign-analysis.md`, `scale-decision-matrix.md` e `cautious-scale-plan.md`.
 - Campanhas por nicho: use `niche-campaign-utm-links.md`, `niche-copy-guide.md` e `niche-campaign-plan.md`.
+- Registro manual de campanhas: use `campaign-results-workflow.md`, `post-campaign-analysis-template.md`, `campaign-decision-criteria.md` e `monthly-campaign-report-template.md`.
 - Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
 
 ## Observacao sobre documentos legados

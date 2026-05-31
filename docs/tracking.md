@@ -70,6 +70,12 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `feedback_success`: feedback salvo.
 - `feedback_error`: falha ao salvar feedback.
 - `feedback_cta_click`: clique em CTA para feedback.
+- `admin_campaign_created`: campanha interna criada por admin, sem payload sensivel.
+- `admin_campaign_updated`: campanha interna atualizada por admin, sem observacoes completas.
+- `admin_campaign_result_recorded`: resultado manual agregado registrado por admin.
+- `admin_campaign_decision_updated`: decisao final da campanha atualizada por admin.
+
+Eventos `admin_campaign_*` são eventos internos persistidos via tabela `events`, não eventos enviados ao GA4/Meta pelo client. A metadata deve ficar limitada a status, canal, nicho, ids tecnicos e flags agregadas.
 
 ## Mapeamento externo
 

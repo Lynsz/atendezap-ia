@@ -29,6 +29,7 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 - Dashboard de assinatura.
 - Admin protegido.
 - Metricas basicas, relatorios internos, feedback e tracking.
+- Registro interno admin-only de campanhas, resultados manuais, UTMs, criativos, diagnostico simples e comparacao por nicho/canal.
 - Area de privacidade no dashboard para solicitacoes de exportacao/exclusao.
 - Central de ajuda no dashboard com FAQ e solicitacoes simples de suporte.
 - Checklist de ativacao no dashboard para primeiros passos.
@@ -187,6 +188,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/safe-logging.md` para revisar o que pode ou nao ir para logs.
 - Use `docs/ai-cost-control.md`, `docs/plan-limits.md` e `docs/rate-limits.md` para limites de IA, custo e prevencao de abuso.
 - Use `docs/niche-campaign-utm-links.md`, `docs/niche-copy-guide.md` e `docs/niche-campaign-plan.md` para campanhas por nicho.
+- Use `docs/campaign-results-workflow.md`, `docs/post-campaign-analysis-template.md`, `docs/campaign-decision-criteria.md` e `docs/monthly-campaign-report-template.md` para registrar resultados manuais e decidir proximos testes.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
 - Use `docs/error-messages.md` para manter mensagens amigaveis e sem stack trace.
@@ -254,6 +256,10 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/niche-campaign-utm-links.md`: links UTM por nicho.
 - `docs/niche-copy-guide.md`: guia de copy por nicho.
 - `docs/niche-campaign-plan.md`: plano de campanha por nicho.
+- `docs/campaign-results-workflow.md`: fluxo do registro interno de campanhas.
+- `docs/post-campaign-analysis-template.md`: template de analise pos-campanha.
+- `docs/campaign-decision-criteria.md`: criterios para manter, pausar, ajustar ou escalar com cautela.
+- `docs/monthly-campaign-report-template.md`: template mensal de campanhas.
 - `docs/retention-plan.md`: plano inicial de retencao.
 - `docs/ai-response-quality-plan.md`: qualidade das respostas com IA.
 - `docs/internal-faq.md`: FAQ operacional interna.

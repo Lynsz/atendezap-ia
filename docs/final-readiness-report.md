@@ -27,6 +27,28 @@ Nota estimada atualizada: 96/100. A nota nao sobe nesta consolidacao porque a et
 
 Recomendacao sobre escala cautelosa: manter a decisao de nao escalar ainda sem dados reais preenchidos em `docs/second-campaign-analysis.md`, matriz de escala verde e ausencia de bugs P0/P1. Campanhas pequenas continuam aceitaveis somente com monitoramento diario e baixo orcamento.
 
+## Registro interno de campanhas
+
+Status: registro manual de campanhas implementado no admin protegido, sem integração direta com Meta Ads, TikTok Ads ou Google Ads e sem BI complexo.
+
+O que foi feito:
+
+- Tabelas `campaign_experiments` e `campaign_results` criadas por migration para campanhas e resultados agregados.
+- APIs admin criadas para campanhas e resultados, com `requireAdmin`, validação de status/decisão, rejeição de valores negativos e cálculo simples de custo por lead, cadastro e assinatura.
+- Seção "Campanhas" adicionada ao admin para listar, criar, editar, alterar status, registrar resultados, adicionar decisão final e ver resumo por campanha.
+- Diagnóstico simples por campanha adicionado sem IA.
+- Comparações por nicho e por canal adicionadas com métricas agregadas.
+- Eventos internos e logs mínimos adicionados sem payload completo, dados pessoais, dados de pagamento, respostas ou secrets.
+- Criados `docs/campaign-results-workflow.md`, `docs/post-campaign-analysis-template.md`, `docs/campaign-decision-criteria.md` e `docs/monthly-campaign-report-template.md`.
+
+Pendências:
+
+- Aplicar `supabase/migrations/0019_campaign_experiments.sql` no Supabase real/staging.
+- Validar o admin com usuário administrador real e dados manuais.
+- Manter visitantes, custos detalhados e dados das plataformas nos painéis externos, registrando no app apenas números agregados necessários.
+
+Nota estimada mantida: 97/100 para produção controlada, condicionada à validação real do admin e da migration.
+
 ## Relatorios internos de negocio
 
 Status: relatorios internos simples implementados no admin protegido, sem BI complexo, sem expor conteudo completo de respostas e sem dados de pagamento.

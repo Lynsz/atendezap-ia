@@ -18,6 +18,19 @@ Pendencias conhecidas seguem principalmente externas/operacionais: validacao man
 
 Recomendacao atualizada: manter producao controlada e campanhas pequenas como rotina de validacao. Nao escalar investimento enquanto `docs/second-campaign-analysis.md` nao tiver dados reais suficientes, enquanto a matriz de decisao nao estiver verde e enquanto houver qualquer P0/P1 aberto.
 
+## Registro interno de campanhas - 2026-05-31
+
+- Criadas tabelas `campaign_experiments` e `campaign_results` para registro manual, agregado e admin-only de campanhas, criativos, UTMs e resultados.
+- RLS e grants foram definidos sem acesso direto para `anon` e `authenticated`; o acesso operacional fica nas APIs protegidas por `requireAdmin`.
+- APIs admin criadas para listar/criar/editar/remover campanhas e listar/criar/editar resultados manuais.
+- Admin ganhou seção "Campanhas" com criação, edição, status, decisão final, registro de resultados, resumo por campanha, diagnóstico simples, comparação por nicho e comparação por canal.
+- Diagnóstico permanece determinístico e sem IA, cobrindo gargalos de visitantes para leads, leads para cadastros, cadastros para onboarding, onboarding para primeira resposta, primeira resposta para checkout e checkout para assinatura.
+- Tracking/logs internos seguros adicionados: `admin_campaign_created`, `admin_campaign_updated`, `admin_campaign_result_recorded` e `admin_campaign_decision_updated`, sem observações completas, dados pessoais, dados de pagamento, respostas ou secrets.
+- Documentação criada: `docs/campaign-results-workflow.md`, `docs/post-campaign-analysis-template.md`, `docs/campaign-decision-criteria.md` e `docs/monthly-campaign-report-template.md`.
+- README e `docs/README.md` atualizados com os novos documentos.
+- Pendências restantes: aplicar `supabase/migrations/0019_campaign_experiments.sql` em staging/producao, validar a seção admin com dados reais agregados e continuar usando plataformas externas para visitantes/custos detalhados.
+- Nota estimada mantida: 97/100 para operação controlada, condicionada à validação real de Supabase/admin em staging/producao.
+
 ## Relatorios internos de negocio - 2026-05-29
 
 - Admin protegido ganhou visao interna de "Relatorios" para acompanhar aquisicao, ativacao, uso, receita, suporte e qualidade com dados agregados.
