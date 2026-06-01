@@ -15,6 +15,9 @@
 - tracking da campanha otimizada nao registrar page view ou CTA com UTM oficial
 - usuarios nao conseguirem ativar apos cadastro
 - custo da IA ficar descontrolado sem conversao
+- campanha otimizada nao gerar primeira resposta apos cadastros/onboardings suficientes
+- checkout ou webhook falhar durante qualquer teste de escala cautelosa
+- recomendacao de `docs/optimized-campaign-analysis.md` continuar como `Sem dados suficientes`
 
 ## Depois de pausar
 
@@ -25,3 +28,4 @@
 - rodar smoke test
 - so reativar campanha apos validacao
 - atualizar `docs/post-go-live-72h-report.md` e `docs/post-go-live-daily-decision.md`
+- atualizar `docs/optimized-campaign-analysis.md` e `docs/optimized-campaign-adjustment-plan.md`, se a pausa estiver ligada a campanha otimizada

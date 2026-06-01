@@ -48,6 +48,8 @@ Testar qual nicho entende mais rapido o valor do produto.
 - Use UTMs preservadas para comparar leads, checkout e assinatura no admin.
 - O app nao deve receber conteudo de perguntas/respostas em analytics.
 - Eventos de nicho devem enviar apenas `niche`, `cta`, `source` e indices seguros.
+- Para a campanha otimizada, compare `delivery` e `estetica` em `docs/optimized-campaign-analysis.md` e `docs/campaign-comparison-report.md`.
+- Nao declarar nicho vencedor se a conclusao for `Sem dados suficientes`.
 
 ## Limites de escopo
 

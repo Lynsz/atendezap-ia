@@ -40,7 +40,15 @@ Registrar campanhas pequenas, criativos, UTMs e resultados para aprender quais n
 3. Registre resultados agregados manualmente enquanto a campanha roda.
 4. Compare nicho, canal, criativo e página de destino usando apenas métricas agregadas.
 5. Marque a decisão final como manter, pausar, ajustar, escalar com cautela ou inconclusivo.
+6. Para a campanha otimizada, registre a leitura em `docs/optimized-campaign-analysis.md` e use `docs/optimized-campaign-decision-matrix.md` antes de repetir ou pausar.
 
 ## Segurança
 
 O registro é interno, admin-only e manual. Não integra diretamente com Meta Ads, TikTok Ads ou Google Ads nesta etapa.
+
+## Campanha otimizada
+
+- Use `utm_campaign=campanha_otimizada_01`.
+- Guarde apenas numeros agregados.
+- Use as notas internas para hipotese validada, principal gargalo e proxima acao.
+- Se nao houver dados suficientes, marque a decisao como `inconclusive` e nao escale.

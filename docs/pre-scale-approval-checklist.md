@@ -50,9 +50,14 @@
 - [ ] evento `optimized_campaign_page_view` validado, se aplicavel
 - [ ] evento `optimized_campaign_cta_click` validado, se aplicavel
 - [ ] relatorio da campanha otimizada preenchido, se aplicavel
+- [ ] analise da campanha otimizada revisada, se aplicavel
+- [ ] diagnostico do funil da campanha otimizada revisado, se aplicavel
+- [ ] comparativo de campanhas revisado antes de escolher nicho, criativo ou CTA
 - [ ] nao escalar se usuarios nao ativam
 - [ ] nao escalar se checkout/webhook tem falha
 - [ ] nao escalar se custo da IA esta descontrolado
+- [ ] nao escalar se nao houver usuarios gerando primeira resposta
+- [ ] nao escalar se tracking estiver quebrado ou incompleto
 
 ## Decisao
 

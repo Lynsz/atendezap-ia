@@ -56,3 +56,5 @@ Para go-live controlado, use tambem `docs/emergency-pause-criteria.md`.
 - Nao escalar se usuarios nao ativam, se checkout/webhook falha, se custo da IA esta descontrolado, se suporte recebe bug critico ou se tracking nao e confiavel.
 - Depois das primeiras 72 horas, use `docs/post-go-live-decision-matrix.md` para decidir manter, pausar, corrigir ou liberar nova campanha pequena.
 - Para a campanha otimizada, use `docs/optimized-campaign-report.md` e mantenha `Sem dados suficientes` se nao houver ativacao, checkout/webhook estavel e primeira resposta gerada.
+- Depois da analise da campanha otimizada, use tambem `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-funnel-diagnosis.md` e `docs/optimized-campaign-decision-matrix.md`.
+- Nao escalar se o diagnostico apontar tracking quebrado, onboarding sem ativacao, checkout/webhook falho ou custo de IA descontrolado.

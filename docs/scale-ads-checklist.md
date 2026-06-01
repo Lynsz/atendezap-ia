@@ -6,6 +6,8 @@ Antes de qualquer aumento, conclua `docs/controlled-go-live.md`, `docs/first-72-
 
 Depois das primeiras 72 horas, revise tambem `docs/post-go-live-72h-report.md`, `docs/post-go-live-diagnosis.md`, `docs/post-go-live-decision-matrix.md` e `docs/post-go-live-learnings.md`.
 
+Se a campanha pequena otimizada foi rodada, revise tambem `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-funnel-diagnosis.md`, `docs/optimized-campaign-decision-matrix.md`, `docs/optimized-campaign-adjustment-plan.md`, `docs/next-campaign-variation-plan.md` e `docs/campaign-comparison-report.md`.
+
 ## Sinais comerciais
 
 - [ ] campanha pequena gerou leads
@@ -67,12 +69,17 @@ Depois das primeiras 72 horas, revise tambem `docs/post-go-live-72h-report.md`, 
 - [ ] suporte sem bug critico recorrente
 - [ ] tracking confiavel
 - [ ] `docs/optimized-campaign-report.md` preenchido, se a campanha otimizada foi rodada
+- [ ] `docs/optimized-campaign-analysis.md` preenchido com decisao objetiva
+- [ ] usuarios da campanha otimizada geraram primeira resposta
+- [ ] maior gargalo da campanha otimizada foi corrigido ou classificado como dados insuficientes
 
 ## Limite recomendado
 
 Aumente aos poucos. Se a campanha pequena ainda nao gerou cadastros, onboarding e primeiras respostas com clareza, nao ha base suficiente para escalar.
 
 Para a campanha otimizada, nao aumentar verba se a conclusao ainda for `Sem dados suficientes`, se o custo de IA subir sem ativacao ou se checkout/webhook nao estiverem estaveis.
+
+Escala cautelosa so pode ser considerada quando a campanha otimizada tiver tracking confiavel, usuarios ativando, primeira resposta gerada, checkout/webhook funcionando, custo de IA sob controle e suporte sem bug critico.
 
 ## Antes da segunda campanha
 

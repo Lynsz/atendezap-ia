@@ -24,12 +24,20 @@
 - Plano da proxima campanha pequena.
 - Aprendizados pos-go-live.
 - Campanha pequena otimizada `campanha_otimizada_01`.
+- Analise da campanha pequena otimizada.
+- Diagnostico do funil da campanha otimizada.
+- Matriz de decisao da campanha otimizada.
+- Plano de ajustes pos-campanha otimizada.
+- Proxima variacao de campanha planejada.
+- Comparativo de campanhas.
 
 ### Melhorado
 
 - Processo de release passa a exigir checklist de Release Candidate, QA manual e revisao pre-escala.
 - Admin ganhou secao simples "Go-Live" com cards agregados para acompanhamento controlado.
 - Tracking client-side passa a emitir eventos seguros da campanha otimizada quando a UTM oficial esta presente.
+- Admin de campanhas ganhou bloco deterministico de diagnostico da campanha, com melhor sinal, pior sinal, gargalo, decisao recomendada e proxima acao.
+- Criterios de pausa e escala reforcam que nao ha escala com tracking quebrado, onboarding sem ativacao, checkout/webhook falho, custo de IA descontrolado ou ausencia de primeira resposta.
 
 ### Corrigido
 
@@ -64,6 +72,30 @@
 - `docs/optimized-campaign-video-scripts.md`
 - `docs/optimized-campaign-launch-checklist.md`
 - `docs/optimized-campaign-report.md`
+- `docs/optimized-campaign-analysis.md`
+- `docs/optimized-campaign-funnel-diagnosis.md`
+- `docs/optimized-campaign-decision-matrix.md`
+- `docs/optimized-campaign-adjustment-plan.md`
+- `docs/next-campaign-variation-plan.md`
+- `docs/campaign-comparison-report.md`
+- `docs/ad-testing-matrix.md`
+
+## [1.1.0-rc.5] - em preparacao
+
+### Inclui
+
+- analise da campanha pequena otimizada
+- diagnostico do funil
+- matriz de decisao
+- plano de ajustes
+- proxima variacao planejada
+- comparativo de campanhas
+- criterios de escala atualizados
+
+### Status
+
+- Release Candidate privada, ainda nao marcada como final.
+- Decisao atual: Sem dados suficientes para escalar; ajustar e repetir pequena variacao apenas com tracking e funil validados.
 
 ## [1.1.0-rc.2] - em preparacao
 

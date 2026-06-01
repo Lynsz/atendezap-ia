@@ -36,3 +36,18 @@ Use `docs/post-go-live-learnings.md` e `docs/post-go-live-fix-plan.md` como entr
 - usability
 
 Status atual: Sem dados suficientes. Nao criar conclusoes de produto sem evidencias agregadas do go-live.
+
+# Intake da campanha otimizada
+
+Use `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-funnel-diagnosis.md` e `docs/campaign-comparison-report.md` como entrada para insights simples.
+
+## Insights potenciais
+
+- campaign: Sem dados suficientes para definir criativo, nicho ou CTA vencedor.
+- activation: acompanhar se cadastros da campanha concluem onboarding e geram primeira resposta.
+- conversion: acompanhar se primeira resposta leva a checkout antes de alterar pricing.
+- billing: pausar qualquer escala se checkout ou webhook falhar.
+- ai_quality: revisar feedback agregado das primeiras respostas antes de alterar prompt.
+- usability: validar mobile da pagina por nicho e demo antes de nova variacao.
+
+Nao transformar esses itens em desenvolvimento enquanto nao houver dados agregados reais ou gargalo claro.

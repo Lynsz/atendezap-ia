@@ -36,6 +36,14 @@ type CampaignsPayload = {
   error?: string;
 };
 
+type CampaignDiagnosisSummary = {
+  bestSignal: string;
+  worstSignal: string;
+  mainBottleneck: string;
+  recommendedDecision: string;
+  nextAction: string;
+};
+
 type CampaignForm = {
   name: string;
   niche: string;
@@ -165,6 +173,98 @@ function formFromCampaign(campaign: CampaignWithResults): CampaignForm {
   };
 }
 
+function getCampaignSignalScore(campaign: CampaignWithResults) {
+  const totals = campaign.totals;
+
+  return (
+    totals.subscriptions * 100 +
+    totals.checkouts * 40 +
+    totals.first_responses * 20 +
+    totals.onboardings * 12 +
+    totals.signups * 8 +
+    totals.leads * 3 +
+    totals.clicks
+  );
+}
+
+function hasCampaignData(campaign: CampaignWithResults) {
+  const totals = campaign.totals;
+  return Boolean(
+    totals.visitors ||
+      totals.clicks ||
+      totals.leads ||
+      totals.signups ||
+      totals.onboardings ||
+      totals.first_responses ||
+      totals.saved_responses ||
+      totals.checkouts ||
+      totals.subscriptions ||
+      totals.spend_amount
+  );
+}
+
+function getCampaignBottleneck(campaign: CampaignWithResults) {
+  const totals = campaign.totals;
+
+  if (!hasCampaignData(campaign)) return "Sem dados suficientes para recomendacao.";
+  if (totals.visitors >= 50 && totals.clicks < Math.max(5, Math.ceil(totals.visitors * 0.08))) return "Visitantes nao clicam no CTA.";
+  if (totals.clicks >= 20 && totals.leads < Math.max(3, Math.ceil(totals.clicks * 0.15))) return "Cliques nao viram leads.";
+  if (totals.leads >= 10 && totals.signups < Math.max(2, Math.ceil(totals.leads * 0.2))) return "Leads nao viram cadastros.";
+  if (totals.signups >= 5 && totals.onboardings < Math.max(1, Math.ceil(totals.signups * 0.4))) return "Cadastros nao concluem onboarding.";
+  if (totals.onboardings >= 5 && totals.first_responses < Math.max(1, Math.ceil(totals.onboardings * 0.5))) return "Onboarding nao leva a primeira resposta.";
+  if (totals.first_responses >= 5 && totals.checkouts < Math.max(1, Math.ceil(totals.first_responses * 0.2))) return "Uso nao vira checkout.";
+  if (totals.checkouts >= 3 && totals.subscriptions < Math.max(1, Math.ceil(totals.checkouts * 0.3))) return "Checkout nao vira assinatura.";
+
+  return "Sem gargalo claro com os dados agregados atuais.";
+}
+
+function getCampaignDiagnosisSummary(campaigns: CampaignWithResults[]): CampaignDiagnosisSummary {
+  const campaignsWithData = campaigns.filter(hasCampaignData);
+
+  if (!campaignsWithData.length) {
+    return {
+      bestSignal: "Sem dados suficientes para recomendacao.",
+      worstSignal: "Sem dados suficientes para recomendacao.",
+      mainBottleneck: "Sem dados suficientes para recomendacao.",
+      recommendedDecision: "Inconclusivo: manter baixo orcamento ou pausar ate preencher resultados agregados.",
+      nextAction: "Registrar visitantes, cliques, leads, cadastros, onboarding, primeiras respostas, checkouts e assinaturas."
+    };
+  }
+
+  const ranked = [...campaignsWithData].sort((a, b) => getCampaignSignalScore(b) - getCampaignSignalScore(a));
+  const best = ranked[0];
+  const worst = ranked[ranked.length - 1];
+  const bottleneck = getCampaignBottleneck(best);
+
+  if (best.totals.subscriptions > 0 && best.totals.first_responses > 0) {
+    return {
+      bestSignal: best.name,
+      worstSignal: worst.name,
+      mainBottleneck: bottleneck,
+      recommendedDecision: "Manter campanha pequena e considerar escala cautelosa somente com tracking, checkout e suporte estaveis.",
+      nextAction: "Repetir a melhor variacao com baixo aumento e criterio de pausa ativo."
+    };
+  }
+
+  if (best.totals.first_responses > 0 || best.totals.checkouts > 0) {
+    return {
+      bestSignal: best.name,
+      worstSignal: worst.name,
+      mainBottleneck: bottleneck,
+      recommendedDecision: "Ajustar antes de escalar.",
+      nextAction: "Melhorar a etapa do maior gargalo e repetir uma variacao pequena."
+    };
+  }
+
+  return {
+    bestSignal: best.name,
+    worstSignal: worst.name,
+    mainBottleneck: bottleneck,
+    recommendedDecision: "Nao escalar: sinal ainda fraco ou incompleto.",
+    nextAction: "Ajustar copy, destino ou onboarding conforme o gargalo e manter baixo orcamento."
+  };
+}
+
 export default function CampaignAdminSection() {
   const [payload, setPayload] = useState<CampaignsPayload | null>(null);
   const [campaignForm, setCampaignForm] = useState<CampaignForm>(emptyCampaignForm);
@@ -218,6 +318,11 @@ export default function CampaignAdminSection() {
   const selectedCampaign = useMemo(
     () => payload?.campaigns.find((campaign) => campaign.id === selectedCampaignId) || null,
     [payload, selectedCampaignId]
+  );
+
+  const campaignDiagnosis = useMemo(
+    () => getCampaignDiagnosisSummary(payload?.campaigns || []),
+    [payload]
   );
 
   async function submitCampaign(event: FormEvent<HTMLFormElement>) {
@@ -336,6 +441,17 @@ export default function CampaignAdminSection() {
       {error ? <div className="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">{error}</div> : null}
       {message ? <div className="mb-4 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm font-bold text-emerald-100">{message}</div> : null}
 
+      <div className="mb-5 rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-4">
+        <p className="text-xs font-black uppercase tracking-wide text-cyan-100">Diagnostico da campanha</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <Info label="Melhor sinal" value={campaignDiagnosis.bestSignal} />
+          <Info label="Pior sinal" value={campaignDiagnosis.worstSignal} />
+          <Info label="Maior gargalo" value={campaignDiagnosis.mainBottleneck} />
+          <Info label="Decisao recomendada" value={campaignDiagnosis.recommendedDecision} />
+          <Info label="Proxima acao" value={campaignDiagnosis.nextAction} />
+        </div>
+      </div>
+
       <div className="grid gap-5 xl:grid-cols-[0.85fr_1.15fr]">
         <form onSubmit={submitCampaign} className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
           <div className="mb-4 flex items-center justify-between gap-3">
@@ -381,7 +497,7 @@ export default function CampaignAdminSection() {
               onChange={(event) => setCampaignForm((current) => ({ ...current, notes: event.target.value }))}
               className="field-input min-h-24 resize-none py-3 normal-case"
               maxLength={1500}
-              placeholder="Notas agregadas. Não registre dados pessoais, pagamento, secrets ou respostas completas."
+              placeholder="Notas agregadas: hipotese validada, principal gargalo e proxima acao. Nao registre dados pessoais, pagamento, secrets ou respostas completas."
             />
           </label>
 

@@ -8,6 +8,38 @@
 
 Pronto para producao controlada com primeiros usuarios.
 
+## Campanha pequena otimizada analisada - 2026-06-01
+
+Status: Sem dados suficientes para escala cautelosa.
+
+O que foi feito:
+
+- Criada analise da campanha pequena otimizada em `docs/optimized-campaign-analysis.md`.
+- Criado diagnostico do funil em `docs/optimized-campaign-funnel-diagnosis.md`.
+- Criada matriz de decisao em `docs/optimized-campaign-decision-matrix.md`.
+- Criado plano de ajustes em `docs/optimized-campaign-adjustment-plan.md`.
+- Criada proxima variacao planejada em `docs/next-campaign-variation-plan.md`.
+- Criado comparativo de campanhas em `docs/campaign-comparison-report.md`.
+- Criada matriz geral de testes de anuncios em `docs/ad-testing-matrix.md`.
+- Admin de campanhas ganhou diagnostico deterministico e agregado, sem IA e sem dados sensiveis.
+- Criterios de pausa, pre-escala e escala foram atualizados.
+
+Gargalos identificados:
+
+- Sem dados suficientes para apontar gargalo real.
+- Gargalos a monitorar: clique na pagina por nicho, lead, cadastro, onboarding, primeira resposta, checkout e assinatura.
+
+Recomendacao:
+
+- manter privado
+- nao escalar agora
+- pausar se houver P0/P1, tracking quebrado, checkout/webhook falho, IA falhando ou custo descontrolado
+- corrigir antes de repetir se houver gargalo claro
+- testar nova variacao pequena apenas com tracking confiavel
+- escalar com cautela somente com usuarios gerando primeira resposta, sinal real de compra, checkout/webhook estavel e suporte sob controle
+
+Nota estimada atualizada: 98/100 para producao controlada documentada, ainda condicionada a dados reais agregados e validacao em ambiente final.
+
 ## Status versao 1.0
 
 O AtendeZap IA esta consolidado como versao 1.0 em termos de escopo, documentacao e operacao. A 1.0 representa o MVP validado para producao controlada e campanhas pequenas, com limites claros: a ferramenta gera respostas para revisar, copiar e enviar manualmente pelo WhatsApp; ela nao envia mensagens automaticamente, nao e CRM completo e nao inclui automacoes avancadas.

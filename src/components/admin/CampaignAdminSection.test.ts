@@ -16,6 +16,8 @@ describe("CampaignAdminSection", () => {
     expect(component).toContain("Nenhuma campanha registrada.");
     expect(component).toContain("Sem dados suficientes para comparar nichos.");
     expect(component).toContain("Sem dados suficientes para comparar canais.");
+    expect(component).toContain("Diagnostico da campanha");
+    expect(component).toContain("Sem dados suficientes para recomendacao.");
     expect(component).toContain("Resultados por nicho");
     expect(component).toContain("Resultados por canal");
   });
@@ -23,7 +25,7 @@ describe("CampaignAdminSection", () => {
   it("mantem aviso para nao registrar dados sensiveis", () => {
     const component = readRepoFile("src/components/admin/CampaignAdminSection.tsx");
 
-    expect(component).toContain("Não registre dados pessoais");
+    expect(component).toContain("Nao registre dados pessoais");
     expect(component).toContain("Não integra com plataformas de anúncio");
   });
 });

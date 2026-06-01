@@ -33,3 +33,13 @@
 - melhorar pricing
 - rodar campanha
 - pausar campanha
+
+## Campanha otimizada
+
+- status: Sem dados suficientes / sinal positivo / sinal fraco / pausada / pronta para nova variacao / pronta para escala cautelosa
+- melhor sinal:
+- maior gargalo:
+- decisao recomendada:
+- proxima acao:
+
+Use `docs/optimized-campaign-analysis.md` e `docs/campaign-comparison-report.md` antes de aumentar orcamento.

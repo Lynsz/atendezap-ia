@@ -18,6 +18,19 @@ Pendencias conhecidas seguem principalmente externas/operacionais: validacao man
 
 Recomendacao atualizada: manter producao controlada e campanhas pequenas como rotina de validacao. Nao escalar investimento enquanto `docs/second-campaign-analysis.md` nao tiver dados reais suficientes, enquanto a matriz de decisao nao estiver verde e enquanto houver qualquer P0/P1 aberto.
 
+## Analise da campanha pequena otimizada - 2026-06-01
+
+- Campanha `campanha_otimizada_01` analisada com base nos documentos existentes.
+- Status atual: Sem dados suficientes para declarar nicho, criativo, CTA, destino ou pricing vencedor.
+- Gargalos identificados como pontos de observacao, nao como conclusoes reais: visitantes para clique, clique para lead, cadastro para onboarding, onboarding para primeira resposta e uso para checkout.
+- Documentos criados: `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-funnel-diagnosis.md`, `docs/optimized-campaign-decision-matrix.md`, `docs/optimized-campaign-adjustment-plan.md`, `docs/next-campaign-variation-plan.md` e `docs/campaign-comparison-report.md`.
+- `docs/ad-testing-matrix.md` criado para consolidar variacoes pequenas sem automacao ou integracao externa.
+- Admin de campanhas revisado com bloco deterministico "Diagnostico da campanha", mantendo dados agregados e sem IA.
+- Criterios de pausa e escala atualizados para bloquear escala com tracking quebrado, onboarding sem ativacao, checkout/webhook falho, custo de IA descontrolado ou ausencia de primeira resposta.
+- Backlog atualizado com intake da campanha otimizada por area de impacto, sem criar tarefas conclusivas sem dados reais.
+- Nota estimada mantida: 98/100 para producao controlada, condicionada a validacao real de campanha, tracking, checkout, webhook, IA, suporte e admin.
+- Recomendacao: manter privado, nao escalar, corrigir antes de repetir se houver gargalo claro, testar nova variacao pequena e considerar escala cautelosa somente com dados agregados positivos.
+
 ## Registro interno de campanhas - 2026-05-31
 
 - Criadas tabelas `campaign_experiments` e `campaign_results` para registro manual, agregado e admin-only de campanhas, criativos, UTMs e resultados.
