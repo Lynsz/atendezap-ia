@@ -45,6 +45,8 @@ type CampaignDiagnosisSummary = {
 };
 
 type ScaleSummary = {
+  status: string;
+  mainCampaign: string;
   activeCampaigns: number;
   spend: number;
   leads: number;
@@ -54,6 +56,7 @@ type ScaleSummary = {
   subscriptions: number;
   costPerLead: number | null;
   costPerSubscription: number | null;
+  aiCost: string;
   criticalBugs: string;
   openSupport: string;
   recommendedDecision: string;
@@ -301,6 +304,7 @@ function getCampaignDiagnosisSummary(campaigns: CampaignWithResults[]): Campaign
 function getScaleSummary(campaigns: CampaignWithResults[]): ScaleSummary {
   const activeCampaigns = campaigns.filter((campaign) => campaign.status === "running" || campaign.decision === "scale_cautiously");
   const source = activeCampaigns.length ? activeCampaigns : campaigns.filter(hasCampaignData);
+  const mainCampaign = source[0]?.name || "Nao disponivel";
   const totals = source.reduce(
     (accumulator, campaign) => ({
       spend: accumulator.spend + campaign.totals.spend_amount,
@@ -318,20 +322,27 @@ function getScaleSummary(campaigns: CampaignWithResults[]): ScaleSummary {
   const hasActivation = totals.signups > 0 && totals.firstResponses > 0;
   const hasPurchaseSignal = totals.checkouts > 0 || totals.subscriptions > 0;
 
+  let status = "Dados insuficientes";
   let recommendedDecision = "Nao disponivel";
   if (hasActivation && hasPurchaseSignal) {
+    status = "Manter escala cautelosa";
     recommendedDecision = "Manter escala cautelosa; aumentar pouco apenas se billing, IA, suporte e tracking estiverem verdes.";
   } else if (hasActivation) {
+    status = "Atencao";
     recommendedDecision = "Manter orcamento e ajustar conversao antes de aumentar.";
   } else if (hasData) {
+    status = "Corrigir antes de continuar";
     recommendedDecision = "Nao aumentar: falta ativacao ou primeira resposta suficiente.";
   }
 
   return {
+    status,
+    mainCampaign,
     activeCampaigns: activeCampaigns.length,
     ...totals,
     costPerLead,
     costPerSubscription,
+    aiCost: "Nao disponivel",
     criticalBugs: "Nao disponivel",
     openSupport: "Nao disponivel",
     recommendedDecision
@@ -544,6 +555,22 @@ export default function CampaignAdminSection() {
           <Info label="Custo por assinatura" value={money(scaleSummary.costPerSubscription)} />
           <Info label="Bugs criticos" value={scaleSummary.criticalBugs} />
           <Info label="Suporte aberto" value={scaleSummary.openSupport} />
+          <Info label="Decisao recomendada" value={scaleSummary.recommendedDecision} />
+        </div>
+      </div>
+
+      <div className="mb-5 rounded-lg border border-amber-300/20 bg-amber-300/10 p-4">
+        <p className="text-xs font-black uppercase tracking-wide text-amber-100">Resumo pos-escala</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <Info label="Status da escala" value={scaleSummary.status} />
+          <Info label="Campanha principal" value={scaleSummary.mainCampaign} />
+          <Info label="Leads" value={scaleSummary.leads || "Nao disponivel"} />
+          <Info label="Cadastros" value={scaleSummary.signups || "Nao disponivel"} />
+          <Info label="Primeiras respostas" value={scaleSummary.firstResponses || "Nao disponivel"} />
+          <Info label="Checkouts" value={scaleSummary.checkouts || "Nao disponivel"} />
+          <Info label="Assinaturas" value={scaleSummary.subscriptions || "Nao disponivel"} />
+          <Info label="Suporte aberto" value={scaleSummary.openSupport} />
+          <Info label="Custo da IA" value={scaleSummary.aiCost} />
           <Info label="Decisao recomendada" value={scaleSummary.recommendedDecision} />
         </div>
       </div>

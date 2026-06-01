@@ -10,6 +10,8 @@ Se a campanha pequena otimizada foi rodada, revise tambem `docs/optimized-campai
 
 Para escala cautelosa, revise tambem `docs/cautious-scale-execution-plan.md`, `docs/scale-control-matrix.md`, `docs/daily-scale-checklist.md`, `docs/cautious-scale-report.md`, `docs/ad-budget-guardrails.md`, `docs/scale-contingency-plan.md` e `docs/after-scale-next-step-criteria.md`.
 
+Depois da analise pos-escala, revise tambem `docs/cautious-scale-analysis.md`, `docs/scale-health-diagnosis.md`, `docs/post-scale-decision-matrix.md`, `docs/post-scale-adjustment-plan.md` e `docs/operational-stability-report.md`.
+
 ## Sinais comerciais
 
 - [ ] campanha pequena gerou leads
@@ -88,6 +90,18 @@ Para a campanha otimizada, nao aumentar verba se a conclusao ainda for `Sem dado
 Escala cautelosa so pode ser considerada quando a campanha otimizada tiver tracking confiavel, usuarios ativando, primeira resposta gerada, checkout/webhook funcionando, custo de IA sob controle e suporte sem bug critico.
 
 O aumento deve ser gradual. Se suporte subir, custo da IA sair do controle, usuarios nao ativarem ou billing oscilar, reduza ou pause antes de testar novo criativo.
+
+## Depois da escala cautelosa
+
+- [ ] `docs/cautious-scale-analysis.md` preenchido com dados agregados reais ou `Sem dados suficientes`
+- [ ] `docs/scale-health-diagnosis.md` revisado
+- [ ] `docs/post-scale-decision-matrix.md` aplicado
+- [ ] `docs/post-scale-adjustment-plan.md` atualizado com P0/P1/P2/P3
+- [ ] `docs/operational-stability-report.md` revisado
+- [ ] decisao registrada: manter, reduzir, pausar, corrigir ou consolidar 1.1
+- [ ] versao 1.1 preparada apenas se produto, billing, IA e suporte estiverem estaveis
+
+Se a analise pos-escala permanecer como `Sem dados suficientes`, nao aumentar orcamento. Voltar para campanha pequena, preencher os campos agregados faltantes e corrigir somente gargalos comprovados.
 
 ## Antes da segunda campanha
 

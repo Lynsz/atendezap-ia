@@ -1320,3 +1320,38 @@ Decisao recomendada:
 - rodar apenas com baixo orcamento
 - nao declarar nicho vencedor sem dados reais
 - nao escalar se a conclusao permanecer `Sem dados suficientes`
+
+## Analise pos-escala cautelosa e plano da versao 1.1 - 2026-06-01
+
+Status: escala cautelosa analisada, sem dados agregados suficientes para aprovar aumento.
+
+O que foi feito:
+
+- `docs/cautious-scale-analysis.md` criado.
+- `docs/scale-health-diagnosis.md` criado.
+- `docs/post-scale-decision-matrix.md` criado.
+- `docs/post-scale-adjustment-plan.md` criado.
+- `docs/operational-stability-report.md` criado.
+- `docs/version-1.1-plan.md` criado.
+- `docs/version-1.1-release-checklist.md` criado.
+- `docs/release-notes-1.1.md` criado.
+- Admin de campanhas ganhou bloco "Resumo pos-escala" com dados agregados e `Nao disponivel` quando nao ha fonte persistida.
+- Criterios de escala, pausa, backlog, roadmap, calendario operacional, auditoria e CHANGELOG foram atualizados.
+
+Pendencias:
+
+- Preencher `docs/cautious-scale-report.md` e `docs/cautious-scale-analysis.md` com dados reais agregados.
+- Validar checkout, portal Stripe, webhook, Supabase, Resend, OpenAI, tracking, suporte e admin no ambiente real.
+- Confirmar custo OpenAI no painel externo e registrar apenas agregado.
+- Classificar P0/P1 antes de qualquer nova campanha ou aumento.
+- Fechar `docs/version-1.1-release-checklist.md` antes de marcar 1.1 como estavel.
+
+Recomendacao:
+
+- manter privado
+- nao aumentar orcamento ainda
+- reduzir ou pausar se houver gasto ativo sem ativacao e primeira resposta
+- corrigir antes de continuar se produto, billing, onboarding, copy, IA, suporte ou tracking falharem
+- preparar versao 1.1 como consolidacao estavel, sem WhatsApp API, CRM, automacao complexa ou BI avancado
+
+Nota estimada mantida: 98/100 para producao controlada; sem dados reais suficientes para aprovar escala cautelosa.

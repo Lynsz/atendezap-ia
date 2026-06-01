@@ -36,3 +36,10 @@
 - automações avançadas
 - múltiplos atendentes
 - app mobile
+
+## Intake pos-escala
+
+- Registrar pendencias apenas com evidencia agregada de `docs/cautious-scale-analysis.md` e `docs/operational-stability-report.md`.
+- Priorizar P0/P1 antes de novo criativo, novo nicho ou aumento de orcamento.
+- Planejar a versao 1.1 quando produto, billing, IA e suporte estiverem estaveis.
+- Manter fora do roadmap imediato qualquer CRM, WhatsApp API, automacao complexa ou BI avancado.

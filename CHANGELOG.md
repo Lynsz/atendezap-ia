@@ -37,6 +37,13 @@
 - Guardrails de orcamento.
 - Plano de contingencia de escala.
 - Criterios para proxima etapa apos escala.
+- Analise da escala cautelosa.
+- Diagnostico de saude da escala.
+- Matriz de decisao pos-escala.
+- Plano da versao 1.1.
+- Relatorio de estabilidade operacional.
+- Checklist de release 1.1.
+- Release notes 1.1.
 
 ### Melhorado
 
@@ -47,6 +54,9 @@
 - Criterios de pausa e escala reforcam que nao ha escala com tracking quebrado, onboarding sem ativacao, checkout/webhook falho, custo de IA descontrolado ou ausencia de primeira resposta.
 - Admin de campanhas ganhou visao simples de escala cautelosa e decisao diaria registrada nas observacoes agregadas do resultado.
 - Checklists de escala passam a exigir aumento gradual, revisao diaria, suporte sob controle e custo de IA monitorado.
+- Admin de campanhas ganhou resumo pos-escala agregado.
+- Criterios de escala passam a exigir leitura pos-escala antes de novo aumento.
+- Documentacao de campanha passa a separar dados insuficientes de decisao de escala.
 
 ### Corrigido
 
@@ -56,6 +66,8 @@
 
 - Criterios de release reforcam repositorio privado, secrets server-side, logs seguros e tracking sem conteudo sensivel.
 - Go-live reforca pausa imediata para falha de checkout, webhook, IA, login, admin, dados expostos, custo anormal ou tracking quebrado.
+- Repositorio permanece privado, sem instrucoes para torna-lo publico.
+- Validacoes e secrets server-side permanecem preservados.
 
 ### Documentacao
 
@@ -95,6 +107,39 @@
 - `docs/ad-budget-guardrails.md`
 - `docs/scale-contingency-plan.md`
 - `docs/after-scale-next-step-criteria.md`
+- `docs/cautious-scale-analysis.md`
+- `docs/scale-health-diagnosis.md`
+- `docs/post-scale-decision-matrix.md`
+- `docs/post-scale-adjustment-plan.md`
+- `docs/operational-stability-report.md`
+- `docs/version-1.1-plan.md`
+- `docs/version-1.1-release-checklist.md`
+- `docs/release-notes-1.1.md`
+
+## [1.1.0] - em preparacao
+
+### Adicionado
+
+- analise da escala cautelosa
+- plano da versao 1.1
+- relatorio de estabilidade operacional
+
+### Melhorado
+
+- criterios de escala
+- documentacao de campanha
+- processo de decisao pos-escala
+
+### Seguranca
+
+- repositorio permanece privado
+- validacoes e secrets mantidos
+
+### Documentacao
+
+- release notes 1.1
+- checklist de release 1.1
+- plano de ajustes pos-escala
 
 ## [1.1.0-rc.6] - em preparacao
 

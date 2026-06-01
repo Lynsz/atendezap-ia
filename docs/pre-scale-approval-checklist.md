@@ -63,6 +63,10 @@
 - [ ] nao escalar se tracking estiver quebrado ou incompleto
 - [ ] aumento sera gradual e revisado diariamente
 - [ ] suporte sera tratado como sinal de risco antes de novo aumento
+- [ ] analise pos-escala anterior revisada, se existir
+- [ ] `docs/cautious-scale-analysis.md` nao esta em `Sem dados suficientes`
+- [ ] `docs/operational-stability-report.md` nao aponta status critico
+- [ ] plano da versao 1.1 nao tem P0/P1 bloqueador aberto
 
 ## Decisao
 
@@ -70,3 +74,8 @@
 - [ ] campanha pequena liberada
 - [ ] escala cautelosa liberada
 - [ ] manter campanha pequena ate dados suficientes
+
+## Aprendizado pos-escala
+
+- A escala cautelosa so deve ser aprovada de novo se a rodada anterior tiver ativacao, primeira resposta, checkout/webhook estavel, custo de IA controlado e suporte sob controle.
+- Se a rodada anterior ficou sem dados suficientes, manter baixo orcamento e registrar resultados agregados antes de qualquer novo aumento.

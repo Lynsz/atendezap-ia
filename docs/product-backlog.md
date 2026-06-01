@@ -70,3 +70,29 @@ Use `docs/cautious-scale-report.md`, `docs/daily-scale-checklist.md` e `docs/sca
 - Criar insight apenas com evidencia agregada.
 - Nao criar automacao, CRM ou integracao externa para resolver falta de dados.
 - Se o impacto `ai_cost` precisar ir para o admin atual, registrar como `campaign` ou `ai_quality` e mencionar custo de IA nas notas seguras.
+
+# Pendencias pos-escala e versao 1.1
+
+Use `docs/cautious-scale-analysis.md`, `docs/scale-health-diagnosis.md`, `docs/post-scale-adjustment-plan.md` e `docs/operational-stability-report.md` como entrada da versao 1.1.
+
+## P0/P1 possiveis
+
+- checkout, webhook, login/cadastro, IA ou tracking falhando durante campanha
+- custo de IA subindo sem ativacao
+- suporte com bug critico recorrente
+- usuarios cadastrados sem primeira resposta por gargalo de onboarding
+
+## P2/P3 possiveis
+
+- melhorar copy da pagina por nicho se visitantes nao virarem leads
+- melhorar onboarding se cadastros nao gerarem primeira resposta
+- melhorar relatorios internos se a decisao diaria depender de campos manuais repetidos
+- testar novo nicho ou novo criativo somente depois de dados agregados suficientes
+
+## Fora do escopo atual
+
+- CRM
+- integracao direta com WhatsApp
+- automacao de mensagens
+- app mobile
+- BI avancado

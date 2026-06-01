@@ -60,3 +60,6 @@ Para go-live controlado, use tambem `docs/emergency-pause-criteria.md`.
 - Nao escalar se o diagnostico apontar tracking quebrado, onboarding sem ativacao, checkout/webhook falho ou custo de IA descontrolado.
 - Para escala cautelosa, use `docs/scale-control-matrix.md` e `docs/daily-scale-checklist.md` todos os dias.
 - Reduza ou pause se suporte aumentar, custo da IA subir sem conversao, usuarios nao gerarem primeira resposta ou billing ficar instavel.
+- Depois da escala cautelosa, use `docs/cautious-scale-analysis.md`, `docs/post-scale-decision-matrix.md` e `docs/operational-stability-report.md`.
+- Se a decisao pos-escala for `dados insuficientes`, nao aumentar verba; manter campanha pequena ou reduzir ate completar dados agregados.
+- Se a decisao pos-escala apontar correcao de produto, billing, onboarding, copy ou IA, corrigir antes de novo criativo.

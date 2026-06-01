@@ -10,6 +10,7 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 - Melhorar relatorios admin.
 - Corrigir bugs P0/P1.
 - Melhorar mobile.
+- Consolidar versao 1.1 com analise pos-escala, estabilidade operacional e criterios de release.
 
 ## Prioridade media
 
@@ -81,6 +82,14 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 - Pagina por nicho.
 - Prova social real.
 - Estudos de caso.
+- Novos criativos e novos nichos somente depois de dados agregados suficientes da escala cautelosa.
+
+## Versao 1.1 estavel
+
+- Consolidar correcoes P0/P1, se existirem.
+- Revisar ativacao, onboarding, copy, billing, IA e suporte com base em dados agregados.
+- Manter relatorios internos simples, sem BI avancado.
+- Usar `docs/version-1.1-plan.md` e `docs/version-1.1-release-checklist.md` para fechamento.
 
 ## Regra de priorizacao
 

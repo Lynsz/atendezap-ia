@@ -43,6 +43,20 @@ Recomendacao atualizada: manter producao controlada e campanhas pequenas como ro
 - Nota estimada mantida: 98/100 para producao controlada, condicionada a validacao real em staging/producao e a dados agregados suficientes.
 - Recomendacao: manter privado, manter campanha pequena, nao escalar ainda, pausar para correcao diante de qualquer P0/P1 e iniciar escala cautelosa somente com produto, billing, IA, tracking, suporte e custos controlados.
 
+## Analise pos-escala cautelosa e versao 1.1 - 2026-06-01
+
+- Escala cautelosa analisada com base nos documentos atuais.
+- Status atual: Sem dados suficientes para manter ou aumentar escala cautelosa.
+- Diagnostico de saude criado em `docs/scale-health-diagnosis.md`.
+- Decisao pos-escala documentada em `docs/post-scale-decision-matrix.md`.
+- Plano de ajustes criado em `docs/post-scale-adjustment-plan.md`.
+- Relatorio de estabilidade operacional criado em `docs/operational-stability-report.md`.
+- Versao 1.1 planejada em `docs/version-1.1-plan.md`, `docs/version-1.1-release-checklist.md` e `docs/release-notes-1.1.md`.
+- Admin de campanhas revisado com bloco agregado "Resumo pos-escala", sem dados sensiveis e com `Nao disponivel` para campos sem fonte persistida.
+- Criterios de escala, pausa, backlog, roadmap e calendario operacional atualizados para exigir leitura pos-escala.
+- Nota estimada mantida: 98/100 para producao controlada, condicionada a validacao real em staging/producao, provedores externos e dados agregados suficientes.
+- Recomendacao: manter privado, nao escalar ainda, reduzir ou pausar se houver gasto ativo sem ativacao, corrigir antes de continuar diante de qualquer P0/P1 e preparar a versao 1.1 como consolidacao estavel.
+
 ## Registro interno de campanhas - 2026-05-31
 
 - Criadas tabelas `campaign_experiments` e `campaign_results` para registro manual, agregado e admin-only de campanhas, criativos, UTMs e resultados.

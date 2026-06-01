@@ -40,3 +40,10 @@
 - billing, webhook e suporte precisam estar estaveis
 - custo da IA precisa ser revisado diariamente
 - qualquer sinal critico exige pausa ou reducao antes de novo teste
+
+## Regra pos-escala
+
+- Manter escala cautelosa apenas se `docs/cautious-scale-analysis.md` tiver dados agregados suficientes e sem P0/P1.
+- Reduzir orcamento se custo subir, ativacao cair, suporte aumentar ou IA consumir sem conversao.
+- Pausar se checkout, webhook, IA, auth, tracking ou privacidade falhar.
+- Preparar versao 1.1 somente depois de consolidar estabilidade, docs e pendencias P0/P1.

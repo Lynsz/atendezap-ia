@@ -34,3 +34,15 @@
 ## Decisao atual
 
 - Voltar para campanha pequena ate haver dados suficientes para escala cautelosa.
+
+## Analise pos-escala
+
+Use `docs/cautious-scale-analysis.md`, `docs/scale-health-diagnosis.md`, `docs/post-scale-decision-matrix.md`, `docs/post-scale-adjustment-plan.md` e `docs/operational-stability-report.md` antes de decidir a proxima etapa.
+
+Decisao atualizada:
+
+- dados insuficientes para manter ou aumentar escala cautelosa
+- nao escalar ainda
+- manter repositorio privado
+- corrigir P0/P1 antes de continuar, se aparecerem
+- planejar a versao 1.1 como consolidacao estavel

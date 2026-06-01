@@ -26,3 +26,11 @@
 - atualizar roadmap
 - preparar próxima sprint
 - revisar custos
+
+## Rotina pos-escala
+
+- revisar `docs/cautious-scale-analysis.md`
+- revisar `docs/scale-health-diagnosis.md`
+- revisar `docs/operational-stability-report.md`
+- decidir manter, reduzir, pausar, corrigir ou preparar 1.1
+- atualizar `docs/product-backlog.md`, `docs/roadmap-post-1.0.md` e CHANGELOG
