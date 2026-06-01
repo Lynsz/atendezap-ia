@@ -58,3 +58,5 @@ Para go-live controlado, use tambem `docs/emergency-pause-criteria.md`.
 - Para a campanha otimizada, use `docs/optimized-campaign-report.md` e mantenha `Sem dados suficientes` se nao houver ativacao, checkout/webhook estavel e primeira resposta gerada.
 - Depois da analise da campanha otimizada, use tambem `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-funnel-diagnosis.md` e `docs/optimized-campaign-decision-matrix.md`.
 - Nao escalar se o diagnostico apontar tracking quebrado, onboarding sem ativacao, checkout/webhook falho ou custo de IA descontrolado.
+- Para escala cautelosa, use `docs/scale-control-matrix.md` e `docs/daily-scale-checklist.md` todos os dias.
+- Reduza ou pause se suporte aumentar, custo da IA subir sem conversao, usuarios nao gerarem primeira resposta ou billing ficar instavel.

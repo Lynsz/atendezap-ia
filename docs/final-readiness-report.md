@@ -40,6 +40,33 @@ Recomendacao:
 
 Nota estimada atualizada: 98/100 para producao controlada documentada, ainda condicionada a dados reais agregados e validacao em ambiente final.
 
+## Escala cautelosa planejada - 2026-06-01
+
+Status: planejada, mas nao liberada para execucao ate haver dados suficientes.
+
+O que foi feito:
+
+- Criado `docs/cautious-scale-execution-plan.md`.
+- Criado `docs/scale-control-matrix.md`.
+- Criado `docs/daily-scale-checklist.md`.
+- Criado `docs/cautious-scale-report.md`.
+- Criado `docs/ad-budget-guardrails.md`.
+- Criado `docs/scale-contingency-plan.md`.
+- Criado `docs/after-scale-next-step-criteria.md`.
+- Admin de campanhas ganhou visao agregada de escala cautelosa.
+- Registro de resultados permite decisao diaria nas observacoes: maintain, increase_slightly, reduce, pause ou fix_before_continue.
+- Criterios de pausa, pre-escala, saude do negocio e relatórios recorrentes foram atualizados.
+
+Recomendacao:
+
+- manter privado
+- manter campanha pequena enquanto houver Sem dados suficientes
+- nao escalar ainda
+- pausar para correcao se houver bug P0/P1, checkout/webhook instavel, IA instavel, suporte critico ou tracking quebrado
+- iniciar escala cautelosa somente com usuarios ativando, primeira resposta gerada, checkout/webhook funcionando, custo de IA controlado e suporte sob controle
+
+Nota estimada atualizada: 98/100 para producao controlada documentada, com escala cautelosa apenas planejada e condicionada a dados agregados reais.
+
 ## Status versao 1.0
 
 O AtendeZap IA esta consolidado como versao 1.0 em termos de escopo, documentacao e operacao. A 1.0 representa o MVP validado para producao controlada e campanhas pequenas, com limites claros: a ferramenta gera respostas para revisar, copiar e enviar manualmente pelo WhatsApp; ela nao envia mensagens automaticamente, nao e CRM completo e nao inclui automacoes avancadas.

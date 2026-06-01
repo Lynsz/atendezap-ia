@@ -44,6 +44,23 @@ type CampaignDiagnosisSummary = {
   nextAction: string;
 };
 
+type ScaleSummary = {
+  activeCampaigns: number;
+  spend: number;
+  leads: number;
+  signups: number;
+  firstResponses: number;
+  checkouts: number;
+  subscriptions: number;
+  costPerLead: number | null;
+  costPerSubscription: number | null;
+  criticalBugs: string;
+  openSupport: string;
+  recommendedDecision: string;
+};
+
+type ScaleDecision = "" | "maintain" | "increase_slightly" | "reduce" | "pause" | "fix_before_continue";
+
 type CampaignForm = {
   name: string;
   niche: string;
@@ -74,6 +91,7 @@ type ResultForm = {
   subscriptions: string;
   spend_amount: string;
   recorded_at: string;
+  scale_decision: ScaleDecision;
   notes: string;
 };
 
@@ -107,7 +125,16 @@ const emptyResultForm: ResultForm = {
   subscriptions: "",
   spend_amount: "",
   recorded_at: new Date().toISOString().slice(0, 10),
+  scale_decision: "",
   notes: ""
+};
+
+const scaleDecisionLabels: Record<Exclude<ScaleDecision, "">, string> = {
+  maintain: "Manter",
+  increase_slightly: "Aumentar pouco",
+  reduce: "Reduzir",
+  pause: "Pausar",
+  fix_before_continue: "Corrigir antes de continuar"
 };
 
 function notInformed(value: string | number | null | undefined) {
@@ -118,6 +145,10 @@ function notInformed(value: string | number | null | undefined) {
 function money(value: number | null | undefined, currency = "BRL") {
   if (value === null || value === undefined) return "Não informado";
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format(value);
+}
+
+function scaleDecisionLabel(decision: ScaleDecision) {
+  return decision ? scaleDecisionLabels[decision] : "Nao informado";
 }
 
 function toPayload(form: CampaignForm) {
@@ -137,6 +168,8 @@ function toPayload(form: CampaignForm) {
 }
 
 function toResultPayload(form: ResultForm) {
+  const notes = [form.scale_decision ? `Decisao diaria: ${scaleDecisionLabel(form.scale_decision)}.` : "", form.notes].filter(Boolean).join("\n");
+
   return {
     visitors: form.visitors || null,
     clicks: form.clicks || null,
@@ -149,7 +182,7 @@ function toResultPayload(form: ResultForm) {
     subscriptions: form.subscriptions || null,
     spend_amount: form.spend_amount || null,
     recorded_at: form.recorded_at ? new Date(`${form.recorded_at}T12:00:00.000Z`).toISOString() : null,
-    notes: form.notes || null
+    notes: notes || null
   };
 }
 
@@ -265,6 +298,46 @@ function getCampaignDiagnosisSummary(campaigns: CampaignWithResults[]): Campaign
   };
 }
 
+function getScaleSummary(campaigns: CampaignWithResults[]): ScaleSummary {
+  const activeCampaigns = campaigns.filter((campaign) => campaign.status === "running" || campaign.decision === "scale_cautiously");
+  const source = activeCampaigns.length ? activeCampaigns : campaigns.filter(hasCampaignData);
+  const totals = source.reduce(
+    (accumulator, campaign) => ({
+      spend: accumulator.spend + campaign.totals.spend_amount,
+      leads: accumulator.leads + campaign.totals.leads,
+      signups: accumulator.signups + campaign.totals.signups,
+      firstResponses: accumulator.firstResponses + campaign.totals.first_responses,
+      checkouts: accumulator.checkouts + campaign.totals.checkouts,
+      subscriptions: accumulator.subscriptions + campaign.totals.subscriptions
+    }),
+    { spend: 0, leads: 0, signups: 0, firstResponses: 0, checkouts: 0, subscriptions: 0 }
+  );
+  const hasData = source.some(hasCampaignData);
+  const costPerLead = totals.spend > 0 && totals.leads > 0 ? Number((totals.spend / totals.leads).toFixed(2)) : null;
+  const costPerSubscription = totals.spend > 0 && totals.subscriptions > 0 ? Number((totals.spend / totals.subscriptions).toFixed(2)) : null;
+  const hasActivation = totals.signups > 0 && totals.firstResponses > 0;
+  const hasPurchaseSignal = totals.checkouts > 0 || totals.subscriptions > 0;
+
+  let recommendedDecision = "Nao disponivel";
+  if (hasActivation && hasPurchaseSignal) {
+    recommendedDecision = "Manter escala cautelosa; aumentar pouco apenas se billing, IA, suporte e tracking estiverem verdes.";
+  } else if (hasActivation) {
+    recommendedDecision = "Manter orcamento e ajustar conversao antes de aumentar.";
+  } else if (hasData) {
+    recommendedDecision = "Nao aumentar: falta ativacao ou primeira resposta suficiente.";
+  }
+
+  return {
+    activeCampaigns: activeCampaigns.length,
+    ...totals,
+    costPerLead,
+    costPerSubscription,
+    criticalBugs: "Nao disponivel",
+    openSupport: "Nao disponivel",
+    recommendedDecision
+  };
+}
+
 export default function CampaignAdminSection() {
   const [payload, setPayload] = useState<CampaignsPayload | null>(null);
   const [campaignForm, setCampaignForm] = useState<CampaignForm>(emptyCampaignForm);
@@ -322,6 +395,11 @@ export default function CampaignAdminSection() {
 
   const campaignDiagnosis = useMemo(
     () => getCampaignDiagnosisSummary(payload?.campaigns || []),
+    [payload]
+  );
+
+  const scaleSummary = useMemo(
+    () => getScaleSummary(payload?.campaigns || []),
     [payload]
   );
 
@@ -449,6 +527,24 @@ export default function CampaignAdminSection() {
           <Info label="Maior gargalo" value={campaignDiagnosis.mainBottleneck} />
           <Info label="Decisao recomendada" value={campaignDiagnosis.recommendedDecision} />
           <Info label="Proxima acao" value={campaignDiagnosis.nextAction} />
+        </div>
+      </div>
+
+      <div className="mb-5 rounded-lg border border-emerald-300/20 bg-emerald-300/10 p-4">
+        <p className="text-xs font-black uppercase tracking-wide text-emerald-100">Escala cautelosa</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <Info label="Campanhas ativas" value={scaleSummary.activeCampaigns || "Nao disponivel"} />
+          <Info label="Gasto registrado" value={scaleSummary.spend ? money(scaleSummary.spend) : "Nao disponivel"} />
+          <Info label="Leads" value={scaleSummary.leads || "Nao disponivel"} />
+          <Info label="Cadastros" value={scaleSummary.signups || "Nao disponivel"} />
+          <Info label="Primeiras respostas" value={scaleSummary.firstResponses || "Nao disponivel"} />
+          <Info label="Checkouts" value={scaleSummary.checkouts || "Nao disponivel"} />
+          <Info label="Assinaturas" value={scaleSummary.subscriptions || "Nao disponivel"} />
+          <Info label="Custo por lead" value={money(scaleSummary.costPerLead)} />
+          <Info label="Custo por assinatura" value={money(scaleSummary.costPerSubscription)} />
+          <Info label="Bugs criticos" value={scaleSummary.criticalBugs} />
+          <Info label="Suporte aberto" value={scaleSummary.openSupport} />
+          <Info label="Decisao recomendada" value={scaleSummary.recommendedDecision} />
         </div>
       </div>
 
@@ -607,6 +703,14 @@ export default function CampaignAdminSection() {
           <TextInput label="Assinaturas" type="number" value={resultForm.subscriptions} onChange={(value) => setResultForm((current) => ({ ...current, subscriptions: value }))} />
           <TextInput label="Gasto" type="number" value={resultForm.spend_amount} onChange={(value) => setResultForm((current) => ({ ...current, spend_amount: value }))} />
           <TextInput label="Registrado em" type="date" value={resultForm.recorded_at} onChange={(value) => setResultForm((current) => ({ ...current, recorded_at: value }))} />
+          <SelectInput
+            label="Decisao diaria"
+            value={resultForm.scale_decision}
+            onChange={(value) => setResultForm((current) => ({ ...current, scale_decision: value as ScaleDecision }))}
+            options={Object.keys(scaleDecisionLabels)}
+            formatter={(value) => scaleDecisionLabels[value as Exclude<ScaleDecision, "">]}
+            emptyLabel="Nao informado"
+          />
         </div>
         <label className="mt-3 grid gap-2 text-xs font-black uppercase tracking-wide text-slate-400">
           Observações

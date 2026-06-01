@@ -31,6 +31,18 @@ Recomendacao atualizada: manter producao controlada e campanhas pequenas como ro
 - Nota estimada mantida: 98/100 para producao controlada, condicionada a validacao real de campanha, tracking, checkout, webhook, IA, suporte e admin.
 - Recomendacao: manter privado, nao escalar, corrigir antes de repetir se houver gargalo claro, testar nova variacao pequena e considerar escala cautelosa somente com dados agregados positivos.
 
+## Escala cautelosa planejada - 2026-06-01
+
+- Estrutura de escala cautelosa criada sem liberar aumento automatico de verba.
+- Documentos criados: `docs/cautious-scale-execution-plan.md`, `docs/scale-control-matrix.md`, `docs/daily-scale-checklist.md`, `docs/cautious-scale-report.md`, `docs/ad-budget-guardrails.md`, `docs/scale-contingency-plan.md` e `docs/after-scale-next-step-criteria.md`.
+- Guardrails de orcamento criados para impedir aumento com P0/P1, checkout/webhook instavel, usuarios sem primeira resposta, tracking quebrado ou custo de IA subindo sem ativacao.
+- Controle diario criado para produto, billing, IA/custo, campanha e decisao operacional.
+- Contingencia criada para custo de IA, checkout, baixa ativacao, suporte, tracking e P0/P1.
+- Admin de campanhas revisado com visao agregada "Escala cautelosa" e decisao diaria nas observacoes de resultado, sem schema novo e sem integracao externa.
+- Status atual: Sem dados suficientes para iniciar escala cautelosa; manter campanha pequena ate haver ativacao e sinais reais.
+- Nota estimada mantida: 98/100 para producao controlada, condicionada a validacao real em staging/producao e a dados agregados suficientes.
+- Recomendacao: manter privado, manter campanha pequena, nao escalar ainda, pausar para correcao diante de qualquer P0/P1 e iniciar escala cautelosa somente com produto, billing, IA, tracking, suporte e custos controlados.
+
 ## Registro interno de campanhas - 2026-05-31
 
 - Criadas tabelas `campaign_experiments` e `campaign_results` para registro manual, agregado e admin-only de campanhas, criativos, UTMs e resultados.

@@ -18,6 +18,8 @@
 - campanha otimizada nao gerar primeira resposta apos cadastros/onboardings suficientes
 - checkout ou webhook falhar durante qualquer teste de escala cautelosa
 - recomendacao de `docs/optimized-campaign-analysis.md` continuar como `Sem dados suficientes`
+- suporte aumentar por bug critico durante escala cautelosa
+- checklist diario de escala indicar status critico
 
 ## Depois de pausar
 
@@ -29,3 +31,4 @@
 - so reativar campanha apos validacao
 - atualizar `docs/post-go-live-72h-report.md` e `docs/post-go-live-daily-decision.md`
 - atualizar `docs/optimized-campaign-analysis.md` e `docs/optimized-campaign-adjustment-plan.md`, se a pausa estiver ligada a campanha otimizada
+- atualizar `docs/cautious-scale-report.md` e `docs/scale-contingency-plan.md`, se a pausa estiver ligada a escala

@@ -43,3 +43,15 @@
 - decisao: manter / pausar / ajustar / testar nova variacao / escalar com cautela / inconclusivo
 
 Referencias: `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-funnel-diagnosis.md` e `docs/campaign-comparison-report.md`.
+
+## Escala cautelosa
+
+- houve aumento de orcamento?
+- aumento foi gradual?
+- dias revisados pelo checklist diario:
+- custo da IA ficou controlado?
+- suporte ficou controlado?
+- billing ficou estavel?
+- decisao para o proximo mes: manter baixo / aumentar pouco / reduzir / pausar / corrigir antes de continuar
+
+Referencias: `docs/cautious-scale-report.md`, `docs/scale-control-matrix.md` e `docs/ad-budget-guardrails.md`.

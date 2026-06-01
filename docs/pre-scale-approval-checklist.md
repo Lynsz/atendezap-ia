@@ -46,6 +46,9 @@
 - [ ] criterios de pausa imediata revisados
 - [ ] orcamento pequeno inicial
 - [ ] monitoramento diario pronto
+- [ ] `docs/daily-scale-checklist.md` pronto para uso
+- [ ] `docs/ad-budget-guardrails.md` revisado
+- [ ] `docs/scale-contingency-plan.md` revisado
 - [ ] custo da IA controlado
 - [ ] evento `optimized_campaign_page_view` validado, se aplicavel
 - [ ] evento `optimized_campaign_cta_click` validado, se aplicavel
@@ -58,9 +61,12 @@
 - [ ] nao escalar se custo da IA esta descontrolado
 - [ ] nao escalar se nao houver usuarios gerando primeira resposta
 - [ ] nao escalar se tracking estiver quebrado ou incompleto
+- [ ] aumento sera gradual e revisado diariamente
+- [ ] suporte sera tratado como sinal de risco antes de novo aumento
 
 ## Decisao
 
 - [ ] nao escalar
 - [ ] campanha pequena liberada
 - [ ] escala cautelosa liberada
+- [ ] manter campanha pequena ate dados suficientes

@@ -43,3 +43,15 @@
 - proxima acao:
 
 Use `docs/optimized-campaign-analysis.md` e `docs/campaign-comparison-report.md` antes de aumentar orcamento.
+
+## Escala cautelosa
+
+- orcamento foi aumentado?
+- decisao diaria registrada?
+- usuarios ativaram e geraram primeira resposta?
+- checkout/webhook ficaram estaveis?
+- custo da IA ficou controlado?
+- suporte ficou controlado?
+- decisao da semana: manter / aumentar pouco / reduzir / pausar / corrigir antes de continuar
+
+Use `docs/daily-scale-checklist.md` e `docs/cautious-scale-report.md` antes de qualquer novo aumento.

@@ -17,6 +17,8 @@ describe("CampaignAdminSection", () => {
     expect(component).toContain("Sem dados suficientes para comparar nichos.");
     expect(component).toContain("Sem dados suficientes para comparar canais.");
     expect(component).toContain("Diagnostico da campanha");
+    expect(component).toContain("Escala cautelosa");
+    expect(component).toContain("Decisao diaria");
     expect(component).toContain("Sem dados suficientes para recomendacao.");
     expect(component).toContain("Resultados por nicho");
     expect(component).toContain("Resultados por canal");

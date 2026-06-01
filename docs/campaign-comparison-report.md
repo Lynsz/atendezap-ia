@@ -47,3 +47,11 @@
 - Nao escalar.
 - Preencher resultados reais.
 - Testar nova variacao pequena somente com tracking, checkout, webhook, IA e suporte estaveis.
+
+## Escala cautelosa
+
+- Campanha candidata: Sem dados suficientes.
+- Nicho candidato: delivery como hipotese, nao como vencedor.
+- Canal candidato: Meta Ads, se tracking e custos estiverem validados.
+- Condicao para iniciar: usuarios ativando, primeira resposta gerada, checkout/webhook funcionando, custo de IA controlado e suporte sem bug critico.
+- Decisao atual: manter campanha pequena e nao aumentar orcamento ate haver dados agregados suficientes.

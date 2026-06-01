@@ -97,6 +97,13 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [optimized-campaign-video-scripts](optimized-campaign-video-scripts.md)
 - [optimized-campaign-launch-checklist](optimized-campaign-launch-checklist.md)
 - [optimized-campaign-report](optimized-campaign-report.md)
+- [cautious-scale-execution-plan](cautious-scale-execution-plan.md)
+- [scale-control-matrix](scale-control-matrix.md)
+- [daily-scale-checklist](daily-scale-checklist.md)
+- [cautious-scale-report](cautious-scale-report.md)
+- [ad-budget-guardrails](ad-budget-guardrails.md)
+- [scale-contingency-plan](scale-contingency-plan.md)
+- [after-scale-next-step-criteria](after-scale-next-step-criteria.md)
 - [release-process](release-process.md)
 - [release-notes-template](release-notes-template.md)
 - [versioning](versioning.md)
@@ -170,6 +177,13 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [optimized-campaign-video-scripts](optimized-campaign-video-scripts.md)
 - [optimized-campaign-launch-checklist](optimized-campaign-launch-checklist.md)
 - [optimized-campaign-report](optimized-campaign-report.md)
+- [cautious-scale-execution-plan](cautious-scale-execution-plan.md)
+- [scale-control-matrix](scale-control-matrix.md)
+- [daily-scale-checklist](daily-scale-checklist.md)
+- [cautious-scale-report](cautious-scale-report.md)
+- [ad-budget-guardrails](ad-budget-guardrails.md)
+- [scale-contingency-plan](scale-contingency-plan.md)
+- [after-scale-next-step-criteria](after-scale-next-step-criteria.md)
 - [release-process](release-process.md)
 - [release-notes-template](release-notes-template.md)
 - [versioning](versioning.md)
@@ -197,6 +211,13 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [optimized-campaign-video-scripts](optimized-campaign-video-scripts.md)
 - [optimized-campaign-launch-checklist](optimized-campaign-launch-checklist.md)
 - [optimized-campaign-report](optimized-campaign-report.md)
+- [cautious-scale-execution-plan](cautious-scale-execution-plan.md)
+- [scale-control-matrix](scale-control-matrix.md)
+- [daily-scale-checklist](daily-scale-checklist.md)
+- [cautious-scale-report](cautious-scale-report.md)
+- [ad-budget-guardrails](ad-budget-guardrails.md)
+- [scale-contingency-plan](scale-contingency-plan.md)
+- [after-scale-next-step-criteria](after-scale-next-step-criteria.md)
 
 ## Seguranca e testes
 
@@ -227,11 +248,11 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - Retencao e qualidade: use `user-activation.md`, `activation-emails.md`, `retention-plan.md`, `ai-response-quality-plan.md`, `ai-business-templates.md`, `saved-responses.md` e `whatsapp-templates.md`.
 - Relatorios internos: use `internal-metrics.md`, `weekly-business-review.md`, `business-health-criteria.md` e `monthly-business-report-template.md`.
 - Seguranca: use `SECURITY.md` na raiz como fonte completa; `docs/security.md` e `docs/security-checklist.md` sao entradas auxiliares.
-- Campanhas: use `first-paid-campaign-plan.md`, `second-campaign-analysis.md`, `scale-decision-matrix.md`, `cautious-scale-plan.md`, `optimized-small-campaign-plan.md`, `optimized-campaign-utm-links.md` e `optimized-campaign-report.md`.
+- Campanhas: use `first-paid-campaign-plan.md`, `second-campaign-analysis.md`, `scale-decision-matrix.md`, `cautious-scale-plan.md`, `optimized-small-campaign-plan.md`, `optimized-campaign-utm-links.md`, `optimized-campaign-report.md`, `cautious-scale-execution-plan.md`, `scale-control-matrix.md`, `daily-scale-checklist.md`, `cautious-scale-report.md`, `ad-budget-guardrails.md`, `scale-contingency-plan.md` e `after-scale-next-step-criteria.md`.
 - Campanhas por nicho: use `niche-campaign-utm-links.md`, `niche-copy-guide.md` e `niche-campaign-plan.md`.
 - Registro manual de campanhas: use `campaign-results-workflow.md`, `post-campaign-analysis-template.md`, `campaign-decision-criteria.md` e `monthly-campaign-report-template.md`.
 - Feedback e backlog: use `feedback-workflow.md`, `product-prioritization.md`, `product-backlog.md`, `user-interview-script.md` e `monthly-feedback-report-template.md`.
-- Sprint, release e roadmap: use `sprint-workflow.md`, `sprint-planning-template.md`, `sprint-review-template.md`, `release-candidate.md`, `release-candidate-checklist.md`, `manual-qa-plan.md`, `release-blockers.md`, `final-qa-report.md`, `pre-scale-approval-checklist.md`, `controlled-go-live.md`, `go-live-approval-checklist.md`, `go-live-deploy-plan.md`, `first-72-hours-monitoring.md`, `post-go-live-small-campaign.md`, `emergency-pause-criteria.md`, `go-live-daily-report-template.md`, `post-go-live-decision.md`, `go-live-tracking-checklist.md`, `post-go-live-72h-report.md`, `post-go-live-diagnosis.md`, `post-go-live-decision-matrix.md`, `post-go-live-fix-plan.md`, `next-small-campaign-plan.md`, `post-go-live-daily-decision.md`, `post-go-live-learnings.md`, `optimized-small-campaign-plan.md`, `optimized-campaign-launch-checklist.md`, `optimized-campaign-report.md`, `release-process.md`, `release-notes-template.md`, `versioning.md`, `sprint-intake-criteria.md`, `release-readiness-checklist.md`, `roadmap-management.md` e `monthly-operating-calendar.md`.
+- Sprint, release e roadmap: use `sprint-workflow.md`, `sprint-planning-template.md`, `sprint-review-template.md`, `release-candidate.md`, `release-candidate-checklist.md`, `manual-qa-plan.md`, `release-blockers.md`, `final-qa-report.md`, `pre-scale-approval-checklist.md`, `controlled-go-live.md`, `go-live-approval-checklist.md`, `go-live-deploy-plan.md`, `first-72-hours-monitoring.md`, `post-go-live-small-campaign.md`, `emergency-pause-criteria.md`, `go-live-daily-report-template.md`, `post-go-live-decision.md`, `go-live-tracking-checklist.md`, `post-go-live-72h-report.md`, `post-go-live-diagnosis.md`, `post-go-live-decision-matrix.md`, `post-go-live-fix-plan.md`, `next-small-campaign-plan.md`, `post-go-live-daily-decision.md`, `post-go-live-learnings.md`, `optimized-small-campaign-plan.md`, `optimized-campaign-launch-checklist.md`, `optimized-campaign-report.md`, `cautious-scale-execution-plan.md`, `daily-scale-checklist.md`, `cautious-scale-report.md`, `release-process.md`, `release-notes-template.md`, `versioning.md`, `sprint-intake-criteria.md`, `release-readiness-checklist.md`, `roadmap-management.md` e `monthly-operating-calendar.md`.
 - UX e SEO tecnico: use `ux-polish-checklist.md`, `ux-review.md` e `technical-seo.md` antes de campanhas ou deploy em dominio real.
 - Suporte: use `support-workflow.md`, `product-faq.md`, `internal-support-playbook.md`, `support.md`, `support-messages.md` e `launch-bugs.md`.
 

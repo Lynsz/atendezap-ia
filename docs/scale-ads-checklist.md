@@ -8,6 +8,8 @@ Depois das primeiras 72 horas, revise tambem `docs/post-go-live-72h-report.md`, 
 
 Se a campanha pequena otimizada foi rodada, revise tambem `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-funnel-diagnosis.md`, `docs/optimized-campaign-decision-matrix.md`, `docs/optimized-campaign-adjustment-plan.md`, `docs/next-campaign-variation-plan.md` e `docs/campaign-comparison-report.md`.
 
+Para escala cautelosa, revise tambem `docs/cautious-scale-execution-plan.md`, `docs/scale-control-matrix.md`, `docs/daily-scale-checklist.md`, `docs/cautious-scale-report.md`, `docs/ad-budget-guardrails.md`, `docs/scale-contingency-plan.md` e `docs/after-scale-next-step-criteria.md`.
+
 ## Sinais comerciais
 
 - [ ] campanha pequena gerou leads
@@ -72,6 +74,10 @@ Se a campanha pequena otimizada foi rodada, revise tambem `docs/optimized-campai
 - [ ] `docs/optimized-campaign-analysis.md` preenchido com decisao objetiva
 - [ ] usuarios da campanha otimizada geraram primeira resposta
 - [ ] maior gargalo da campanha otimizada foi corrigido ou classificado como dados insuficientes
+- [ ] checklist diario de escala revisado
+- [ ] guardrails de orcamento revisados
+- [ ] contingencia de escala pronta
+- [ ] decisao diaria registrada no admin ou no relatorio
 
 ## Limite recomendado
 
@@ -80,6 +86,8 @@ Aumente aos poucos. Se a campanha pequena ainda nao gerou cadastros, onboarding 
 Para a campanha otimizada, nao aumentar verba se a conclusao ainda for `Sem dados suficientes`, se o custo de IA subir sem ativacao ou se checkout/webhook nao estiverem estaveis.
 
 Escala cautelosa so pode ser considerada quando a campanha otimizada tiver tracking confiavel, usuarios ativando, primeira resposta gerada, checkout/webhook funcionando, custo de IA sob controle e suporte sem bug critico.
+
+O aumento deve ser gradual. Se suporte subir, custo da IA sair do controle, usuarios nao ativarem ou billing oscilar, reduza ou pause antes de testar novo criativo.
 
 ## Antes da segunda campanha
 

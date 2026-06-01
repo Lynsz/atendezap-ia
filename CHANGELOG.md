@@ -30,6 +30,13 @@
 - Plano de ajustes pos-campanha otimizada.
 - Proxima variacao de campanha planejada.
 - Comparativo de campanhas.
+- Plano de escala cautelosa.
+- Matriz de controle de escala.
+- Checklist diario de escala.
+- Relatorio de escala cautelosa.
+- Guardrails de orcamento.
+- Plano de contingencia de escala.
+- Criterios para proxima etapa apos escala.
 
 ### Melhorado
 
@@ -38,6 +45,8 @@
 - Tracking client-side passa a emitir eventos seguros da campanha otimizada quando a UTM oficial esta presente.
 - Admin de campanhas ganhou bloco deterministico de diagnostico da campanha, com melhor sinal, pior sinal, gargalo, decisao recomendada e proxima acao.
 - Criterios de pausa e escala reforcam que nao ha escala com tracking quebrado, onboarding sem ativacao, checkout/webhook falho, custo de IA descontrolado ou ausencia de primeira resposta.
+- Admin de campanhas ganhou visao simples de escala cautelosa e decisao diaria registrada nas observacoes agregadas do resultado.
+- Checklists de escala passam a exigir aumento gradual, revisao diaria, suporte sob controle e custo de IA monitorado.
 
 ### Corrigido
 
@@ -79,6 +88,30 @@
 - `docs/next-campaign-variation-plan.md`
 - `docs/campaign-comparison-report.md`
 - `docs/ad-testing-matrix.md`
+- `docs/cautious-scale-execution-plan.md`
+- `docs/scale-control-matrix.md`
+- `docs/daily-scale-checklist.md`
+- `docs/cautious-scale-report.md`
+- `docs/ad-budget-guardrails.md`
+- `docs/scale-contingency-plan.md`
+- `docs/after-scale-next-step-criteria.md`
+
+## [1.1.0-rc.6] - em preparacao
+
+### Inclui
+
+- plano de escala cautelosa
+- matriz de controle
+- checklist diario
+- relatorio de escala
+- guardrails de orcamento
+- plano de contingencia
+- criterios da proxima etapa
+
+### Status
+
+- Release Candidate privada, ainda nao marcada como final.
+- Decisao atual: manter campanha pequena e nao iniciar escala cautelosa ate produto, billing, IA, tracking, suporte e custos estarem controlados com dados agregados.
 
 ## [1.1.0-rc.5] - em preparacao
 

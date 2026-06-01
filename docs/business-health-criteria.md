@@ -1,14 +1,16 @@
-# Critérios de Saúde do Negócio — AtendeZap IA
+# Criterios de Saude do Negocio - AtendeZap IA
 
 ## Sinais positivos
 
-- usuários concluem onboarding
-- usuários geram respostas
-- usuários salvam respostas
-- usuários voltam em até 7 dias
+- usuarios concluem onboarding
+- usuarios geram respostas
+- usuarios salvam respostas
+- usuarios voltam em ate 7 dias
 - checkouts acontecem
 - assinaturas aparecem
-- feedbacks são corrigíveis
+- feedbacks sao corrigiveis
+- campanha em escala cautelosa mantem custo controlado
+- suporte permanece sob controle durante aumento gradual
 
 ## Sinais de alerta
 
@@ -16,13 +18,25 @@
 - muitos usos sem checkout
 - muitos checkouts sem assinatura
 - feedbacks indicam produto confuso
-- custo de IA cresce sem conversão
-- suporte aumenta por erro técnico
+- custo de IA cresce sem conversao
+- suporte aumenta por erro tecnico
+- campanha exige aumento de gasto sem primeira resposta
+- tracking fica incompleto durante campanha ativa
 
-## Sinais críticos
+## Sinais criticos
 
 - checkout quebrado
 - IA falhando
 - webhook quebrado
 - dados expostos
-- usuários pagos sem plano liberado
+- usuarios pagos sem plano liberado
+- bug P0/P1 durante escala cautelosa
+- custo da IA sobe de forma anormal
+- admin ou tracking ficam indisponiveis para decisao diaria
+
+## Regra de escala cautelosa
+
+- ativacao e primeira resposta sao pre-requisitos para qualquer aumento
+- billing, webhook e suporte precisam estar estaveis
+- custo da IA precisa ser revisado diariamente
+- qualquer sinal critico exige pausa ou reducao antes de novo teste

@@ -52,3 +52,11 @@ O registro é interno, admin-only e manual. Não integra diretamente com Meta Ad
 - Guarde apenas numeros agregados.
 - Use as notas internas para hipotese validada, principal gargalo e proxima acao.
 - Se nao houver dados suficientes, marque a decisao como `inconclusive` e nao escale.
+
+## Escala cautelosa
+
+- Marque a campanha como `scale_cautiously` somente quando os pre-requisitos estiverem verdes.
+- Registre resultados diarios em `campaign_results`.
+- Use a decisao diaria nas observacoes: maintain, increase_slightly, reduce, pause ou fix_before_continue.
+- Nao integre Meta, TikTok ou Google Ads diretamente; gasto e visitantes continuam sendo entrada manual agregada.
+- Se houver bug P0/P1, custo de IA anormal, suporte critico ou tracking quebrado, pause e registre em `docs/cautious-scale-report.md`.

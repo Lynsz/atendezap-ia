@@ -51,3 +51,22 @@ Use `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-funnel-diagn
 - usability: validar mobile da pagina por nicho e demo antes de nova variacao.
 
 Nao transformar esses itens em desenvolvimento enquanto nao houver dados agregados reais ou gargalo claro.
+
+# Intake da escala cautelosa
+
+Use `docs/cautious-scale-report.md`, `docs/daily-scale-checklist.md` e `docs/scale-contingency-plan.md` para criar insights simples antes de nova sprint.
+
+## Areas de impacto
+
+- activation: cadastros sem onboarding ou sem primeira resposta.
+- conversion: uso sem checkout ou checkout sem assinatura.
+- billing: falha de checkout, webhook, portal ou liberacao de plano.
+- ai_cost: custo de IA subindo sem ativacao ou conversao.
+- support: aumento de duvidas ou bugs durante campanha.
+- campaign: criativo, nicho, CTA ou destino com baixo sinal.
+
+## Regra
+
+- Criar insight apenas com evidencia agregada.
+- Nao criar automacao, CRM ou integracao externa para resolver falta de dados.
+- Se o impacto `ai_cost` precisar ir para o admin atual, registrar como `campaign` ou `ai_quality` e mencionar custo de IA nas notas seguras.
