@@ -1,8 +1,46 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Versao 1.1 estavel executada - 2026-06-02
+
+Status: aprovado com observacoes.
+
+O que foi feito:
+
+- `docs/version-1.1-execution-plan.md` criado.
+- `docs/version-1.1-final-report.md` criado.
+- `docs/version-1.1-qa-report.md` criado.
+- `docs/release-notes-1.1.md`, `CHANGELOG.md`, roadmap, backlog, auditoria e checklist de release atualizados.
+- Correcao P1 aplicada no suporte: usuario comum nao recebe nem visualiza `admin_notes`.
+
+Status por area:
+
+- Billing: documentado e pronto para validacao real; checkout, portal e webhook seguem obrigatorios antes de nova escala.
+- IA: limite antes da OpenAI preservado, uso contabilizado apos sucesso e logs/tracking sem conteudo sensivel.
+- Ativacao: fluxo leve mantido com onboarding, primeira resposta, copia, salvamento, templates, favoritos e planos.
+- Campanhas: dados insuficientes para aumento; recomendacao permanece campanha pequena e escala cautelosa.
+- Suporte: P1 corrigido, suporte simples mantido sem CRM.
+- Admin: continua protegido e agregado; validar com admin real em staging/producao.
+
+Pendencias:
+
+- Rodar validacao completa final.
+- Validar Supabase RLS com dois usuarios reais.
+- Validar Stripe, OpenAI, Resend, tracking, admin e health check em staging/producao.
+- Fazer smoke visual em mobile/tablet/desktop antes de nova campanha.
+
+Recomendacao:
+
+- manter privado
+- liberar versao 1.1
+- manter escala cautelosa
+- corrigir antes de novas campanhas se surgir P0/P1
+- preparar versao 1.2 somente com evidencia agregada real
+
+Nota estimada atualizada: 98/100 para producao controlada documentada.
+
 ## Nota atual estimada
 
-97/100.
+98/100.
 
 ## Status
 

@@ -2,144 +2,49 @@
 
 ## [Unreleased]
 
+Sem itens registrados.
+
+## [1.1.0] - 2026-06-02
+
 ### Adicionado
 
-- Release Candidate privada `1.1.0-rc.1` documentada para validacao antes de aumentar campanhas.
-- Plano de QA manual ponta a ponta.
-- Matriz de bugs bloqueadores P0/P1/P2.
-- Checklist de aprovacao pre-escala.
-- Relatorio final de QA.
-- Go-live controlado pos-Release Candidate.
-- Checklist de aprovacao do go-live.
-- Plano de deploy do go-live.
-- Monitoramento das primeiras 72 horas.
-- Campanha pequena pos-go-live.
-- Criterios de pausa imediata.
-- Relatorio diario e decisao pos-go-live.
-- Checklist de tracking seguro do go-live.
-- Relatorio 72h pos-go-live.
-- Diagnostico pos-go-live.
-- Matriz de decisao pos-go-live.
-- Plano de correcoes pos-go-live.
-- Plano da proxima campanha pequena.
-- Aprendizados pos-go-live.
-- Campanha pequena otimizada `campanha_otimizada_01`.
-- Analise da campanha pequena otimizada.
-- Diagnostico do funil da campanha otimizada.
-- Matriz de decisao da campanha otimizada.
-- Plano de ajustes pos-campanha otimizada.
-- Proxima variacao de campanha planejada.
-- Comparativo de campanhas.
-- Plano de escala cautelosa.
-- Matriz de controle de escala.
-- Checklist diario de escala.
-- Relatorio de escala cautelosa.
-- Guardrails de orcamento.
-- Plano de contingencia de escala.
-- Criterios para proxima etapa apos escala.
-- Analise da escala cautelosa.
-- Diagnostico de saude da escala.
-- Matriz de decisao pos-escala.
-- Plano da versao 1.1.
-- Relatorio de estabilidade operacional.
-- Checklist de release 1.1.
-- Release notes 1.1.
+- Plano de execucao da versao 1.1.
+- Relatorio final da versao 1.1.
+- QA final documentado da versao 1.1.
+- Analise da escala cautelosa, diagnostico de saude, matriz de decisao pos-escala e plano de ajustes.
+- Relatorio de estabilidade operacional e checklist de release 1.1.
 
 ### Melhorado
 
-- Processo de release passa a exigir checklist de Release Candidate, QA manual e revisao pre-escala.
-- Admin ganhou secao simples "Go-Live" com cards agregados para acompanhamento controlado.
-- Tracking client-side passa a emitir eventos seguros da campanha otimizada quando a UTM oficial esta presente.
-- Admin de campanhas ganhou bloco deterministico de diagnostico da campanha, com melhor sinal, pior sinal, gargalo, decisao recomendada e proxima acao.
-- Criterios de pausa e escala reforcam que nao ha escala com tracking quebrado, onboarding sem ativacao, checkout/webhook falho, custo de IA descontrolado ou ausencia de primeira resposta.
-- Admin de campanhas ganhou visao simples de escala cautelosa e decisao diaria registrada nas observacoes agregadas do resultado.
-- Checklists de escala passam a exigir aumento gradual, revisao diaria, suporte sob controle e custo de IA monitorado.
-- Admin de campanhas ganhou resumo pos-escala agregado.
-- Criterios de escala passam a exigir leitura pos-escala antes de novo aumento.
-- Documentacao de campanha passa a separar dados insuficientes de decisao de escala.
+- Criterios de escala cautelosa e pausa de campanhas.
+- Processo de decisao pos-escala com foco em dados agregados.
+- Documentacao de ativacao, billing, IA, suporte, campanhas, admin e prontidao.
+- Roadmap e backlog para separar P0/P1/P2/P3 e fora do escopo atual.
 
 ### Corrigido
 
--
+- A API e a tela de suporte do usuario nao retornam nem exibem mais notas internas de admin.
 
 ### Seguranca
 
-- Criterios de release reforcam repositorio privado, secrets server-side, logs seguros e tracking sem conteudo sensivel.
-- Go-live reforca pausa imediata para falha de checkout, webhook, IA, login, admin, dados expostos, custo anormal ou tracking quebrado.
-- Repositorio permanece privado, sem instrucoes para torna-lo publico.
-- Validacoes e secrets server-side permanecem preservados.
+- Repositorio permanece privado.
+- Sem instrucao para tornar o repositorio publico.
+- Sem secrets reais ou `.env.local` adicionados.
+- Notas internas de suporte permanecem restritas ao admin protegido.
+- Logs e tracking continuam sem conteudo completo de perguntas, respostas, mensagens, e-mails ou dados de pagamento.
 
 ### Documentacao
 
-- `docs/release-candidate.md`
-- `docs/release-candidate-checklist.md`
-- `docs/manual-qa-plan.md`
-- `docs/release-blockers.md`
-- `docs/final-qa-report.md`
-- `docs/pre-scale-approval-checklist.md`
-- `docs/controlled-go-live.md`
-- `docs/go-live-approval-checklist.md`
-- `docs/go-live-deploy-plan.md`
-- `docs/first-72-hours-monitoring.md`
-- `docs/post-go-live-small-campaign.md`
-- `docs/emergency-pause-criteria.md`
-- `docs/go-live-daily-report-template.md`
-- `docs/post-go-live-decision.md`
-- `docs/go-live-tracking-checklist.md`
-- `docs/optimized-small-campaign-plan.md`
-- `docs/optimized-campaign-utm-links.md`
-- `docs/optimized-campaign-test-matrix.md`
-- `docs/optimized-campaign-copy.md`
-- `docs/optimized-campaign-video-scripts.md`
-- `docs/optimized-campaign-launch-checklist.md`
-- `docs/optimized-campaign-report.md`
-- `docs/optimized-campaign-analysis.md`
-- `docs/optimized-campaign-funnel-diagnosis.md`
-- `docs/optimized-campaign-decision-matrix.md`
-- `docs/optimized-campaign-adjustment-plan.md`
-- `docs/next-campaign-variation-plan.md`
-- `docs/campaign-comparison-report.md`
-- `docs/ad-testing-matrix.md`
-- `docs/cautious-scale-execution-plan.md`
-- `docs/scale-control-matrix.md`
-- `docs/daily-scale-checklist.md`
-- `docs/cautious-scale-report.md`
-- `docs/ad-budget-guardrails.md`
-- `docs/scale-contingency-plan.md`
-- `docs/after-scale-next-step-criteria.md`
-- `docs/cautious-scale-analysis.md`
-- `docs/scale-health-diagnosis.md`
-- `docs/post-scale-decision-matrix.md`
-- `docs/post-scale-adjustment-plan.md`
-- `docs/operational-stability-report.md`
-- `docs/version-1.1-plan.md`
+- `docs/version-1.1-execution-plan.md`
+- `docs/version-1.1-final-report.md`
+- `docs/version-1.1-qa-report.md`
 - `docs/version-1.1-release-checklist.md`
 - `docs/release-notes-1.1.md`
-
-## [1.1.0] - em preparacao
-
-### Adicionado
-
-- analise da escala cautelosa
-- plano da versao 1.1
-- relatorio de estabilidade operacional
-
-### Melhorado
-
-- criterios de escala
-- documentacao de campanha
-- processo de decisao pos-escala
-
-### Seguranca
-
-- repositorio permanece privado
-- validacoes e secrets mantidos
-
-### Documentacao
-
-- release notes 1.1
-- checklist de release 1.1
-- plano de ajustes pos-escala
+- `docs/project-audit.md`
+- `docs/final-readiness-report.md`
+- `docs/roadmap-post-1.0.md`
+- `docs/roadmap-management.md`
+- `docs/product-backlog.md`
 
 ## [1.1.0-rc.6] - em preparacao
 
@@ -175,22 +80,21 @@
 - Release Candidate privada, ainda nao marcada como final.
 - Decisao atual: Sem dados suficientes para escalar; ajustar e repetir pequena variacao apenas com tracking e funil validados.
 
-## [1.1.0-rc.2] - em preparacao
+## [1.1.0-rc.4] - em preparacao
 
 ### Inclui
 
-- go-live controlado
-- checklists de aprovacao
-- monitoramento primeiras 72h
-- campanha pequena pos-go-live
-- criterios de pausa imediata
-- relatorio diario
-- decisao pos-go-live
+- plano de campanha pequena otimizada
+- links UTM para `campanha_otimizada_01`
+- matriz de teste por nicho/criativo
+- copies e roteiros de video sem promessa de automacao no WhatsApp
+- checklist de lancamento e relatorio manual
+- eventos `optimized_campaign_page_view` e `optimized_campaign_cta_click`
 
 ### Status
 
-- Release Candidate privada, ainda nao marcada como final.
-- Exige staging verde, smoke test e monitoramento inicial antes de campanha pequena.
+- Continua privado e sem escala.
+- Campanha liberada apenas como teste pequeno, com `Sem dados suficientes` como conclusao inicial ate haver dados reais.
 
 ## [1.1.0-rc.3] - em preparacao
 
@@ -208,21 +112,22 @@
 - Release Candidate privada, ainda nao marcada como final.
 - Exige dados reais agregados antes de decidir escala cautelosa.
 
-## [1.1.0-rc.4] - em preparacao
+## [1.1.0-rc.2] - em preparacao
 
 ### Inclui
 
-- plano de campanha pequena otimizada
-- links UTM para `campanha_otimizada_01`
-- matriz de teste por nicho/criativo
-- copies e roteiros de video sem promessa de automacao no WhatsApp
-- checklist de lancamento e relatorio manual
-- eventos `optimized_campaign_page_view` e `optimized_campaign_cta_click`
+- go-live controlado
+- checklists de aprovacao
+- monitoramento primeiras 72h
+- campanha pequena pos-go-live
+- criterios de pausa imediata
+- relatorio diario
+- decisao pos-go-live
 
 ### Status
 
-- Continua privado e sem escala.
-- Campanha liberada apenas como teste pequeno, com `Sem dados suficientes` como conclusao inicial ate haver dados reais.
+- Release Candidate privada, ainda nao marcada como final.
+- Exige staging verde, smoke test e monitoramento inicial antes de campanha pequena.
 
 ## [1.1.0-rc.1] - em preparacao
 

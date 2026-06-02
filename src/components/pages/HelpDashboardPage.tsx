@@ -178,7 +178,6 @@ function HelpDashboardContent() {
                       <p className="text-xs font-black uppercase tracking-wide text-emerald-300">{item.category}</p>
                       <h3 className="mt-1 font-black text-white">{item.subject}</h3>
                       <p className="mt-2 text-sm text-slate-400">Criada em {formatDate(item.created_at)}</p>
-                      {item.admin_notes ? <p className="mt-3 rounded-md bg-[#0b1118] p-3 text-sm leading-6 text-slate-300">Nota: {item.admin_notes}</p> : null}
                     </div>
                     <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(item.status)}`}>{supportStatusLabel(item.status)}</span>
                   </div>

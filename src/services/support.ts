@@ -10,7 +10,6 @@ export type SupportRequest = {
   message: string;
   status: SupportStatus;
   priority: SupportPriority;
-  admin_notes: string | null;
   created_at: string;
   updated_at: string;
 };

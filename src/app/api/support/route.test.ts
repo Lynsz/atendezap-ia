@@ -202,6 +202,7 @@ describe("/api/support", () => {
 
     expect(response.status).toBe(200);
     expect(body.supportRequests).toHaveLength(1);
+    expect(body.supportRequests[0]).not.toHaveProperty("admin_notes");
     expect(mocks.tableFilters).toContainEqual({
       table: "support_requests",
       column: "user_id",

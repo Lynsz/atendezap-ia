@@ -43,3 +43,13 @@
 - Priorizar P0/P1 antes de novo criativo, novo nicho ou aumento de orcamento.
 - Planejar a versao 1.1 quando produto, billing, IA e suporte estiverem estaveis.
 - Manter fora do roadmap imediato qualquer CRM, WhatsApp API, automacao complexa ou BI avancado.
+
+## Fechamento da versao 1.1
+
+- Status: 1.1 entregue em 2026-06-02 como release estavel com observacoes.
+- Item shipped: correcao P1 para impedir exposicao de `admin_notes` no suporte do usuario.
+- Item shipped: documentacao final da 1.1, incluindo plano de execucao, relatorio final e QA.
+- P0 atual: nenhum confirmado.
+- P1 operacional: validar provedores reais e RLS em staging/producao antes de nova escala.
+- P2: smoke visual e mobile nas superficies publicas e privadas.
+- Fora do escopo atual: WhatsApp API, CRM, automacao complexa, multiplos atendentes, app mobile e BI avancado.

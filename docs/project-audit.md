@@ -1,8 +1,22 @@
 # Auditoria do AtendeZap IA
 
+## Versao 1.1 executada - 2026-06-02
+
+- Status: aprovada com observacoes para operacao controlada.
+- Bugs P0: nenhum confirmado na revisao local.
+- Bugs P1: corrigida exposicao de notas internas de suporte (`admin_notes`) para usuario comum.
+- Billing: Stripe Checkout, Customer Portal, webhook, status de assinatura, pagamentos falhos e cancelamento permanecem documentados; validacao real em staging/producao segue obrigatoria antes de nova escala.
+- IA: geracao autenticada continua server-side, limite e status sao verificados antes da OpenAI, falhas antes de persistir nao contam como uso e demo publica segue com rate limit.
+- Ativacao: checklist, onboarding, primeira resposta, copiar, salvar, templates, favoritos e planos seguem como fluxo leve, sem CRM.
+- Campanhas: dados insuficientes para aumentar orcamento; manter campanha pequena e escala cautelosa.
+- Suporte: usuario pode abrir e acompanhar solicitacoes sem ver notas internas; admin protegido mantem triagem.
+- Pendencias restantes: validar Supabase RLS, Stripe, OpenAI, Resend, tracking, admin, health check e smoke visual no ambiente final.
+- Nota estimada atualizada: 98/100 para producao controlada documentada, condicionada a validacao real dos provedores e ausencia de P0/P1 em producao.
+- Recomendacao: manter privado, liberar versao 1.1 para operacao controlada, manter escala cautelosa, corrigir antes de novas campanhas se surgir P0/P1 e preparar versao 1.2 apenas com dados agregados reais.
+
 ## Nota geral
 
-97/100
+98/100
 
 ## Status versao 1.0
 

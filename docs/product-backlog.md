@@ -1,19 +1,31 @@
 # Backlog de Produto - AtendeZap IA
 
-## P0 - Crítico
--
+## P0 - Critico
+
+- Nenhum P0 confirmado na revisao local da versao 1.1.
 
 ## P1 - Alta prioridade
--
 
-## P2 - Média prioridade
--
+- Validar Stripe Checkout, Customer Portal, webhook, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao antes de nova escala.
+- Corrigido na 1.1: notas internas de suporte (`admin_notes`) nao retornam nem aparecem para usuario comum.
+
+## P2 - Media prioridade
+
+- Validar visualmente landing, paginas por nicho, demo, ebook, precos, assinatura, suporte, dashboard e admin em mobile/tablet/desktop.
+- Acompanhar gargalos entre cadastro, onboarding, primeira resposta, salvar/copiar resposta e checkout.
+- Preencher relatorios de campanha apenas com dados agregados reais.
 
 ## P3 - Futuro
--
+
+- Avaliar alertas automaticos somente quando o volume justificar.
+- Avaliar novos nichos e criativos depois de dados agregados suficientes.
+- Avaliar metricas internas de custo de IA se tokens/modelo passarem a ser persistidos.
 
 ## Ideias descartadas por enquanto
--
+
+- Escala de campanha sem dados suficientes.
+- Mudanca grande de prompt sem feedback agregado recorrente.
+- Novo painel complexo para substituir admin atual.
 
 ## Funcionalidades fora do escopo atual
 

@@ -102,6 +102,21 @@ function jsonError(error: unknown) {
   return errorResponse(error);
 }
 
+function toUserSupportRequest(row: Record<string, unknown>) {
+  return {
+    id: row.id,
+    user_id: row.user_id,
+    email: row.email,
+    category: row.category,
+    subject: row.subject,
+    message: row.message,
+    status: row.status,
+    priority: row.priority,
+    created_at: row.created_at,
+    updated_at: row.updated_at
+  };
+}
+
 export async function GET(request: Request) {
   let userId: string | null = null;
 
@@ -113,7 +128,7 @@ export async function GET(request: Request) {
 
     const { data, error } = await supabase
       .from("support_requests")
-      .select("id, user_id, email, category, subject, message, status, priority, admin_notes, created_at, updated_at")
+      .select("id, user_id, email, category, subject, message, status, priority, created_at, updated_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -124,7 +139,7 @@ export async function GET(request: Request) {
     }
 
     serverLog({ event: "support_requests_listed", route: "/api/support", userId: user.id, status: "ok" });
-    return NextResponse.json({ supportRequests: data || [] });
+    return NextResponse.json({ supportRequests: (data || []).map((item) => toUserSupportRequest(item as Record<string, unknown>)) });
   } catch (error) {
     serverLog({ level: "warn", event: "support_requests_list_failed", route: "/api/support", userId, error });
     return jsonError(error);
@@ -182,7 +197,7 @@ export async function POST(request: NextRequest) {
           authenticated: Boolean(user)
         }
       })
-      .select("id, user_id, email, category, subject, message, status, priority, admin_notes, created_at, updated_at")
+      .select("id, user_id, email, category, subject, message, status, priority, created_at, updated_at")
       .single();
 
     if (error || !data) {
@@ -196,7 +211,7 @@ export async function POST(request: NextRequest) {
       status: "pending"
     });
     serverLog({ event: "support_request_created", route: "/api/support", userId, status: "ok", metadata: { category: body.category, priority } });
-    return Response.json({ ok: true, supportRequest: data }, { status: 201 });
+    return Response.json({ ok: true, supportRequest: toUserSupportRequest(data as Record<string, unknown>) }, { status: 201 });
   } catch (error) {
     await logEvent("support_request_failed", {
       source: "api",

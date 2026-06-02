@@ -4,13 +4,13 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 
 ## Prioridade alta
 
-- Melhorar ativacao.
-- Melhorar qualidade das respostas.
-- Melhorar onboarding.
-- Melhorar relatorios admin.
-- Corrigir bugs P0/P1.
-- Melhorar mobile.
-- Consolidar versao 1.1 com analise pos-escala, estabilidade operacional e criterios de release.
+- Melhorar ativacao. Implementado na 1.1 como fluxo leve e checklist, com monitoramento pendente em dados reais.
+- Melhorar qualidade das respostas. Implementado na 1.1 com templates, feedback agregado e controle de limites.
+- Melhorar onboarding. Implementado na 1.1 como orientacao inicial; acompanhar dados reais antes de nova mudanca.
+- Melhorar relatorios admin. Implementado na 1.1 com relatorios agregados, campanhas, suporte, insights e saude operacional.
+- Corrigir bugs P0/P1. P1 de suporte corrigido na 1.1; nenhum P0 confirmado na revisao local.
+- Melhorar mobile. Revisado documentalmente; validacao visual real segue pendente.
+- Consolidar versao 1.1 com analise pos-escala, estabilidade operacional e criterios de release. Implementado.
 
 ## Prioridade media
 
@@ -86,10 +86,19 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 
 ## Versao 1.1 estavel
 
-- Consolidar correcoes P0/P1, se existirem.
-- Revisar ativacao, onboarding, copy, billing, IA e suporte com base em dados agregados.
-- Manter relatorios internos simples, sem BI avancado.
-- Usar `docs/version-1.1-plan.md` e `docs/version-1.1-release-checklist.md` para fechamento.
+- Status: entregue em 2026-06-02 com observacoes.
+- Correcao P1 entregue: notas internas de suporte nao aparecem para usuario comum.
+- Ativacao, onboarding, copy, billing, IA, suporte, campanhas e admin revisados sem ampliar escopo.
+- Relatorios internos mantidos simples, agregados e sem BI avancado.
+- Fechamento registrado em `docs/version-1.1-execution-plan.md`, `docs/version-1.1-final-report.md`, `docs/version-1.1-qa-report.md` e `docs/version-1.1-release-checklist.md`.
+
+## Pendencias para 1.2 ou operacao
+
+- P0: nenhum item aberto confirmado.
+- P1: validar Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao antes de nova escala.
+- P2: validar visualmente paginas publicas, dashboard, assinatura, suporte e admin em mobile/tablet/desktop.
+- P3: avaliar alertas automaticos, custo interno de IA e novos nichos apenas com volume real.
+- Fora do escopo atual: WhatsApp API, CRM completo, automacoes avancadas, multiplos atendentes, app mobile e BI avancado.
 
 ## Regra de priorizacao
 
