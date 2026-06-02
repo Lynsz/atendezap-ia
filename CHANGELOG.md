@@ -6,6 +6,10 @@ Sem itens registrados.
 
 ## [1.2.0] - planejado
 
+### Em progresso
+
+- Sprint 1: estabilidade, billing, IA, limites e tracking seguro.
+
 ### Planejado
 
 - Analise pos-release 1.1.

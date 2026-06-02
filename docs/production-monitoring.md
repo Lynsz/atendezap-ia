@@ -1,9 +1,11 @@
 # Monitoramento de Producao - AtendeZap IA
 
 ## Objetivo
+
 Acompanhar a saude do produto em producao e detectar problemas criticos rapidamente.
 
 ## O que monitorar diariamente
+
 - erros na Vercel
 - falhas em rotas API
 - falhas de login/cadastro
@@ -18,6 +20,7 @@ Acompanhar a saude do produto em producao e detectar problemas criticos rapidame
 - feedbacks negativos
 
 ## O que monitorar semanalmente
+
 - conversao do funil
 - uso medio por usuario
 - usuarios ativos
@@ -28,6 +31,7 @@ Acompanhar a saude do produto em producao e detectar problemas criticos rapidame
 - gargalos de onboarding
 
 ## Alertas criticos
+
 - checkout quebrado
 - webhook nao atualiza assinatura
 - IA indisponivel
@@ -37,6 +41,7 @@ Acompanhar a saude do produto em producao e detectar problemas criticos rapidame
 - admin acessivel indevidamente
 
 ## Fontes minimas
+
 - Vercel Logs
 - Supabase logs e tabelas administrativas protegidas
 - Stripe Dashboard e eventos de webhook
@@ -44,3 +49,11 @@ Acompanhar a saude do produto em producao e detectar problemas criticos rapidame
 - Resend logs
 - `/api/health`
 - painel admin em `/admin`
+
+## Revisao Sprint 1 da versao 1.2
+
+- `/api/health` segue como endpoint leve de smoke test, sem chamada a servicos caros e sem dados de usuario.
+- Admin operacional segue agregado e protegido por `requireAdmin`.
+- Tracking e logs foram revisados para manter metadata segura.
+- Pendencia: validar health check, admin, logs e provedores reais em staging/producao.
+

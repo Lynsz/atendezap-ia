@@ -4,6 +4,8 @@
 
 - Corrigir qualquer P0/P1 real que aparecer em login, cadastro, admin, RLS, billing, IA, suporte ou tracking.
 - Validar a correcao de suporte da 1.1 em ambiente real.
+- Entregue na Sprint 1: tracking remove e-mail em valores genericos, telefone e WhatsApp.
+- Entregue na Sprint 1: testes cobrem limite bloqueando IA, falha da IA sem persistir uso e health check sem dados sensiveis.
 
 ## Ativacao
 
@@ -28,12 +30,14 @@
 - Validar checkout, portal, webhook, status de assinatura, pagamento falho e cancelamento em staging/producao.
 - Manter Stripe como fonte de verdade financeira.
 - Nao salvar dados de cartao.
+- Revisado na Sprint 1: checkout, portal, webhook, idempotencia, status e pagamentos falhos sem P0/P1 local encontrado.
 
 ## IA
 
 - Monitorar falhas, limites, usuarios perto do limite e custo agregado.
 - Ajustar prompt/templates apenas com feedback agregado recorrente.
 - Manter OpenAI server-side.
+- Revisado na Sprint 1: limite antes da IA, uso apos persistencia e falha sem consumo.
 
 ## Campanhas
 
@@ -51,6 +55,13 @@
 - Validar Supabase RLS com dois usuarios reais.
 - Validar health check, logs, tracking seguro e admin no ambiente final.
 - Atualizar auditoria, prontidao e release notes durante a execucao.
+- Sprint 1 concluida com pendencias externas em `docs/version-1.2-sprint-1-report.md`.
+
+## Sprint 2
+
+- Melhorar ativacao e retencao somente com base em dados agregados.
+- Medir cadastro para onboarding, onboarding para primeira resposta e primeira resposta para copia/salvamento.
+- Revisar exemplos por nicho e templates recomendados se houver gargalo comprovado.
 
 ## Fora do escopo
 
@@ -59,4 +70,3 @@
 - automacoes avancadas
 - multiplos atendentes
 - app mobile
-

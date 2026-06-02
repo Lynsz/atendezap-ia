@@ -11,6 +11,8 @@
 - Selecionado para 1.2: validar provedores reais e RLS antes de nova campanha.
 - Selecionado para 1.2: medir gargalo de ativacao entre cadastro, onboarding, primeira resposta, copia/salvamento, checkout e assinatura.
 - Selecionado para 1.2: reduzir suporte recorrente sobre WhatsApp automatico, onboarding, pricing e billing com ajustes simples.
+- Entregue na Sprint 1 da 1.2: tracking seguro reforcado contra e-mail em campo generico, telefone e WhatsApp.
+- Entregue na Sprint 1 da 1.2: testes de IA/limites e health check ampliados.
 
 ## P2 - Media prioridade
 
@@ -130,6 +132,15 @@ Use `docs/post-1.1-release-report.md`, `docs/version-1.1-diagnosis.md`, `docs/ve
 - billing e webhook
 - campanhas pequenas por nicho
 - UX mobile validada em ambiente final
+
+## Sprint 1 da versao 1.2
+
+- Status: concluida com pendencias externas.
+- Entregue: revisao local de billing, webhook, status de assinatura, IA/limites, tracking seguro, logs, health check e admin.
+- Entregue: correcao de tracking seguro para remover e-mail em valor generico, telefone e WhatsApp.
+- Entregue: testes focados para tracking, health check e IA/limites.
+- Pendencia P1: validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao.
+- Proxima etapa: Sprint 2 de ativacao e retencao.
 
 ## Itens que dependem de mais dados
 

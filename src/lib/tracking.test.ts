@@ -33,7 +33,10 @@ describe("tracking seguro", () => {
       customerQuestion: "Meu pedido atrasou?",
       generatedAnswer: "Sinto muito pelo atraso.",
       resposta: "conteudo completo",
-      email: "cliente@example.com"
+      email: "cliente@example.com",
+      contact: "cliente@example.com",
+      phone: "11999999999",
+      whatsapp: "11999999999"
     });
 
     expect(gtag).toHaveBeenCalledTimes(1);
@@ -50,6 +53,9 @@ describe("tracking seguro", () => {
     expect(payload.generatedAnswer).toBeUndefined();
     expect(payload.resposta).toBeUndefined();
     expect(payload.email).toBeUndefined();
+    expect(payload.contact).toBeUndefined();
+    expect(payload.phone).toBeUndefined();
+    expect(payload.whatsapp).toBeUndefined();
   });
 
   it("mantem eventos de ativacao sem conteudo de resposta", async () => {

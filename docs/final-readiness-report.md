@@ -1,5 +1,42 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Sprint 1 da versao 1.2 executada - 2026-06-02
+
+Status: concluida com pendencias externas.
+
+O que foi feito:
+
+- `docs/version-1.2-sprint-1-plan.md` criado.
+- `docs/version-1.2-sprint-1-report.md` criado.
+- Billing, webhook Stripe, status de assinatura, IA/limites, tracking seguro, logs, health check e admin operacional revisados.
+- Tracking seguro reforcado para remover e-mail em valores genericos, telefone e WhatsApp.
+- Testes adicionados/revisados para tracking seguro, health check e IA/limites.
+- Documentacao de billing, pagamentos falhos, reconciliacao Stripe/Supabase, limites, custo de IA e logs seguros atualizada.
+
+Resultado:
+
+- Bugs P0/P1 revisados: nenhum P0 confirmado; nenhum P1 grave local encontrado.
+- Billing revisado: sem falha local clara, com validacao real ainda pendente.
+- IA/limites revisados: limite antes da IA, uso apos persistencia e falha sem consumo.
+- Tracking seguro revisado: sem envio de pergunta, resposta, e-mail, telefone, tokens, secrets ou dados de pagamento.
+- Logs revisados: metadata sanitizada e health check simples.
+
+Pendencias:
+
+- Validar Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao.
+- Validar RLS com dois usuarios reais.
+- Fazer smoke visual antes de campanha.
+- Nao escalar se surgir P0/P1.
+
+Recomendacao:
+
+- manter privado
+- avancar para Sprint 2
+- corrigir pendencias antes de campanhas
+- nao escalar se houver bug P0/P1
+
+Nota estimada atualizada: 98/100 para producao controlada documentada.
+
 ## Pos-release 1.1 e planejamento 1.2 - 2026-06-02
 
 Status: 1.1 estavel para operacao controlada; 1.2 planejada.

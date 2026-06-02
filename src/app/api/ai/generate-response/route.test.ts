@@ -146,6 +146,8 @@ describe("POST /api/ai/generate-response", () => {
       limit: 30,
       remaining: 0
     });
+    expect(mocks.generateCustomerResponseWithAi).not.toHaveBeenCalled();
+    expect(mocks.insertPayload).toBeNull();
   });
 
   it("retorna 401 sem sessao", async () => {
@@ -162,6 +164,8 @@ describe("POST /api/ai/generate-response", () => {
 
     expect(response.status).toBe(401);
     expect(body.error).toContain("Sess");
+    expect(mocks.generateCustomerResponseWithAi).not.toHaveBeenCalled();
+    expect(mocks.insertPayload).toBeNull();
   });
 
   it("retorna 400 para pergunta vazia", async () => {
@@ -252,5 +256,38 @@ describe("POST /api/ai/generate-response", () => {
       business_type: "Estetica",
       brand_tone: "Acolhedor"
     });
+  });
+
+  it("nao persiste uso quando a IA falha", async () => {
+    mocks.responseCount = 0;
+    mocks.generateCustomerResponseWithAi.mockRejectedValueOnce(new Error("OpenAI indisponivel"));
+
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/ai/generate-response", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          customerQuestion: "Tem horario hoje?",
+          responseType: "atendimento",
+          businessData: {
+            id: "22222222-2222-4222-8222-222222222222",
+            business_name: "Studio Maria",
+            business_area: "beleza",
+            brand_tone: "profissional"
+          }
+        })
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.error).toContain("Nao foi possivel gerar");
+    expect(mocks.generateCustomerResponseWithAi).toHaveBeenCalledTimes(1);
+    expect(mocks.insertPayload).toBeNull();
   });
 });

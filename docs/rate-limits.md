@@ -1,4 +1,4 @@
-# Rate Limits — AtendeZap IA
+# Rate Limits - AtendeZap IA
 
 ## Objetivo
 
@@ -26,9 +26,17 @@ Proteger APIs sensiveis contra abuso.
 
 O helper `src/lib/rate-limit.ts` usa Upstash Redis quando `UPSTASH_REDIS_REST_URL` e `UPSTASH_REDIS_REST_TOKEN` existem. Sem essas variaveis, usa fallback em memoria para ambiente local/preview.
 
+## Revisao Sprint 1 da versao 1.2
+
+- Demo publica permanece com limite separado por IP.
+- Geracao autenticada usa rate limit por IP e por usuario.
+- Checkout e portal Stripe permanecem protegidos por rate limit.
+- Eventos de rate limit registram metadata segura, sem IP completo em analytics e sem conteudo de usuario.
+
 ## Pendencias futuras
 
 - Rate limit distribuido obrigatorio em producao.
 - Alertas automaticos.
 - Bloqueio por abuso.
 - Painel avancado de seguranca.
+

@@ -1,9 +1,9 @@
-# Limites por Plano — AtendeZap IA
+# Limites por Plano - AtendeZap IA
 
 ## Starter
 
 - Limite mensal: 150 respostas.
-- Indicado para: negocios pequenos começando a usar IA no atendimento.
+- Indicado para: negocios pequenos comecando a usar IA no atendimento.
 
 ## Pro
 
@@ -30,3 +30,12 @@
 - Falhas da IA nao devem contar.
 - Demo publica possui limite separado.
 - Assinatura inativa, cancelada ou com pagamento pendente pode bloquear geracao, conforme regra do produto.
+
+## Revisao Sprint 1 da versao 1.2
+
+- A geracao autenticada consulta plano/status e limite antes da chamada de IA.
+- Quando o limite acaba, a OpenAI nao deve ser chamada.
+- Uso conta apenas apos resposta gerada e persistida.
+- Falha da IA nao persiste uso.
+- Testes cobrem limite excedido, falta de sessao, falha da IA e persistencia apenas apos sucesso.
+

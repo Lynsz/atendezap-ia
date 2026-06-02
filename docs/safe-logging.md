@@ -1,6 +1,7 @@
 # Logs Seguros - AtendeZap IA
 
 ## Pode registrar
+
 - nome da rota
 - acao executada
 - status de sucesso/falha
@@ -10,6 +11,7 @@
 - id parcial de usuario, se necessario
 
 ## Nao pode registrar
+
 - chaves de API
 - tokens
 - senha
@@ -20,6 +22,7 @@
 - service role key
 
 ## Implementacao atual
+
 - `src/lib/logger.ts` centraliza logs server-side.
 - `src/lib/events.ts` registra eventos internos na tabela `events` com metadata sanitizada.
 - IDs de usuario sao mascarados nos logs.
@@ -30,4 +33,12 @@
 - Logs de suporte registram apenas evento, rota, status, categoria/prioridade e usuario mascarado quando aplicavel; nao registram mensagem completa, e-mail completo, dados de pagamento ou secrets.
 
 ## Objetivo
+
 Logs devem ajudar a investigar falhas sem vazar dados.
+
+## Revisao Sprint 1 da versao 1.2
+
+- Tracking client-side passa a remover valores que parecam e-mail mesmo em campos genericos.
+- Chaves relacionadas a telefone e WhatsApp tambem sao removidas de eventos de analytics.
+- Health check foi coberto por teste para garantir resposta simples sem secrets, usuario, e-mail ou dados internos sensiveis.
+

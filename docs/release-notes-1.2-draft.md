@@ -16,6 +16,15 @@ Melhorar ativacao, retencao, conversao e operacao com base nos aprendizados da v
 - Melhorar suporte recorrente com ajustes simples de copy, FAQ ou fluxo.
 - Melhorar campanhas pequenas por nicho com UTMs e tracking seguro.
 
+## Sprint 1
+
+- Correcoes de estabilidade: tracking seguro reforcado para remover e-mail em valores genericos, telefone e WhatsApp.
+- Melhorias de billing: checkout, portal, webhook, status de assinatura, pagamento falho e idempotencia revisados sem P0/P1 local encontrado.
+- Melhorias de IA/limites: testes confirmam que limite excedido nao chama IA, falta de sessao bloqueia geracao e falha da IA nao persiste uso.
+- Revisao de tracking seguro: eventos continuam sem pergunta, resposta, e-mail, telefone, token, secret ou dados de pagamento.
+- Revisao de logs seguros: logs e eventos internos seguem sanitizados; health check coberto por teste.
+- Documentacao atualizada: billing, limites, custo de IA, logs, backlog, auditoria e prontidao.
+
 ## Melhorias esperadas
 
 - Menos abandono entre cadastro, onboarding e primeira resposta.
@@ -49,4 +58,3 @@ Melhorar ativacao, retencao, conversao e operacao com base nos aprendizados da v
 - integracao direta com WhatsApp
 - CRM completo
 - automacoes avancadas
-

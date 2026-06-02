@@ -1,5 +1,20 @@
 # Auditoria do AtendeZap IA
 
+## Sprint 1 da versao 1.2 executada - 2026-06-02
+
+- Sprint 1 da versao 1.2 executada com foco em estabilidade, billing, IA, limites, tracking seguro, logs e health check.
+- Plano criado em `docs/version-1.2-sprint-1-plan.md`.
+- Relatorio criado em `docs/version-1.2-sprint-1-report.md`.
+- Bugs P0/P1 revisados: nenhum P0 confirmado; nenhum P1 grave local encontrado.
+- Billing revisado: checkout, portal Stripe, webhook, status de assinatura, pagamentos falhos e idempotencia continuam alinhados ao fluxo Stripe/Supabase.
+- IA/limites revisados: sessao, assinatura/status e limite sao verificados antes da IA; limite excedido nao chama IA; falha da IA nao persiste uso.
+- Tracking seguro revisado: eventos removem e-mail em valores genericos, telefone, WhatsApp, pergunta, resposta, token, secret e dados de pagamento.
+- Logs revisados: logger e eventos internos seguem sanitizados; health check retorna dados simples e sem sensiveis.
+- Testes ampliados: tracking seguro, health check e IA/limites.
+- Pendencias restantes: validar Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao; validar RLS com dois usuarios reais; smoke visual antes de campanha.
+- Nota estimada mantida: 98/100 para producao controlada documentada.
+- Recomendacao: manter privado, avancar para Sprint 2, corrigir pendencias antes de campanhas e nao escalar se houver bug P0/P1.
+
 ## Pos-release 1.1 e planejamento 1.2 - 2026-06-02
 
 - Pos-release 1.1 analisado em `docs/post-1.1-release-report.md`.

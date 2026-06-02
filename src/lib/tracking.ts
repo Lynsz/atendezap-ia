@@ -131,7 +131,8 @@ declare global {
 
 const UTM_STORAGE_KEY = "atendezap_ia_utm_attribution_v1";
 const ATTRIBUTION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
-const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem|email|mail)/i;
+const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem|email|mail|phone|telefone|whatsapp)/i;
+const EMAIL_VALUE_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type StoredAttribution = UtmPayload & {
   source?: string;
@@ -170,6 +171,7 @@ function sanitizeProperties(properties: TrackingProperties = {}) {
     if (value === undefined || value === null || FORBIDDEN_PROPERTY_PATTERN.test(key)) return accumulator;
     if (typeof value === "string") {
       const trimmed = cleanValue(value);
+      if (EMAIL_VALUE_PATTERN.test(trimmed)) return accumulator;
       if (trimmed) accumulator[key] = trimmed;
       return accumulator;
     }
