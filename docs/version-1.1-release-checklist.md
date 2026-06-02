@@ -2,9 +2,9 @@
 
 ## Codigo
 
-- [ ] npm run validate passou
+- [x] npm run validate passou
 - [x] teste focado de suporte passou
-- [ ] build passou na validacao final
+- [x] build passou na validacao final
 - [x] sem secrets reais adicionados
 - [x] sem .env.local no Git
 
@@ -44,4 +44,3 @@
 
 - A versao 1.1 esta aprovada com observacoes para operacao controlada.
 - Validacoes reais de staging/producao, Stripe, Supabase, OpenAI, Resend, tracking e admin seguem obrigatorias antes de nova escala.
-

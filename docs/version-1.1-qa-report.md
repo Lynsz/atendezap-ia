@@ -8,7 +8,8 @@
 
 - Revisao local de codigo e documentacao.
 - Teste automatizado focado executado: `npm test -- src/app/api/support/route.test.ts`.
-- Validacao completa pendente de execucao final: `npm run validate`.
+- Validacao completa executada: `npm run validate`.
+- E2E executado: `npm run test:e2e`.
 
 ## Checklist manual documentado
 
@@ -31,13 +32,13 @@
 - tracking seguro: manter eventos sem pergunta, resposta, e-mail, mensagem completa ou dados de pagamento.
 - health check: validar `/api/health` no ambiente final.
 
-## Resultado automatizado ate agora
+## Resultado automatizado
 
 - `npm test -- src/app/api/support/route.test.ts`: passou.
+- `npm run validate`: passou com `check:secrets`, lint, typecheck, build e 209 testes unitarios.
+- `npm run test:e2e`: passou com 60 testes Playwright.
 
 ## Pendencias de QA
 
-- Rodar `npm run validate`.
-- Se existir tempo/ambiente, rodar `npm run test:e2e`.
 - Fazer smoke visual em staging/producao antes de campanha.
-
+- Validar provedores reais em staging/producao: Stripe, Supabase, OpenAI, Resend e tracking.
