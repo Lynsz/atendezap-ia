@@ -4,6 +4,24 @@
 
 Sem itens registrados.
 
+## [1.2.0] - planejado
+
+### Planejado
+
+- Analise pos-release 1.1.
+- Diagnostico da versao 1.1.
+- Plano, roadmap, backlog, criterios de entrada e metricas de sucesso da versao 1.2.
+- Checklist de release 1.2 e release notes draft.
+- Plano de campanha pequena pos-1.2.
+- Validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check antes de nova escala.
+- Melhorias pequenas de ativacao, retencao, conversao, suporte, billing, IA, campanhas e UX mobile, condicionadas a dados agregados.
+
+### Fora do escopo
+
+- integracao direta com WhatsApp
+- CRM completo
+- automacoes avancadas
+
 ## [1.1.0] - 2026-06-02
 
 ### Adicionado

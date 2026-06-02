@@ -53,3 +53,13 @@
 - P1 operacional: validar provedores reais e RLS em staging/producao antes de nova escala.
 - P2: smoke visual e mobile nas superficies publicas e privadas.
 - Fora do escopo atual: WhatsApp API, CRM, automacao complexa, multiplos atendentes, app mobile e BI avancado.
+
+## Planejamento da versao 1.2
+
+- Status permitido: `planned` enquanto a 1.2 nao for executada.
+- Entrada principal: `docs/version-1.2-intake-criteria.md`.
+- Backlog filtrado: `docs/version-1.2-backlog.md`.
+- Metricas: `docs/version-1.2-success-metrics.md`.
+- Planejamento de campanha: `docs/post-1.2-campaign-plan.md`.
+- Nao mover itens para `shipped` antes de QA, changelog e release notes finais.
+- Itens sem dado agregado suficiente devem ficar como `reviewing` ou `planned`, nunca como conclusao de produto.

@@ -1,5 +1,40 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Pos-release 1.1 e planejamento 1.2 - 2026-06-02
+
+Status: 1.1 estavel para operacao controlada; 1.2 planejada.
+
+O que foi feito:
+
+- `docs/post-1.1-release-report.md` criado.
+- `docs/version-1.1-diagnosis.md` criado.
+- `docs/version-1.2-plan.md` criado.
+- `docs/version-1.2-intake-criteria.md` criado.
+- `docs/version-1.2-roadmap.md` criado.
+- `docs/version-1.2-success-metrics.md` criado.
+- `docs/version-1.2-backlog.md` criado.
+- `docs/version-1.2-release-checklist.md` criado.
+- `docs/release-notes-1.2-draft.md` criado.
+- `docs/post-1.2-campaign-plan.md` criado.
+- Backlog, roadmap, CHANGELOG e auditoria atualizados.
+
+Diagnostico:
+
+- Sem dados suficientes para aprovar escala ampla.
+- Nenhum P0 confirmado.
+- P1 de suporte da 1.1 permanece corrigido.
+- Validacao real de Supabase RLS, Stripe, OpenAI, Resend, tracking, admin e health check segue como prioridade da 1.2.
+
+Recomendacao:
+
+- manter privado
+- planejar sprint 1 da versao 1.2
+- corrigir antes de nova campanha se surgir P0/P1
+- rodar campanha pequena pos-1.2
+- manter escala cautelosa
+
+Nota estimada atualizada: 98/100 para producao controlada documentada.
+
 ## Versao 1.1 estavel executada - 2026-06-02
 
 Status: aprovado com observacoes.

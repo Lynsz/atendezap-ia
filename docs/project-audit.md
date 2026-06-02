@@ -1,5 +1,22 @@
 # Auditoria do AtendeZap IA
 
+## Pos-release 1.1 e planejamento 1.2 - 2026-06-02
+
+- Pos-release 1.1 analisado em `docs/post-1.1-release-report.md`.
+- Diagnostico 1.1 criado em `docs/version-1.1-diagnosis.md`.
+- Plano 1.2 criado em `docs/version-1.2-plan.md`.
+- Roadmap 1.2 criado em `docs/version-1.2-roadmap.md`.
+- Backlog 1.2 criado em `docs/version-1.2-backlog.md`.
+- Metricas de sucesso 1.2 criadas em `docs/version-1.2-success-metrics.md`.
+- Checklist de release 1.2 criado em `docs/version-1.2-release-checklist.md`.
+- Release notes 1.2 draft criadas em `docs/release-notes-1.2-draft.md`.
+- Plano de campanha pos-1.2 criado em `docs/post-1.2-campaign-plan.md`.
+- Status atual: 1.1 estavel para operacao controlada; 1.2 planejada, nao entregue.
+- Bugs P0/P1: nenhum P0 confirmado; P1 de suporte ja corrigido; validacoes reais seguem como prioridade operacional.
+- Admin/relatorios: bloco "Planejamento 1.2" documentado como pendencia simples para avaliar sem criar dashboard paralelo.
+- Nota estimada atualizada: 98/100 para producao controlada documentada, condicionada a dados reais, provedores validados e ausencia de P0/P1.
+- Recomendacao: manter privado, planejar sprint 1 da versao 1.2, corrigir antes de nova campanha se aparecer P0/P1, rodar campanha pequena pos-1.2 e manter escala cautelosa.
+
 ## Versao 1.1 executada - 2026-06-02
 
 - Status: aprovada com observacoes para operacao controlada.

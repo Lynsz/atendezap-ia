@@ -8,24 +8,31 @@
 
 - Validar Stripe Checkout, Customer Portal, webhook, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao antes de nova escala.
 - Corrigido na 1.1: notas internas de suporte (`admin_notes`) nao retornam nem aparecem para usuario comum.
+- Selecionado para 1.2: validar provedores reais e RLS antes de nova campanha.
+- Selecionado para 1.2: medir gargalo de ativacao entre cadastro, onboarding, primeira resposta, copia/salvamento, checkout e assinatura.
+- Selecionado para 1.2: reduzir suporte recorrente sobre WhatsApp automatico, onboarding, pricing e billing com ajustes simples.
 
 ## P2 - Media prioridade
 
 - Validar visualmente landing, paginas por nicho, demo, ebook, precos, assinatura, suporte, dashboard e admin em mobile/tablet/desktop.
 - Acompanhar gargalos entre cadastro, onboarding, primeira resposta, salvar/copiar resposta e checkout.
 - Preencher relatorios de campanha apenas com dados agregados reais.
+- Selecionado para 1.2: melhorar exemplos por nicho, templates recomendados, CTA pos-demo e pricing apenas se os dados agregados mostrarem gargalo.
+- Selecionado para 1.2: planejar bloco simples "Planejamento 1.2" no admin somente se couber sem criar dashboard paralelo.
 
 ## P3 - Futuro
 
 - Avaliar alertas automaticos somente quando o volume justificar.
 - Avaliar novos nichos e criativos depois de dados agregados suficientes.
 - Avaliar metricas internas de custo de IA se tokens/modelo passarem a ser persistidos.
+- Adiado: planos anuais, tags avancadas, exportacao de historico, alertas automaticos e custo interno por resposta.
 
 ## Ideias descartadas por enquanto
 
 - Escala de campanha sem dados suficientes.
 - Mudanca grande de prompt sem feedback agregado recorrente.
 - Novo painel complexo para substituir admin atual.
+- Integracao direta com WhatsApp, CRM, automacao complexa, app mobile e BI avancado continuam fora do escopo da 1.2.
 
 ## Funcionalidades fora do escopo atual
 
@@ -108,3 +115,27 @@ Use `docs/cautious-scale-analysis.md`, `docs/scale-health-diagnosis.md`, `docs/p
 - automacao de mensagens
 - app mobile
 - BI avancado
+
+# Planejamento da versao 1.2
+
+Use `docs/post-1.1-release-report.md`, `docs/version-1.1-diagnosis.md`, `docs/version-1.2-plan.md`, `docs/version-1.2-backlog.md` e `docs/version-1.2-success-metrics.md` como entrada da proxima sprint.
+
+## Itens selecionados para 1.2
+
+- validacao real de provedores, RLS, tracking, admin e health check
+- ativacao e primeira resposta
+- retencao inicial e uso de respostas salvas/favoritas
+- conversao para plano pago
+- suporte recorrente
+- billing e webhook
+- campanhas pequenas por nicho
+- UX mobile validada em ambiente final
+
+## Itens que dependem de mais dados
+
+- mudancas de pricing
+- alteracoes de prompt
+- novos nichos ou criativos
+- e-mails de ativacao
+- relatorios internos mais detalhados
+- custo interno de IA por resposta

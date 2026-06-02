@@ -100,6 +100,17 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 - P3: avaliar alertas automaticos, custo interno de IA e novos nichos apenas com volume real.
 - Fora do escopo atual: WhatsApp API, CRM completo, automacoes avancadas, multiplos atendentes, app mobile e BI avancado.
 
+## Versao 1.2 planejada
+
+- Status: planejada, nao entregue.
+- Objetivo: crescimento controlado, retencao, conversao e operacao com base nos aprendizados da 1.1.
+- Sprint 1: estabilidade, billing, IA, suporte, tracking, RLS e provedores reais.
+- Sprint 2: ativacao, primeira resposta, templates recomendados, dashboard inicial e retencao 7 dias.
+- Sprint 3: conversao, paginas por nicho, pricing, CTA pos-demo e campanha pequena.
+- Sprint 4: operacao, auditoria, QA, release notes e checklist de release.
+- Documentos de referencia: `docs/version-1.2-plan.md`, `docs/version-1.2-roadmap.md`, `docs/version-1.2-backlog.md`, `docs/version-1.2-success-metrics.md` e `docs/version-1.2-release-checklist.md`.
+- Admin/relatorios: bloco "Planejamento 1.2" fica documentado como pendencia simples; implementar apenas se couber no admin atual sem criar painel paralelo.
+
 ## Regra de priorizacao
 
 Antes de adicionar funcionalidade grande, validar se ela resolve um gargalo real visto em suporte, admin, feedbacks, campanhas ou uso dos primeiros clientes.
