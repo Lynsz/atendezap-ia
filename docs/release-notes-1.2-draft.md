@@ -25,6 +25,16 @@ Melhorar ativacao, retencao, conversao e operacao com base nos aprendizados da v
 - Revisao de logs seguros: logs e eventos internos seguem sanitizados; health check coberto por teste.
 - Documentacao atualizada: billing, limites, custo de IA, logs, backlog, auditoria e prontidao.
 
+## Sprint 2
+
+- Melhorias de onboarding para explicar o contexto do atendimento e o uso manual das respostas.
+- Melhorias do dashboard inicial com foco em gerar a primeira resposta para cliente.
+- Checklist de ativacao revisado com onboarding, primeira resposta, copiar, salvar, templates, favoritos e planos.
+- Exemplos por nicho revisados para delivery, estetica, assistencia tecnica, loja, restaurante, prestador de servico e autonomo.
+- Templates recomendados e respostas favoritas mantidos como atalhos no dashboard.
+- Metricas de ativacao revisadas no admin protegido, com cards agregados e diagnostico simples.
+- Documentacao de ativacao, retencao, e-mails, backlog, auditoria e prontidao atualizada.
+
 ## Melhorias esperadas
 
 - Menos abandono entre cadastro, onboarding e primeira resposta.
@@ -52,6 +62,7 @@ Melhorar ativacao, retencao, conversao e operacao com base nos aprendizados da v
 - Metricas de sucesso 1.2.
 - Checklist de release 1.2.
 - Plano de campanha pos-1.2.
+- Plano e relatorio da Sprint 2.
 
 ## Fora do escopo
 

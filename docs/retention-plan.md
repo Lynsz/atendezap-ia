@@ -66,3 +66,21 @@ Entender se usuarios voltam a usar o produto depois do primeiro acesso.
 - melhorar e-mail de onboarding
 - revisar pricing
 - revisar qualidade da IA
+
+## Sprint 2 da versao 1.2
+
+- Primeira experiencia do dashboard revisada para levar o usuario a uma resposta util rapidamente.
+- Checklist de ativacao reforca copiar, salvar, ver templates, favoritar e conhecer planos.
+- Templates recomendados por tipo de atuacao continuam visiveis no dashboard inicial.
+- Favoritos continuam como atalho para retorno ao produto.
+- Admin passa a ter uma secao agregada de ativacao com diagnostico simples.
+
+## Definicao atual de usuario ativado
+
+Usuario ativado = concluiu onboarding, gerou pelo menos uma resposta e copiou ou salvou uma resposta util.
+
+## Pendencias
+
+- Confirmar retorno em 7 dias com dados reais agregados.
+- Manter e-mails de ativacao como templates ate existir regra operacional de envio.
+- Nao criar automacao complexa ou CRM para resolver baixa retencao inicial.

@@ -119,6 +119,15 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 - Entregue: testes adicionais de tracking, IA/limites e health check.
 - Proxima etapa: Sprint 2 para ativacao e retencao, condicionada a manter validacoes verdes.
 
+## Sprint 2 da versao 1.2
+
+- Status: concluida com pendencias externas.
+- Entregue: primeira experiencia do dashboard revisada para gerar a primeira resposta.
+- Entregue: checklist de ativacao, exemplos por nicho, templates recomendados e favoritas revisados.
+- Entregue: admin de ativacao com cards agregados e diagnostico simples.
+- Mantido fora do escopo: WhatsApp API, CRM, automacao complexa, app mobile e BI avancado.
+- Proxima etapa: Sprint 3 para conversao e campanhas pequenas, somente depois de validar ativacao real.
+
 ## Regra de priorizacao
 
 Antes de adicionar funcionalidade grande, validar se ela resolve um gargalo real visto em suporte, admin, feedbacks, campanhas ou uso dos primeiros clientes.

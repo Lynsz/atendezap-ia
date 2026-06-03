@@ -554,6 +554,28 @@ function getLikelyBottleneck(report: CampaignReportPayload | null, metrics: Prod
   return "Ainda não há dados suficientes para conclusão.";
 }
 
+function getActivationDiagnosis(metrics: ProductMetricsPayload) {
+  const totalUsers = metrics.funnel.totalUsers;
+  const onboardings = metrics.funnel.completedOnboardingUsers;
+  const firstResponses = metrics.funnel.usersWithFirstResponse;
+  const savedOrCopied = metrics.funnel.usersWithSavedOrCopiedResponse;
+  const activeUsers7Days = metrics.activation.activeUsersLast7Days;
+
+  if (totalUsers >= 3 && onboardings < Math.max(1, Math.ceil(totalUsers * 0.4))) {
+    return "Revisar clareza do onboarding.";
+  }
+  if (onboardings >= 3 && firstResponses < Math.max(1, Math.ceil(onboardings * 0.5))) {
+    return "Revisar dashboard inicial e exemplos.";
+  }
+  if (firstResponses >= 3 && savedOrCopied < Math.max(1, Math.ceil(firstResponses * 0.5))) {
+    return "Revisar utilidade da resposta e CTAs de copiar/salvar.";
+  }
+  if (firstResponses >= 3 && activeUsers7Days < Math.max(1, Math.ceil(firstResponses * 0.4))) {
+    return "Revisar templates, favoritos e e-mails de ativacao.";
+  }
+  return "Sem dados suficientes para conclusao.";
+}
+
 function availableValue(available: boolean, value: string | number) {
   return available ? value : "Não disponível";
 }
@@ -1022,6 +1044,40 @@ export default function AdminDashboardPage() {
           <MetricCard label="Cadastro -> assinatura" value={`${metrics?.signupToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
           <MetricCard label="Lead -> assinatura" value={`${metrics?.leadToSubscriptionRate ?? 0}%`} icon={<BarChart3 className="h-5 w-5" />} />
         </section>
+
+        {productMetrics ? (
+          <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Ativacao</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Primeira experiencia e retencao inicial</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  Leitura agregada para acompanhar onboarding, primeira resposta, copia, salvamento, templates, favoritos e retorno em 7 dias. Nao mostra conteudo de perguntas ou respostas.
+                </p>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-slate-300">
+                {productMetrics.period.label}
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Usuarios novos 7 dias" value={availableValue(productMetrics.availability.profiles, productMetrics.activation.newUsersLast7Days)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Onboardings concluidos" value={availableValue(productMetrics.availability.businesses, productMetrics.activation.onboardingCompletedLast7Days)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Primeiras respostas" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.activation.firstResponsesGenerated)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Respostas copiadas" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.usersWithCopiedResponse)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Respostas salvas" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.usersWithSavedResponses)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Templates salvos" value={availableValue(productMetrics.availability.savedResponses, productMetrics.usage.totalSavedTemplates)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Favoritos criados" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.usersWithFavoriteResponse)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Usuarios ativos 7 dias" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.activation.activeUsersLast7Days)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Checkouts iniciados" value={availableValue(productMetrics.availability.subscriptions, productMetrics.activation.checkoutStartedUsers)} icon={<BarChart3 className="h-5 w-5" />} />
+            </div>
+
+            <div className="mt-5 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-200">Diagnostico simples</p>
+              <p className="mt-2 text-sm font-bold leading-6 text-amber-50">{getActivationDiagnosis(productMetrics)}</p>
+            </div>
+          </section>
+        ) : null}
 
         {productMetrics ? (
           <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">

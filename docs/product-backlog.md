@@ -142,11 +142,21 @@ Use `docs/post-1.1-release-report.md`, `docs/version-1.1-diagnosis.md`, `docs/ve
 - Pendencia P1: validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao.
 - Proxima etapa: Sprint 2 de ativacao e retencao.
 
+## Sprint 2 da versao 1.2
+
+- Status: concluida com pendencias externas.
+- Entregue: dashboard inicial, checklist de ativacao, exemplos por nicho, templates recomendados, favoritas e admin de ativacao.
+- Entregue: CTAs pos-primeira resposta para copiar, salvar, testar outro exemplo, ver templates, favoritar e conhecer planos.
+- Entregue: eventos e testes de ativacao mantidos sem conteudo sensivel.
+- Sprint 3/P1: validar ativacao real, mobile, provedores e RLS antes de nova campanha.
+- Sprint 3/P2: revisar conversao/pricing apenas se usuarios ativados nao iniciarem checkout.
+- P3: avaliar e-mails automaticos de ativacao somente depois de regra operacional e consentimento.
+
 ## Itens que dependem de mais dados
 
 - mudancas de pricing
 - alteracoes de prompt
 - novos nichos ou criativos
-- e-mails de ativacao
+- envio automatico de e-mails de ativacao
 - relatorios internos mais detalhados
 - custo interno de IA por resposta

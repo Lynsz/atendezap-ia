@@ -59,9 +59,20 @@
 
 ## Sprint 2
 
-- Melhorar ativacao e retencao somente com base em dados agregados.
-- Medir cadastro para onboarding, onboarding para primeira resposta e primeira resposta para copia/salvamento.
-- Revisar exemplos por nicho e templates recomendados se houver gargalo comprovado.
+- Entregue: plano e relatorio da Sprint 2 em `docs/version-1.2-sprint-2-plan.md` e `docs/version-1.2-sprint-2-report.md`.
+- Entregue: dashboard inicial revisado para orientar a primeira resposta.
+- Entregue: checklist de ativacao revisado com onboarding, primeira resposta, copia, salvamento, templates, favoritos e planos.
+- Entregue: exemplos por nicho revisados para delivery, estetica, assistencia tecnica, loja, restaurante, prestador de servico e autonomo.
+- Entregue: templates recomendados e favoritas mantidos no dashboard.
+- Entregue: metricas/admin de ativacao revisadas com cards agregados e diagnostico simples.
+- Pendente: validar ativacao real em staging/producao e mobile antes de nova campanha.
+
+## Sprint 3
+
+- Revisar conversao para planos somente depois de confirmar ativacao real.
+- Revisar pricing e CTA pos-demo se houver primeira resposta sem checkout.
+- Planejar nova campanha pequena sem escalar se onboarding ou primeira resposta estiverem fracos.
+- Manter P1: validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check.
 
 ## Fora do escopo
 

@@ -1,5 +1,42 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Sprint 2 da versao 1.2 executada - 2026-06-03
+
+Status: concluida com pendencias externas.
+
+O que foi feito:
+
+- `docs/version-1.2-sprint-2-plan.md` criado.
+- `docs/version-1.2-sprint-2-report.md` criado.
+- Onboarding revisado para orientar preenchimento de contexto, ajuste posterior e uso manual das respostas.
+- Dashboard inicial melhorado para conduzir o usuario ate a primeira resposta.
+- Checklist de ativacao revisado/criado com onboarding, primeira resposta, copiar, salvar, templates, favoritos e planos.
+- Templates recomendados e exemplos por nicho revisados.
+- Admin de ativacao revisado com metricas agregadas e diagnostico simples.
+- Documentacao de ativacao, retencao, e-mails, metricas, backlog, release notes e auditoria atualizada.
+
+Resultado:
+
+- Primeira experiencia mais clara para usuario novo.
+- Eventos de ativacao continuam seguros e sem conteudo de perguntas/respostas.
+- Nenhuma integracao direta com WhatsApp, CRM ou automacao complexa foi criada.
+- E-mails de ativacao continuam como templates; envio automatico fica pendente de regra operacional.
+
+Pendencias:
+
+- Validar mobile em dashboard, onboarding, templates, biblioteca e favoritas.
+- Validar Supabase RLS, Stripe, OpenAI, Resend, tracking, admin e health check em staging/producao.
+- Confirmar com dados reais que usuarios geram primeira resposta, copiam/salvam e retornam em 7 dias.
+
+Recomendacao:
+
+- manter privado
+- avancar para Sprint 3
+- validar ativacao antes de nova campanha
+- nao escalar se usuarios nao geram primeira resposta
+
+Nota estimada atualizada: 98/100 para producao controlada documentada.
+
 ## Sprint 1 da versao 1.2 executada - 2026-06-02
 
 Status: concluida com pendencias externas.

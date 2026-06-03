@@ -145,3 +145,19 @@ npm run typecheck
 npm run build
 npm run dev
 ```
+# Sprint 2 da versao 1.2 - eventos de ativacao
+
+Eventos revisados:
+
+- `activation_onboarding_completed`
+- `activation_first_response_generated`
+- `activation_response_copied`
+- `activation_response_saved`
+- `activation_template_viewed`
+- `activation_template_saved`
+- `activation_favorite_created`
+- `activation_pricing_viewed`
+
+Payload permitido: `businessType`, `plan`, `source`, `category` e `step`.
+
+Payload proibido: e-mail, telefone, pergunta do cliente, resposta gerada, prompt, token, secret, payload completo e dados de pagamento.

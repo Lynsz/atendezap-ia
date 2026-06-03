@@ -11,12 +11,16 @@
 
 ## Sprint 2 - Ativacao e retencao
 
+Status: concluida com pendencias externas.
+
 - melhorar checklist inicial
 - melhorar exemplos por nicho
 - melhorar templates recomendados
 - melhorar e-mails de ativacao
 - melhorar dashboard inicial
 - medir retorno em 7 dias com dados agregados
+- entregue: dashboard inicial, checklist, exemplos por nicho, templates recomendados, favoritas, admin de ativacao e documentacao
+- pendente: validacao mobile e dados reais de retorno em 7 dias
 
 ## Sprint 3 - Conversao e campanhas
 
@@ -34,4 +38,3 @@
 - validar QA
 - preparar release 1.2
 - atualizar changelog e prontidao
-

@@ -1946,11 +1946,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         {tab === "assistant" ? (
           <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
             <form onSubmit={handleGenerateResponse} className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
-              <h2 className="text-xl font-black text-white">{hasFirstResponse ? "Responder cliente" : "Comece gerando sua primeira resposta"}</h2>
+              <h2 className="text-xl font-black text-white">{hasFirstResponse ? "Responder cliente" : "Gere sua primeira resposta para cliente"}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-400">
                 {hasFirstResponse
                   ? "Cole a mensagem recebida no WhatsApp e escolha o objetivo. A IA gera uma sugestão para você revisar, copiar e enviar manualmente."
-                  : "Digite uma pergunta comum que seus clientes fazem no WhatsApp. A IA vai criar uma sugestão para você copiar, ajustar e enviar."}
+                  : "Digite uma pergunta comum que você recebe no WhatsApp. A IA vai criar uma sugestão de resposta para você copiar, ajustar e enviar."}
               </p>
               <label className="mt-5 grid gap-2 text-sm font-bold text-slate-300">
                 Pergunta do cliente
@@ -2007,6 +2007,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   <p className="whitespace-pre-wrap rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm leading-7 text-emerald-50">{generatedAnswer}</p>
                   <div className="mt-4 rounded-lg border border-emerald-300/20 bg-emerald-300/10 p-4">
                     <h3 className="text-sm font-black text-emerald-50">Próximos passos</h3>
+                    <p className="mt-2 text-sm leading-6 text-emerald-100">
+                      Boa. Agora você pode copiar essa resposta para usar no atendimento ou salvar na biblioteca para reutilizar depois.
+                    </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <button type="button" onClick={() => copyText(generatedAnswer, "generated")} className="inline-flex min-h-9 items-center justify-center rounded-md bg-white px-3 text-xs font-black text-slate-950">
                         Copiar resposta

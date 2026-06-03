@@ -26,4 +26,24 @@ describe("AdminDashboardPage go-live", () => {
     expect(source).not.toContain("generated_answer");
     expect(source).not.toContain("payment_method");
   });
+
+  it("mantem secao agregada de ativacao com diagnostico simples", () => {
+    const source = readAdminSource();
+
+    expect(source).toContain("Primeira experiencia e retencao inicial");
+    expect(source).toContain("Usuarios novos 7 dias");
+    expect(source).toContain("Onboardings concluidos");
+    expect(source).toContain("Primeiras respostas");
+    expect(source).toContain("Respostas copiadas");
+    expect(source).toContain("Respostas salvas");
+    expect(source).toContain("Templates salvos");
+    expect(source).toContain("Favoritos criados");
+    expect(source).toContain("Usuarios ativos 7 dias");
+    expect(source).toContain("Revisar clareza do onboarding.");
+    expect(source).toContain("Revisar dashboard inicial e exemplos.");
+    expect(source).toContain("Revisar utilidade da resposta e CTAs de copiar/salvar.");
+    expect(source).toContain("Revisar templates, favoritos e e-mails de ativacao.");
+    expect(source).not.toContain("customer_question");
+    expect(source).not.toContain("generated_answer");
+  });
 });

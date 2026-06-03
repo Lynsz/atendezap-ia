@@ -9,6 +9,7 @@ Sem itens registrados.
 ### Em progresso
 
 - Sprint 1: estabilidade, billing, IA, limites e tracking seguro.
+- Sprint 2: ativacao, retencao inicial, onboarding e primeira experiencia.
 
 ### Planejado
 

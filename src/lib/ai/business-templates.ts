@@ -26,7 +26,7 @@ const templates: Record<BusinessTypeOption, BusinessTemplate> = {
     type: "Autonomo",
     label: "Autônomo",
     contextDescription: "Profissional que atende diretamente clientes e precisa responder com clareza, disponibilidade real e proximidade.",
-    commonQuestions: ["Qual o valor do serviço?", "Você atende hoje?", "Como faço para agendar?", "Quais formas de pagamento?"],
+    commonQuestions: ["Como funciona seu serviço?", "Qual o valor?", "Você tem disponibilidade?", "O que preciso enviar para orçamento?"],
     toneGuidance: "Use tom humano, simples e profissional, sem soar como empresa grande.",
     importantCare: ["Nao confirme agenda sem data e horario disponiveis.", "Nao invente preco.", "Peca detalhes quando o pedido for amplo."],
     expectedResponseExamples: [
@@ -38,7 +38,7 @@ const templates: Record<BusinessTypeOption, BusinessTemplate> = {
     type: "Prestador de servico",
     label: "Prestador de serviço",
     contextDescription: "Negocio de servicos que normalmente precisa entender o problema antes de passar prazo, preco ou orcamento.",
-    commonQuestions: ["Qual o valor do serviço?", "Vocês fazem orçamento?", "Atende minha região?", "Quais formas de pagamento?"],
+    commonQuestions: ["Quanto fica esse serviço?", "Você atende na minha região?", "Tem horário essa semana?", "Quais formas de pagamento?"],
     toneGuidance: "Seja objetivo, consultivo e transmita confianca.",
     importantCare: ["Nao prometa prazo sem avaliar o servico.", "Nao invente deslocamento ou cobertura.", "Peça fotos, medidas ou detalhes quando necessario."],
     expectedResponseExamples: [
@@ -50,7 +50,7 @@ const templates: Record<BusinessTypeOption, BusinessTemplate> = {
     type: "Loja",
     label: "Loja",
     contextDescription: "Loja pequena que responde sobre produtos, estoque, entrega e pagamento.",
-    commonQuestions: ["Tem esse produto disponível?", "Qual o valor?", "Vocês entregam?", "Aceita cartão?"],
+    commonQuestions: ["Tem esse produto disponível?", "Vocês entregam?", "Aceita cartão?", "Como funciona a troca?"],
     toneGuidance: "Use tom claro, vendedor e prestativo, sem pressionar o cliente.",
     importantCare: ["Nao confirme estoque sem informacao.", "Nao invente preco.", "Nao invente prazo de entrega."],
     expectedResponseExamples: [
@@ -62,7 +62,7 @@ const templates: Record<BusinessTypeOption, BusinessTemplate> = {
     type: "Delivery",
     label: "Delivery",
     contextDescription: "Atendimento de pedidos, entrega, taxas, tempo estimado e formas de pagamento.",
-    commonQuestions: ["Vocês entregam no meu bairro?", "Qual o valor da entrega?", "Quais formas de pagamento?", "Quanto tempo demora?"],
+    commonQuestions: ["Vocês entregam no meu bairro?", "Qual o valor da entrega?", "Quanto tempo demora?", "Aceita Pix?"],
     toneGuidance: "Seja rapido, direto e cordial, com foco em concluir o pedido.",
     importantCare: ["Nao confirme entrega sem bairro/endereco.", "Nao invente taxa.", "Nao invente tempo de entrega."],
     expectedResponseExamples: [
@@ -74,7 +74,7 @@ const templates: Record<BusinessTypeOption, BusinessTemplate> = {
     type: "Estetica",
     label: "Estética",
     contextDescription: "Atendimento acolhedor para procedimentos, agenda, valores, formas de pagamento e localizacao.",
-    commonQuestions: ["Qual o valor?", "Tem horario hoje?", "Como faco para agendar?", "Quais formas de pagamento?", "Onde fica?"],
+    commonQuestions: ["Tem horário hoje?", "Qual o valor?", "Como faço para agendar?", "Onde fica?"],
     toneGuidance: "Use tom acolhedor, cuidadoso e profissional.",
     importantCare: ["Nao confirme horario sem informacao.", "Nao invente preco.", "Peca mais detalhes sobre o procedimento quando necessario."],
     expectedResponseExamples: [
@@ -86,7 +86,7 @@ const templates: Record<BusinessTypeOption, BusinessTemplate> = {
     type: "Restaurante",
     label: "Restaurante",
     contextDescription: "Atendimento sobre cardapio, reservas, delivery, horario e formas de pagamento.",
-    commonQuestions: ["Tem entrega?", "Qual o cardapio de hoje?", "Precisa reservar?", "Quais formas de pagamento?"],
+    commonQuestions: ["Tem cardápio?", "Faz reserva?", "Tem delivery?", "Qual o horário de funcionamento?"],
     toneGuidance: "Use tom cordial, apetitoso e pratico.",
     importantCare: ["Nao invente itens do cardapio.", "Nao confirme reserva sem dados.", "Nao invente tempo de entrega."],
     expectedResponseExamples: [
@@ -98,7 +98,7 @@ const templates: Record<BusinessTypeOption, BusinessTemplate> = {
     type: "Assistencia tecnica",
     label: "Assistência técnica",
     contextDescription: "Atendimento tecnico que precisa identificar aparelho, modelo, defeito, garantia e prazo de avaliacao.",
-    commonQuestions: ["Quanto custa para avaliar?", "Vocês consertam esse modelo?", "Tem garantia?", "Quanto tempo demora o conserto?"],
+    commonQuestions: ["Vocês consertam esse modelo?", "Quanto custa a avaliação?", "Tem garantia?", "Quanto tempo demora?"],
     toneGuidance: "Use tom tecnico simples, seguro e transparente.",
     importantCare: ["Nao confirme conserto sem avaliar o aparelho.", "Nao invente prazo.", "Nao prometa garantia sem regra informada."],
     expectedResponseExamples: [

@@ -26,9 +26,10 @@ describe("dashboard de ativacao", () => {
   it("mantem orientacao para primeira resposta e proximos passos", () => {
     const source = readDashboardSource();
 
-    expect(source).toContain("Comece gerando sua primeira resposta");
-    expect(source).toContain("Digite uma pergunta comum que seus clientes fazem no WhatsApp");
+    expect(source).toContain("Gere sua primeira resposta para cliente");
+    expect(source).toContain("Digite uma pergunta comum que");
     expect(source).toContain("Qual o valor?");
+    expect(source).toContain("Boa. Agora");
     expect(source).toContain("Vocês atendem hoje?");
     expect(source).toContain("Tem entrega?");
     expect(source).toContain("Quais formas de pagamento?");

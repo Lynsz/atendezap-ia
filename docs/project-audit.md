@@ -1,5 +1,21 @@
 # Auditoria do AtendeZap IA
 
+## Sprint 2 da versao 1.2 executada - 2026-06-03
+
+- Sprint 2 da versao 1.2 executada com foco em ativacao, retencao inicial, onboarding, primeira resposta, templates e admin agregado.
+- Plano criado em `docs/version-1.2-sprint-2-plan.md`.
+- Relatorio criado em `docs/version-1.2-sprint-2-report.md`.
+- Onboarding revisado para reforcar que as informacoes ajudam a IA a gerar respostas melhores e podem ser ajustadas depois.
+- Dashboard inicial melhorado com orientacao "Gere sua primeira resposta para cliente" e CTA pos-resposta para copiar ou salvar.
+- Checklist de ativacao mantido/revisado com onboarding, primeira resposta, copia, salvamento, templates, favoritos e planos.
+- Exemplos por nicho revisados em `src/lib/ai/business-templates.ts`.
+- Templates recomendados e favoritas continuam no dashboard sem criar CRM, WhatsApp API ou automacao.
+- Metricas de ativacao revisadas no admin protegido com cards agregados e diagnostico simples.
+- E-mails de ativacao permanecem como templates/documentacao; nenhum envio automatico novo foi criado.
+- Pendencias restantes: validar mobile, RLS, provedores reais, tracking, admin e ativacao em staging/producao.
+- Nota estimada mantida: 98/100 para producao controlada documentada.
+- Recomendacao: manter privado, avancar para Sprint 3, validar ativacao antes de nova campanha e nao escalar se usuarios nao geram primeira resposta.
+
 ## Sprint 1 da versao 1.2 executada - 2026-06-02
 
 - Sprint 1 da versao 1.2 executada com foco em estabilidade, billing, IA, limites, tracking seguro, logs e health check.
