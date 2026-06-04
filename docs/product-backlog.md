@@ -175,3 +175,20 @@ Use `docs/post-1.1-release-report.md`, `docs/version-1.1-diagnosis.md`, `docs/ve
 - P2 1.3: iterar ativacao, templates, pricing, nichos e campanhas com dados agregados reais.
 - P3 futuro: planos anuais, novos nichos, custo por resposta detalhado e automacoes operacionais leves se houver volume.
 - Fora do escopo: WhatsApp API, CRM completo, automacao complexa, multiplos atendentes e app mobile.
+
+## Intake pos-deploy 1.2
+
+Use `docs/version-1.2-post-deploy-analysis.md`, `docs/version-1.2-stability-diagnosis.md` e `docs/version-1.2-post-deploy-fix-plan.md` para criar insights simples depois de dados reais.
+
+Areas:
+
+- activation: cadastro, onboarding e primeira resposta.
+- conversion: pricing, checkout e assinatura.
+- billing: checkout, portal, webhook, pagamento falho e limite.
+- ai_quality: falhas de IA, limite e custo.
+- support: bugs criticos, duvidas recorrentes e prioridade.
+- campaign: liberacao, pausa, UTMs e decisao diaria.
+- security: admin, RLS, logs, analytics e privacidade.
+- tracking: eventos principais, UTMs e ausencia de dados sensiveis.
+
+Status atual: Sem dados suficientes. Nao abrir campanha nem criar tarefas de produto conclusivas ate os checklists de producao e monitoramento estarem preenchidos.

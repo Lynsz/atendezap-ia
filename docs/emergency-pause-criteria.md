@@ -54,3 +54,9 @@ Depois da pausa:
 - validar staging
 - rodar smoke test
 - liberar novamente apenas apos aprovacao operacional
+
+## Campanha pos-1.2
+
+Pausar ou manter bloqueada se `docs/version-1.2-post-deploy-analysis.md` ou `docs/post-1.2-campaign-decision-matrix.md` indicar atencao, correcao obrigatoria ou dados insuficientes.
+
+Se a campanha ja estiver ativa e surgir bug P0/P1, falha de checkout, webhook, IA, suporte critico, tracking quebrado ou dado sensivel em log/analytics, pausar imediatamente, preencher o relatorio diario e avaliar rollback pelos criterios da versao 1.2.

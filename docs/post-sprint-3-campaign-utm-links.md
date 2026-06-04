@@ -38,3 +38,10 @@ Use `SEU-DOMINIO` apenas como placeholder operacional. Substitua pelo dominio re
 - Pausar se IA, checkout, webhook, portal Stripe, tracking ou suporte falhar.
 - Publicar somente depois de `docs/post-1.2-campaign-approval-checklist.md` aprovado.
 - Nao escalar antes de 72h de dados agregados.
+
+## Status pos-deploy 1.2
+
+- Links permanecem preparados, mas nao liberados para publicacao.
+- Antes de usar qualquer UTM, preencher `docs/post-1.2-final-campaign-launch-checklist.md`.
+- A operacao diaria deve seguir `docs/post-1.2-campaign-operations.md` e `docs/post-1.2-campaign-daily-report-template.md`.
+- Comecar com orcamento pequeno e pausar por qualquer P0/P1, falha de checkout, webhook, IA, tracking, suporte ou privacidade.

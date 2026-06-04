@@ -92,3 +92,15 @@ Tambem pausar se, nas primeiras 72h apos release:
 - Pausar se a versao 1.2 deixar de cumprir o smoke test de producao.
 - Pausar se checkout, webhook, IA, suporte ou privacidade falhar.
 - Pausar se qualquer analytics receber dado sensivel.
+
+## Pos-deploy 1.2
+
+Antes de ativar a campanha, confirme `docs/version-1.2-post-deploy-analysis.md`, `docs/post-1.2-campaign-decision-matrix.md` e `docs/post-1.2-final-campaign-launch-checklist.md`.
+
+Pausar imediatamente se:
+
+- a decisao atual estiver como bloqueada
+- producao ainda nao tiver validacao preenchida
+- health check, logs ou smoke indicarem falha critica
+- bugs P0/P1 surgirem durante as primeiras verificacoes
+- o relatorio diario da campanha indicar status critico

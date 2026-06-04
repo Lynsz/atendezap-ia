@@ -158,3 +158,15 @@ Escala continua bloqueada sem dados agregados suficientes.
 - [ ] metricas revisadas diariamente
 - [ ] nenhum P0/P1 aberto
 - [ ] no minimo 72h de dados antes de qualquer aumento de orcamento
+
+## Pos-deploy 1.2
+
+- [ ] `docs/version-1.2-post-deploy-analysis.md` preenchido
+- [ ] `docs/version-1.2-stability-diagnosis.md` revisado
+- [ ] `docs/post-1.2-campaign-decision-matrix.md` aplicado
+- [ ] `docs/version-1.2-post-deploy-fix-plan.md` sem P0/P1 pendente
+- [ ] `docs/post-1.2-final-campaign-launch-checklist.md` aprovado
+- [ ] `docs/post-1.2-campaign-operations.md` revisado
+- [ ] campanha iniciada pequena, sem escala antes de dados iniciais
+
+Se qualquer item acima estiver pendente, manter campanha bloqueada.

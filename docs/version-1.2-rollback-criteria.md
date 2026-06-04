@@ -29,3 +29,8 @@
 - rodar smoke test
 - redeploy apenas apos validacao
 
+## Pos-deploy 1.2
+
+Se a analise pos-deploy encontrar bug P0/P1, exposicao de dados, falha critica de billing, IA, auth, admin ou erro 500 recorrente, a campanha pos-1.2 fica bloqueada e o rollback deve ser avaliado antes de qualquer nova publicacao.
+
+Se houver apenas falta de dados ou checklist incompleto, nao aplicar rollback automaticamente; manter producao em observacao e bloquear campanha.

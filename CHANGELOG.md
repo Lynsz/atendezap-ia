@@ -13,6 +13,7 @@ Sem itens registrados.
 - Bloco admin "Release 1.2" para acompanhar deploy controlado com dados agregados.
 - Eventos seguros de ativacao e conversao para demo, ebook, pricing, paginas por nicho, primeira resposta e checkout.
 - Plano, QA final, checklist de deploy, smoke test, release notes finais, relatorio final, deploy controlado, monitoramento pos-release e criterios de rollback da versao 1.2.
+- Analise pos-deploy da 1.2, diagnostico de estabilidade, matriz de decisao da campanha, checklist final de campanha e operacao diaria da campanha pos-1.2.
 
 ### Melhorado
 
@@ -21,6 +22,7 @@ Sem itens registrados.
 - CTA pos-demo, CTA pos-primeira resposta, funil do ebook e paginas por nicho.
 - Campanha pequena pos-1.2 preparada com UTMs, guardrails e criterios de pausa.
 - Campanha pos-1.2 condicionada a aprovacao em producao, smoke test e 72h de dados antes de qualquer escala.
+- Decisao da campanha pos-1.2 documentada como bloqueada ate validacao real, monitoramento inicial e ausencia de P0/P1.
 
 ### Corrigido
 
@@ -52,6 +54,13 @@ Sem itens registrados.
 - `docs/version-1.2-post-release-report.md`
 - `docs/version-1.2-rollback-criteria.md`
 - `docs/post-1.2-campaign-approval-checklist.md`
+- `docs/version-1.2-post-deploy-analysis.md`
+- `docs/version-1.2-stability-diagnosis.md`
+- `docs/post-1.2-campaign-decision-matrix.md`
+- `docs/version-1.2-post-deploy-fix-plan.md`
+- `docs/post-1.2-final-campaign-launch-checklist.md`
+- `docs/post-1.2-campaign-operations.md`
+- `docs/post-1.2-campaign-daily-report-template.md`
 
 ### Fora do escopo
 

@@ -50,3 +50,15 @@
 
 Registrar apenas metricas agregadas. Nao incluir e-mails, telefones, perguntas, respostas, IDs Stripe, payloads de webhook ou dados reais de usuarios.
 
+## Analise pos-deploy inicial
+
+Status atual: atencao.
+
+- staging: sem aprovacao preenchida
+- producao: sem aprovacao preenchida
+- bugs P0/P1: nenhum registrado nos documentos revisados
+- incidentes: nenhum registrado nos documentos revisados
+- rollback: nao aplicado
+- campanha pos-1.2: bloqueada
+
+Decisao: nao liberar campanha pequena ate que a validacao de producao, o monitoramento inicial e o checklist final de campanha estejam preenchidos com dados agregados reais.

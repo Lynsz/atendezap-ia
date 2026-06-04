@@ -1028,6 +1028,26 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
+            <div className="mt-6 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4">
+              <div className="mb-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-100">Pos-Deploy 1.2</p>
+                <p className="mt-2 text-sm leading-6 text-amber-50">
+                  Diagnostico agregado para decidir se a campanha pos-1.2 pode sair. Campos sem evidencia real ficam como Nao disponivel.
+                </p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <MetricCard label="Status da versao" value="Atencao: validar producao" icon={<CheckCircle2 className="h-5 w-5" />} />
+                <MetricCard label="Health check" value="Verificar /api/health" icon={<CheckCircle2 className="h-5 w-5" />} />
+                <MetricCard label="Bugs P0/P1" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Falhas IA" value={productMetrics.operationalHealth.aiFailuresToday} icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Falhas Stripe" value={productMetrics.operationalHealth.stripeWebhookFailuresToday} icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Checkouts" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.checkoutStartedUsers)} icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Assinaturas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.activeSubscriptions)} icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Suporte aberto" value={availableValue(productMetrics.availability.supportRequests, productMetrics.supportQuality.openSupportRequests)} icon={<MessageSquare className="h-5 w-5" />} />
+                <MetricCard label="Decisao campanha pos-1.2" value="Bloqueada ate validacao real" icon={<BarChart3 className="h-5 w-5" />} />
+              </div>
+            </div>
+
             <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.03] p-4">
               <div className="mb-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Resumo 72h</p>

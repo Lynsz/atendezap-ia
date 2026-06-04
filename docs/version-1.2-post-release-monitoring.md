@@ -60,3 +60,14 @@ Verificar:
 
 Nao ativar campanha pos-1.2 antes de smoke test aprovado e sem monitoramento minimo das primeiras verificacoes.
 
+## Pos-deploy 1.2
+
+Usar tambem:
+
+- `docs/version-1.2-post-deploy-analysis.md`
+- `docs/version-1.2-stability-diagnosis.md`
+- `docs/version-1.2-post-deploy-fix-plan.md`
+- `docs/post-1.2-final-campaign-launch-checklist.md`
+- `docs/post-1.2-campaign-operations.md`
+
+Enquanto o relatorio pos-release nao tiver dados agregados reais, a decisao permanece: campanha bloqueada e producao em observacao.

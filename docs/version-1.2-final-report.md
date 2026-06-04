@@ -101,3 +101,15 @@
 - manter escala cautelosa bloqueada
 - corrigir antes de campanha se smoke, IA, checkout, webhook, tracking ou suporte falhar
 - planejar versao 1.3 com base nos dados agregados pos-release
+
+## Analise pos-deploy
+
+- Criado `docs/version-1.2-post-deploy-analysis.md`.
+- Criado `docs/version-1.2-stability-diagnosis.md`.
+- Criado `docs/post-1.2-campaign-decision-matrix.md`.
+- Criado `docs/version-1.2-post-deploy-fix-plan.md`.
+- Criado `docs/post-1.2-final-campaign-launch-checklist.md`.
+- Criado `docs/post-1.2-campaign-operations.md`.
+- Criado `docs/post-1.2-campaign-daily-report-template.md`.
+
+Decisao atual: campanha pos-1.2 bloqueada ate validacao real de producao, monitoramento inicial, ausencia de P0/P1 e checklist final aprovado.

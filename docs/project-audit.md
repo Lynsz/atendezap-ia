@@ -1,5 +1,13 @@
 # Auditoria do AtendeZap IA
 
+## Analise pos-deploy da versao 1.2 preparada - 2026-06-04
+
+- Criados `docs/version-1.2-post-deploy-analysis.md`, `docs/version-1.2-stability-diagnosis.md`, `docs/post-1.2-campaign-decision-matrix.md`, `docs/version-1.2-post-deploy-fix-plan.md`, `docs/post-1.2-final-campaign-launch-checklist.md`, `docs/post-1.2-campaign-operations.md` e `docs/post-1.2-campaign-daily-report-template.md`.
+- Admin Go-Live recebeu bloco simples "Pos-Deploy 1.2" com status, health check, bugs P0/P1, falhas IA, falhas Stripe, checkouts, assinaturas, suporte aberto e decisao da campanha pos-1.2.
+- Status atual: Sem dados suficientes para liberar campanha; staging/producao e relatorio pos-release ainda precisam de evidencias agregadas reais.
+- Recomendacao: manter privado, monitorar mais 24/72h, bloquear campanha ate checklist final aprovado e aplicar rollback apenas se surgir P0/P1 ou criterio critico confirmado.
+- Nota estimada: 96/100 local, condicionada a validacao real de producao, billing, IA, tracking, suporte, admin e ausencia de P0/P1.
+
 ## Sprint 4 da versao 1.2 executada - 2026-06-04
 
 - Sprint 4 da versao 1.2 executada com foco em QA final, documentacao, release notes, changelog, checklist de deploy, smoke test e fechamento operacional.

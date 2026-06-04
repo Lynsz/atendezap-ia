@@ -48,3 +48,18 @@ Publicar a versao 1.2 de forma controlada, com validacao em staging, smoke test 
 - Tracking precisa ser conferido no dominio final.
 - Campanha pos-1.2 continua bloqueada ate smoke pos-deploy aprovado.
 
+## Analise pos-deploy
+
+- Relatorio: `docs/version-1.2-post-deploy-analysis.md`.
+- Diagnostico: `docs/version-1.2-stability-diagnosis.md`.
+- Decisao de campanha: `docs/post-1.2-campaign-decision-matrix.md`.
+
+Status atual: campanha pos-1.2 bloqueada ate validacao real de producao, monitoramento inicial e ausencia de P0/P1.
+
+Proximos passos:
+
+- preencher validacao de staging
+- preencher validacao de producao
+- revisar health check, logs, IA, billing, Resend, tracking, suporte e admin
+- preencher relatorio pos-release
+- aprovar ou bloquear campanha pequena com base nos dados reais

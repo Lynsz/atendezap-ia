@@ -72,6 +72,12 @@ Versao focada em estabilidade, ativacao, conversao, billing, controle de IA, sup
 - QA final, checklist de deploy, smoke test e relatorio final.
 - Release notes finais, changelog, auditoria e prontidao atualizados.
 - Plano de campanha pos-1.2 e links UTM revisados.
+- Analise pos-deploy, diagnostico de estabilidade, matriz de decisao da campanha, plano de correcoes pos-deploy, checklist final de campanha e operacao diaria criados.
+
+## Decisao pos-deploy
+
+- Campanha pos-1.2 nao esta marcada como executada.
+- Decisao atual: bloqueada ate validacao real de producao, monitoramento inicial, ausencia de P0/P1 e checklist final aprovado.
 
 ## Fora do escopo
 

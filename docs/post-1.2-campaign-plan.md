@@ -96,3 +96,25 @@ Regra de decisao: manter campanha pequena ate haver dados agregados de pricing, 
 - Revisar metricas diariamente nas primeiras 72h.
 - Pausar ao primeiro bug P0/P1.
 - Nao escalar antes de 72h de dados agregados.
+
+## Status pos-deploy 1.2
+
+Status atual: bloqueada.
+
+Motivo: os documentos de staging, producao e relatorio pos-release ainda nao possuem evidencia real preenchida suficiente para liberar a campanha. A analise pos-deploy esta em `docs/version-1.2-post-deploy-analysis.md` e a decisao de campanha esta em `docs/post-1.2-campaign-decision-matrix.md`.
+
+Condicao de liberacao:
+
+- `docs/version-1.2-production-validation.md` aprovado
+- `docs/version-1.2-post-release-report.md` preenchido com dados agregados
+- `docs/post-1.2-final-campaign-launch-checklist.md` aprovado
+- sem bug P0/P1
+- checkout, webhook, IA, limites, suporte e tracking estaveis
+
+Operacao diaria:
+
+- usar `docs/post-1.2-campaign-operations.md`
+- preencher `docs/post-1.2-campaign-daily-report-template.md`
+- comecar pequena
+- pausar imediatamente por bug critico
+- nao escalar antes de dados iniciais suficientes
