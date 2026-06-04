@@ -136,3 +136,11 @@ Antes de adicionar funcionalidade grande, validar se ela resolve um gargalo real
 - Sprint 3 da 1.2 adicionou melhorias de conversao, pricing, CTAs, paginas por nicho, tracking seguro e admin Conversao.
 - A campanha pos-Sprint 3 deve ser pequena e servir para diagnostico, nao escala.
 - A decisao continua dependente de dados agregados reais de ativacao, checkout, assinatura, suporte e custo de IA.
+
+## Fechamento da versao 1.2
+
+- Status: 1.2 aprovada com observacoes para deploy controlado.
+- Entregue: estabilidade, ativacao, conversao, admin agregado, tracking seguro, docs finais, QA, smoke test e release notes.
+- Proxima etapa: deploy controlado, smoke pos-deploy e monitoramento das primeiras 72h.
+- Campanha pequena pos-1.2: permitida somente depois do smoke test e sem escala.
+- Versao 1.3: usar dados reais para priorizar provedores, billing, RLS, ativacao, conversao, mobile, templates e custo de IA.

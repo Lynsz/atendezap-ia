@@ -90,3 +90,12 @@ Para aprovar nova escala depois da Sprint 3:
 - [ ] Usuarios geram primeira resposta antes de serem empurrados para plano.
 - [ ] Copy continua sem WhatsApp automatico, promessa de venda ou urgencia falsa.
 - [ ] Repositorio permanece privado e sem secrets versionados.
+
+## Atualizacao Sprint 4 da 1.2
+
+- [ ] release 1.2 em producao ou staging final sem P0/P1
+- [ ] `docs/version-1.2-smoke-test.md` executado no ambiente final
+- [ ] `docs/version-1.2-deploy-checklist.md` preenchido
+- [ ] primeiras 72h pos-release acompanhadas
+- [ ] campanha pequena ainda dentro de orcamento controlado
+- [ ] nenhuma escala aprovada sem dados agregados reais

@@ -73,3 +73,15 @@ Pausar a campanha pequena pos-Sprint 3 se ocorrer qualquer item abaixo:
 - muitos leads e poucos cadastros
 - qualquer falha de checkout, webhook, portal Stripe, IA ou tracking principal
 - qualquer indicio de promessa percebida como automacao do WhatsApp
+
+## Atualizacao Sprint 4 da 1.2
+
+Tambem pausar se, nas primeiras 72h apos release:
+
+- smoke pos-deploy falhar
+- IA real falhar para multiplos usuarios
+- checkout ou webhook falhar
+- portal Stripe nao abrir para usuario com customer
+- admin ou tracking ficar indisponivel
+- suporte receber bug critico recorrente
+- custo externo subir sem ativacao

@@ -33,4 +33,6 @@ Use `SEU-DOMINIO` apenas como placeholder operacional. Substitua pelo dominio re
 - Nao usar UTMs com e-mail, telefone, nome de pessoa ou dado de pagamento.
 - Nao prometer envio automatico pelo WhatsApp.
 - Nao escalar investimento sem dados agregados de ativacao, checkout e assinatura.
-
+- Nao publicar links antes do smoke test pos-deploy da versao 1.2.
+- Acompanhar as primeiras 72h apos release com orcamento pequeno.
+- Pausar se IA, checkout, webhook, portal Stripe, tracking ou suporte falhar.

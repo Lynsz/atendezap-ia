@@ -1,5 +1,14 @@
 # Auditoria do AtendeZap IA
 
+## Sprint 4 da versao 1.2 executada - 2026-06-04
+
+- Sprint 4 da versao 1.2 executada com foco em QA final, documentacao, release notes, changelog, checklist de deploy, smoke test e fechamento operacional.
+- Criados `docs/version-1.2-sprint-4-plan.md`, `docs/version-1.2-final-qa-plan.md`, `docs/version-1.2-final-qa-report.md`, `docs/version-1.2-deploy-checklist.md`, `docs/version-1.2-smoke-test.md`, `docs/release-notes-1.2.md` e `docs/version-1.2-final-report.md`.
+- Versao 1.2 finalizada como aprovada com observacoes para deploy controlado.
+- Pendencias restantes: validar Stripe, Supabase RLS, OpenAI, Resend, tracking, admin, health check e smoke visual no ambiente final.
+- Recomendacao: manter privado, liberar deploy controlado da 1.2, rodar campanha pequena pos-1.2 somente apos smoke test e nao escalar sem validacao pos-release.
+- Nota estimada: 96/100 local; pode subir apos validacao real de provedores, RLS, billing, tracking e smoke pos-deploy.
+
 ## Sprint 3 da versao 1.2 executada - 2026-06-03
 
 - Sprint 3 da versao 1.2 executada com foco em conversao, pricing, paginas por nicho, funis demo/ebook e campanha pequena pos-1.2.

@@ -69,10 +69,17 @@
 
 ## Sprint 3
 
-- Revisar conversao para planos somente depois de confirmar ativacao real.
-- Revisar pricing e CTA pos-demo se houver primeira resposta sem checkout.
-- Planejar nova campanha pequena sem escalar se onboarding ou primeira resposta estiverem fracos.
+- Entregue: pricing, FAQ, CTAs pos-demo, pos-primeira resposta, paginas por nicho, eventos seguros de conversao e admin Conversao.
+- Entregue: campanha pequena pos-Sprint 3 planejada com UTMs e criterios de pausa.
 - Manter P1: validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check.
+
+## Sprint 4
+
+- Entregue: QA final, checklist de deploy, smoke test, release notes finais, changelog, auditoria, prontidao e relatorio final da 1.2.
+- Status: versao 1.2 aprovada com observacoes para deploy controlado.
+- P1 para versao 1.3: validar provedores reais, RLS, billing e tracking no ambiente final.
+- P2 para versao 1.3: melhorar ativacao, conversao, mobile, templates e custo de IA somente com dados agregados.
+- P3 futuro: planos anuais, novos nichos e metricas internas de custo por resposta.
 
 ## Fora do escopo
 
@@ -81,9 +88,11 @@
 - automacoes avancadas
 - multiplos atendentes
 - app mobile
-# Atualizacao Sprint 3 da 1.2
 
-- Entregue: pricing, FAQ, CTAs pos-demo, pos-primeira resposta, paginas por nicho, eventos seguros de conversao e admin Conversao.
-- Proximo passo: campanha pequena pos-Sprint 3 apenas com UTMs controladas e leitura agregada.
-- Manter em backlog: validar Stripe real/test mode, GA4/Meta Pixel, webhook, portal, suporte e custos antes de escala.
-- Fora do escopo permanece: WhatsApp automatico, conexao direta ao WhatsApp, CRM completo e automacoes avancadas.
+## Pendencias movidas para versao 1.3
+
+- P1: validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check.
+- P1: corrigir qualquer P0/P1 revelado por staging/producao.
+- P2: refinar exemplos, templates, pricing ou CTAs somente com dados reais.
+- P2: revisar UX mobile se smoke visual indicar problema.
+- P3: novos nichos, planos anuais e metricas internas de custo detalhadas.

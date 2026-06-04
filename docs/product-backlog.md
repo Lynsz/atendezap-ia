@@ -166,3 +166,12 @@ Use `docs/post-1.1-release-report.md`, `docs/version-1.1-diagnosis.md`, `docs/ve
 - Campaign: rodar apenas campanha pequena pos-Sprint 3 com `Sem dados suficientes` como conclusao inicial.
 - Copy: manter explicacao de copiar, ajustar e enviar manualmente; nao prometer automacao no WhatsApp.
 - Billing: validar Stripe checkout, portal e webhook em ambiente real/test mode antes de escala.
+
+## Atualizacao Sprint 4 da 1.2
+
+- Shipped 1.2: estabilidade local, ativacao inicial, conversao, tracking seguro, admin agregado, QA final e documentacao de release.
+- P1 1.3: validar provedores reais e RLS em staging/producao.
+- P1 1.3: corrigir qualquer falha real de checkout, webhook, portal, IA, tracking, suporte ou admin.
+- P2 1.3: iterar ativacao, templates, pricing, nichos e campanhas com dados agregados reais.
+- P3 futuro: planos anuais, novos nichos, custo por resposta detalhado e automacoes operacionais leves se houver volume.
+- Fora do escopo: WhatsApp API, CRM completo, automacao complexa, multiplos atendentes e app mobile.

@@ -157,6 +157,10 @@ Eventos revisados:
 - `activation_template_saved`
 - `activation_favorite_created`
 - `activation_pricing_viewed`
+- `saved_response_created`
+- `data_request_created`
+- `support_request_created`
+- `usage_limit_reached`
 
 Payload permitido: `businessType`, `plan`, `source`, `category` e `step`.
 

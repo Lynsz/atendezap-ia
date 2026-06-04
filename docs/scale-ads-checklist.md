@@ -136,3 +136,16 @@ Antes de qualquer aumento alem da campanha pequena pos-Sprint 3, confirmar:
 - [ ] Admin Conversao mostra agregados ou `Nao disponivel` sem dados sensiveis.
 - [ ] Checkout, webhook, assinatura ativa e portal Stripe validados no ambiente real/test mode.
 - [ ] Sem dados suficientes continua sendo decisao padrao quando a amostra for baixa.
+
+## Atualizacao Sprint 4 da 1.2
+
+Antes da campanha pequena pos-1.2:
+
+- [ ] deploy controlado da 1.2 concluido
+- [ ] smoke test pos-deploy aprovado
+- [ ] primeiras 72h monitoradas ou plano de monitoramento definido
+- [ ] orcamento pequeno definido
+- [ ] IA, checkout, webhook, portal Stripe, tracking e suporte sem falha critica
+- [ ] rollback disponivel
+
+Escala continua bloqueada sem dados agregados suficientes.

@@ -4,29 +4,53 @@
 
 Sem itens registrados.
 
-## [1.2.0] - planejado
+## [1.2.0] - 2026-06-04
 
-### Em progresso
+### Adicionado
 
-- Sprint 1: estabilidade, billing, IA, limites e tracking seguro.
-- Sprint 2: ativacao, retencao inicial, onboarding e primeira experiencia.
-- Sprint 3: conversao, pricing, paginas por nicho, tracking de funil e campanha pequena pos-1.2.
+- Admin de ativacao com metricas agregadas e diagnostico simples.
+- Admin de conversao com metricas agregadas e diagnostico deterministico.
+- Eventos seguros de ativacao e conversao para demo, ebook, pricing, paginas por nicho, primeira resposta e checkout.
+- Plano, QA final, checklist de deploy, smoke test, release notes finais e relatorio final da versao 1.2.
 
-### Planejado
+### Melhorado
 
-- Analise pos-release 1.1.
-- Diagnostico da versao 1.1.
-- Plano, roadmap, backlog, criterios de entrada e metricas de sucesso da versao 1.2.
-- Checklist de release 1.2 e release notes draft.
-- Plano de campanha pequena pos-1.2.
-- Validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check antes de nova escala.
-- Melhorias pequenas de ativacao, retencao, conversao, suporte, billing, IA, campanhas e UX mobile, condicionadas a dados agregados.
+- Onboarding, dashboard inicial, primeira resposta, templates recomendados e respostas favoritas.
+- Pricing com Plano Pro recomendado, primeiro mes por R$ 29 para novos usuarios e recorrencia normal depois.
+- CTA pos-demo, CTA pos-primeira resposta, funil do ebook e paginas por nicho.
+- Campanha pequena pos-1.2 preparada com UTMs, guardrails e criterios de pausa.
+
+### Corrigido
+
+- Tracking seguro reforcado para remover e-mail em valores genericos, telefone e WhatsApp.
+- Testes reforcados para limite mensal bloqueando IA, falha de IA sem consumo e health check sem dados sensiveis.
+- Fluxos protegidos de admin, checkout e portal seguem exigindo autenticacao/autorizacao.
+
+### Seguranca
+
+- Repositorio permanece privado.
+- Sem instrucao para tornar o repositorio publico.
+- Sem secrets reais ou `.env.local` adicionados.
+- OpenAI, Stripe, Supabase service role e Resend permanecem server-side.
+- Logs e analytics continuam sem conteudo completo de perguntas, respostas, mensagens, e-mails ou dados de pagamento.
+
+### Documentacao
+
+- `docs/release-notes-1.2.md`
+- `docs/version-1.2-final-report.md`
+- `docs/version-1.2-final-qa-plan.md`
+- `docs/version-1.2-final-qa-report.md`
+- `docs/version-1.2-deploy-checklist.md`
+- `docs/version-1.2-smoke-test.md`
+- `docs/version-1.2-sprint-4-plan.md`
 
 ### Fora do escopo
 
 - integracao direta com WhatsApp
 - CRM completo
 - automacoes avancadas
+- multiplos atendentes
+- app mobile
 
 ## [1.1.0] - 2026-06-02
 

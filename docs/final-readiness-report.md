@@ -1,5 +1,33 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Sprint 4 da versao 1.2 executada - 2026-06-04
+
+Status: concluida com pendencias externas.
+
+O que foi feito:
+
+- QA final criado e reportado para a versao 1.2.
+- Release notes finais criadas.
+- Smoke test e checklist de deploy criados.
+- CHANGELOG finalizado para 1.2.0.
+- Relatorio final da versao 1.2 criado.
+- Campanha pos-1.2, backlog, roadmap, auditoria e prontidao atualizados.
+
+Pendencias restantes:
+
+- Validar Stripe, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao.
+- Executar smoke visual mobile/tablet/desktop no ambiente final.
+- Monitorar primeiras 72h apos release antes de campanha pequena.
+
+Nota estimada: 96/100 local, ainda condicionada a validacao real de provedores e smoke pos-deploy.
+
+Recomendacao:
+
+- manter privado
+- liberar deploy controlado da 1.2
+- rodar campanha pequena pos-1.2 somente apos smoke test
+- nao escalar sem validacao pos-release e dados agregados suficientes
+
 ## Sprint 3 da versao 1.2 executada - 2026-06-03
 
 Status: concluida com pendencias externas.

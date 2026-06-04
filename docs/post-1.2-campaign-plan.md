@@ -7,12 +7,15 @@ Rodar campanha pequena apos validar a versao 1.2.
 ## Condicoes para ativar
 
 - versao 1.2 validada
+- smoke test pos-deploy aprovado
+- primeiras verificacoes das 72h pos-release sem P0/P1
 - sem bugs P0/P1
 - checkout funcionando
 - IA funcionando
 - tracking confiavel
 - custo da IA controlado
 - suporte preparado
+- orcamento pequeno definido
 
 ## Nichos candidatos
 
@@ -77,3 +80,11 @@ Eventos principais:
 - `checkout_failed`
 
 Regra de decisao: manter campanha pequena ate haver dados agregados de pricing, cliques de plano, checkout, assinatura, primeira resposta e suporte. Nao escalar com checkout, IA, tracking ou suporte instavel.
+
+## Regras pos-1.2 final
+
+- So ativar campanha apos deploy controlado e smoke test aprovado.
+- So ativar campanha se a versao 1.2 estiver estavel nas primeiras verificacoes operacionais.
+- Pausar imediatamente se IA, checkout, webhook, portal Stripe, tracking ou suporte falhar.
+- Acompanhar as primeiras 72h apos release antes de qualquer nova decisao.
+- Usar orcamento pequeno e manter `Sem dados suficientes` como conclusao ate haver amostra real.

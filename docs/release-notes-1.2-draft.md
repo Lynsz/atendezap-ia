@@ -46,6 +46,15 @@ Melhorar ativacao, retencao, conversao e operacao com base nos aprendizados da v
 - Admin protegido recebeu bloco Conversao com metricas agregadas e diagnostico deterministico.
 - Campanha pequena pos-Sprint 3 documentada com links UTM e criterios de pausa.
 
+## Sprint 4
+
+- QA final da versao 1.2 planejado e reportado.
+- Checklist de deploy e smoke test da versao 1.2 criados.
+- Release notes finais criadas em `docs/release-notes-1.2.md`.
+- Relatorio final da versao 1.2 criado.
+- Campanha pos-1.2, backlog, roadmap, auditoria, prontidao e changelog atualizados.
+- Decisao: aprovado com observacoes para deploy controlado; campanha pequena apenas apos smoke pos-deploy.
+
 ## Melhorias esperadas
 
 - Menos abandono entre cadastro, onboarding e primeira resposta.
@@ -75,6 +84,8 @@ Melhorar ativacao, retencao, conversao e operacao com base nos aprendizados da v
 - Plano de campanha pos-1.2.
 - Plano e relatorio da Sprint 2.
 - Plano e relatorio da Sprint 3.
+- Plano e relatorio final da Sprint 4.
+- QA final, deploy checklist, smoke test e relatorio final da versao 1.2.
 - Otimizacao de conversao.
 - Links UTM da campanha pequena pos-Sprint 3.
 

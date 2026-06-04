@@ -63,3 +63,11 @@
 - Planejamento de campanha: `docs/post-1.2-campaign-plan.md`.
 - Nao mover itens para `shipped` antes de QA, changelog e release notes finais.
 - Itens sem dado agregado suficiente devem ficar como `reviewing` ou `planned`, nunca como conclusao de produto.
+
+## Fechamento da versao 1.2
+
+- Status permitido: `shipped` para itens entregues e validados localmente na 1.2.
+- Status geral: aprovado com observacoes para deploy controlado.
+- Manter como `planned` ou `reviewing` para 1.3: validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking e admin no ambiente final.
+- Manter como `blocked` para escala: campanha maior sem smoke pos-deploy, primeiras 72h e dados agregados suficientes.
+- Fora do roadmap imediato: WhatsApp API, CRM completo, automacao complexa, multiplos atendentes e app mobile.

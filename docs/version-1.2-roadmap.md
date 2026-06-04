@@ -24,17 +24,25 @@ Status: concluida com pendencias externas.
 
 ## Sprint 3 - Conversao e campanhas
 
+Status: concluida com pendencias externas.
+
 - melhorar paginas por nicho
 - melhorar pricing
 - melhorar CTA pos-demo
 - melhorar relatorios de campanha
 - planejar nova campanha pequena
 - revisar UTMs e criterios de pausa
+- entregue: pricing, CTAs, paginas por nicho, eventos seguros de conversao, admin Conversao e campanha pequena planejada
+- pendente: validar conversao real, Stripe, tracking e campanha em ambiente final
 
 ## Sprint 4 - Operacao e documentacao
+
+Status: concluida com pendencias externas.
 
 - revisar auditoria
 - atualizar release notes
 - validar QA
 - preparar release 1.2
 - atualizar changelog e prontidao
+- entregue: QA final, checklist de deploy, smoke test, release notes finais, changelog, auditoria, prontidao e relatorio final
+- pendente: executar deploy controlado, smoke pos-deploy e monitoramento das primeiras 72h
