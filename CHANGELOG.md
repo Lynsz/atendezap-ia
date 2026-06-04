@@ -10,6 +10,7 @@ Sem itens registrados.
 
 - Sprint 1: estabilidade, billing, IA, limites e tracking seguro.
 - Sprint 2: ativacao, retencao inicial, onboarding e primeira experiencia.
+- Sprint 3: conversao, pricing, paginas por nicho, tracking de funil e campanha pequena pos-1.2.
 
 ### Planejado
 

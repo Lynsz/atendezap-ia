@@ -60,3 +60,18 @@ O registro é interno, admin-only e manual. Não integra diretamente com Meta Ad
 - Use a decisao diaria nas observacoes: maintain, increase_slightly, reduce, pause ou fix_before_continue.
 - Nao integre Meta, TikTok ou Google Ads diretamente; gasto e visitantes continuam sendo entrada manual agregada.
 - Se houver bug P0/P1, custo de IA anormal, suporte critico ou tracking quebrado, pause e registre em `docs/cautious-scale-report.md`.
+# Atualizacao Sprint 3 da 1.2
+
+Na leitura pos-Sprint 3, incluir o bloco Conversao do admin:
+
+- visitas ao pricing
+- cliques em planos
+- checkouts iniciados
+- assinaturas ativas
+- cadastros com primeira resposta
+- pricing apos primeira resposta
+- usuarios que salvaram resposta antes do checkout
+- taxa aproximada primeira resposta -> checkout
+- taxa aproximada checkout -> assinatura
+
+Se algum dado estiver indisponivel, registrar `Sem dados suficientes` e nao extrapolar conclusao.

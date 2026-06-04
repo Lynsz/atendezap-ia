@@ -50,7 +50,13 @@ function createMetricsSupabase() {
     ],
     events: [
       { event_name: "ai_generation_failed", created_at: new Date().toISOString() },
-      { event_name: "checkout_started", created_at: new Date().toISOString() }
+      { event_name: "pricing_page_view", metadata: { page: "pricing" }, created_at: new Date().toISOString() },
+      { event_name: "plan_cta_click", metadata: { plan: "pro" }, created_at: new Date().toISOString() },
+      { event_name: "first_response_to_pricing_click", metadata: { source: "dashboard" }, created_at: new Date().toISOString() },
+      { event_name: "demo_to_signup_click", metadata: { source: "demo" }, created_at: new Date().toISOString() },
+      { event_name: "ebook_to_signup_click", metadata: { source: "ebook" }, created_at: new Date().toISOString() },
+      { event_name: "checkout_started", created_at: new Date().toISOString() },
+      { event_name: "checkout_failed", created_at: new Date().toISOString() }
     ],
     stripe_webhook_events: [
       { event_type: "checkout.session.completed", processed_at: new Date().toISOString(), created_at: new Date().toISOString() }
@@ -105,6 +111,14 @@ describe("GET /api/admin/metrics", () => {
     expect(body.activation.responsesSaved).toBe(2);
     expect(body.activation.usersWithCopiedResponse).toBe(1);
     expect(body.activation.usersWithFavoriteResponse).toBe(1);
+    expect(body.conversion.pricingPageViews).toBe(1);
+    expect(body.conversion.planClicks).toBe(1);
+    expect(body.conversion.checkoutsStarted).toBe(1);
+    expect(body.conversion.checkoutFailures).toBe(1);
+    expect(body.conversion.firstResponseToPricingClicks).toBe(1);
+    expect(body.conversion.usersSavedResponseBeforeCheckout).toBe(1);
+    expect(body.conversion.approximateFirstResponseToCheckoutRate).toBe(100);
+    expect(body.conversion.approximateCheckoutToSubscriptionRate).toBe(100);
     expect(body.usage.totalSavedTemplates).toBe(1);
     expect(body.availability.supportRequests).toBe(true);
     expect(body.funnel.usersWithSavedOrCopiedResponse).toBe(1);
@@ -112,6 +126,7 @@ describe("GET /api/admin/metrics", () => {
     expect(body.revenue.estimatedMrr).toBe(97);
     expect(body.revenue.activeSubscriptionsByPlan).toEqual([{ label: "pro", count: 1 }]);
     expect(body.supportQuality.openSupportRequests).toBe(1);
+    expect(body.conversion).toBeDefined();
     expect(body.leads).toBeUndefined();
     expect(body.profiles).toBeUndefined();
   });
@@ -144,6 +159,7 @@ describe("GET /api/admin/metrics", () => {
     expect(body.availability.supportRequests).toBe(false);
     expect(body.supportQuality.openSupportRequests).toBe(0);
     expect(body.funnel.totalLeads).toBe(0);
+    expect(body.conversion.pricingPageViews).toBe(0);
   });
 
   it("bloqueia usuario comum via requireAdmin", async () => {

@@ -160,3 +160,9 @@ Use `docs/post-1.1-release-report.md`, `docs/version-1.1-diagnosis.md`, `docs/ve
 - envio automatico de e-mails de ativacao
 - relatorios internos mais detalhados
 - custo interno de IA por resposta
+# Atualizacao Sprint 3 da 1.2
+
+- Conversion: acompanhar pricing visits, plan clicks, checkout started/failed, first response -> pricing e checkout -> subscription no admin.
+- Campaign: rodar apenas campanha pequena pos-Sprint 3 com `Sem dados suficientes` como conclusao inicial.
+- Copy: manter explicacao de copiar, ajustar e enviar manualmente; nao prometer automacao no WhatsApp.
+- Billing: validar Stripe checkout, portal e webhook em ambiente real/test mode antes de escala.

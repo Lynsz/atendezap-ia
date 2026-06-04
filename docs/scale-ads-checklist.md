@@ -125,3 +125,14 @@ Se a analise pos-escala permanecer como `Sem dados suficientes`, nao aumentar or
 - [ ] `docs/cautious-scale-plan.md` revisado
 - [ ] `docs/copy-iteration-notes.md` atualizado com dados reais
 - [ ] `docs/third-campaign-prep-checklist.md` pronto, se houver nova rodada
+# Atualizacao Sprint 3 da 1.2
+
+Antes de qualquer aumento alem da campanha pequena pos-Sprint 3, confirmar:
+
+- [ ] Pricing com Pro R$ 29 primeiro mes e recorrencia normal depois.
+- [ ] CTA pos-demo rastreado para cadastro, planos e ebook.
+- [ ] CTA pos-primeira resposta rastreado para planos.
+- [ ] Paginas de nicho deixam claro que nao ha envio automatico pelo WhatsApp.
+- [ ] Admin Conversao mostra agregados ou `Nao disponivel` sem dados sensiveis.
+- [ ] Checkout, webhook, assinatura ativa e portal Stripe validados no ambiente real/test mode.
+- [ ] Sem dados suficientes continua sendo decisao padrao quando a amostra for baixa.

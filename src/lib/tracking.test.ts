@@ -130,6 +130,54 @@ describe("tracking seguro", () => {
     expect(payload.email).toBeUndefined();
   });
 
+  it("mantem eventos de conversao sem conteudo, contato ou ids de pagamento", async () => {
+    const gtag = vi.fn();
+    vi.stubGlobal("window", {
+      location: { pathname: "/precos", search: "?utm_source=meta&utm_campaign=pos_sprint_3_delivery" },
+      localStorage: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn()
+      },
+      gtag
+    });
+    vi.stubGlobal("document", { title: "AtendeZap IA - Planos" });
+
+    const { trackEvent } = await import("./tracking");
+    trackEvent("plan_cta_click", {
+      plan: "pro",
+      source: "pricing",
+      cta: "pro_card",
+      page: "pricing",
+      campaign: "pos_sprint_3_delivery",
+      question: "Qual o prazo?",
+      answer: "Resposta completa",
+      email: "cliente@example.com",
+      phone: "11999999999",
+      stripe_customer_id: "cus_123",
+      stripe_checkout_session_id: "cs_123",
+      payment_method: "card"
+    });
+
+    const payload = gtag.mock.calls[0][2] as Record<string, unknown>;
+    expect(payload).toMatchObject({
+      plan: "pro",
+      source: "pricing",
+      cta: "pro_card",
+      page: "pricing",
+      campaign: "pos_sprint_3_delivery",
+      utm_source: "meta",
+      utm_campaign: "pos_sprint_3_delivery"
+    });
+    expect(payload.question).toBeUndefined();
+    expect(payload.answer).toBeUndefined();
+    expect(payload.email).toBeUndefined();
+    expect(payload.phone).toBeUndefined();
+    expect(payload.stripe_customer_id).toBeUndefined();
+    expect(payload.stripe_checkout_session_id).toBeUndefined();
+    expect(payload.payment_method).toBeUndefined();
+  });
+
   it("identifica a campanha pequena otimizada pela UTM oficial", async () => {
     vi.stubGlobal("window", {
       location: { pathname: "/para/delivery", search: "?utm_campaign=campanha_otimizada_01&utm_content=delivery_criativo_1" },

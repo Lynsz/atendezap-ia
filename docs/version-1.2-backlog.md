@@ -81,3 +81,9 @@
 - automacoes avancadas
 - multiplos atendentes
 - app mobile
+# Atualizacao Sprint 3 da 1.2
+
+- Entregue: pricing, FAQ, CTAs pos-demo, pos-primeira resposta, paginas por nicho, eventos seguros de conversao e admin Conversao.
+- Proximo passo: campanha pequena pos-Sprint 3 apenas com UTMs controladas e leitura agregada.
+- Manter em backlog: validar Stripe real/test mode, GA4/Meta Pixel, webhook, portal, suporte e custos antes de escala.
+- Fora do escopo permanece: WhatsApp automatico, conexao direta ao WhatsApp, CRM completo e automacoes avancadas.

@@ -37,7 +37,7 @@ const sharedFaq: NicheFaq[] = [
   {
     question: "O AtendeZap IA envia mensagens sozinho?",
     answer:
-      "Nao. O AtendeZap IA nao envia mensagens automaticamente pelo WhatsApp. Ele gera respostas para voce copiar, ajustar e enviar."
+      "O AtendeZap IA não envia mensagens automaticamente. Ele gera respostas para você copiar, ajustar e enviar."
   },
   {
     question: "Preciso conectar meu WhatsApp?",

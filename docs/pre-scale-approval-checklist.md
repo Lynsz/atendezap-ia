@@ -79,3 +79,14 @@
 
 - A escala cautelosa so deve ser aprovada de novo se a rodada anterior tiver ativacao, primeira resposta, checkout/webhook estavel, custo de IA controlado e suporte sob controle.
 - Se a rodada anterior ficou sem dados suficientes, manter baixo orcamento e registrar resultados agregados antes de qualquer novo aumento.
+# Atualizacao Sprint 3 da 1.2
+
+Para aprovar nova escala depois da Sprint 3:
+
+- [ ] Existe amostra agregada suficiente para decisao.
+- [ ] Diagnostico de conversao no admin nao aponta gargalo critico sem correcao.
+- [ ] `checkout_started` e assinatura ativa batem com Stripe/Supabase.
+- [ ] `checkout_failed` esta zerado ou explicado.
+- [ ] Usuarios geram primeira resposta antes de serem empurrados para plano.
+- [ ] Copy continua sem WhatsApp automatico, promessa de venda ou urgencia falsa.
+- [ ] Repositorio permanece privado e sem secrets versionados.

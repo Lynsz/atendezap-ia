@@ -177,6 +177,20 @@ type ProductMetricsPayload = {
     activationRate: number;
     averageHoursToActivation: number | null;
   };
+  conversion: {
+    pricingPageViews: number;
+    planClicks: number;
+    checkoutsStarted: number;
+    checkoutFailures: number;
+    activeSubscriptions: number;
+    signupsWithFirstResponse: number;
+    firstResponseToPricingClicks: number;
+    usersSavedResponseBeforeCheckout: number;
+    demoToSignupClicks: number;
+    ebookToSignupClicks: number;
+    approximateFirstResponseToCheckoutRate: number;
+    approximateCheckoutToSubscriptionRate: number;
+  };
   usage: {
     totalResponses: number;
     averageResponsesPerUser: number;
@@ -572,6 +586,23 @@ function getActivationDiagnosis(metrics: ProductMetricsPayload) {
   }
   if (firstResponses >= 3 && activeUsers7Days < Math.max(1, Math.ceil(firstResponses * 0.4))) {
     return "Revisar templates, favoritos e e-mails de ativacao.";
+  }
+  return "Sem dados suficientes para conclusao.";
+}
+
+function getConversionDiagnosis(metrics: ProductMetricsPayload) {
+  const conversion = metrics.conversion;
+  if (conversion.pricingPageViews >= 10 && conversion.checkoutsStarted < Math.max(1, Math.ceil(conversion.pricingPageViews * 0.08))) {
+    return "Revisar clareza dos planos, preço e CTA.";
+  }
+  if (conversion.signupsWithFirstResponse >= 5 && conversion.firstResponseToPricingClicks < Math.max(1, Math.ceil(conversion.signupsWithFirstResponse * 0.2))) {
+    return "Revisar CTA pós-primeira resposta e percepção de valor.";
+  }
+  if (conversion.checkoutsStarted >= 3 && conversion.activeSubscriptions < Math.max(1, Math.ceil(conversion.checkoutsStarted * 0.4))) {
+    return "Revisar Stripe, preço, confiança e método de pagamento.";
+  }
+  if ((metrics.funnel.periodLeads || metrics.funnel.totalLeads) >= 5 && metrics.funnel.totalUsers < Math.max(1, Math.ceil((metrics.funnel.periodLeads || metrics.funnel.totalLeads) * 0.2))) {
+    return "Revisar página de obrigado e convite para criar conta.";
   }
   return "Sem dados suficientes para conclusao.";
 }
@@ -1075,6 +1106,43 @@ export default function AdminDashboardPage() {
             <div className="mt-5 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-200">Diagnostico simples</p>
               <p className="mt-2 text-sm font-bold leading-6 text-amber-50">{getActivationDiagnosis(productMetrics)}</p>
+            </div>
+          </section>
+        ) : null}
+
+        {productMetrics ? (
+          <section className="mt-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Conversão</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Pricing, demo e primeira resposta</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  Contagens agregadas para localizar gargalos de conversão sem listar pessoas, respostas, pagamentos ou IDs Stripe.
+                </p>
+              </div>
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-black text-slate-300">
+                {productMetrics.period.label}
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Visitas ao pricing" value={availableValue(productMetrics.availability.events, productMetrics.conversion.pricingPageViews)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Cliques em planos" value={availableValue(productMetrics.availability.events, productMetrics.conversion.planClicks)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Checkouts iniciados" value={availableValue(productMetrics.availability.events || productMetrics.availability.subscriptions, productMetrics.conversion.checkoutsStarted)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Assinaturas ativas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.conversion.activeSubscriptions)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Cadastros com primeira resposta" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.conversion.signupsWithFirstResponse)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Pricing após primeira resposta" value={availableValue(productMetrics.availability.events, productMetrics.conversion.firstResponseToPricingClicks)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Salvou antes do checkout" value={availableValue(productMetrics.availability.savedResponses && productMetrics.availability.subscriptions, productMetrics.conversion.usersSavedResponseBeforeCheckout)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Resposta -> checkout" value={`${productMetrics.conversion.approximateFirstResponseToCheckoutRate}%`} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Checkout -> assinatura" value={`${productMetrics.conversion.approximateCheckoutToSubscriptionRate}%`} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Falhas de checkout" value={availableValue(productMetrics.availability.events, productMetrics.conversion.checkoutFailures)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Demo -> cadastro" value={availableValue(productMetrics.availability.events, productMetrics.conversion.demoToSignupClicks)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Ebook -> cadastro" value={availableValue(productMetrics.availability.events, productMetrics.conversion.ebookToSignupClicks)} icon={<Users className="h-5 w-5" />} />
+            </div>
+
+            <div className="mt-5 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-200">Diagnostico deterministico</p>
+              <p className="mt-2 text-sm font-bold leading-6 text-amber-50">{getConversionDiagnosis(productMetrics)}</p>
             </div>
           </section>
         ) : null}

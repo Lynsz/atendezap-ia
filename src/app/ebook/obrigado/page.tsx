@@ -91,6 +91,7 @@ export default function EbookThankYouPage() {
             <TrackedLink
               href="/precos"
               eventName="thank_you_pricing_cta_click"
+              secondaryEventName="ebook_to_pricing_click"
               properties={{ cta: "conhecer_planos", funnel: "ebook" }}
               className="bg-emerald-400 text-slate-950 hover:bg-emerald-300 focus:ring-emerald-300"
             >
@@ -100,6 +101,7 @@ export default function EbookThankYouPage() {
             <TrackedLink
               href="/cadastro"
               eventName="thank_you_signup_cta_click"
+              secondaryEventName="ebook_to_signup_click"
               properties={{ cta: "criar_conta", funnel: "ebook" }}
               className="border border-white/10 bg-white/10 text-white hover:bg-white/15 focus:ring-emerald-300"
             >

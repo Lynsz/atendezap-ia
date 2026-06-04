@@ -123,11 +123,13 @@ export function PublicDemo() {
   }
 
   function trackSignupCta() {
-    trackEvent("demo_signup_cta_click", { cta: "demo_signup" });
+    trackEvent("demo_signup_cta_click", { cta: "demo_signup", source: "demo", page: "demo" });
+    trackEvent("demo_to_signup_click", { cta: "signup", source: "demo", page: "demo" });
   }
 
   function trackPricingCta() {
-    trackEvent("demo_pricing_cta_click", { cta: "demo_pricing" });
+    trackEvent("demo_pricing_cta_click", { cta: "demo_pricing", source: "demo", page: "demo" });
+    trackEvent("demo_to_pricing_click", { cta: "pricing", source: "demo", page: "demo" });
   }
 
   function trackEbookCta() {
@@ -244,8 +246,9 @@ export function PublicDemo() {
                 <p className="whitespace-pre-wrap rounded-md border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm leading-7 text-emerald-50">{answer}</p>
                 {mode.includes("fallback") ? <p className="mt-3 text-xs font-bold text-slate-500">Modo local de demonstração: OpenAI não configurada neste ambiente.</p> : null}
                 <div className="mt-5 rounded-md border border-white/10 bg-white/[0.04] p-4">
-                  <p className="text-sm font-bold leading-6 text-slate-200">
-                    Essa foi só uma prévia. Com sua conta, você pode configurar seu atendimento, salvar histórico e gerar respostas mais alinhadas ao seu negócio.
+                  <h3 className="text-base font-black text-white">Quer usar isso com o contexto do seu atendimento?</h3>
+                  <p className="mt-2 text-sm font-bold leading-6 text-slate-200">
+                    Com uma conta, você configura seu tipo de atendimento, salva respostas, usa templates e acompanha seu limite mensal.
                   </p>
                   <p className="mt-2 text-xs font-bold leading-5 text-slate-400">
                     A IA gera uma sugestao. Voce revisa, copia e envia manualmente pelo WhatsApp.

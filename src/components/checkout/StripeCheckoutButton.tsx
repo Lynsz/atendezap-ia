@@ -38,6 +38,11 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
       plan: planId,
       funnel
     });
+    trackEvent("plan_cta_click", {
+      plan: planId,
+      source: "pricing",
+      funnel
+    });
     trackEvent("checkout_click", {
       plan: planId,
       funnel
@@ -84,6 +89,11 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
           funnel,
           reason: "api_error"
         });
+        trackEvent("checkout_failed", {
+          plan: planId,
+          funnel,
+          reason: "api_error"
+        });
         return;
       }
 
@@ -95,6 +105,11 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
     } catch {
       setFeedback("Erro ao iniciar checkout. Verifique sua conexão e tente de novo.");
       trackEvent("checkout_error", {
+        plan: planId,
+        funnel,
+        reason: "network_error"
+      });
+      trackEvent("checkout_failed", {
         plan: planId,
         funnel,
         reason: "network_error"

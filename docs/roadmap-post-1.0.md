@@ -131,3 +131,8 @@ Este roadmap registra evolucoes depois da versao 1.0. Ele nao altera o escopo do
 ## Regra de priorizacao
 
 Antes de adicionar funcionalidade grande, validar se ela resolve um gargalo real visto em suporte, admin, feedbacks, campanhas ou uso dos primeiros clientes.
+# Atualizacao Sprint 3 da 1.2
+
+- Sprint 3 da 1.2 adicionou melhorias de conversao, pricing, CTAs, paginas por nicho, tracking seguro e admin Conversao.
+- A campanha pos-Sprint 3 deve ser pequena e servir para diagnostico, nao escala.
+- A decisao continua dependente de dados agregados reais de ativacao, checkout, assinatura, suporte e custo de IA.

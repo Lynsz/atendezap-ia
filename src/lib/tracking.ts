@@ -21,6 +21,9 @@ export type TrackingEventName =
   | "niche_signup_cta_click"
   | "niche_ebook_cta_click"
   | "niche_pricing_cta_click"
+  | "niche_to_demo_click"
+  | "niche_to_signup_click"
+  | "niche_to_pricing_click"
   | "niche_faq_opened"
   | "hero_cta_click"
   | "demo_cta_click"
@@ -34,6 +37,7 @@ export type TrackingEventName =
   | "ebook_view"
   | "lead_submit"
   | "lead_success"
+  | "ebook_lead_success"
   | "lead_error"
   | "thank_you_view"
   | "thank_you_cta_click"
@@ -45,13 +49,21 @@ export type TrackingEventName =
   | "demo_signup_cta_click"
   | "demo_pricing_cta_click"
   | "demo_ebook_cta_click"
+  | "demo_to_signup_click"
+  | "demo_to_pricing_click"
   | "thank_you_demo_cta_click"
   | "thank_you_signup_cta_click"
   | "thank_you_pricing_cta_click"
+  | "ebook_to_signup_click"
+  | "ebook_to_pricing_click"
   | "pricing_view"
+  | "pricing_page_view"
+  | "plan_card_view"
+  | "plan_cta_click"
   | "checkout_click"
   | "checkout_started"
   | "checkout_error"
+  | "checkout_failed"
   | "subscription_page_view"
   | "stripe_portal_opened"
   | "subscription_status_changed"
@@ -77,6 +89,7 @@ export type TrackingEventName =
   | "activation_template_saved"
   | "activation_favorite_created"
   | "activation_pricing_viewed"
+  | "first_response_to_pricing_click"
   | "saved_response_create"
   | "saved_response_create_manual"
   | "saved_response_copy"
@@ -131,7 +144,7 @@ declare global {
 
 const UTM_STORAGE_KEY = "atendezap_ia_utm_attribution_v1";
 const ATTRIBUTION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
-const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem|email|mail|phone|telefone|whatsapp)/i;
+const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem|email|mail|phone|telefone|whatsapp|payment|pagamento|stripe|customer|checkout_session|subscription_id)/i;
 const EMAIL_VALUE_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type StoredAttribution = UtmPayload & {
@@ -146,6 +159,7 @@ const metaEventMap: Partial<Record<TrackingEventName, string>> = {
   ebook_view: "ViewContent",
   demo_view: "ViewContent",
   lead_success: "Lead",
+  ebook_lead_success: "Lead",
   demo_response_success: "Lead",
   checkout_started: "InitiateCheckout",
   signup_completed: "CompleteRegistration",

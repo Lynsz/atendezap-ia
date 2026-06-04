@@ -1,5 +1,14 @@
 # Auditoria do AtendeZap IA
 
+## Sprint 3 da versao 1.2 executada - 2026-06-03
+
+- Sprint 3 da versao 1.2 executada com foco em conversao, pricing, paginas por nicho, funis demo/ebook e campanha pequena pos-1.2.
+- Pricing revisado com Pro recomendado, primeiro mes por R$ 29 para novos usuarios e recorrencia normal depois.
+- CTA pos-demo, CTA pos-primeira resposta, funil do ebook e paginas por nicho reforcados sem prometer automacao do WhatsApp.
+- Eventos seguros de conversao adicionados com propriedades limitadas a `plan`, `source`, `niche`, `cta`, `page` e `campaign`.
+- Admin protegido recebeu bloco Conversao com metricas agregadas e diagnostico deterministico.
+- Campanha pequena pos-Sprint 3 documentada; decisao inicial segue `Sem dados suficientes`.
+
 ## Sprint 2 da versao 1.2 executada - 2026-06-03
 
 - Sprint 2 da versao 1.2 executada com foco em ativacao, retencao inicial, onboarding, primeira resposta, templates e admin agregado.

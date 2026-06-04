@@ -41,18 +41,18 @@ export function NicheLandingPage({ niche }: NicheLandingPageProps) {
               O AtendeZap IA gera sugestoes de respostas para voce revisar, copiar, ajustar e enviar pelo WhatsApp.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <TrackedLink href="/demo" eventName="niche_demo_cta_click" properties={ctaProps(niche, "demo")} className={primaryCta}>
+              <TrackedLink href="/demo" eventName="niche_demo_cta_click" secondaryEventName="niche_to_demo_click" properties={ctaProps(niche, "demo")} className={primaryCta}>
                 Testar demo gratis
                 <Sparkles className="ml-2 h-4 w-4" />
               </TrackedLink>
-              <TrackedLink href="/cadastro" eventName="niche_signup_cta_click" properties={ctaProps(niche, "signup")} className={darkCta}>
+              <TrackedLink href="/cadastro" eventName="niche_signup_cta_click" secondaryEventName="niche_to_signup_click" properties={ctaProps(niche, "signup")} className={darkCta}>
                 Criar minha conta
                 <ArrowRight className="ml-2 h-4 w-4" />
               </TrackedLink>
               <TrackedLink href="/ebook" eventName="niche_ebook_cta_click" properties={ctaProps(niche, "ebook")} className={secondaryCta}>
                 Baixar guia gratuito
               </TrackedLink>
-              <TrackedLink href="/precos" eventName="niche_pricing_cta_click" properties={ctaProps(niche, "pricing")} className={secondaryCta}>
+              <TrackedLink href="/precos" eventName="niche_pricing_cta_click" secondaryEventName="niche_to_pricing_click" properties={ctaProps(niche, "pricing")} className={secondaryCta}>
                 Ver planos
               </TrackedLink>
             </div>
@@ -157,10 +157,10 @@ export function NicheLandingPage({ niche }: NicheLandingPageProps) {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-            <TrackedLink href="/precos#planos" eventName="niche_pricing_cta_click" properties={ctaProps(niche, "pro_offer")} className={primaryCta}>
+            <TrackedLink href="/precos#planos" eventName="niche_pricing_cta_click" secondaryEventName="niche_to_pricing_click" properties={ctaProps(niche, "pro_offer")} className={primaryCta}>
               Ver planos
             </TrackedLink>
-            <TrackedLink href="/demo" eventName="niche_demo_cta_click" properties={ctaProps(niche, "pro_demo")} className="bg-white/10 text-white ring-1 ring-white/15 hover:bg-white/15 focus:ring-emerald-300">
+            <TrackedLink href="/demo" eventName="niche_demo_cta_click" secondaryEventName="niche_to_demo_click" properties={ctaProps(niche, "pro_demo")} className="bg-white/10 text-white ring-1 ring-white/15 hover:bg-white/15 focus:ring-emerald-300">
               Testar demo gratis
             </TrackedLink>
           </div>
@@ -186,10 +186,10 @@ export function NicheLandingPage({ niche }: NicheLandingPageProps) {
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <TrackedLink href="/demo" eventName="niche_demo_cta_click" properties={ctaProps(niche, "final_demo")} className={primaryCta}>
+              <TrackedLink href="/demo" eventName="niche_demo_cta_click" secondaryEventName="niche_to_demo_click" properties={ctaProps(niche, "final_demo")} className={primaryCta}>
                 Testar demo gratis
               </TrackedLink>
-              <TrackedLink href="/cadastro" eventName="niche_signup_cta_click" properties={ctaProps(niche, "final_signup")} className={darkCta}>
+              <TrackedLink href="/cadastro" eventName="niche_signup_cta_click" secondaryEventName="niche_to_signup_click" properties={ctaProps(niche, "final_signup")} className={darkCta}>
                 Criar minha conta
               </TrackedLink>
             </div>

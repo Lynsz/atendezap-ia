@@ -63,3 +63,13 @@ Para go-live controlado, use tambem `docs/emergency-pause-criteria.md`.
 - Depois da escala cautelosa, use `docs/cautious-scale-analysis.md`, `docs/post-scale-decision-matrix.md` e `docs/operational-stability-report.md`.
 - Se a decisao pos-escala for `dados insuficientes`, nao aumentar verba; manter campanha pequena ou reduzir ate completar dados agregados.
 - Se a decisao pos-escala apontar correcao de produto, billing, onboarding, copy ou IA, corrigir antes de novo criativo.
+# Atualizacao Sprint 3 da 1.2
+
+Pausar a campanha pequena pos-Sprint 3 se ocorrer qualquer item abaixo:
+
+- muitas visitas ao pricing e poucos checkouts sem explicacao operacional
+- muitas primeiras respostas e poucos cliques para planos
+- muitos checkouts e poucas assinaturas
+- muitos leads e poucos cadastros
+- qualquer falha de checkout, webhook, portal Stripe, IA ou tracking principal
+- qualquer indicio de promessa percebida como automacao do WhatsApp

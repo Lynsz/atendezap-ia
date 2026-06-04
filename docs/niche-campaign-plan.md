@@ -57,3 +57,10 @@ Testar qual nicho entende mais rapido o valor do produto.
 - Nao dizer que mensagens sao enviadas automaticamente.
 - Nao criar CRM ou automacao complexa.
 - Nao mudar planos ou cobranca fora do fluxo Stripe.
+# Atualizacao Sprint 3 da 1.2
+
+- Campanha pos-Sprint 3 permanece pequena, com status inicial `Sem dados suficientes`.
+- Priorizar delivery como hipotese principal e estetica/prestadores como variacoes pequenas.
+- Usar paginas `/para/[slug]` com CTAs para demo, cadastro e planos acima da dobra.
+- Evitar promessas de venda garantida, automacao ou conexao direta com WhatsApp.
+- Medir `niche_to_demo_click`, `niche_to_signup_click`, `niche_to_pricing_click`, `demo_to_signup_click`, `demo_to_pricing_click`, `plan_cta_click`, `checkout_started` e `checkout_failed`.

@@ -74,6 +74,7 @@ type SavedResponseMetricRow = {
 
 type EventMetricRow = {
   event_name: string;
+  metadata?: Record<string, unknown> | null;
   created_at: string;
 };
 
@@ -235,7 +236,7 @@ export async function GET(request: Request) {
       supabase.from("user_feedback").select("type, status, created_at").limit(10000),
       supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000),
       supabase.from("saved_responses").select("user_id, source_template_id, category, copy_count, is_favorite, created_at").limit(20000),
-      supabase.from("events").select("event_name, created_at").limit(20000),
+      supabase.from("events").select("event_name, metadata, created_at").limit(20000),
       supabase.from("stripe_webhook_events").select("event_type, processed_at, created_at").limit(10000),
       supabase.from("support_requests").select("status, created_at").limit(10000),
       supabase.from("cancellation_feedback").select("reason, created_at").limit(10000)
@@ -399,6 +400,15 @@ export async function GET(request: Request) {
       }))
       .sort((a, b) => b.leads - a.leads || a.campaign.localeCompare(b.campaign))
       .slice(0, 8);
+    const pricingPageViews = events.filter((event) => ["pricing_page_view", "pricing_view"].includes(event.event_name)).length;
+    const planClicks = events.filter((event) => ["plan_cta_click", "plan_click", "pricing_cta_click"].includes(event.event_name)).length;
+    const checkoutsStartedByEvent = events.filter((event) => event.event_name === "checkout_started").length;
+    const checkoutFailures = events.filter((event) => ["checkout_failed", "checkout_error"].includes(event.event_name)).length;
+    const firstResponsePricingClicks = events.filter((event) => event.event_name === "first_response_to_pricing_click").length;
+    const demoSignupClicks = events.filter((event) => ["demo_to_signup_click", "demo_signup_cta_click"].includes(event.event_name)).length;
+    const ebookSignupClicks = events.filter((event) => ["ebook_to_signup_click", "thank_you_signup_cta_click"].includes(event.event_name)).length;
+    const usersSavedBeforeCheckout = [...savedResponseUsers].filter((user) => checkoutStartedUsers.has(user)).length;
+    const approximateCheckoutStarted = Math.max(checkoutStartedUsers.size, checkoutsStartedByEvent);
 
     serverLog({ event: "admin_metrics_loaded", route: "/api/admin/metrics", userId, status: "ok", metadata: { period } });
 
@@ -441,6 +451,20 @@ export async function GET(request: Request) {
         activatedUsers,
         activationRate: percent(activatedUsers, totalUsers),
         averageHoursToActivation: average(activationHours)
+      },
+      conversion: {
+        pricingPageViews,
+        planClicks,
+        checkoutsStarted: approximateCheckoutStarted,
+        checkoutFailures,
+        activeSubscriptions: activeSubscriptions.length,
+        signupsWithFirstResponse: usersWithFirstResponse,
+        firstResponseToPricingClicks: firstResponsePricingClicks,
+        usersSavedResponseBeforeCheckout: usersSavedBeforeCheckout,
+        demoToSignupClicks: demoSignupClicks,
+        ebookToSignupClicks: ebookSignupClicks,
+        approximateFirstResponseToCheckoutRate: percent(approximateCheckoutStarted, usersWithFirstResponse),
+        approximateCheckoutToSubscriptionRate: percent(activeSubscriptions.length, approximateCheckoutStarted)
       },
       usage: {
         totalResponses,

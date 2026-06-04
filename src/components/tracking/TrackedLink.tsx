@@ -11,12 +11,16 @@ type TrackedLinkProps = {
   children: ReactNode;
   className?: string;
   eventName: TrackingEventName;
+  secondaryEventName?: TrackingEventName;
   properties?: TrackingProperties;
 };
 
-export function TrackedLink({ href, children, className, eventName, properties }: TrackedLinkProps) {
+export function TrackedLink({ href, children, className, eventName, secondaryEventName, properties }: TrackedLinkProps) {
   function handleClick() {
     trackEvent(eventName, properties);
+    if (secondaryEventName) {
+      trackEvent(secondaryEventName, properties);
+    }
     if (isOptimizedSmallCampaign()) {
       trackEvent("optimized_campaign_cta_click", {
         ...properties,

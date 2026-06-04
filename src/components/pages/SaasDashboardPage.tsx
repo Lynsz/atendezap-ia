@@ -1049,6 +1049,16 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     router.push(destination);
   }
 
+  function handleFirstResponsePricingClick() {
+    trackEvent("first_response_to_pricing_click", {
+      source: "dashboard",
+      cta: "post_first_response",
+      page: "dashboard",
+      plan: subscription?.plan || subscription?.plan_name || "sem_plano"
+    });
+    handleViewPricing("/precos");
+  }
+
   function navigateActivationStep(target: DashboardTab | "pricing") {
     if (target === "pricing") {
       handleViewPricing("/plans");
@@ -1082,6 +1092,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         setError(result.error || "Não foi possível abrir o portal da assinatura.");
         return;
       }
+      trackEvent("stripe_portal_opened", {
+        source: "dashboard",
+        page: "dashboard",
+        plan: subscription?.plan || subscription?.plan_name || "sem_plano"
+      });
       window.location.href = result.url;
     } catch {
       setError("Não foi possível abrir o portal da assinatura agora.");
@@ -2036,6 +2051,29 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                       </button>
                     </div>
                   </div>
+                  {!activeSubscription ? (
+                    <div className="mt-4 rounded-lg border border-amber-300/20 bg-amber-300/10 p-4">
+                      <p className="text-sm font-bold leading-6 text-amber-50">
+                        Gostou da resposta? Veja os planos para continuar usando com mais limite e recursos.
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button type="button" onClick={handleFirstResponsePricingClick} className="inline-flex min-h-9 items-center justify-center rounded-md bg-amber-300 px-3 text-xs font-black text-slate-950 hover:bg-amber-200">
+                          Ver planos
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer })}
+                          disabled={savingResponseId === (generatedResponseId || "generated") || Boolean(generatedResponseId && savedGeneratedResponseIds.has(generatedResponseId))}
+                          className="inline-flex min-h-9 items-center justify-center rounded-md border border-amber-300/30 bg-[#101821] px-3 text-xs font-black text-amber-100 disabled:opacity-60"
+                        >
+                          Salvar resposta
+                        </button>
+                        <button type="button" onClick={() => navigateActivationStep("templates")} className="inline-flex min-h-9 items-center justify-center rounded-md border border-white/10 bg-white/10 px-3 text-xs font-black text-slate-100">
+                          Ver templates prontos
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                   <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] p-4">
                     <p className="text-sm font-bold leading-6 text-slate-200">
                       A resposta ajudou? Copie, ajuste se precisar e envie manualmente pelo WhatsApp.

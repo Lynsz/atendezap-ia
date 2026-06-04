@@ -35,6 +35,17 @@ Melhorar ativacao, retencao, conversao e operacao com base nos aprendizados da v
 - Metricas de ativacao revisadas no admin protegido, com cards agregados e diagnostico simples.
 - Documentacao de ativacao, retencao, e-mails, backlog, auditoria e prontidao atualizada.
 
+## Sprint 3
+
+- Pricing revisado com Pro recomendado, primeiro mes por R$ 29 para novos usuarios e recorrencia normal depois.
+- Copy de Stripe/portal reforcada para explicar checkout, processamento e cancelamento.
+- CTA pos-demo revisado para cadastro, planos e guia gratuito.
+- CTA pos-primeira resposta adicionado para usuario sem plano pago.
+- Paginas por nicho revisadas com aviso de que o AtendeZap IA nao envia mensagens automaticamente.
+- Eventos seguros de conversao adicionados sem pergunta, resposta, contato, dados de pagamento ou IDs Stripe.
+- Admin protegido recebeu bloco Conversao com metricas agregadas e diagnostico deterministico.
+- Campanha pequena pos-Sprint 3 documentada com links UTM e criterios de pausa.
+
 ## Melhorias esperadas
 
 - Menos abandono entre cadastro, onboarding e primeira resposta.
@@ -63,6 +74,9 @@ Melhorar ativacao, retencao, conversao e operacao com base nos aprendizados da v
 - Checklist de release 1.2.
 - Plano de campanha pos-1.2.
 - Plano e relatorio da Sprint 2.
+- Plano e relatorio da Sprint 3.
+- Otimizacao de conversao.
+- Links UTM da campanha pequena pos-Sprint 3.
 
 ## Fora do escopo
 

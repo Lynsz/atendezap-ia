@@ -122,7 +122,7 @@ export const conversionFaqItems: FaqItem[] = [
   {
     question: "A IA envia mensagens sozinha?",
     answer:
-      "Não. O produto gera sugestões de resposta para você revisar e enviar, mantendo controle sobre cada conversa."
+      "O AtendeZap IA não envia mensagens automaticamente. Ele gera respostas para você copiar, ajustar e enviar."
   },
   {
     question: "Posso usar sendo autônomo?",
@@ -137,7 +137,7 @@ export const conversionFaqItems: FaqItem[] = [
   {
     question: "Como funciona o primeiro mês do Pro por R$ 29?",
     answer:
-      "Novos usuários do Plano Pro pagam R$ 29 no primeiro mês. Depois, a assinatura continua por R$ 97/mês."
+      "Novos usuários do Plano Pro pagam R$ 29 no primeiro mês. Depois, segue o valor normal do Plano Pro configurado na assinatura."
   },
   {
     question: "Posso cancelar?",
@@ -530,6 +530,7 @@ export function PricingPlanCards() {
               )}
               key={plan.id}
             >
+              <TrackOnMount eventName="plan_card_view" properties={{ plan: plan.id, page: "pricing" }} />
               {plan.recommended ? (
                 <span className="mb-4 w-fit rounded-full bg-emerald-300 px-3 py-1 text-xs font-black text-slate-950">
                   Mais recomendado
@@ -543,7 +544,7 @@ export function PricingPlanCards() {
               <p className="mt-4 text-3xl font-black">{plan.firstMonthPriceLabel || plan.monthlyPriceLabel}</p>
               {plan.recurringPriceLabel ? <p className="mt-1 text-sm font-black text-emerald-200">{plan.recurringPriceLabel}</p> : null}
               {plan.id === "pro" ? (
-                <p className="mt-2 text-xs font-bold text-slate-400">Primeiro mês por R$ 29 para novos usuários</p>
+                <p className="mt-2 text-xs font-bold text-slate-400">Primeiro mês por R$ 29 para novos usuários. Depois, segue o valor normal do Plano Pro configurado na assinatura.</p>
               ) : null}
               <p className="mt-4 min-h-16 text-sm leading-6 text-slate-300">{plan.description}</p>
               <ul className="mt-5 flex flex-1 flex-col gap-3 text-sm text-slate-200">

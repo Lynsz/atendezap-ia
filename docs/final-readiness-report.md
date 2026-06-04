@@ -1,5 +1,20 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Sprint 3 da versao 1.2 executada - 2026-06-03
+
+Status: concluida com pendencias externas.
+
+O que foi feito:
+
+- Conversao para plano pago revisada em pricing, demo, dashboard, ebook e paginas por nicho.
+- O aviso de que o AtendeZap IA nao envia mensagens automaticamente permanece visivel em FAQ e nichos.
+- Admin Conversao mostra apenas agregados; nao lista usuarios, respostas, contatos, pagamentos ou IDs Stripe.
+- A campanha pos-Sprint 3 esta preparada apenas como teste pequeno com UTMs controladas.
+
+Pendencias externas:
+
+- Validar checkout, webhook, assinatura ativa, portal Stripe, IA, tracking, suporte e custos no ambiente real/test mode antes de escala.
+
 ## Sprint 2 da versao 1.2 executada - 2026-06-03
 
 Status: concluida com pendencias externas.

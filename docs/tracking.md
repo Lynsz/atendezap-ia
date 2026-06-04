@@ -161,3 +161,26 @@ Eventos revisados:
 Payload permitido: `businessType`, `plan`, `source`, `category` e `step`.
 
 Payload proibido: e-mail, telefone, pergunta do cliente, resposta gerada, prompt, token, secret, payload completo e dados de pagamento.
+
+# Sprint 3 da versao 1.2 - eventos de conversao
+
+Eventos revisados:
+
+- `pricing_page_view`
+- `plan_card_view`
+- `plan_cta_click`
+- `checkout_started`
+- `checkout_failed`
+- `stripe_portal_opened`
+- `demo_to_signup_click`
+- `demo_to_pricing_click`
+- `first_response_to_pricing_click`
+- `niche_to_demo_click`
+- `niche_to_signup_click`
+- `niche_to_pricing_click`
+- `ebook_to_signup_click`
+- `ebook_to_pricing_click`
+
+Payload permitido: `plan`, `source`, `niche`, `cta`, `page` e `campaign`.
+
+Payload proibido: e-mail, telefone, WhatsApp, pergunta do cliente, resposta gerada, mensagem, dados de pagamento, IDs Stripe, token, secret e payload completo.

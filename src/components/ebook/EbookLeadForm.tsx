@@ -74,6 +74,11 @@ export function EbookLeadForm() {
         funnel: attribution.funnel || "ebook",
         business_type: payload.business_type
       });
+      trackEvent("ebook_lead_success", {
+        source: payload.source,
+        funnel: attribution.funnel || "ebook",
+        business_type: payload.business_type
+      });
       window.location.href = result.redirectTo || "/ebook/obrigado";
     } catch {
       setError("Não foi possível enviar seus dados agora. Tente novamente em instantes.");

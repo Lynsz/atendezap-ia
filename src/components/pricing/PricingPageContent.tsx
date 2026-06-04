@@ -6,11 +6,13 @@ import {
   PlanComparisonSection
 } from "@/components/conversion/ConversionSections";
 import { PricingSection } from "@/components/pricing/PricingSection";
+import { TrackOnMount } from "@/components/tracking/TrackOnMount";
 import { TrackedLink } from "@/components/tracking/TrackedLink";
 
 export function PricingPageContent() {
   return (
     <main className="bg-[#090d12] text-white">
+      <TrackOnMount eventName="pricing_page_view" properties={{ page: "pricing" }} />
       <section className="mx-auto max-w-6xl px-4 py-16 text-center">
         <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">Planos</p>
         <h1 className="mx-auto mt-3 max-w-3xl text-4xl font-black tracking-tight md:text-5xl">
@@ -21,12 +23,13 @@ export function PricingPageContent() {
           para quem responde clientes todos os dias.
         </p>
         <p className="mx-auto mt-5 inline-flex rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-sm font-black text-emerald-100">
-          Primeiro mês por R$ 29 para novos usuários. Depois, R$ 97/mês.
+          Primeiro mês por R$ 29 para novos usuários. Depois, segue o valor normal do Plano Pro configurado na assinatura.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <TrackedLink
             href="#planos"
             eventName="pricing_cta_click"
+            secondaryEventName="plan_cta_click"
             properties={{ section: "pricing_hero", destination: "plans" }}
             className="bg-emerald-400 text-slate-950 hover:bg-emerald-300 focus:ring-emerald-300"
           >
@@ -61,7 +64,7 @@ export function PricingPageContent() {
         <div className="rounded-lg border border-emerald-300/20 bg-emerald-400/10 p-5">
           <p className="text-sm font-bold leading-6 text-emerald-100">
             A Stripe fica responsável pela cobrança recorrente; o dashboard libera recursos a partir do status salvo no Supabase.
-            Se o checkout não iniciar, o botão mostra uma mensagem amigável para tentar novamente.
+            O cancelamento e a gestão da assinatura acontecem pelo portal Stripe. Se o checkout não iniciar, o botão mostra uma mensagem amigável para tentar novamente.
           </p>
         </div>
         <p className="mx-auto mt-6 max-w-3xl text-sm leading-6 text-slate-400">
