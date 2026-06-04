@@ -88,3 +88,11 @@ Regra de decisao: manter campanha pequena ate haver dados agregados de pricing, 
 - Pausar imediatamente se IA, checkout, webhook, portal Stripe, tracking ou suporte falhar.
 - Acompanhar as primeiras 72h apos release antes de qualquer nova decisao.
 - Usar orcamento pequeno e manter `Sem dados suficientes` como conclusao ate haver amostra real.
+
+## Aprovacao pos-deploy controlado
+
+- A campanha so pode ser ativada apos a versao 1.2 estar aprovada em producao.
+- Preencher `docs/post-1.2-campaign-approval-checklist.md` antes de publicar qualquer anuncio.
+- Revisar metricas diariamente nas primeiras 72h.
+- Pausar ao primeiro bug P0/P1.
+- Nao escalar antes de 72h de dados agregados.

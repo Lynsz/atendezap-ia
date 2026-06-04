@@ -52,5 +52,9 @@
 ## Decisao
 
 - [x] liberar deploy controlado
+- [ ] validar staging com `docs/version-1.2-staging-validation.md`
+- [ ] validar producao com `docs/version-1.2-production-validation.md`
+- [ ] monitorar pos-release com `docs/version-1.2-post-release-monitoring.md`
+- [ ] preencher `docs/version-1.2-post-release-report.md`
 - [ ] liberar campanha pequena somente apos smoke pos-deploy
 - [ ] nao escalar sem dados agregados suficientes

@@ -36,3 +36,5 @@ Use `SEU-DOMINIO` apenas como placeholder operacional. Substitua pelo dominio re
 - Nao publicar links antes do smoke test pos-deploy da versao 1.2.
 - Acompanhar as primeiras 72h apos release com orcamento pequeno.
 - Pausar se IA, checkout, webhook, portal Stripe, tracking ou suporte falhar.
+- Publicar somente depois de `docs/post-1.2-campaign-approval-checklist.md` aprovado.
+- Nao escalar antes de 72h de dados agregados.

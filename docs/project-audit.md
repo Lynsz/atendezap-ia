@@ -9,6 +9,14 @@
 - Recomendacao: manter privado, liberar deploy controlado da 1.2, rodar campanha pequena pos-1.2 somente apos smoke test e nao escalar sem validacao pos-release.
 - Nota estimada: 96/100 local; pode subir apos validacao real de provedores, RLS, billing, tracking e smoke pos-deploy.
 
+## Deploy controlado da versao 1.2 preparado - 2026-06-04
+
+- Criados `docs/version-1.2-controlled-deploy.md`, `docs/version-1.2-staging-validation.md`, `docs/version-1.2-production-validation.md`, `docs/version-1.2-post-release-monitoring.md`, `docs/version-1.2-post-release-report.md`, `docs/version-1.2-rollback-criteria.md` e `docs/post-1.2-campaign-approval-checklist.md`.
+- Admin Go-Live recebeu bloco simples "Release 1.2" com status, health check, usuarios, primeiras respostas, checkouts, assinaturas, falhas IA, falhas Stripe, suporte aberto e decisao da campanha pos-1.2.
+- Status atual: deploy controlado preparado; staging e producao ainda precisam ser validados.
+- Recomendacao: manter privado, validar staging, liberar producao controlada, monitorar 72h e liberar campanha pequena so apos aprovacao.
+- Nota estimada: 96/100 local, ainda condicionada a validacao real de staging/producao.
+
 ## Sprint 3 da versao 1.2 executada - 2026-06-03
 
 - Sprint 3 da versao 1.2 executada com foco em conversao, pricing, paginas por nicho, funis demo/ebook e campanha pequena pos-1.2.

@@ -44,6 +44,16 @@
 - CHANGELOG finalizado para 1.2.0.
 - Auditoria, prontidao, campanha, backlog e roadmap atualizados.
 
+## Deploy controlado
+
+- Deploy controlado da 1.2 preparado em `docs/version-1.2-controlled-deploy.md`.
+- Validacao de staging criada em `docs/version-1.2-staging-validation.md`.
+- Validacao de producao criada em `docs/version-1.2-production-validation.md`.
+- Monitoramento pos-release criado em `docs/version-1.2-post-release-monitoring.md`.
+- Criterios de rollback criados em `docs/version-1.2-rollback-criteria.md`.
+- Aprovacao da campanha pos-1.2 criada em `docs/post-1.2-campaign-approval-checklist.md`.
+- Admin Go-Live recebeu bloco "Release 1.2" com dados agregados e decisao da campanha pos-release.
+
 ## Correcoes criticas
 
 - Nenhum P0/P1 local conhecido ao fechar a versao 1.2.
@@ -91,4 +101,3 @@
 - manter escala cautelosa bloqueada
 - corrigir antes de campanha se smoke, IA, checkout, webhook, tracking ou suporte falhar
 - planejar versao 1.3 com base nos dados agregados pos-release
-

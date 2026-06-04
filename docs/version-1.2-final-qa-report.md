@@ -59,3 +59,9 @@
 - liberar campanha pequena pos-1.2 somente apos smoke test pos-deploy e monitoramento inicial
 - nao liberar escala ainda
 
+## Proxima validacao obrigatoria
+
+- Preencher `docs/version-1.2-staging-validation.md`.
+- Preencher `docs/version-1.2-production-validation.md`.
+- Monitorar com `docs/version-1.2-post-release-monitoring.md`.
+- Preencher `docs/version-1.2-post-release-report.md` antes da campanha.

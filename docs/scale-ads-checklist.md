@@ -149,3 +149,12 @@ Antes da campanha pequena pos-1.2:
 - [ ] rollback disponivel
 
 Escala continua bloqueada sem dados agregados suficientes.
+
+## Campanha pos-1.2
+
+- [ ] `docs/version-1.2-production-validation.md` aprovado
+- [ ] `docs/version-1.2-post-release-monitoring.md` em execucao
+- [ ] `docs/post-1.2-campaign-approval-checklist.md` aprovado
+- [ ] metricas revisadas diariamente
+- [ ] nenhum P0/P1 aberto
+- [ ] no minimo 72h de dados antes de qualquer aumento de orcamento

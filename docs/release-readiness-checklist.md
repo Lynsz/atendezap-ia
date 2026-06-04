@@ -32,9 +32,13 @@
 ## Producao
 
 - staging validado
+- deploy controlado planejado
+- criterios de rollback definidos
+- monitoramento pos-release definido
 - relatorio final de QA atualizado
 - checklist pre-escala revisado antes de aumentar campanhas
 - rollback possivel
 - health check funcionando
 - smoke test pronto
 - documentacao atualizada
+- campanha bloqueada ate smoke pos-deploy e aprovacao operacional

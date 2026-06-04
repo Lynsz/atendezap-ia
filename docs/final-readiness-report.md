@@ -28,6 +28,38 @@ Recomendacao:
 - rodar campanha pequena pos-1.2 somente apos smoke test
 - nao escalar sem validacao pos-release e dados agregados suficientes
 
+## Deploy controlado da versao 1.2 preparado - 2026-06-04
+
+Status: preparado, ainda nao validado em staging/producao.
+
+O que foi criado:
+
+- deploy controlado 1.2
+- validacao staging 1.2
+- validacao producao 1.2
+- monitoramento pos-release 1.2
+- relatorio pos-release 1.2
+- criterios de rollback 1.2
+- aprovacao de campanha pos-1.2
+- comunicacao interna da release 1.2
+
+Status atual:
+
+- staging: pendente
+- producao: pendente
+- campanha pos-1.2: bloqueada ate aprovacao em producao
+- rollback: criterios definidos
+
+Nota estimada: 96/100 local.
+
+Recomendacao:
+
+- manter privado
+- validar staging
+- liberar producao controlada
+- monitorar 72h
+- liberar campanha pequena so apos aprovacao
+
 ## Sprint 3 da versao 1.2 executada - 2026-06-03
 
 Status: concluida com pendencias externas.

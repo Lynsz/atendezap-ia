@@ -85,3 +85,10 @@ Tambem pausar se, nas primeiras 72h apos release:
 - admin ou tracking ficar indisponivel
 - suporte receber bug critico recorrente
 - custo externo subir sem ativacao
+
+## Campanha pos-1.2
+
+- Pausar ao primeiro bug P0/P1.
+- Pausar se a versao 1.2 deixar de cumprir o smoke test de producao.
+- Pausar se checkout, webhook, IA, suporte ou privacidade falhar.
+- Pausar se qualquer analytics receber dado sensivel.

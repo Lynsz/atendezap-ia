@@ -35,3 +35,22 @@
 - atualizar `docs/optimized-campaign-analysis.md` e `docs/optimized-campaign-adjustment-plan.md`, se a pausa estiver ligada a campanha otimizada
 - atualizar `docs/cautious-scale-report.md` e `docs/scale-contingency-plan.md`, se a pausa estiver ligada a escala
 - atualizar `docs/cautious-scale-analysis.md`, `docs/post-scale-adjustment-plan.md` e `docs/operational-stability-report.md`, se a pausa ocorrer durante ou apos escala cautelosa
+
+# Atualizacao pos-1.2
+
+Pausar campanha e considerar rollback se a release 1.2 apresentar:
+
+- bug P0/P1 em login, cadastro, dashboard, IA, checkout, webhook, privacidade ou admin
+- falha de checkout ou webhook recorrente
+- IA falhando para multiplos usuarios
+- admin acessivel para usuario comum
+- dado sensivel em log, analytics ou relatorio
+- erro 500 recorrente em rota critica
+
+Depois da pausa:
+
+- registrar incidente
+- bloquear nova campanha
+- validar staging
+- rodar smoke test
+- liberar novamente apenas apos aprovacao operacional

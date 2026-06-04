@@ -6,6 +6,8 @@ Garantir que cada versao enviada para producao seja segura, validada e documenta
 
 ## Antes da release
 
+- revisar `docs/version-1.2-controlled-deploy.md` quando a release for a 1.2 ou posterior
+- preencher validacao de staging antes de producao
 - revisar `docs/release-candidate.md`
 - preencher `docs/release-candidate-checklist.md`
 - executar `docs/manual-qa-plan.md` em staging quando houver mudanca de fluxo principal
@@ -29,6 +31,7 @@ Garantir que cada versao enviada para producao seja segura, validada e documenta
 - rodar smoke test
 - testar fluxo principal
 - validar health check
+- nao ativar campanha antes de aprovar smoke pos-deploy
 
 ## Depois da release
 
@@ -39,10 +42,14 @@ Garantir que cada versao enviada para producao seja segura, validada e documenta
 - revisar metricas
 - monitorar suporte
 - decidir proxima prioridade
+- monitorar primeiras 24h e 72h conforme runbook da versao
+- preencher relatorio pos-release antes de campanha
 
 ## Aprovacao pre-escala
 
 Antes de aumentar campanhas, preencher `docs/pre-scale-approval-checklist.md`.
+
+Para a campanha pos-1.2, preencher tambem `docs/post-1.2-campaign-approval-checklist.md`.
 
 - P0 bloqueia release.
 - P1 bloqueia campanha maior.

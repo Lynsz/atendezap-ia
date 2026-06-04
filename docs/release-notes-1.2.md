@@ -12,8 +12,9 @@ Versao focada em estabilidade, ativacao, conversao, billing, controle de IA, sup
 
 - Admin de ativacao com metricas agregadas e diagnostico simples.
 - Admin de conversao com metricas agregadas e diagnostico deterministico.
+- Bloco admin de Release 1.2 para acompanhar deploy controlado com dados agregados.
 - Eventos seguros para ativacao, conversao, pricing, demo, ebook, nichos e checkout.
-- Documentos finais de QA, deploy, smoke test e fechamento da versao 1.2.
+- Documentos finais de QA, deploy, smoke test, rollback, monitoramento pos-release e fechamento da versao 1.2.
 
 ## Melhorado
 
@@ -63,6 +64,7 @@ Versao focada em estabilidade, ativacao, conversao, billing, controle de IA, sup
 - Pricing, demo, dashboard, ebook e paginas por nicho foram revisados.
 - Eventos de conversao usam payload minimo.
 - Campanha pequena pos-1.2 foi preparada, mas depende de smoke pos-deploy e monitoramento.
+- Campanha pequena permanece condicionada a aprovacao em producao, monitoramento inicial e checklist especifico.
 
 ## Documentacao
 
@@ -78,4 +80,3 @@ Versao focada em estabilidade, ativacao, conversao, billing, controle de IA, sup
 - automacoes avancadas
 - multiplos atendentes
 - app mobile
-

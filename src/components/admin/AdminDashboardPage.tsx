@@ -1007,6 +1007,27 @@ export default function AdminDashboardPage() {
               <MetricCard label="Incidentes recentes" value="Nao disponivel" icon={<BarChart3 className="h-5 w-5" />} />
             </div>
 
+            <div className="mt-6 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4">
+              <div className="mb-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-200">Release 1.2</p>
+                <p className="mt-2 text-sm leading-6 text-emerald-50">
+                  Acompanhe a liberacao controlada da 1.2 antes de ativar campanha pos-release. Nao inclui dados pessoais, respostas completas, dados de pagamento ou IDs Stripe.
+                </p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <MetricCard label="Status da versao" value="Deploy controlado preparado" icon={<CheckCircle2 className="h-5 w-5" />} />
+                <MetricCard label="Health check" value="Verificar /api/health" icon={<CheckCircle2 className="h-5 w-5" />} />
+                <MetricCard label="Novos usuarios" value={availableValue(productMetrics.availability.profiles, productMetrics.activation.newUsersLast7Days)} icon={<Users className="h-5 w-5" />} />
+                <MetricCard label="Primeiras respostas" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.activation.firstResponsesGenerated)} icon={<MessageSquare className="h-5 w-5" />} />
+                <MetricCard label="Checkouts" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.checkoutStartedUsers)} icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Assinaturas" value={availableValue(productMetrics.availability.subscriptions, productMetrics.revenue.activeSubscriptions)} icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Falhas IA" value={productMetrics.operationalHealth.aiFailuresToday} icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Falhas Stripe" value={productMetrics.operationalHealth.stripeWebhookFailuresToday} icon={<BarChart3 className="h-5 w-5" />} />
+                <MetricCard label="Suporte aberto" value={availableValue(productMetrics.availability.supportRequests, productMetrics.supportQuality.openSupportRequests)} icon={<MessageSquare className="h-5 w-5" />} />
+                <MetricCard label="Campanha pos-1.2" value="Bloqueada ate smoke aprovado" icon={<BarChart3 className="h-5 w-5" />} />
+              </div>
+            </div>
+
             <div className="mt-6 rounded-lg border border-white/10 bg-white/[0.03] p-4">
               <div className="mb-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Resumo 72h</p>

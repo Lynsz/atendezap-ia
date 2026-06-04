@@ -42,3 +42,8 @@
 
 A versao so pode ser considerada saudavel se o fluxo principal funcionar sem erro critico.
 
+## Relacao com deploy controlado
+
+- Em staging, executar junto com `docs/version-1.2-staging-validation.md`.
+- Em producao, executar junto com `docs/version-1.2-production-validation.md`.
+- Se falhar em rota critica, bloquear campanha e avaliar `docs/version-1.2-rollback-criteria.md`.

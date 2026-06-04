@@ -15,6 +15,10 @@ describe("AdminDashboardPage go-live", () => {
 
     expect(source).toContain("Go-Live");
     expect(source).toContain("Acompanhamento controlado");
+    expect(source).toContain("Release 1.2");
+    expect(source).toContain("Deploy controlado preparado");
+    expect(source).toContain("Campanha pos-1.2");
+    expect(source).toContain("Bloqueada ate smoke aprovado");
     expect(source).toContain("Resumo 72h");
     expect(source).toContain("Health check");
     expect(source).toContain("Primeiras respostas hoje");

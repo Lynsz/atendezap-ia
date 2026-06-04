@@ -10,8 +10,9 @@ Sem itens registrados.
 
 - Admin de ativacao com metricas agregadas e diagnostico simples.
 - Admin de conversao com metricas agregadas e diagnostico deterministico.
+- Bloco admin "Release 1.2" para acompanhar deploy controlado com dados agregados.
 - Eventos seguros de ativacao e conversao para demo, ebook, pricing, paginas por nicho, primeira resposta e checkout.
-- Plano, QA final, checklist de deploy, smoke test, release notes finais e relatorio final da versao 1.2.
+- Plano, QA final, checklist de deploy, smoke test, release notes finais, relatorio final, deploy controlado, monitoramento pos-release e criterios de rollback da versao 1.2.
 
 ### Melhorado
 
@@ -19,6 +20,7 @@ Sem itens registrados.
 - Pricing com Plano Pro recomendado, primeiro mes por R$ 29 para novos usuarios e recorrencia normal depois.
 - CTA pos-demo, CTA pos-primeira resposta, funil do ebook e paginas por nicho.
 - Campanha pequena pos-1.2 preparada com UTMs, guardrails e criterios de pausa.
+- Campanha pos-1.2 condicionada a aprovacao em producao, smoke test e 72h de dados antes de qualquer escala.
 
 ### Corrigido
 
@@ -43,6 +45,13 @@ Sem itens registrados.
 - `docs/version-1.2-deploy-checklist.md`
 - `docs/version-1.2-smoke-test.md`
 - `docs/version-1.2-sprint-4-plan.md`
+- `docs/version-1.2-controlled-deploy.md`
+- `docs/version-1.2-staging-validation.md`
+- `docs/version-1.2-production-validation.md`
+- `docs/version-1.2-post-release-monitoring.md`
+- `docs/version-1.2-post-release-report.md`
+- `docs/version-1.2-rollback-criteria.md`
+- `docs/post-1.2-campaign-approval-checklist.md`
 
 ### Fora do escopo
 
