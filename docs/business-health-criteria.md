@@ -47,3 +47,10 @@
 - Reduzir orcamento se custo subir, ativacao cair, suporte aumentar ou IA consumir sem conversao.
 - Pausar se checkout, webhook, IA, auth, tracking ou privacidade falhar.
 - Preparar versao 1.1 somente depois de consolidar estabilidade, docs e pendencias P0/P1.
+
+## Regra da campanha pequena pos-1.2
+
+- Comecar pequena e monitorar diariamente.
+- Pausar por bug critico ou falha de IA, auth, checkout, webhook, tracking, suporte ou privacidade.
+- Nao escalar antes de 72h de dados agregados.
+- Nao escalar sem primeira resposta, com billing instavel ou custo de IA instavel.

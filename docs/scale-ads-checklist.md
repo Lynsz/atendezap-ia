@@ -170,3 +170,15 @@ Escala continua bloqueada sem dados agregados suficientes.
 - [ ] campanha iniciada pequena, sem escala antes de dados iniciais
 
 Se qualquer item acima estiver pendente, manter campanha bloqueada.
+
+## Campanha pequena pos-1.2 - regra de 72h
+
+- [ ] campanha iniciou com orcamento pequeno e fixo
+- [ ] `docs/post-1.2-campaign-live-tracking.md` foi preenchido diariamente
+- [ ] analise de 72h foi concluida
+- [ ] usuarios geraram primeira resposta
+- [ ] checkout e webhook permaneceram estaveis
+- [ ] custo de IA permaneceu controlado
+- [ ] nenhum P0/P1 foi aberto
+
+Sem todos os itens acima, nao aumentar orcamento.

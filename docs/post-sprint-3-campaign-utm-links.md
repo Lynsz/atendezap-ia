@@ -45,3 +45,10 @@ Use `SEU-DOMINIO` apenas como placeholder operacional. Substitua pelo dominio re
 - Antes de usar qualquer UTM, preencher `docs/post-1.2-final-campaign-launch-checklist.md`.
 - A operacao diaria deve seguir `docs/post-1.2-campaign-operations.md` e `docs/post-1.2-campaign-daily-report-template.md`.
 - Comecar com orcamento pequeno e pausar por qualquer P0/P1, falha de checkout, webhook, IA, tracking, suporte ou privacidade.
+
+## Campanha pequena pos-1.2
+
+- UTM proposta: `/para/delivery?utm_source=meta&utm_medium=paid_social&utm_campaign=post_12_campaign_01&utm_content=delivery_criativo_01`
+- Status: preparada, mas bloqueada para publicacao ate aprovacao de producao e do checklist de ativacao.
+- Eventos especificos: `post_12_campaign_page_view` e `post_12_campaign_cta_click`.
+- Nao publicar, aumentar orcamento ou declarar resultado antes de dados agregados reais.

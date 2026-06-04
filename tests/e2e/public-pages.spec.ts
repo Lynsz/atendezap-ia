@@ -88,4 +88,15 @@ test.describe("paginas publicas", () => {
     const response = await page.goto("/para/nicho-invalido");
     expect(response?.status()).toBe(404);
   });
+
+  test("landing delivery da campanha pos-1.2 mantem CTA, Pro R$ 29 e copy sem automacao", async ({ page }) => {
+    const response = await page.goto(
+      "/para/delivery?utm_source=meta&utm_medium=paid_social&utm_campaign=post_12_campaign_01&utm_content=delivery_criativo_01"
+    );
+
+    expect(response?.status()).toBe(200);
+    await expect(page.getByRole("link", { name: /Testar demo gratis/i }).first()).toBeVisible();
+    await expect(page.locator("body")).toContainText("Primeiro mes por R$ 29");
+    await expect(page.locator("body")).toContainText(/nao envia mensagens automaticamente pelo WhatsApp/i);
+  });
 });

@@ -62,6 +62,23 @@ type ScaleSummary = {
   recommendedDecision: string;
 };
 
+type Post12CampaignSummary = {
+  status: string;
+  niche: string;
+  channel: string;
+  destination: string;
+  leads: number | string;
+  signups: number | string;
+  onboardings: number | string;
+  firstResponses: number | string;
+  checkouts: number | string;
+  subscriptions: number | string;
+  openSupport: string;
+  aiFailures: string;
+  stripeFailures: string;
+  recommendedDecision: string;
+};
+
 type ScaleDecision = "" | "maintain" | "increase_slightly" | "reduce" | "pause" | "fix_before_continue";
 
 type CampaignForm = {
@@ -349,6 +366,48 @@ function getScaleSummary(campaigns: CampaignWithResults[]): ScaleSummary {
   };
 }
 
+function getPost12CampaignSummary(campaigns: CampaignWithResults[]): Post12CampaignSummary {
+  const campaign = campaigns.find((item) => item.utm_campaign === "post_12_campaign_01");
+
+  if (!campaign) {
+    return {
+      status: "Bloqueada: registro planejado ainda nao criado",
+      niche: "Nao disponivel",
+      channel: "Nao disponivel",
+      destination: "Nao disponivel",
+      leads: "Nao disponivel",
+      signups: "Nao disponivel",
+      onboardings: "Nao disponivel",
+      firstResponses: "Nao disponivel",
+      checkouts: "Nao disponivel",
+      subscriptions: "Nao disponivel",
+      openSupport: "Nao disponivel",
+      aiFailures: "Nao disponivel",
+      stripeFailures: "Nao disponivel",
+      recommendedDecision: "Manter bloqueada ate validacao real da versao 1.2 e checklist de ativacao aprovado."
+    };
+  }
+
+  const hasData = hasCampaignData(campaign);
+
+  return {
+    status: campaignStatusLabel(campaign.status),
+    niche: campaign.niche || "Nao disponivel",
+    channel: campaign.channel || "Nao disponivel",
+    destination: campaign.destination_url || "Nao disponivel",
+    leads: hasData ? campaign.totals.leads : "Nao disponivel",
+    signups: hasData ? campaign.totals.signups : "Nao disponivel",
+    onboardings: hasData ? campaign.totals.onboardings : "Nao disponivel",
+    firstResponses: hasData ? campaign.totals.first_responses : "Nao disponivel",
+    checkouts: hasData ? campaign.totals.checkouts : "Nao disponivel",
+    subscriptions: hasData ? campaign.totals.subscriptions : "Nao disponivel",
+    openSupport: "Nao disponivel",
+    aiFailures: "Nao disponivel",
+    stripeFailures: "Nao disponivel",
+    recommendedDecision: hasData ? getCampaignBottleneck(campaign) : "Sem dados suficientes; nao escalar."
+  };
+}
+
 export default function CampaignAdminSection() {
   const [payload, setPayload] = useState<CampaignsPayload | null>(null);
   const [campaignForm, setCampaignForm] = useState<CampaignForm>(emptyCampaignForm);
@@ -411,6 +470,11 @@ export default function CampaignAdminSection() {
 
   const scaleSummary = useMemo(
     () => getScaleSummary(payload?.campaigns || []),
+    [payload]
+  );
+
+  const post12CampaignSummary = useMemo(
+    () => getPost12CampaignSummary(payload?.campaigns || []),
     [payload]
   );
 
@@ -556,6 +620,26 @@ export default function CampaignAdminSection() {
           <Info label="Bugs criticos" value={scaleSummary.criticalBugs} />
           <Info label="Suporte aberto" value={scaleSummary.openSupport} />
           <Info label="Decisao recomendada" value={scaleSummary.recommendedDecision} />
+        </div>
+      </div>
+
+      <div className="mb-5 rounded-lg border border-sky-300/20 bg-sky-300/10 p-4">
+        <p className="text-xs font-black uppercase tracking-wide text-sky-100">Campanha pos-1.2 ativa</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <Info label="Status" value={post12CampaignSummary.status} />
+          <Info label="Nicho" value={post12CampaignSummary.niche} />
+          <Info label="Canal" value={post12CampaignSummary.channel} />
+          <Info label="Pagina de destino" value={post12CampaignSummary.destination} />
+          <Info label="Leads" value={post12CampaignSummary.leads} />
+          <Info label="Cadastros" value={post12CampaignSummary.signups} />
+          <Info label="Onboardings" value={post12CampaignSummary.onboardings} />
+          <Info label="Primeiras respostas" value={post12CampaignSummary.firstResponses} />
+          <Info label="Checkouts" value={post12CampaignSummary.checkouts} />
+          <Info label="Assinaturas" value={post12CampaignSummary.subscriptions} />
+          <Info label="Suporte aberto" value={post12CampaignSummary.openSupport} />
+          <Info label="Falhas IA" value={post12CampaignSummary.aiFailures} />
+          <Info label="Falhas Stripe" value={post12CampaignSummary.stripeFailures} />
+          <Info label="Decisao recomendada" value={post12CampaignSummary.recommendedDecision} />
         </div>
       </div>
 

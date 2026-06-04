@@ -963,3 +963,25 @@ O ciclo pos-campanha agora tambem esta definido: diagnostico, matriz de prioriza
 - Tracking client-side adicionou `optimized_campaign_page_view` e `optimized_campaign_cta_click` quando a UTM oficial esta presente, preservando os eventos originais e sem enviar conteudo sensivel.
 - Criterios de pausa, pre-escala e escala reforcados para bloquear aumento se tracking falhar, se custo de IA subir sem ativacao, se checkout/webhook falharem ou se a conclusao continuar `Sem dados suficientes`.
 - Status atual: pronto para validacao manual e smoke test; nao aprovado para escala.
+
+## Execucao e monitoramento da campanha pos-1.2 - 2026-06-04
+
+Status: preparada documentalmente e no admin/tracking, mas bloqueada para ativacao.
+
+O que foi feito:
+
+- Criados plano de execucao, checklist de ativacao, acompanhamento diario, checklist de pausa e template de analise.
+- Configuracao proposta registrada como hipotese: delivery, Meta Ads, `/para/delivery`, CTA `Testar demo gratis` e `utm_campaign=post_12_campaign_01`.
+- Admin existente recebeu resumo agregado da campanha pos-1.2, com `Nao disponivel` quando nao ha fonte persistida.
+- Tracking seguro revisado com eventos especificos de page view e CTA.
+- Criterios de pausa, pre-escala, saude, relatorios recorrentes e backlog foram atualizados.
+
+Riscos e pendencias:
+
+- Validacao real de producao, billing, IA, Resend, tracking, suporte e health check continua pendente.
+- Orcamento pequeno ainda precisa de aprovacao operacional.
+- Nao ha dados reais para concluir nicho, CTA, criativo ou desempenho.
+
+Recomendacao: manter privado, manter campanha bloqueada ate checklist verde, ativar somente campanha pequena, monitorar 72h e nao escalar ainda.
+
+Nota estimada mantida: 98/100 para producao controlada documentada, condicionada a validacao real de producao.

@@ -75,3 +75,11 @@ Na leitura pos-Sprint 3, incluir o bloco Conversao do admin:
 - taxa aproximada checkout -> assinatura
 
 Se algum dado estiver indisponivel, registrar `Sem dados suficientes` e nao extrapolar conclusao.
+
+## Execucao da campanha pos-1.2
+
+- Usar `utm_campaign=post_12_campaign_01`.
+- Criar o registro no admin somente apos liberacao operacional, com status `planned` e decisao `inconclusive`.
+- Registrar resultados diarios agregados e usar `docs/post-1.2-campaign-live-tracking.md`.
+- Aplicar o diagnostico deterministico do admin e o checklist de pausa; nao usar IA para recomendar decisoes.
+- Consolidar a decisao em `docs/post-1.2-campaign-analysis-template.md`.

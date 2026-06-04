@@ -118,3 +118,13 @@ Operacao diaria:
 - comecar pequena
 - pausar imediatamente por bug critico
 - nao escalar antes de dados iniciais suficientes
+
+## Execucao e monitoramento inicial
+
+- Plano de execucao: `docs/post-1.2-campaign-execution-plan.md`
+- Checklist de ativacao: `docs/post-1.2-campaign-activation-checklist.md`
+- Acompanhamento diario: `docs/post-1.2-campaign-live-tracking.md`
+- Checklist de pausa: `docs/post-1.2-campaign-pause-checklist.md`
+- Template de analise: `docs/post-1.2-campaign-analysis-template.md`
+
+Configuracao proposta, ainda bloqueada: delivery, Meta Ads, `/para/delivery`, CTA `Testar demo gratis` e `utm_campaign=post_12_campaign_01`. O orcamento permanece pequeno e pendente de aprovacao. Nao ativar nem escalar enquanto a validacao real de producao estiver pendente.

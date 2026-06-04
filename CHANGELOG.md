@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
-Sem itens registrados.
+### Adicionado
+
+- Execucao da campanha pos-1.2 preparada com plano, acompanhamento diario, checklist de ativacao, checklist de pausa e template de analise.
+- Eventos seguros `post_12_campaign_page_view` e `post_12_campaign_cta_click`.
+- Bloco agregado "Campanha pos-1.2 ativa" no admin existente.
+
+### Status
+
+- Campanha continua bloqueada ate validacao real de producao e aprovacao operacional.
+- Nenhuma escala ou conclusao de desempenho foi registrada.
 
 ## [1.2.0] - 2026-06-04
 

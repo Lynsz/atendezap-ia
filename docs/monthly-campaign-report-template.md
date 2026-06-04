@@ -55,3 +55,15 @@ Referencias: `docs/optimized-campaign-analysis.md`, `docs/optimized-campaign-fun
 - decisao para o proximo mes: manter baixo / aumentar pouco / reduzir / pausar / corrigir antes de continuar
 
 Referencias: `docs/cautious-scale-report.md`, `docs/scale-control-matrix.md` e `docs/ad-budget-guardrails.md`.
+
+## Campanha pequena pos-1.2
+
+- status:
+- dias acompanhados:
+- melhor sinal:
+- maior gargalo:
+- bugs criticos:
+- custo IA:
+- decisao: manter / pausar / ajustar / testar nova variacao / corrigir produto / inconclusivo
+
+Referencias: `docs/post-1.2-campaign-live-tracking.md` e `docs/post-1.2-campaign-analysis-template.md`.

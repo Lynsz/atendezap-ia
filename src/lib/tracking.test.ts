@@ -192,4 +192,19 @@ describe("tracking seguro", () => {
 
     expect(isOptimizedSmallCampaign()).toBe(true);
   });
+
+  it("identifica a campanha pos-1.2 pela UTM oficial", async () => {
+    vi.stubGlobal("window", {
+      location: { pathname: "/para/delivery", search: "?utm_campaign=post_12_campaign_01&utm_content=delivery_criativo_01" },
+      localStorage: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn()
+      }
+    });
+
+    const { isPost12Campaign } = await import("./tracking");
+
+    expect(isPost12Campaign()).toBe(true);
+  });
 });

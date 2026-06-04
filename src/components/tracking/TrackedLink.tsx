@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { TrackingEventName, TrackingProperties } from "@/lib/tracking";
-import { isOptimizedSmallCampaign, trackEvent } from "@/lib/tracking";
+import { isOptimizedSmallCampaign, isPost12Campaign, trackEvent } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 
 type TrackedLinkProps = {
@@ -23,6 +23,12 @@ export function TrackedLink({ href, children, className, eventName, secondaryEve
     }
     if (isOptimizedSmallCampaign()) {
       trackEvent("optimized_campaign_cta_click", {
+        ...properties,
+        original_event: eventName
+      });
+    }
+    if (isPost12Campaign()) {
+      trackEvent("post_12_campaign_cta_click", {
         ...properties,
         original_event: eventName
       });

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { TrackingEventName, TrackingProperties } from "@/lib/tracking";
-import { captureUtmsFromLocation, isOptimizedSmallCampaign, trackEvent } from "@/lib/tracking";
+import { captureUtmsFromLocation, isOptimizedSmallCampaign, isPost12Campaign, trackEvent } from "@/lib/tracking";
 
 type TrackOnMountProps = {
   eventName: TrackingEventName;
@@ -17,6 +17,13 @@ export function TrackOnMount({ eventName, properties, source, funnel }: TrackOnM
     trackEvent(eventName, properties);
     if (isOptimizedSmallCampaign()) {
       trackEvent("optimized_campaign_page_view", {
+        page_event: eventName,
+        source: source || "unknown",
+        funnel: funnel || "unknown"
+      });
+    }
+    if (isPost12Campaign()) {
+      trackEvent("post_12_campaign_page_view", {
         page_event: eventName,
         source: source || "unknown",
         funnel: funnel || "unknown"

@@ -60,3 +60,7 @@ Depois da pausa:
 Pausar ou manter bloqueada se `docs/version-1.2-post-deploy-analysis.md` ou `docs/post-1.2-campaign-decision-matrix.md` indicar atencao, correcao obrigatoria ou dados insuficientes.
 
 Se a campanha ja estiver ativa e surgir bug P0/P1, falha de checkout, webhook, IA, suporte critico, tracking quebrado ou dado sensivel em log/analytics, pausar imediatamente, preencher o relatorio diario e avaliar rollback pelos criterios da versao 1.2.
+
+## Checklist operacional pos-1.2
+
+Aplicar `docs/post-1.2-campaign-pause-checklist.md`. Registrar a campanha como `paused`, revisar logs seguros, corrigir, validar em staging, rodar smoke e somente reativar com nova aprovacao operacional.

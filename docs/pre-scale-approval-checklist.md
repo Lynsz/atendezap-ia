@@ -99,3 +99,14 @@ Para aprovar nova escala depois da Sprint 3:
 - [ ] primeiras 72h pos-release acompanhadas
 - [ ] campanha pequena ainda dentro de orcamento controlado
 - [ ] nenhuma escala aprovada sem dados agregados reais
+
+## Campanha pequena pos-1.2
+
+- [ ] campanha executada por pelo menos 72h com acompanhamento diario
+- [ ] usuarios chegaram a primeira resposta
+- [ ] checkout e webhook estaveis
+- [ ] custo de IA estavel
+- [ ] suporte sem bug critico
+- [ ] `docs/post-1.2-campaign-analysis-template.md` preenchido
+
+Se qualquer item estiver pendente, manter a campanha pequena ou bloqueada e nao escalar.

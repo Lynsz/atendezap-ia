@@ -55,3 +55,14 @@ Use `docs/optimized-campaign-analysis.md` e `docs/campaign-comparison-report.md`
 - decisao da semana: manter / aumentar pouco / reduzir / pausar / corrigir antes de continuar
 
 Use `docs/daily-scale-checklist.md` e `docs/cautious-scale-report.md` antes de qualquer novo aumento.
+
+## Campanha pequena pos-1.2
+
+- checklist de ativacao aprovado?
+- campanha continua bloqueada, ativa ou pausada?
+- dias 1, 2 e 3 revisados?
+- usuarios chegaram a primeira resposta?
+- billing, IA, suporte e tracking ficaram estaveis?
+- decisao da semana: manter bloqueada / ativar pequena / manter / ajustar / pausar / corrigir
+
+Use `docs/post-1.2-campaign-activation-checklist.md`, `docs/post-1.2-campaign-live-tracking.md` e `docs/post-1.2-campaign-pause-checklist.md`.

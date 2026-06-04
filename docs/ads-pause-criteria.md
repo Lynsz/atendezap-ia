@@ -104,3 +104,11 @@ Pausar imediatamente se:
 - health check, logs ou smoke indicarem falha critica
 - bugs P0/P1 surgirem durante as primeiras verificacoes
 - o relatorio diario da campanha indicar status critico
+
+## Execucao da campanha pos-1.2
+
+- Comecar pequena e revisar `docs/post-1.2-campaign-live-tracking.md` diariamente.
+- Pausar por qualquer bug critico, falha de checkout/webhook/IA/auth/tracking, custo de IA anormal ou exposicao de dados.
+- Nao escalar antes da analise de 72h.
+- Nao escalar sem primeira resposta, com billing instavel ou custo de IA instavel.
+- Usar `docs/post-1.2-campaign-pause-checklist.md` para registrar a pausa e a reativacao.

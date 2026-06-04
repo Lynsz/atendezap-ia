@@ -23,6 +23,8 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `campaign_pro_cta_click`: clique da pagina de campanha na oferta do Pro.
 - `optimized_campaign_page_view`: abertura com `utm_campaign=campanha_otimizada_01`.
 - `optimized_campaign_cta_click`: clique em CTA com `utm_campaign=campanha_otimizada_01`.
+- `post_12_campaign_page_view`: abertura com `utm_campaign=post_12_campaign_01`.
+- `post_12_campaign_cta_click`: clique em CTA com `utm_campaign=post_12_campaign_01`.
 - `niche_page_view`: abertura de pagina publica por nicho.
 - `niche_demo_cta_click`: clique de pagina por nicho para demo.
 - `niche_signup_cta_click`: clique de pagina por nicho para cadastro.
@@ -118,6 +120,8 @@ Nas paginas por nicho, os eventos enviam apenas metadados seguros como `niche`, 
 Na segunda campanha, use `utm_content` para diferenciar variacoes como `demo_criativo_1`, `ebook_criativo_1`, `landing_criativo_1` e `pro_29_criativo_1`.
 
 Na campanha pequena otimizada, use `utm_campaign=campanha_otimizada_01`. Quando essa UTM estiver presente, o client dispara tambem `optimized_campaign_page_view` e `optimized_campaign_cta_click` com metadados seguros, preservando os eventos originais da pagina.
+
+Na campanha pequena pos-1.2, use `utm_campaign=post_12_campaign_01`. Quando essa UTM estiver presente, o client dispara tambem `post_12_campaign_page_view` e `post_12_campaign_cta_click`, sem e-mail, telefone, pergunta, resposta, dados de pagamento, IDs Stripe ou secrets.
 
 ## Como testar sem GA4 ou Meta Pixel
 

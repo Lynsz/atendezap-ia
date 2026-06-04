@@ -1559,6 +1559,28 @@ Recomendacao:
 
 Nota estimada mantida: 98/100 para producao controlada; sem dados reais suficientes para aprovar escala cautelosa.
 
+## Prontidao para executar campanha pequena pos-1.2 - 2026-06-04
+
+- Campanha preparada para execucao: sim, documentalmente.
+- Checklist de ativacao criado: sim.
+- Acompanhamento diario criado: sim.
+- Painel admin revisado: sim, agregado e admin-only.
+- Tracking revisado: sim, sem dados sensiveis.
+- Checklist de pausa criado: sim.
+- Campanha liberada: nao.
+- Status atual: bloqueada por falta de evidencia real preenchida de producao.
+- Dados de desempenho: Sem dados suficientes.
+
+Recomendacao:
+
+- manter privado
+- bloquear campanha ate validacao real e checklist verde
+- depois, ativar campanha pequena e monitorar 72h
+- pausar por qualquer criterio critico
+- nao escalar ainda
+
+Nota estimada mantida: 98/100 para operacao controlada documentada, condicionada a validacao real em producao.
+
 ## Campanha pequena otimizada - 2026-05-31
 
 Status: preparada para teste pequeno, sem aprovar escala.

@@ -192,3 +192,16 @@ Areas:
 - tracking: eventos principais, UTMs e ausencia de dados sensiveis.
 
 Status atual: Sem dados suficientes. Nao abrir campanha nem criar tarefas de produto conclusivas ate os checklists de producao e monitoramento estarem preenchidos.
+
+## Intake de execucao da campanha pos-1.2
+
+Criar insight manual somente quando houver evidencia agregada:
+
+- activation: cadastro sem onboarding ou onboarding sem primeira resposta
+- conversion: primeira resposta sem pricing/checkout ou checkout sem assinatura
+- campaign: pagina, headline, CTA, criativo ou UTM com gargalo comprovado
+- billing: checkout, webhook, portal ou status de assinatura instavel
+- ai_cost: custo anormal ou uso sem ativacao
+- support: bug critico ou duvida recorrente
+
+Status atual: Sem dados suficientes. Riscos previstos nao devem virar conclusoes ou funcionalidades grandes antes da execucao real.
