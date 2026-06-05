@@ -67,3 +67,11 @@ Referencias: `docs/cautious-scale-report.md`, `docs/scale-control-matrix.md` e `
 - decisao: manter / pausar / ajustar / testar nova variacao / corrigir produto / inconclusivo
 
 Referencias: `docs/post-1.2-campaign-live-tracking.md` e `docs/post-1.2-campaign-analysis-template.md`.
+
+## Decisao de escala pos-1.2
+
+- status de escala: nao escalar / manter pequena / testar nova variacao / liberar escala cautelosa
+- prerequisitos pendentes:
+- proxima acao:
+
+Referencias: `docs/post-1.2-campaign-analysis.md`, `docs/post-1.2-campaign-decision.md`, `docs/post-1.2-scale-decision.md` e `docs/version-1.3-initial-plan.md`.

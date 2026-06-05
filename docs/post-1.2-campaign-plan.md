@@ -128,3 +128,15 @@ Operacao diaria:
 - Template de analise: `docs/post-1.2-campaign-analysis-template.md`
 
 Configuracao proposta, ainda bloqueada: delivery, Meta Ads, `/para/delivery`, CTA `Testar demo gratis` e `utm_campaign=post_12_campaign_01`. O orcamento permanece pequeno e pendente de aprovacao. Nao ativar nem escalar enquanto a validacao real de producao estiver pendente.
+
+## Analise e proxima decisao
+
+- Analise consolidada: `docs/post-1.2-campaign-analysis.md`.
+- Diagnostico do funil: `docs/post-1.2-campaign-funnel-diagnosis.md`.
+- Matriz de decisao operacional: `docs/post-1.2-campaign-decision.md`.
+- Plano de ajustes: `docs/post-1.2-campaign-adjustment-plan.md`.
+- Proxima variacao: `docs/post-1.2-next-variation-plan.md`.
+- Comparativo: `docs/post-1.2-campaign-comparison.md`.
+- Decisao de escala: `docs/post-1.2-scale-decision.md`.
+
+Decisao atual: `Sem dados suficientes`; manter bloqueada ate validacao real, nao escalar e nao alterar produto, pricing ou IA sem gargalo comprovado.

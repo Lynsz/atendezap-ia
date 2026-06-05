@@ -66,3 +66,12 @@ Use `docs/daily-scale-checklist.md` e `docs/cautious-scale-report.md` antes de q
 - decisao da semana: manter bloqueada / ativar pequena / manter / ajustar / pausar / corrigir
 
 Use `docs/post-1.2-campaign-activation-checklist.md`, `docs/post-1.2-campaign-live-tracking.md` e `docs/post-1.2-campaign-pause-checklist.md`.
+
+## Analise pos-1.2 e versao 1.3
+
+- `docs/post-1.2-campaign-analysis.md` esta preenchido?
+- `docs/post-1.2-scale-decision.md` permite ou bloqueia escala?
+- existe gargalo real para ajustes P0/P1/P2?
+- algum item deve entrar no planejamento inicial da 1.3?
+
+Use `docs/post-1.2-campaign-adjustment-plan.md`, `docs/post-1.2-next-variation-plan.md` e `docs/version-1.3-initial-plan.md`.

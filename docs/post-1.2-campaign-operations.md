@@ -33,6 +33,9 @@
 - documentar aprendizados
 - criar insights
 - decidir manter, pausar, ajustar ou escalar com cautela
+- consolidar `docs/post-1.2-campaign-analysis.md`
+- revisar `docs/post-1.2-scale-decision.md`
+- planejar a proxima variacao em `docs/post-1.2-next-variation-plan.md`
 
 ## Guardrails
 
@@ -40,3 +43,5 @@
 - Nao escalar antes de analisar dados iniciais.
 - Nao usar dados pessoais, respostas completas, IDs Stripe ou payloads de webhook em relatorios.
 - Nao prometer envio automatico pelo WhatsApp.
+- Nao escalar se a analise indicar `Sem dados suficientes`.
+- Nao escalar sem primeira resposta, checkout/webhook estaveis, tracking confiavel, custo de IA controlado e suporte sob controle.

@@ -82,4 +82,6 @@ Se algum dado estiver indisponivel, registrar `Sem dados suficientes` e nao extr
 - Criar o registro no admin somente apos liberacao operacional, com status `planned` e decisao `inconclusive`.
 - Registrar resultados diarios agregados e usar `docs/post-1.2-campaign-live-tracking.md`.
 - Aplicar o diagnostico deterministico do admin e o checklist de pausa; nao usar IA para recomendar decisoes.
-- Consolidar a decisao em `docs/post-1.2-campaign-analysis-template.md`.
+- Consolidar a decisao em `docs/post-1.2-campaign-analysis.md` e manter `docs/post-1.2-campaign-analysis-template.md` como modelo.
+- Registrar decisao final como `keep`, `pause`, `iterate`, `scale_cautiously` ou `inconclusive`.
+- Se nao houver primeira resposta, checkout/webhook estavel e tracking confiavel, manter `inconclusive` ou `pause`; nao escalar.

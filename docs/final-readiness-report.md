@@ -1,5 +1,40 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Analise da campanha pos-1.2 e decisao de escala - 2026-06-05
+
+Status: Sem dados suficientes; campanha bloqueada para escala.
+
+O que foi feito:
+
+- Campanha pos-1.2 analisada.
+- Diagnostico do funil criado.
+- Plano de ajustes criado.
+- Proxima variacao planejada.
+- Decisao de escala criada.
+- Plano inicial 1.3 criado.
+- Admin de campanhas revisado com bloco agregado e campos `Nao disponivel` quando nao ha dados.
+
+Status atual:
+
+- campanha pos-1.2: bloqueada
+- escala cautelosa: nao liberada
+- melhor sinal: hipotese, destino, UTM e tracking preparados
+- maior gargalo: falta de dados agregados reais
+- bugs criticos: nenhum confirmado nos documentos revisados
+- suporte aberto: Nao disponivel
+- custo IA: Nao disponivel
+
+Recomendacao:
+
+- manter privado
+- manter campanha pequena ou bloqueada
+- pausar campanha se surgir criterio critico
+- ajustar antes de repetir apenas com gargalo comprovado
+- nao liberar escala cautelosa
+- planejar versao 1.3 sem marcar como iniciada
+
+Nota estimada: 96/100 local, condicionada a validacao real de producao, checkout, webhook, IA, tracking, suporte e dados agregados.
+
 ## Analise pos-deploy da versao 1.2 preparada - 2026-06-04
 
 Status: em observacao; campanha bloqueada.

@@ -108,5 +108,7 @@ Para aprovar nova escala depois da Sprint 3:
 - [ ] custo de IA estavel
 - [ ] suporte sem bug critico
 - [ ] `docs/post-1.2-campaign-analysis-template.md` preenchido
+- [ ] `docs/post-1.2-campaign-analysis.md` revisado
+- [ ] `docs/post-1.2-scale-decision.md` nao recomenda `nao escalar`
 
 Se qualquer item estiver pendente, manter a campanha pequena ou bloqueada e nao escalar.

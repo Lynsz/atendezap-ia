@@ -54,3 +54,10 @@
 - Pausar por bug critico ou falha de IA, auth, checkout, webhook, tracking, suporte ou privacidade.
 - Nao escalar antes de 72h de dados agregados.
 - Nao escalar sem primeira resposta, com billing instavel ou custo de IA instavel.
+
+## Analise pos-campanha pos-1.2
+
+- Status `Sem dados suficientes` significa nao escalar.
+- Manter campanha pequena ou bloqueada ate usuarios gerarem primeira resposta.
+- Checkout/webhook, tracking, custo de IA e suporte precisam estar estaveis antes de qualquer aumento.
+- Bugs P0/P1, custo anormal ou suporte critico mudam a decisao para pausar ou corrigir antes de continuar.

@@ -1,5 +1,13 @@
 # Auditoria do AtendeZap IA
 
+## Analise da campanha pos-1.2 e decisao de escala - 2026-06-05
+
+- Criados `docs/post-1.2-campaign-analysis.md`, `docs/post-1.2-campaign-funnel-diagnosis.md`, `docs/post-1.2-campaign-decision.md`, `docs/post-1.2-campaign-adjustment-plan.md`, `docs/post-1.2-next-variation-plan.md`, `docs/post-1.2-campaign-comparison.md`, `docs/post-1.2-scale-decision.md` e `docs/version-1.3-initial-plan.md`.
+- Admin de campanhas revisado para mostrar melhor sinal, maior gargalo, proxima acao, suporte aberto, falhas IA/Stripe, custo IA e decisao recomendada com `Nao disponivel` quando nao ha fonte persistida.
+- Status atual: Sem dados suficientes; campanha pequena pos-1.2 segue bloqueada ate validacao real, checklist aprovado e acompanhamento agregado.
+- Recomendacao: manter privado, manter campanha bloqueada ou pequena, pausar se houver P0/P1, ajustar apenas gargalo comprovado, nao liberar escala cautelosa e usar o plano 1.3 apenas como planejamento inicial.
+- Nota estimada: 96/100 local, condicionada a validacao real de producao, billing, IA, tracking, suporte, admin e ausencia de P0/P1.
+
 ## Analise pos-deploy da versao 1.2 preparada - 2026-06-04
 
 - Criados `docs/version-1.2-post-deploy-analysis.md`, `docs/version-1.2-stability-diagnosis.md`, `docs/post-1.2-campaign-decision-matrix.md`, `docs/version-1.2-post-deploy-fix-plan.md`, `docs/post-1.2-final-campaign-launch-checklist.md`, `docs/post-1.2-campaign-operations.md` e `docs/post-1.2-campaign-daily-report-template.md`.

@@ -112,3 +112,13 @@ Pausar imediatamente se:
 - Nao escalar antes da analise de 72h.
 - Nao escalar sem primeira resposta, com billing instavel ou custo de IA instavel.
 - Usar `docs/post-1.2-campaign-pause-checklist.md` para registrar a pausa e a reativacao.
+
+## Analise da campanha pos-1.2
+
+- Se `docs/post-1.2-campaign-analysis.md` estiver como `Sem dados suficientes`, manter campanha bloqueada ou pequena.
+- Nao escalar sem usuarios gerando primeira resposta.
+- Nao escalar se checkout/webhook estiver instavel.
+- Nao escalar com tracking quebrado ou incompleto.
+- Nao escalar se custo de IA estiver fora de controle.
+- Nao escalar se suporte indicar problema critico.
+- Usar `docs/post-1.2-scale-decision.md` antes de qualquer aumento.

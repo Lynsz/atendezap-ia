@@ -182,3 +182,17 @@ Se qualquer item acima estiver pendente, manter campanha bloqueada.
 - [ ] nenhum P0/P1 foi aberto
 
 Sem todos os itens acima, nao aumentar orcamento.
+
+## Decisao de escala pos-1.2
+
+- [ ] `docs/post-1.2-campaign-analysis.md` preenchido com dados agregados reais ou decisao `Sem dados suficientes`
+- [ ] `docs/post-1.2-campaign-funnel-diagnosis.md` revisado
+- [ ] `docs/post-1.2-campaign-decision.md` aplicado
+- [ ] `docs/post-1.2-scale-decision.md` revisado
+- [ ] usuarios da campanha geraram primeira resposta
+- [ ] checkout e webhook ficaram estaveis
+- [ ] tracking ficou confiavel
+- [ ] custo de IA ficou controlado
+- [ ] suporte nao indicou problema critico
+
+Se qualquer item estiver pendente, nao liberar escala cautelosa.

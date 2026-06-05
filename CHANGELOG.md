@@ -6,7 +6,13 @@
 
 - Execucao da campanha pos-1.2 preparada com plano, acompanhamento diario, checklist de ativacao, checklist de pausa e template de analise.
 - Eventos seguros `post_12_campaign_page_view` e `post_12_campaign_cta_click`.
-- Bloco agregado "Campanha pos-1.2 ativa" no admin existente.
+- Bloco agregado "Analise campanha pos-1.2" no admin existente.
+- Analise da campanha pos-1.2 criada.
+- Diagnostico do funil pos-1.2 criado.
+- Plano de ajustes pos-campanha criado.
+- Proxima variacao pos-1.2 planejada.
+- Decisao de escala pos-1.2 documentada.
+- Plano inicial da versao 1.3 criado, sem marcar a 1.3 como iniciada.
 
 ### Status
 

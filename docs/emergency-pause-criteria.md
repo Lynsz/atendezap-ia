@@ -64,3 +64,13 @@ Se a campanha ja estiver ativa e surgir bug P0/P1, falha de checkout, webhook, I
 ## Checklist operacional pos-1.2
 
 Aplicar `docs/post-1.2-campaign-pause-checklist.md`. Registrar a campanha como `paused`, revisar logs seguros, corrigir, validar em staging, rodar smoke e somente reativar com nova aprovacao operacional.
+
+## Decisao pos-analise da campanha pos-1.2
+
+Manter bloqueada ou pausar imediatamente se `docs/post-1.2-campaign-analysis.md`, `docs/post-1.2-campaign-decision.md` ou `docs/post-1.2-scale-decision.md` indicar:
+
+- Sem dados suficientes para confirmar ativacao e primeira resposta.
+- Checkout, webhook, IA, auth, tracking ou suporte instavel.
+- Custo de IA fora de controle.
+- Bug P0/P1 ou risco de privacidade.
+- Qualquer analytics recebendo dado sensivel.

@@ -205,3 +205,20 @@ Criar insight manual somente quando houver evidencia agregada:
 - support: bug critico ou duvida recorrente
 
 Status atual: Sem dados suficientes. Riscos previstos nao devem virar conclusoes ou funcionalidades grandes antes da execucao real.
+
+## Intake da analise da campanha pos-1.2
+
+Use `docs/post-1.2-campaign-analysis.md`, `docs/post-1.2-campaign-funnel-diagnosis.md`, `docs/post-1.2-campaign-adjustment-plan.md` e `docs/post-1.2-scale-decision.md` como entrada para insights manuais.
+
+Categorias permitidas:
+
+- activation
+- conversion
+- campaign
+- billing
+- ai_quality
+- ai_cost
+- support
+- usability
+
+Status atual: Sem dados suficientes. Nao criar tarefas de produto conclusivas, automacao, CRM ou WhatsApp API antes de dados agregados reais.

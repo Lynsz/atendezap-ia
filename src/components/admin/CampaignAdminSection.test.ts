@@ -18,8 +18,11 @@ describe("CampaignAdminSection", () => {
     expect(component).toContain("Sem dados suficientes para comparar canais.");
     expect(component).toContain("Diagnostico da campanha");
     expect(component).toContain("Escala cautelosa");
-    expect(component).toContain("Campanha pos-1.2 ativa");
+    expect(component).toContain("Analise campanha pos-1.2");
     expect(component).toContain("post_12_campaign_01");
+    expect(component).toContain("Hipotese, UTM e eventos preparados.");
+    expect(component).toContain("Custo IA");
+    expect(component).toContain("Preencher resultados agregados antes de qualquer decisao de escala.");
     expect(component).toContain("Decisao diaria");
     expect(component).toContain("Sem dados suficientes para recomendacao.");
     expect(component).toContain("Resultados por nicho");
