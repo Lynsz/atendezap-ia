@@ -71,3 +71,17 @@
 - Manter como `planned` ou `reviewing` para 1.3: validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking e admin no ambiente final.
 - Manter como `blocked` para escala: campanha maior sem smoke pos-deploy, primeiras 72h e dados agregados suficientes.
 - Fora do roadmap imediato: WhatsApp API, CRM completo, automacao complexa, multiplos atendentes e app mobile.
+
+## Planejamento da versao 1.3
+
+- Status permitido: `planned` enquanto a 1.3 estiver apenas planejada.
+- Entrada principal: `docs/version-1.3-intake-criteria.md`.
+- Backlog filtrado: `docs/version-1.3-backlog.md`.
+- Priorizacao: `docs/version-1.3-prioritization.md`.
+- Metricas: `docs/version-1.3-success-metrics.md`.
+- Roadmap: `docs/version-1.3-roadmap.md`.
+- Planejamento de campanha: `docs/version-1.3-campaign-plan.md`.
+- Release: `docs/version-1.3-release-checklist.md` e `docs/release-notes-1.3-draft.md`.
+- Itens selecionados devem resolver validacao real, P0/P1, ativacao, retencao, conversao, IA/custo, billing, suporte, tracking ou campanha pequena.
+- Itens sem dado agregado suficiente ficam como `reviewing`, nao como conclusao de produto.
+- Itens fora do escopo permanecem `rejected` ou fora do ciclo: WhatsApp API, CRM completo, automacao complexa, multiplos atendentes, app mobile, marketplace de templates e BI avancado.

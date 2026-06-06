@@ -7,6 +7,10 @@
 ## P1 - Alta prioridade
 
 - Validar Stripe Checkout, Customer Portal, webhook, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao antes de nova escala.
+- Selecionado para 1.3: validar Stripe, portal, webhook, Supabase RLS, OpenAI, Resend, tracking, admin e health check em staging/producao antes de liberar nova variacao de campanha.
+- Selecionado para 1.3: corrigir qualquer P0/P1 real de checkout, webhook, login, cadastro, IA, tracking, privacidade, RLS, suporte ou admin.
+- Selecionado para 1.3: validar ativacao ate primeira resposta, copia, salvamento e retorno inicial com dados agregados.
+- Selecionado para 1.3: revisar limites, falhas e custo de IA antes de aumentar trafego.
 - Corrigido na 1.1: notas internas de suporte (`admin_notes`) nao retornam nem aparecem para usuario comum.
 - Selecionado para 1.2: validar provedores reais e RLS antes de nova campanha.
 - Selecionado para 1.2: medir gargalo de ativacao entre cadastro, onboarding, primeira resposta, copia/salvamento, checkout e assinatura.
@@ -17,6 +21,10 @@
 ## P2 - Media prioridade
 
 - Validar visualmente landing, paginas por nicho, demo, ebook, precos, assinatura, suporte, dashboard e admin em mobile/tablet/desktop.
+- Selecionado para 1.3: validar mobile das paginas por nicho, demo, pricing, dashboard, biblioteca e templates antes de campanha.
+- Selecionado para 1.3: melhorar biblioteca, favoritos e templates recomendados somente se dados mostrarem queda entre primeira resposta e reutilizacao.
+- Selecionado para 1.3: ajustar CTA pos-primeira resposta para pricing somente se usuarios ativados nao avancarem para planos.
+- Selecionado para 1.3: ajustar landing `/para/delivery` e testar criativo 02 somente depois de checklist verde e dados agregados.
 - Acompanhar gargalos entre cadastro, onboarding, primeira resposta, salvar/copiar resposta e checkout.
 - Preencher relatorios de campanha apenas com dados agregados reais.
 - Selecionado para 1.2: melhorar exemplos por nicho, templates recomendados, CTA pos-demo e pricing apenas se os dados agregados mostrarem gargalo.
@@ -27,6 +35,7 @@
 - Avaliar alertas automaticos somente quando o volume justificar.
 - Avaliar novos nichos e criativos depois de dados agregados suficientes.
 - Avaliar metricas internas de custo de IA se tokens/modelo passarem a ser persistidos.
+- Adiado para depois da 1.3: mudanca de pricing, mudanca grande de prompt, novo nicho prioritario, alertas automaticos e custo interno por resposta detalhado sem dados agregados suficientes.
 - Adiado: planos anuais, tags avancadas, exportacao de historico, alertas automaticos e custo interno por resposta.
 
 ## Ideias descartadas por enquanto
@@ -35,6 +44,51 @@
 - Mudanca grande de prompt sem feedback agregado recorrente.
 - Novo painel complexo para substituir admin atual.
 - Integracao direta com WhatsApp, CRM, automacao complexa, app mobile e BI avancado continuam fora do escopo da 1.2.
+
+# Planejamento da versao 1.3
+
+Use `docs/version-1.3-plan.md`, `docs/version-1.3-prioritization.md`, `docs/version-1.3-backlog.md`, `docs/version-1.3-success-metrics.md` e `docs/version-1.3-campaign-plan.md` como entrada da proxima sprint.
+
+## Itens selecionados para 1.3
+
+- validacao real de provedores, RLS, billing, tracking, admin e health check
+- correcao de qualquer P0/P1 real antes de campanha
+- ativacao ate primeira resposta, copia e salvamento
+- retencao inicial por biblioteca, favoritos e templates recomendados
+- conversao entre primeira resposta, pricing, checkout e assinatura
+- suporte recorrente sobre WhatsApp automatico, billing, onboarding e IA
+- limites, falhas e custo da IA antes de aumentar trafego
+- UX mobile nas superficies criticas do funil
+- nova variacao pequena de delivery apenas depois de checklist verde
+
+## Itens adiados
+
+- mudanca de pricing sem dados de pricing, checkout e assinatura
+- mudanca grande de prompt sem feedback agregado recorrente
+- troca de nicho sem campanha com dados suficientes
+- alertas automaticos sem volume operacional
+- relatorios profundos de custo de IA sem necessidade comprovada
+
+## Itens fora do escopo
+
+- integracao direta com WhatsApp
+- CRM completo
+- automacoes avancadas
+- multiplos atendentes
+- app mobile
+- marketplace de templates
+- BI avancado
+
+## Itens dependentes de mais dados
+
+- melhor nicho
+- melhor criativo
+- melhor CTA
+- alteracao de pricing
+- alteracao de prompt
+- custo interno por resposta
+- retencao em 7 dias
+- suporte recorrente por categoria
 
 ## Funcionalidades fora do escopo atual
 

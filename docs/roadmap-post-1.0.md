@@ -144,3 +144,16 @@ Antes de adicionar funcionalidade grande, validar se ela resolve um gargalo real
 - Proxima etapa: deploy controlado, smoke pos-deploy e monitoramento das primeiras 72h.
 - Campanha pequena pos-1.2: permitida somente depois do smoke test e sem escala.
 - Versao 1.3: usar dados reais para priorizar provedores, billing, RLS, ativacao, conversao, mobile, templates e custo de IA.
+
+## Versao 1.3 planejada
+
+- Status: planejada, nao entregue.
+- Objetivo: melhorar retencao, conversao e qualidade da experiencia com base nos aprendizados da 1.2 e da campanha pos-1.2.
+- Foco principal: validar provedores/RLS/billing/tracking, corrigir P0/P1, reduzir atrito ate primeira resposta, melhorar reutilizacao e preparar nova variacao pequena de campanha.
+- Sprint 1: correcoes, estabilidade, tracking, IA/limites, billing, suporte, paginas com gargalo e validacao real.
+- Sprint 2: retencao e reutilizacao com biblioteca, favoritos, templates recomendados, retorno ao dashboard e mensagens de orientacao.
+- Sprint 3: conversao e nova variacao pequena de delivery com CTA, pricing, FAQ, UTM e criativo revisados apenas com dados.
+- Sprint 4: QA, release notes, changelog, smoke test, deploy controlado e plano pos-release.
+- Documentos de referencia: `docs/version-1.3-plan.md`, `docs/version-1.3-roadmap.md`, `docs/version-1.3-backlog.md`, `docs/version-1.3-success-metrics.md`, `docs/version-1.3-release-checklist.md`, `docs/version-1.3-campaign-plan.md` e `docs/version-1.3-prioritization.md`.
+- Itens adiados: mudanca de pricing, mudanca grande de prompt, novo nicho prioritario, alertas automaticos e custo interno por resposta sem dados suficientes.
+- Fora do escopo: WhatsApp API, CRM completo, automacao complexa, multiplos atendentes, app mobile, marketplace de templates e BI avancado.

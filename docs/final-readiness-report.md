@@ -1,5 +1,43 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Planejamento detalhado da versao 1.3 - 2026-06-05
+
+Status: 1.3 planejada, nao entregue.
+
+O que foi feito:
+
+- Plano detalhado 1.3 criado.
+- Criterios de entrada 1.3 criados.
+- Roadmap 1.3 criado.
+- Backlog 1.3 criado.
+- Metricas de sucesso 1.3 criadas.
+- Checklist de release 1.3 criado.
+- Release notes 1.3 draft criadas.
+- Plano de campanha 1.3 criado.
+- Priorizacao 1.3 criada.
+- Backlog, roadmap, gestao de roadmap, CHANGELOG e auditoria atualizados.
+
+Status atual:
+
+- foco principal: validacao real, correcao de P0/P1, ativacao, retencao inicial, conversao, qualidade/custo de IA, suporte e nova variacao pequena de campanha.
+- campanha pos-1.2: bloqueada ate validacao real.
+- nova campanha 1.3: planejada como variacao pequena de delivery, sem escala.
+- maior gargalo: falta de dados agregados reais.
+- melhor sinal: hipotese, destino, CTA, UTM e tracking preparados.
+- bugs P0/P1: nenhum confirmado nos documentos revisados.
+- pontos dependentes de mais dados: pricing, prompt, nicho vencedor, criativo vencedor, custo interno por resposta, retencao em 7 dias e suporte recorrente.
+
+Recomendacao:
+
+- manter privado
+- iniciar Sprint 1 da versao 1.3
+- corrigir P0/P1 antes de campanha
+- manter campanha pequena
+- nao escalar antes de validar nova variacao
+- manter relatorios agregados e sem conteudo completo de usuarios
+
+Nota estimada: 96/100 local, condicionada a validacao real de producao, checkout, webhook, IA, tracking, suporte, admin, RLS e ausencia de P0/P1.
+
 ## Analise da campanha pos-1.2 e decisao de escala - 2026-06-05
 
 Status: Sem dados suficientes; campanha bloqueada para escala.

@@ -19,6 +19,27 @@
 - Campanha continua bloqueada ate validacao real de producao e aprovacao operacional.
 - Nenhuma escala ou conclusao de desempenho foi registrada.
 
+## [1.3.0] - planejado
+
+### Planejado
+
+- Plano detalhado da versao 1.3 criado com foco em retencao inicial, conversao, qualidade da IA, templates, onboarding, campanha por nicho, controle de custo da IA e UX mobile.
+- Criterios de entrada da 1.3 definidos para aceitar apenas correcoes P0/P1, melhorias ligadas a ativacao, retencao, conversao, suporte, IA, billing, campanha e custo com metrica simples.
+- Roadmap 1.3 organizado em quatro sprints: estabilidade pos-campanha, retencao/reutilizacao, conversao/nova variacao e QA/release/operacao.
+- Backlog 1.3 criado por area: correcoes, ativacao, retencao, conversao, IA, templates, billing, suporte, campanhas, admin/relatorios, seguranca e documentacao.
+- Metricas de sucesso 1.3 criadas para ativacao, retencao, conversao, IA, suporte, campanhas e prontidao operacional.
+- Checklist de release 1.3 criado para codigo, seguranca, produto, billing, campanha, documentacao e decisao final.
+- Release notes 1.3 draft, plano de campanha 1.3 e matriz de priorizacao 1.3 criados.
+- Campanha 1.3 planejada como nova variacao pequena de delivery, sem escala antes de dados agregados reais.
+
+### Fora do escopo
+
+- integracao direta com WhatsApp
+- CRM completo
+- automacoes avancadas
+- multiplos atendentes
+- app mobile
+
 ## [1.2.0] - 2026-06-04
 
 ### Adicionado

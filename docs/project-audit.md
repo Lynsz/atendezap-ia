@@ -1,5 +1,17 @@
 # Auditoria do AtendeZap IA
 
+## Planejamento detalhado da versao 1.3 - 2026-06-05
+
+- Criados `docs/version-1.3-plan.md`, `docs/version-1.3-intake-criteria.md`, `docs/version-1.3-roadmap.md`, `docs/version-1.3-backlog.md`, `docs/version-1.3-success-metrics.md`, `docs/version-1.3-release-checklist.md`, `docs/release-notes-1.3-draft.md`, `docs/version-1.3-campaign-plan.md` e `docs/version-1.3-prioritization.md`.
+- Backlog, roadmap pos-1.0, gestao de roadmap e CHANGELOG atualizados para registrar a 1.3 como planejada, nao entregue.
+- Foco principal definido: validacao real de provedores/RLS/billing/tracking, correcao de P0/P1, ativacao ate primeira resposta, retencao por biblioteca/templates/favoritos, conversao para plano pago, custo da IA, suporte e campanha pequena por nicho.
+- Status atual: Sem dados suficientes para escalar; campanha pos-1.2 segue bloqueada ate validacao real e checklist verde.
+- Maior gargalo: falta de dados agregados reais de producao e campanha.
+- Melhor sinal: hipotese de delivery com destino, CTA, UTM e tracking preparados.
+- Bugs P0/P1: nenhum confirmado nos documentos revisados; validacao real de Stripe, Supabase RLS, OpenAI, Resend, tracking, admin, health check e suporte continua P1 operacional.
+- Nota estimada atualizada: 96/100 local, condicionada a validacao real de producao, checkout, webhook, IA, tracking, suporte, admin, RLS e ausencia de P0/P1.
+- Recomendacao: manter privado, iniciar Sprint 1 da versao 1.3, corrigir P0/P1 antes de campanha, manter campanha pequena e nao escalar antes de validar nova variacao com dados agregados.
+
 ## Analise da campanha pos-1.2 e decisao de escala - 2026-06-05
 
 - Criados `docs/post-1.2-campaign-analysis.md`, `docs/post-1.2-campaign-funnel-diagnosis.md`, `docs/post-1.2-campaign-decision.md`, `docs/post-1.2-campaign-adjustment-plan.md`, `docs/post-1.2-next-variation-plan.md`, `docs/post-1.2-campaign-comparison.md`, `docs/post-1.2-scale-decision.md` e `docs/version-1.3-initial-plan.md`.
