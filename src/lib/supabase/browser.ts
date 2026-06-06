@@ -3,6 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 const hasUsableAnonKey = Boolean(supabaseAnonKey && supabaseAnonKey.length >= 40);
+const fallbackSupabaseUrl = "https://supabase-not-configured.invalid";
+const fallbackSupabaseAnonKey = "missing-supabase-anon-key-placeholder-0000000000";
 
 export function getSupabasePublicDiagnostic() {
   return {
@@ -19,15 +21,7 @@ if (typeof window !== "undefined") {
   console.info("[Supabase diagnostic]", supabaseEnv);
 }
 
-if (!supabaseUrl) {
-  throw new Error("NEXT_PUBLIC_SUPABASE_URL não configurada.");
-}
-
-if (!supabaseAnonKey) {
-  throw new Error("NEXT_PUBLIC_SUPABASE_ANON_KEY não configurada.");
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl || fallbackSupabaseUrl, supabaseAnonKey || fallbackSupabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,

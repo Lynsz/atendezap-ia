@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
     const planName = getSubscriptionPlanName(subscription);
     const subscriptionStatus = getSubscriptionStatus(subscription);
-    if (!isUsableSubscriptionStatus(subscriptionStatus)) {
+    if (subscription && !isUsableSubscriptionStatus(subscriptionStatus)) {
       await logEvent("ai_generation_blocked_by_limit", {
         source: "dashboard",
         reason: "subscription_inactive",

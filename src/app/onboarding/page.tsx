@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import SaasDashboardPage from "@/components/pages/SaasDashboardPage";
 
 export const metadata = {
   title: "Configuração inicial",
@@ -10,5 +10,5 @@ export const metadata = {
 };
 
 export default function OnboardingRoutePage() {
-  redirect("/dashboard");
+  return <SaasDashboardPage initialTab="business" />;
 }

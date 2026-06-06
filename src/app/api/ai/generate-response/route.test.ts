@@ -2,7 +2,7 @@
 
 const mocks = vi.hoisted(() => ({
   responseCount: 30,
-  subscription: { plan_name: "free", status: "trial", current_period_start: null, current_period_end: null },
+  subscription: { plan_name: "free", status: "trial", current_period_start: null, current_period_end: null } as Record<string, unknown> | null,
   createClient: vi.fn(),
   generateCustomerResponseWithAi: vi.fn(),
   tableFilters: [] as Array<{ table: string; column: string; value: unknown }>,
@@ -255,6 +255,47 @@ describe("POST /api/ai/generate-response", () => {
       business_id: "22222222-2222-4222-8222-222222222222",
       business_type: "Estetica",
       brand_tone: "Acolhedor"
+    });
+  });
+
+  it("permite uso free quando o usuario ainda nao tem assinatura persistida", async () => {
+    mocks.responseCount = 0;
+    mocks.subscription = null;
+
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/ai/generate-response", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          customerQuestion: "Tem horario hoje?",
+          responseType: "atendimento",
+          businessData: {
+            id: "22222222-2222-4222-8222-222222222222",
+            business_name: "Studio Maria",
+            business_area: "beleza",
+            brand_tone: "profissional"
+          }
+        })
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.generatedAnswer).toBe("Resposta de teste");
+    expect(body.usage).toMatchObject({
+      used: 1,
+      limit: 30,
+      remaining: 29
+    });
+    expect(mocks.generateCustomerResponseWithAi).toHaveBeenCalledTimes(1);
+    expect(mocks.insertPayload).toMatchObject({
+      user_id: "11111111-1111-4111-8111-111111111111",
+      business_id: "22222222-2222-4222-8222-222222222222"
     });
   });
 
