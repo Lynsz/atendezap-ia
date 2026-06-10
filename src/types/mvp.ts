@@ -34,6 +34,27 @@ export type Business = {
   updated_at: string;
 };
 
+export type UserProfile = {
+  id: string;
+  user_id: string;
+  business_name: string | null;
+  business_type: string | null;
+  tone: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AiUsage = {
+  id: string;
+  user_id: string;
+  month: string;
+  count: number;
+  limit: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type GeneratedResponse = {
   id: string;
   user_id: string;

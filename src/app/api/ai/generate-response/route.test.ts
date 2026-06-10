@@ -1,12 +1,14 @@
 ﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
-  responseCount: 30,
+  usageCount: 30,
+  usageLimit: 30,
   subscription: { plan_name: "free", status: "trial", current_period_start: null, current_period_end: null } as Record<string, unknown> | null,
   createClient: vi.fn(),
   generateCustomerResponseWithAi: vi.fn(),
   tableFilters: [] as Array<{ table: string; column: string; value: unknown }>,
-  insertPayload: null as Record<string, unknown> | null
+  insertPayload: null as Record<string, unknown> | null,
+  usageUpdatePayload: null as Record<string, unknown> | null
 }));
 
 vi.mock("@supabase/supabase-js", () => ({
@@ -27,6 +29,7 @@ type QueryChain = {
   maybeSingle: ReturnType<typeof vi.fn>;
   single: ReturnType<typeof vi.fn>;
   insert: ReturnType<typeof vi.fn>;
+  update: ReturnType<typeof vi.fn>;
 };
 
 function createChain(table: string, terminal: () => Promise<Record<string, unknown>>) {
@@ -43,7 +46,15 @@ function createChain(table: string, terminal: () => Promise<Record<string, unkno
   chain.maybeSingle = vi.fn(terminal);
   chain.single = vi.fn(terminal);
   chain.insert = vi.fn((payload: Record<string, unknown>) => {
-    mocks.insertPayload = payload;
+    if (table === "generated_responses") {
+      mocks.insertPayload = payload;
+    }
+    return chain;
+  });
+  chain.update = vi.fn((payload: Record<string, unknown>) => {
+    if (table === "ai_usage") {
+      mocks.usageUpdatePayload = payload;
+    }
     return chain;
   });
 
@@ -68,9 +79,32 @@ function createSupabaseMock() {
           data: { id: "response_1", user_id: "11111111-1111-4111-8111-111111111111" },
           error: null
         }));
-        chain.gte.mockImplementation(() => chain);
-        chain.lt.mockImplementation(async () => ({ count: mocks.responseCount, error: null }) as never);
         return chain;
+      }
+
+      if (table === "ai_usage") {
+        return createChain(table, async () => ({
+          data: {
+            id: "usage_1",
+            user_id: "11111111-1111-4111-8111-111111111111",
+            month: "2026-06",
+            count: mocks.usageUpdatePayload?.count ?? mocks.usageCount,
+            limit: mocks.usageUpdatePayload?.limit ?? mocks.usageLimit
+          },
+          error: null
+        }));
+      }
+
+      if (table === "user_profiles") {
+        return createChain(table, async () => ({
+          data: {
+            business_name: "Studio Maria",
+            business_type: "Estetica",
+            tone: "Acolhedor",
+            description: "Atendimento de estetica"
+          },
+          error: null
+        }));
       }
 
       if (table === "businesses") {
@@ -96,10 +130,13 @@ describe("POST /api/ai/generate-response", () => {
   beforeEach(() => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-key";
-    mocks.responseCount = 30;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
+    mocks.usageCount = 30;
+    mocks.usageLimit = 20;
     mocks.subscription = { plan_name: "free", status: "trial", current_period_start: null, current_period_end: null };
     mocks.tableFilters = [];
     mocks.insertPayload = null;
+    mocks.usageUpdatePayload = null;
     mocks.createClient.mockReset();
     mocks.createClient.mockReturnValue(createSupabaseMock());
     mocks.generateCustomerResponseWithAi.mockReset().mockResolvedValue({
@@ -143,7 +180,7 @@ describe("POST /api/ai/generate-response", () => {
     expect(body.error).toContain("limite mensal");
     expect(body.usage).toMatchObject({
       used: 30,
-      limit: 30,
+      limit: 20,
       remaining: 0
     });
     expect(mocks.generateCustomerResponseWithAi).not.toHaveBeenCalled();
@@ -163,13 +200,13 @@ describe("POST /api/ai/generate-response", () => {
     const body = await response.json();
 
     expect(response.status).toBe(401);
-    expect(body.error).toContain("Sess");
+    expect(body.error).toContain("logado");
     expect(mocks.generateCustomerResponseWithAi).not.toHaveBeenCalled();
     expect(mocks.insertPayload).toBeNull();
   });
 
   it("retorna 400 para pergunta vazia", async () => {
-    mocks.responseCount = 0;
+    mocks.usageCount = 0;
     const { POST } = await import("./route");
     const response = await POST(
       new Request("https://app.example.test/api/ai/generate-response", {
@@ -192,7 +229,7 @@ describe("POST /api/ai/generate-response", () => {
   });
 
   it("retorna 400 para pergunta muito grande", async () => {
-    mocks.responseCount = 0;
+    mocks.usageCount = 0;
     const { POST } = await import("./route");
     const response = await POST(
       new Request("https://app.example.test/api/ai/generate-response", {
@@ -214,11 +251,11 @@ describe("POST /api/ai/generate-response", () => {
     const body = await response.json();
 
     expect(response.status).toBe(400);
-    expect(body.error).toContain("Pergunta muito longa");
+    expect(body.error).toContain("mensagem esta muito longa");
   });
 
   it("filtra negocio e historico pelo user_id da sessao", async () => {
-    mocks.responseCount = 0;
+    mocks.usageCount = 0;
     const { POST } = await import("./route");
     const response = await POST(
       new Request("https://app.example.test/api/ai/generate-response", {
@@ -244,7 +281,7 @@ describe("POST /api/ai/generate-response", () => {
     expect(mocks.tableFilters).toEqual(
       expect.arrayContaining([
         { table: "subscriptions", column: "user_id", value: "11111111-1111-4111-8111-111111111111" },
-        { table: "generated_responses", column: "user_id", value: "11111111-1111-4111-8111-111111111111" },
+        { table: "ai_usage", column: "user_id", value: "11111111-1111-4111-8111-111111111111" },
         { table: "businesses", column: "id", value: "22222222-2222-4222-8222-222222222222" },
         { table: "businesses", column: "user_id", value: "11111111-1111-4111-8111-111111111111" }
       ])
@@ -259,7 +296,7 @@ describe("POST /api/ai/generate-response", () => {
   });
 
   it("permite uso free quando o usuario ainda nao tem assinatura persistida", async () => {
-    mocks.responseCount = 0;
+    mocks.usageCount = 0;
     mocks.subscription = null;
 
     const { POST } = await import("./route");
@@ -287,10 +324,12 @@ describe("POST /api/ai/generate-response", () => {
 
     expect(response.status).toBe(200);
     expect(body.generatedAnswer).toBe("Resposta de teste");
+    expect(body.response).toBe("Resposta de teste");
     expect(body.usage).toMatchObject({
+      count: 1,
       used: 1,
-      limit: 30,
-      remaining: 29
+      limit: 20,
+      remaining: 19
     });
     expect(mocks.generateCustomerResponseWithAi).toHaveBeenCalledTimes(1);
     expect(mocks.insertPayload).toMatchObject({
@@ -300,7 +339,7 @@ describe("POST /api/ai/generate-response", () => {
   });
 
   it("nao persiste uso quando a IA falha", async () => {
-    mocks.responseCount = 0;
+    mocks.usageCount = 0;
     mocks.generateCustomerResponseWithAi.mockRejectedValueOnce(new Error("OpenAI indisponivel"));
 
     const { POST } = await import("./route");

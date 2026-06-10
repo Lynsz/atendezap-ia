@@ -9,6 +9,7 @@ type GenerateCustomerResponseInput = {
 };
 
 type GenerateCustomerResponseResult = {
+  response: string;
   generatedAnswer: string;
   mode?: string;
   savedResponse?: GeneratedResponse | null;
@@ -40,12 +41,14 @@ export async function generateCustomerResponse({ customerQuestion, responseType,
 
   const data = (await response.json().catch(() => ({}))) as Partial<GenerateCustomerResponseResult> & { error?: string };
 
-  if (!response.ok || !data.generatedAnswer) {
+  const generatedAnswer = data.generatedAnswer || data.response;
+
+  if (!response.ok || !generatedAnswer) {
     throw new Error(data.error || "Não foi possível gerar a resposta agora.");
   }
 
   return {
-    generatedAnswer: data.generatedAnswer,
+    generatedAnswer,
     mode: data.mode,
     savedResponse: data.savedResponse ?? null,
     savedResponseId: data.savedResponseId ?? null,

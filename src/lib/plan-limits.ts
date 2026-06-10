@@ -1,6 +1,6 @@
 import { SAAS_PLANS } from "@/config/plans";
 
-export const FREE_RESPONSE_LIMIT = 30;
+export const FREE_RESPONSE_LIMIT = 20;
 export const DEMO_DAILY_LIMIT = 6;
 export const DEMO_WINDOW_MS = 10 * 60_000;
 

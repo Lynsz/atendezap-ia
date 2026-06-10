@@ -1,5 +1,6 @@
-import OpenAI from "openai";
-import { formatBusinessTemplateForPrompt, getBusinessTemplate } from "@/lib/ai/business-templates";
+import { getBusinessTemplate } from "@/lib/ai/business-templates";
+import { buildWhatsappResponsePrompt, normalizeBusinessContextForPrompt } from "@/lib/ai/build-whatsapp-response-prompt";
+import { getOpenAIClient, getOpenAIModel } from "@/lib/server/openai";
 import type { ResponseType } from "@/types/mvp";
 
 export type BusinessDataForResponse = {
@@ -28,32 +29,20 @@ export type GenerateAiResponseInput = {
   businessData: BusinessDataForResponse;
 };
 
-const responseTypeLabels: Record<ResponseType, string> = {
-  atendimento: "atendimento",
-  venda: "venda",
-  orcamento: "orcamento",
-  cliente_indeciso: "cliente indeciso",
-  pos_venda: "pos-venda",
-  recuperacao: "recuperacao de cliente sumido"
-};
-
-function line(label: string, value?: string | null) {
-  return value?.trim() ? `- ${label}: ${value.trim()}` : "";
-}
-
 export function generateFallbackCustomerResponse({ customerQuestion, responseType, businessData }: GenerateAiResponseInput) {
-  const template = getBusinessTemplate(businessData.business_type || businessData.business_area);
+  const safeBusinessData = normalizeBusinessContextForPrompt(businessData);
+  const template = getBusinessTemplate(safeBusinessData.business_type || safeBusinessData.business_area);
   const details = [
-    businessData.products_services ? `trabalhamos com ${businessData.products_services}` : "",
-    businessData.opening_hours ? `nosso atendimento funciona em ${businessData.opening_hours}` : "",
-    businessData.main_channel ? `o canal principal de atendimento e ${businessData.main_channel}` : "",
-    businessData.payment_methods ? `aceitamos ${businessData.payment_methods}` : "",
-    businessData.booking_or_payment_link ? `voce tambem pode acessar este link: ${businessData.booking_or_payment_link}` : ""
+    safeBusinessData.products_services ? `trabalhamos com ${safeBusinessData.products_services}` : "",
+    safeBusinessData.opening_hours ? `nosso atendimento funciona em ${safeBusinessData.opening_hours}` : "",
+    safeBusinessData.main_channel ? `o canal principal de atendimento e ${safeBusinessData.main_channel}` : "",
+    safeBusinessData.payment_methods ? `aceitamos ${safeBusinessData.payment_methods}` : "",
+    safeBusinessData.booking_or_payment_link ? `voce tambem pode acessar este link: ${safeBusinessData.booking_or_payment_link}` : ""
   ].filter(Boolean);
 
   return [
     `Ola! Obrigada pelo contato. Sobre sua duvida: ${customerQuestion.trim()}.`,
-    `Aqui no ${businessData.business_name}, ${details.length ? details.join(", ") : "posso te ajudar com mais informacoes do nosso atendimento"}.`,
+    `Aqui no ${safeBusinessData.business_name}, ${details.length ? details.join(", ") : "posso te ajudar com mais informacoes do nosso atendimento"}.`,
     responseType === "venda" || responseType === "cliente_indeciso"
       ? "Me chama por aqui que eu te ajudo a escolher a melhor opcao."
       : "Posso te ajudar com mais detalhes por aqui.",
@@ -64,61 +53,13 @@ export function generateFallbackCustomerResponse({ customerQuestion, responseTyp
 }
 
 export function buildCustomerResponsePrompt({ customerQuestion, responseType, businessData }: GenerateAiResponseInput) {
-  const template = getBusinessTemplate(businessData.business_type || businessData.business_area);
-
-  return `Pergunta do cliente:
-${customerQuestion}
-
-Tipo de resposta:
-${responseTypeLabels[responseType]}
-
-Dados do negocio:
-${[
-  line("Nome", businessData.business_name),
-  line("Area", businessData.business_area),
-  line("Tipo de atuacao", businessData.business_type),
-  line("Cidade/estado", businessData.location),
-  line("Descricao", businessData.description),
-  line("Produtos/servicos", businessData.products_services),
-  line("Perguntas comuns dos clientes", businessData.common_questions),
-  line("Informacoes importantes para a IA", businessData.important_info),
-  line("Precos", businessData.prices),
-  line("Canal principal", businessData.main_channel),
-  line("Horario", businessData.opening_hours),
-  line("Meta de tempo de resposta", businessData.response_goal),
-  line("Endereco", businessData.address),
-  line("Formas de pagamento", businessData.payment_methods),
-  line("Link de pagamento/agendamento", businessData.booking_or_payment_link),
-  line("Tom de voz", businessData.brand_tone)
-]
-  .filter(Boolean)
-  .join("\n")}
-
-Template do tipo de atuacao:
-${formatBusinessTemplateForPrompt(template)}
-
-Regras obrigatorias:
-- Gerar uma resposta pronta para WhatsApp, curta, clara e natural.
-- Adaptar a resposta ao tipo de atuacao, ao tom de voz e aos dados do negocio.
-- Usar apenas precos, prazos, horarios, disponibilidade, endereco, links e formas de pagamento informados nos dados.
-- Nao inventar preco, prazo, disponibilidade, estoque, garantia, endereco, link ou forma de pagamento.
-- Nao confirmar agendamento, reserva, entrega, avaliacao ou atendimento sem dados suficientes.
-- Nao dizer que a mensagem foi enviada automaticamente.
-- Se faltar informacao, pedir os detalhes necessarios de forma educada.
-- Nao usar markdown, listas longas ou aspas envolvendo a resposta final.`;
+  return buildWhatsappResponsePrompt({ customerQuestion, responseType, businessData });
 }
 
 export async function generateCustomerResponseWithAi(input: GenerateAiResponseInput) {
-  if (!process.env.OPENAI_API_KEY) {
-    return {
-      generatedAnswer: generateFallbackCustomerResponse(input),
-      mode: "fallback_without_openai_key" as const
-    };
-  }
-
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = getOpenAIClient();
   const completion = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    model: getOpenAIModel(),
     messages: [
       {
         role: "system",

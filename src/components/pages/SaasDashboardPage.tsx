@@ -59,7 +59,7 @@ import {
   updateSavedResponse,
   updateSavedResponseFavorite
 } from "@/services/saved-responses";
-import type { Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, SavedResponse, Subscription } from "@/types/mvp";
+import type { AiUsage, Business, CustomerLead, CustomerStatus, GeneratedResponse, Plan, ResponseType, SavedResponse, Subscription, UserProfile } from "@/types/mvp";
 
 type DashboardTab = "assistant" | "business" | "history" | "library" | "templates" | "customers" | "billing";
 
@@ -161,9 +161,9 @@ const emptySavedResponseDraft: SavedResponseDraft = {
   content: ""
 };
 
-function getCurrentMonthStart() {
+function getCurrentUsageMonth() {
   const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
 function getPlanLimit(subscription: Subscription | null, plan: Plan | null) {
@@ -262,6 +262,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
   const [userName, setUserName] = useState("cliente");
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [business, setBusiness] = useState<Business | null>(null);
   const [businessDraft, setBusinessDraft] = useState<BusinessDraft>(emptyBusiness);
   const [onboardingStep, setOnboardingStep] = useState(1);
@@ -340,22 +341,24 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     });
 
     const [
+      { data: userProfileData, error: userProfileError },
       { data: businessData, error: businessError },
       { data: responseData, error: responseError },
       { data: customerData, error: customerError },
       { data: subscriptionData, error: subscriptionError },
       { data: planData },
-      { count: monthlyResponseCount, error: monthlyUsageError }
+      { data: monthlyUsageData, error: monthlyUsageError }
     ] = await Promise.all([
+      supabase.from("user_profiles").select("*").eq("user_id", user.id).limit(1).maybeSingle(),
       supabase.from("businesses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("generated_responses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
       supabase.from("customers").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }),
       supabase.from("subscriptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("plans").select("*").order("price", { ascending: true }),
-      supabase.from("generated_responses").select("id", { count: "exact", head: true }).eq("user_id", user.id).gte("created_at", getCurrentMonthStart())
+      supabase.from("ai_usage").select("*").eq("user_id", user.id).eq("month", getCurrentUsageMonth()).maybeSingle()
     ]);
 
-    if (businessError || responseError || customerError || subscriptionError || monthlyUsageError) {
+    if (userProfileError || businessError || responseError || customerError || subscriptionError || monthlyUsageError) {
       setError("Não conseguimos carregar todos os dados agora. Atualize a página ou tente novamente em instantes.");
     }
 
@@ -393,13 +396,41 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       });
     }
 
-    setBusiness((businessData as Business | null) || null);
-    setBusinessDraft(toBusinessDraft((businessData as Business | null) || null));
+    const profileRow = (userProfileData as UserProfile | null) || null;
+    const businessRow = (businessData as Business | null) || null;
+    const profileBusinessFallback = profileRow
+      ? ({
+          id: profileRow.id,
+          user_id: profileRow.user_id,
+          business_name: profileRow.business_name || "",
+          business_area: profileRow.business_type,
+          business_type: profileRow.business_type,
+          location: null,
+          description: profileRow.description,
+          products_services: profileRow.description,
+          common_questions: null,
+          important_info: null,
+          prices: null,
+          opening_hours: null,
+          main_channel: "WhatsApp",
+          response_goal: "Responder em até 15 minutos",
+          address: null,
+          payment_methods: null,
+          booking_or_payment_link: null,
+          brand_tone: profileRow.tone,
+          onboarding_completed: Boolean(profileRow.business_name),
+          created_at: profileRow.created_at,
+          updated_at: profileRow.updated_at
+        } satisfies Business)
+      : null;
+    setUserProfile(profileRow);
+    setBusiness(businessRow);
+    setBusinessDraft(toBusinessDraft(businessRow || profileBusinessFallback));
     setHistory(responsesWithFeedback);
     setCustomers((customerData as CustomerLead[] | null) || []);
     setSubscription(subscriptionRow);
     setCurrentPlan(matchedPlan || null);
-    setMonthlyUsage(monthlyResponseCount || 0);
+    setMonthlyUsage(((monthlyUsageData as AiUsage | null)?.count) || 0);
     setLoading(false);
   }, [router, supabase]);
 
@@ -452,15 +483,38 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       ? supabase.from("businesses").update(payload).eq("id", existingBusiness.id).eq("user_id", user.id).select("*").single()
       : supabase.from("businesses").insert(payload).select("*").single();
     const { data, error: saveError } = await request;
-    setSavingBusiness(false);
 
     if (saveError) {
+      setSavingBusiness(false);
       setError("Não conseguimos salvar o negócio agora. Revise os campos e tente novamente.");
       return;
     }
 
+    const { data: savedUserProfile, error: userProfileSaveError } = await supabase
+      .from("user_profiles")
+      .upsert(
+        {
+          user_id: user.id,
+          business_name: payload.business_name,
+          business_type: payload.business_type || payload.business_area || null,
+          tone: payload.brand_tone || null,
+          description: payload.description || payload.products_services || null
+        },
+        { onConflict: "user_id" }
+      )
+      .select("*")
+      .single();
+
+    if (userProfileSaveError) {
+      setError("Negócio salvo, mas não conseguimos atualizar o perfil principal. Tente salvar novamente.");
+      setSavingBusiness(false);
+      return;
+    }
+
+    setUserProfile(savedUserProfile as UserProfile);
     setBusiness(data as Business);
     setBusinessDraft(toBusinessDraft(data as Business));
+    setSavingBusiness(false);
     if (options?.completeOnboarding) {
       trackEvent("onboarding_completed", {
         source: "dashboard",
@@ -1174,7 +1228,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const canManageStripeSubscription =
     subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id || subscription.stripe_customer_id);
   const isFreeOrTrial = !subscriptionPlanName || subscriptionPlanName.toLowerCase() === "free" || subscription?.status?.toLowerCase() === "trial";
-  const shouldShowOnboarding = !business?.onboarding_completed;
+  const shouldShowOnboarding = !(business?.onboarding_completed || userProfile?.business_name);
   const exampleQuestions = getBusinessExamples(businessDraft.business_type);
   const responseLimit = monthlyLimit.toLocaleString("pt-BR");
   const renewalDetail = subscription?.current_period_end

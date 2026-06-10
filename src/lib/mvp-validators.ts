@@ -28,7 +28,11 @@ export const businessSchema = z.object({
 
 export const generateResponseSchema = z
   .object({
-    customerQuestion: z.string().trim().min(3, "Cole a pergunta do cliente.").max(1200, "Pergunta muito longa. Reduza o texto e tente novamente."),
+    customerQuestion: z
+      .string({ required_error: "Digite a mensagem do cliente para gerar uma resposta.", invalid_type_error: "Digite a mensagem do cliente para gerar uma resposta." })
+      .trim()
+      .min(1, "Digite a mensagem do cliente para gerar uma resposta.")
+      .max(1200, "A mensagem esta muito longa. Tente resumir antes de gerar a resposta."),
     responseType: z.enum(responseTypes),
     businessData: businessSchema.extend({
       id: z.string().uuid().optional()

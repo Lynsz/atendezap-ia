@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { assertAiUsageAvailable, getCurrentUsageMonth, incrementAiUsage } from "@/lib/ai-usage";
 import { generateCustomerResponseWithAi } from "@/lib/ai-response";
 import { AppError } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { generateResponseSchema } from "@/lib/mvp-validators";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
+import { getAuthenticatedSupabase } from "@/lib/supabase/authenticated";
 import {
   MONTHLY_LIMIT_EXCEEDED_MESSAGE,
   TEMPORARY_AI_ERROR_MESSAGE,
   getSubscriptionPlanName,
   getSubscriptionStatus,
-  getUsageCycle,
-  getUsageLimit,
-  getUsageSnapshot
+  getUsageLimit
 } from "@/lib/usage-limits";
 
 export const runtime = "nodejs";
@@ -27,7 +26,7 @@ function inactiveSubscriptionMessage(status?: string | null, hasPlan?: boolean) 
   const normalized = status?.trim().toLowerCase();
   if (!hasPlan || normalized === "free") return "Escolha um plano para continuar usando.";
   if (normalized === "past_due" || normalized === "unpaid") return "Atualize o pagamento para continuar usando o AtendeZap IA.";
-  return "Sua assinatura não está ativa no momento.";
+  return "Sua assinatura nao esta ativa no momento.";
 }
 
 export async function POST(request: Request) {
@@ -40,61 +39,29 @@ export async function POST(request: Request) {
       route: "api:ai-generate-response:ip",
       limit: 20,
       windowMs: 5 * 60_000,
-      message: "Você enviou muitas solicitações rapidamente. Tente de novo em instantes."
+      message: "Voce enviou muitas solicitacoes rapidamente. Tente de novo em instantes."
     });
 
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!url || !anonKey) {
-      serverLog({ level: "error", event: "ai_generate_missing_supabase_config", route: "/api/ai/generate-response" });
-      return NextResponse.json({ error: "Supabase não configurado no servidor. Revise as variáveis de ambiente." }, { status: 500 });
-    }
-
-    const authorization = request.headers.get("authorization");
-    if (!authorization) {
-      return NextResponse.json({ error: "Sessão não encontrada. Faça login novamente." }, { status: 401 });
-    }
-
-    const supabase = createClient(url, anonKey, {
-      global: {
-        headers: {
-          Authorization: authorization
-        }
-      },
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false
-      }
-    });
-
-    const {
-      data: { user },
-      error: userError
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      return NextResponse.json({ error: "Sessão inválida. Faça login novamente." }, { status: 401 });
-    }
-
+    const { supabase, user } = await getAuthenticatedSupabase(request, "/api/ai/generate-response");
     userId = user.id;
+
     await enforceRateLimit({
       request,
       route: "api:ai-generate-response:user",
       identifier: user.id,
       limit: 8,
       windowMs: 60_000,
-      message: "Você enviou muitas solicitações rapidamente. Tente de novo em instantes."
+      message: "Voce enviou muitas solicitacoes rapidamente. Tente de novo em instantes."
     });
 
     const payload = generateResponseSchema.safeParse(await request.json());
     if (!payload.success) {
-      return NextResponse.json({ error: payload.error.issues[0]?.message || "Dados inválidos." }, { status: 400 });
+      return NextResponse.json({ error: payload.error.issues[0]?.message || "Dados invalidos." }, { status: 400 });
     }
 
     const { data: subscription } = await supabase
       .from("subscriptions")
-      .select("id, plan_name, plan, status, subscription_status, monthly_limit, current_period_start, current_period_end")
+      .select("id, plan_name, plan, status, subscription_status, monthly_limit")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -121,21 +88,9 @@ export async function POST(request: Request) {
     }
 
     const limit = getUsageLimit(subscription);
-    const cycle = getUsageCycle(subscription);
-    const { count, error: countError } = await supabase
-      .from("generated_responses")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .gte("created_at", cycle.periodStart)
-      .lt("created_at", cycle.periodEnd);
+    const usageMonth = getCurrentUsageMonth();
+    const { snapshot: usage } = await assertAiUsageAvailable(user.id, limit, usageMonth);
 
-    if (countError) {
-      serverLog({ level: "warn", event: "ai_usage_count_failed", route: "/api/ai/generate-response", userId: user.id, error: countError });
-      return NextResponse.json({ error: "Não foi possível verificar seu uso mensal agora. Tente novamente em instantes." }, { status: 500 });
-    }
-
-    const used = count ?? 0;
-    const usage = getUsageSnapshot(used, limit, cycle);
     serverLog({
       event: "ai_limit_checked",
       route: "/api/ai/generate-response",
@@ -143,6 +98,7 @@ export async function POST(request: Request) {
       status: "ok",
       metadata: { plan: planName || "sem_plano", used: usage.used, limit: usage.limit, cycle_source: usage.cycleSource }
     });
+
     if (usage.reachedLimit) {
       await logEvent("usage_limit_reached", {
         source: "dashboard",
@@ -154,14 +110,6 @@ export async function POST(request: Request) {
         source: "dashboard",
         reason: "monthly_limit",
         plan: planName || "sem_plano"
-      });
-      serverLog({
-        level: "warn",
-        event: "ai_limit_exceeded",
-        route: "/api/ai/generate-response",
-        userId: user.id,
-        status: 403,
-        metadata: { plan: planName || "sem_plano", used: usage.used, limit: usage.limit }
       });
       return NextResponse.json({ error: MONTHLY_LIMIT_EXCEEDED_MESSAGE, usage }, { status: 403 });
     }
@@ -175,12 +123,30 @@ export async function POST(request: Request) {
           .eq("user_id", user.id)
           .maybeSingle()
       : { data: null };
+
+    const { data: userProfile } = await supabase
+      .from("user_profiles")
+      .select("business_name, business_type, tone, description")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (!userProfile && !savedBusiness) {
+      return NextResponse.json({ error: "Complete o onboarding antes de gerar respostas." }, { status: 403 });
+    }
+
     const businessDataForAi = savedBusiness
       ? {
           ...payload.data.businessData,
           ...savedBusiness
         }
-      : payload.data.businessData;
+      : {
+          ...payload.data.businessData,
+          business_name: userProfile?.business_name || payload.data.businessData.business_name,
+          business_type: userProfile?.business_type || payload.data.businessData.business_type,
+          business_area: userProfile?.business_type || payload.data.businessData.business_area,
+          brand_tone: userProfile?.tone || payload.data.businessData.brand_tone,
+          description: userProfile?.description || payload.data.businessData.description
+        };
 
     const { generatedAnswer, mode } = await generateCustomerResponseWithAi({
       customerQuestion: payload.data.customerQuestion,
@@ -192,7 +158,7 @@ export async function POST(request: Request) {
       .from("generated_responses")
       .insert({
         user_id: user.id,
-        business_id: businessDataForAi.id || requestedBusinessId || null,
+        business_id: savedBusiness?.id || null,
         customer_question: payload.data.customerQuestion,
         generated_answer: generatedAnswer,
         response_type: payload.data.responseType,
@@ -206,7 +172,8 @@ export async function POST(request: Request) {
       serverLog({ level: "error", event: "ai_response_save_failed", route: "/api/ai/generate-response", userId: user.id, error: insertError });
       return NextResponse.json(
         {
-          error: "Resposta gerada, mas não conseguimos salvar no histórico. Tente novamente antes de usar em produção.",
+          error: "Resposta gerada, mas nao conseguimos salvar no historico. Tente novamente antes de usar em producao.",
+          response: generatedAnswer,
           generatedAnswer,
           savedResponseId: null
         },
@@ -214,7 +181,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const nextUsage = getUsageSnapshot(used + 1, limit, cycle);
+    const nextUsage = await incrementAiUsage(user.id, limit, usageMonth);
     if (nextUsage.nearLimit) {
       await logEvent("usage_limit_warning_viewed", {
         source: "dashboard",
@@ -223,6 +190,7 @@ export async function POST(request: Request) {
         limit: nextUsage.limit
       });
     }
+
     await logEvent("ai_generation_succeeded", {
       source: "dashboard",
       response_type: payload.data.responseType,
@@ -230,12 +198,17 @@ export async function POST(request: Request) {
       plan: planName || "sem_plano"
     });
     serverLog({ event: "ai_response_generated", route: "/api/ai/generate-response", userId: user.id, status: "ok", metadata: { response_type: payload.data.responseType, mode } });
+
     return NextResponse.json({
+      response: generatedAnswer,
       generatedAnswer,
       mode,
       savedResponse,
       savedResponseId: savedResponse.id,
-      usage: nextUsage
+      usage: {
+        ...nextUsage,
+        count: nextUsage.used
+      }
     });
   } catch (error) {
     await logEvent("ai_generation_failed", {

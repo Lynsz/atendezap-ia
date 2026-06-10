@@ -12,7 +12,7 @@ import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { isSupabaseBrowserConfigured, supabase } from "@/lib/supabase/browser";
 import { trackEvent } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
-import type { Subscription } from "@/types/mvp";
+import type { AiUsage, Subscription } from "@/types/mvp";
 
 type BillingSubscription = Subscription & {
   monthly_limit?: number | null;
@@ -88,6 +88,11 @@ function formatShortDate(value?: string | null) {
   }).format(new Date(value));
 }
 
+function getCurrentUsageMonth() {
+  const now = new Date();
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
 function BillingContent() {
   const [subscription, setSubscription] = useState<BillingSubscription | null>(null);
   const [monthlyUsage, setMonthlyUsage] = useState(0);
@@ -137,10 +142,9 @@ function BillingContent() {
       return;
     }
 
-    const currentMonthStart = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)).toISOString();
-    const [{ data: subscriptionData, error: subscriptionError }, { count: responseCount, error: usageError }] = await Promise.all([
+    const [{ data: subscriptionData, error: subscriptionError }, { data: usageData, error: usageError }] = await Promise.all([
       supabase.from("subscriptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-      supabase.from("generated_responses").select("id", { count: "exact", head: true }).eq("user_id", user.id).gte("created_at", currentMonthStart)
+      supabase.from("ai_usage").select("*").eq("user_id", user.id).eq("month", getCurrentUsageMonth()).maybeSingle()
     ]);
 
     if (subscriptionError || usageError) {
@@ -148,7 +152,7 @@ function BillingContent() {
     }
 
     setSubscription((subscriptionData as BillingSubscription | null) || null);
-    setMonthlyUsage(responseCount || 0);
+    setMonthlyUsage(((usageData as AiUsage | null)?.count) || 0);
     setLoading(false);
   }, []);
 

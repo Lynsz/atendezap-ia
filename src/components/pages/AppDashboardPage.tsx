@@ -20,6 +20,9 @@ type Business = {
   id: string;
   business_name: string;
   business_area: string | null;
+  business_type?: string | null;
+  tone?: string | null;
+  description?: string | null;
 };
 
 type Subscription = {
@@ -81,6 +84,11 @@ function DashboardContent() {
     return `${stats.monthlyResponsesCount} / ${planLimit}`;
   }, [stats.monthlyResponsesCount, planLimit]);
 
+  function getCurrentUsageMonth() {
+    const now = new Date();
+    return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+  }
+
   useEffect(() => {
     if (!user) return;
 
@@ -91,22 +99,26 @@ function DashboardContent() {
       setErrorMessage('');
 
       try {
-        const monthStart = new Date();
-        monthStart.setDate(1);
-        monthStart.setHours(0, 0, 0, 0);
-
         const [
           businessResult,
+          profileResult,
           subscriptionResult,
           customersResult,
           responsesResult,
-          monthlyResponsesResult,
+          monthlyUsageResult,
         ] = await Promise.all([
           supabase
             .from('businesses')
-            .select('id, business_name, business_area')
+            .select('id, business_name, business_area, business_type')
             .eq('user_id', currentUser.id)
             .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+
+          supabase
+            .from('user_profiles')
+            .select('id, business_name, business_type, tone, description')
+            .eq('user_id', currentUser.id)
             .limit(1)
             .maybeSingle(),
 
@@ -129,19 +141,33 @@ function DashboardContent() {
             .eq('user_id', currentUser.id),
 
           supabase
-            .from('generated_responses')
-            .select('id', { count: 'exact', head: true })
+            .from('ai_usage')
+            .select('count')
             .eq('user_id', currentUser.id)
-            .gte('created_at', monthStart.toISOString()),
+            .eq('month', getCurrentUsageMonth())
+            .maybeSingle(),
         ]);
 
         if (businessResult.error) throw businessResult.error;
+        if (profileResult.error) throw profileResult.error;
         if (subscriptionResult.error) throw subscriptionResult.error;
         if (customersResult.error) throw customersResult.error;
         if (responsesResult.error) throw responsesResult.error;
-        if (monthlyResponsesResult.error) throw monthlyResponsesResult.error;
+        if (monthlyUsageResult.error) throw monthlyUsageResult.error;
 
-        setBusiness(businessResult.data ?? null);
+        setBusiness(
+          businessResult.data ??
+            (profileResult.data
+              ? {
+                  id: profileResult.data.id,
+                  business_name: profileResult.data.business_name || 'Negócio sem nome',
+                  business_area: profileResult.data.business_type,
+                  business_type: profileResult.data.business_type,
+                  tone: profileResult.data.tone,
+                  description: profileResult.data.description,
+                }
+              : null),
+        );
 
         setSubscription(subscriptionResult.data ?? {
           id: 'initial-trigger-pending',
@@ -153,7 +179,7 @@ function DashboardContent() {
         setStats({
           customersCount: customersResult.count ?? 0,
           responsesCount: responsesResult.count ?? 0,
-          monthlyResponsesCount: monthlyResponsesResult.count ?? 0,
+          monthlyResponsesCount: Number((monthlyUsageResult.data as { count?: number } | null)?.count || 0),
         });
       } catch (error) {
         console.error('[Dashboard load failed]', error);
