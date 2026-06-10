@@ -86,6 +86,9 @@ export default function Home() {
             <p className="mt-5 inline-flex rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">
               Feito para autônomos, prestadores de serviço, pequenos negócios e pessoas que vendem ou atendem pelo WhatsApp.
             </p>
+            <p className="mt-4 max-w-2xl rounded-lg border border-slate-200 bg-white/80 p-4 text-sm font-bold leading-6 text-slate-700 shadow-sm">
+              O AtendeZap IA gera respostas para você copiar, ajustar e enviar. Ele não envia mensagens automaticamente no WhatsApp.
+            </p>
           </div>
 
           <div className="rounded-lg border border-white/80 bg-white/75 p-4 shadow-2xl shadow-emerald-950/10 backdrop-blur">

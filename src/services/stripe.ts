@@ -23,7 +23,7 @@ let stripeClient: Stripe | null = null;
 export function getStripe() {
   const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
   if (!secretKey) {
-    throw new AppError("Stripe nao esta configurado neste ambiente.", 503);
+    throw new AppError("Stripe ainda não configurado no ambiente local.", 503);
   }
 
   if (!stripeClient) {
