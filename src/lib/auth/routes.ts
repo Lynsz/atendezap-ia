@@ -38,6 +38,7 @@ const PRIVATE_PAGE_PREFIXES = [
   "/atendezap",
   "/automacoes",
   "/base-conhecimento",
+  "/biblioteca",
   "/configuracoes",
   "/dashboard",
   "/debug/supabase",

@@ -1,7 +1,24 @@
 import OpenAI from "openai";
-import type { GenerateResponseInput } from "@/lib/mvp-validators";
+import type { responseTypes } from "@/lib/mvp-validators";
 
-const responseTypeLabels: Record<GenerateResponseInput["responseType"], string> = {
+type LegacyGenerateResponseInput = {
+  customerQuestion: string;
+  responseType: (typeof responseTypes)[number];
+  businessData: {
+    business_name: string;
+    business_area?: string;
+    description?: string;
+    products_services?: string;
+    prices?: string;
+    opening_hours?: string;
+    address?: string;
+    payment_methods?: string;
+    booking_or_payment_link?: string;
+    brand_tone?: string;
+  };
+};
+
+const responseTypeLabels: Record<LegacyGenerateResponseInput["responseType"], string> = {
   atendimento: "atendimento inicial",
   venda: "venda",
   orcamento: "orçamento",
@@ -10,7 +27,7 @@ const responseTypeLabels: Record<GenerateResponseInput["responseType"], string> 
   recuperacao: "recuperação de cliente sumido"
 };
 
-export function buildResponsePrompt(input: GenerateResponseInput) {
+export function buildResponsePrompt(input: LegacyGenerateResponseInput) {
   const business = input.businessData;
 
   return `Você é uma assistente comercial para WhatsApp de pequenos negócios no Brasil.
@@ -44,7 +61,7 @@ Regras:
 - Retornar apenas a mensagem final, sem título e sem explicações.`;
 }
 
-export async function generateWhatsAppResponse(input: GenerateResponseInput) {
+export async function generateWhatsAppResponse(input: LegacyGenerateResponseInput) {
   if (!process.env.OPENAI_API_KEY) {
     return `Olá! Obrigado pelo contato com ${input.businessData.business_name}. ${input.businessData.products_services ? `Trabalhamos com ${input.businessData.products_services}. ` : ""}${input.businessData.opening_hours ? `Nosso horário de atendimento é ${input.businessData.opening_hours}. ` : ""}Para te orientar melhor, pode me confirmar mais detalhes do que você precisa?`;
   }

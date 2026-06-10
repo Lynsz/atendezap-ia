@@ -3,9 +3,8 @@ import { supabase } from "@/lib/supabase/browser";
 import type { GeneratedResponse } from "@/types/mvp";
 
 type GenerateCustomerResponseInput = {
-  customerQuestion: string;
+  customerMessage: string;
   responseType: GenerateResponseInput["responseType"];
-  business: GenerateResponseInput["businessData"];
 };
 
 type GenerateCustomerResponseResult = {
@@ -21,7 +20,7 @@ type GenerateCustomerResponseResult = {
   };
 };
 
-export async function generateCustomerResponse({ customerQuestion, responseType, business }: GenerateCustomerResponseInput) {
+export async function generateCustomerResponse({ customerMessage, responseType }: GenerateCustomerResponseInput) {
   const {
     data: { session }
   } = await supabase.auth.getSession();
@@ -33,9 +32,8 @@ export async function generateCustomerResponse({ customerQuestion, responseType,
       ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
     },
     body: JSON.stringify({
-      customerQuestion,
-      responseType,
-      businessData: business
+      customerMessage,
+      responseType
     })
   });
 

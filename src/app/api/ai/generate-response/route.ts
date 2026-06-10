@@ -114,15 +114,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: MONTHLY_LIMIT_EXCEEDED_MESSAGE, usage }, { status: 403 });
     }
 
-    const requestedBusinessId = payload.data.businessData.id || payload.data.businessId;
-    const { data: savedBusiness } = requestedBusinessId
-      ? await supabase
-          .from("businesses")
-          .select("*")
-          .eq("id", requestedBusinessId)
-          .eq("user_id", user.id)
-          .maybeSingle()
-      : { data: null };
+    const { data: savedBusiness } = await supabase
+      .from("businesses")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     const { data: userProfile } = await supabase
       .from("user_profiles")
@@ -136,20 +134,23 @@ export async function POST(request: Request) {
 
     const businessDataForAi = savedBusiness
       ? {
-          ...payload.data.businessData,
-          ...savedBusiness
+          ...savedBusiness,
+          business_name: userProfile?.business_name || savedBusiness.business_name,
+          business_type: userProfile?.business_type || savedBusiness.business_type || savedBusiness.business_area,
+          business_area: userProfile?.business_type || savedBusiness.business_area || savedBusiness.business_type,
+          brand_tone: userProfile?.tone || savedBusiness.brand_tone,
+          description: userProfile?.description || savedBusiness.description
         }
       : {
-          ...payload.data.businessData,
-          business_name: userProfile?.business_name || payload.data.businessData.business_name,
-          business_type: userProfile?.business_type || payload.data.businessData.business_type,
-          business_area: userProfile?.business_type || payload.data.businessData.business_area,
-          brand_tone: userProfile?.tone || payload.data.businessData.brand_tone,
-          description: userProfile?.description || payload.data.businessData.description
+          business_name: userProfile?.business_name || "seu negocio",
+          business_type: userProfile?.business_type || "atendimento",
+          business_area: userProfile?.business_type || "atendimento",
+          brand_tone: userProfile?.tone || "educado e profissional",
+          description: userProfile?.description || "atendimento ao cliente pelo WhatsApp"
         };
 
     const { generatedAnswer, mode } = await generateCustomerResponseWithAi({
-      customerQuestion: payload.data.customerQuestion,
+      customerQuestion: payload.data.customerMessage,
       responseType: payload.data.responseType,
       businessData: businessDataForAi
     });
@@ -159,7 +160,7 @@ export async function POST(request: Request) {
       .insert({
         user_id: user.id,
         business_id: savedBusiness?.id || null,
-        customer_question: payload.data.customerQuestion,
+        customer_question: payload.data.customerMessage,
         generated_answer: generatedAnswer,
         response_type: payload.data.responseType,
         business_type: businessDataForAi.business_type || businessDataForAi.business_area || null,

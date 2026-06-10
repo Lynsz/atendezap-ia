@@ -4,7 +4,8 @@ import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LogIn, MessageCircle, UserPlus } from 'lucide-react';
-import { SUPABASE_CONNECTION_ERROR, useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
+import { getPostAuthRedirect } from '@/services/auth-flow';
 
 type AuthMode = 'login' | 'signup';
 
@@ -17,7 +18,7 @@ function getSafeRedirectTo(value: string | null) {
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isAuthenticated, signIn, signUp, loading } = useAuth();
+  const { isAuthenticated, signIn, signUp, loading, user } = useAuth();
   const redirectTo = getSafeRedirectTo(searchParams.get('redirectTo'));
 
   const [mode, setMode] = useState<AuthMode>('login');
@@ -33,9 +34,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      router.replace(redirectTo);
+      queueMicrotask(async () => {
+        const nextPath = user ? await getPostAuthRedirect(user, redirectTo) : redirectTo;
+        router.replace(nextPath);
+      });
     }
-  }, [isAuthenticated, loading, redirectTo, router]);
+  }, [isAuthenticated, loading, redirectTo, router, user]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,7 +81,7 @@ export default function LoginPage() {
         });
 
         if (error) {
-          setErrorMessage(error || SUPABASE_CONNECTION_ERROR);
+          setErrorMessage('Não foi possível criar sua conta. Confira os dados e tente novamente.');
           return;
         }
 
@@ -90,17 +94,18 @@ export default function LoginPage() {
         return;
       }
 
-      const { error } = await signIn({
+      const { error, data } = await signIn({
         email: normalizedEmail,
         password,
       });
 
       if (error) {
-        setErrorMessage(error || SUPABASE_CONNECTION_ERROR);
+        setErrorMessage('Não foi possível entrar. Confira seu e-mail e senha.');
         return;
       }
 
-      router.replace(redirectTo);
+      const nextPath = data?.user ? await getPostAuthRedirect(data.user, redirectTo) : redirectTo;
+      router.replace(nextPath);
     } finally {
       setSubmitting(false);
     }

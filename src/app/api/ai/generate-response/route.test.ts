@@ -155,21 +155,8 @@ describe("POST /api/ai/generate-response", () => {
           Authorization: "Bearer test-token"
         },
         body: JSON.stringify({
-          customerQuestion: "Tem horário hoje?",
-          responseType: "atendimento",
-          businessData: {
-            id: "22222222-2222-4222-8222-222222222222",
-            business_name: "Studio Maria",
-            business_area: "beleza",
-            description: "",
-            products_services: "",
-            prices: "",
-            opening_hours: "",
-            address: "",
-            payment_methods: "",
-            booking_or_payment_link: "",
-            brand_tone: "profissional"
-          }
+          customerMessage: "Tem horário hoje?",
+          responseType: "atendimento"
         })
       })
     );
@@ -216,11 +203,8 @@ describe("POST /api/ai/generate-response", () => {
           Authorization: "Bearer test-token"
         },
         body: JSON.stringify({
-          customerQuestion: "",
-          responseType: "atendimento",
-          businessData: {
-            business_name: "Studio Maria"
-          }
+          customerMessage: "",
+          responseType: "atendimento"
         })
       })
     );
@@ -239,11 +223,8 @@ describe("POST /api/ai/generate-response", () => {
           Authorization: "Bearer test-token"
         },
         body: JSON.stringify({
-          customerQuestion: "a".repeat(1201),
-          responseType: "atendimento",
-          businessData: {
-            business_name: "Studio Maria"
-          }
+          customerMessage: "a".repeat(1201),
+          responseType: "atendimento"
         })
       })
     );
@@ -265,14 +246,8 @@ describe("POST /api/ai/generate-response", () => {
           Authorization: "Bearer test-token"
         },
         body: JSON.stringify({
-          customerQuestion: "Tem horario hoje?",
-          responseType: "atendimento",
-          businessData: {
-            id: "22222222-2222-4222-8222-222222222222",
-            business_name: "Studio Maria",
-            business_area: "beleza"
-          },
-          businessId: "33333333-3333-4333-8333-333333333333"
+          customerMessage: "Tem horario hoje?",
+          responseType: "atendimento"
         })
       })
     );
@@ -282,11 +257,10 @@ describe("POST /api/ai/generate-response", () => {
       expect.arrayContaining([
         { table: "subscriptions", column: "user_id", value: "11111111-1111-4111-8111-111111111111" },
         { table: "ai_usage", column: "user_id", value: "11111111-1111-4111-8111-111111111111" },
-        { table: "businesses", column: "id", value: "22222222-2222-4222-8222-222222222222" },
         { table: "businesses", column: "user_id", value: "11111111-1111-4111-8111-111111111111" }
       ])
     );
-    expect(mocks.tableFilters).not.toContainEqual({ table: "businesses", column: "user_id", value: "33333333-3333-4333-8333-333333333333" });
+    expect(mocks.tableFilters).not.toContainEqual({ table: "businesses", column: "id", value: "33333333-3333-4333-8333-333333333333" });
     expect(mocks.insertPayload).toMatchObject({
       user_id: "11111111-1111-4111-8111-111111111111",
       business_id: "22222222-2222-4222-8222-222222222222",
@@ -308,14 +282,8 @@ describe("POST /api/ai/generate-response", () => {
           Authorization: "Bearer test-token"
         },
         body: JSON.stringify({
-          customerQuestion: "Tem horario hoje?",
-          responseType: "atendimento",
-          businessData: {
-            id: "22222222-2222-4222-8222-222222222222",
-            business_name: "Studio Maria",
-            business_area: "beleza",
-            brand_tone: "profissional"
-          }
+          customerMessage: "Tem horario hoje?",
+          responseType: "atendimento"
         })
       })
     );
@@ -351,14 +319,8 @@ describe("POST /api/ai/generate-response", () => {
           Authorization: "Bearer test-token"
         },
         body: JSON.stringify({
-          customerQuestion: "Tem horario hoje?",
-          responseType: "atendimento",
-          businessData: {
-            id: "22222222-2222-4222-8222-222222222222",
-            business_name: "Studio Maria",
-            business_area: "beleza",
-            brand_tone: "profissional"
-          }
+          customerMessage: "Tem horario hoje?",
+          responseType: "atendimento"
         })
       })
     );

@@ -118,6 +118,7 @@ function BillingContent() {
   const isCancellationScheduled = Boolean(subscription?.cancel_at_period_end);
   const canManageStripeSubscription =
     subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id || subscription.stripe_customer_id);
+  const hasStripePublicConfig = Boolean(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
   const planCards = useMemo(() => PLAN_IDS.map((planId) => SAAS_PLANS[planId]), []);
 
@@ -325,6 +326,11 @@ function BillingContent() {
         </header>
 
         {error ? <div className="mb-5 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">{error}</div> : null}
+        {!hasStripePublicConfig ? (
+          <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4 text-sm font-bold text-amber-100">
+            Stripe ainda não configurado no ambiente local.
+          </div>
+        ) : null}
 
         <div className="mb-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
           <article className="rounded-lg border border-emerald-400/20 bg-[#101821] p-6 shadow-2xl shadow-black/25">

@@ -28,18 +28,29 @@ export const businessSchema = z.object({
 
 export const generateResponseSchema = z
   .object({
-    customerQuestion: z
+    customerMessage: z
       .string({ required_error: "Digite a mensagem do cliente para gerar uma resposta.", invalid_type_error: "Digite a mensagem do cliente para gerar uma resposta." })
       .trim()
       .min(1, "Digite a mensagem do cliente para gerar uma resposta.")
-      .max(1200, "A mensagem esta muito longa. Tente resumir antes de gerar a resposta."),
-    responseType: z.enum(responseTypes),
-    businessData: businessSchema.extend({
-      id: z.string().uuid().optional()
-    }),
-    businessId: z.string().uuid().optional()
+      .max(1200, "A mensagem esta muito longa. Tente resumir antes de gerar a resposta.")
+      .optional(),
+    customerQuestion: z
+      .string({ invalid_type_error: "Digite a mensagem do cliente para gerar uma resposta." })
+      .trim()
+      .min(1, "Digite a mensagem do cliente para gerar uma resposta.")
+      .max(1200, "A mensagem esta muito longa. Tente resumir antes de gerar a resposta.")
+      .optional(),
+    responseType: z.enum(responseTypes).optional().default("atendimento")
   })
-  .strict();
+  .strict()
+  .transform((value) => ({
+    customerMessage: value.customerMessage || value.customerQuestion || "",
+    responseType: value.responseType
+  }))
+  .refine((value) => Boolean(value.customerMessage), {
+    message: "Digite a mensagem do cliente para gerar uma resposta.",
+    path: ["customerMessage"]
+  });
 
 export const customerSchema = z.object({
   name: z.string().trim().min(2, "Informe o nome do cliente.").max(160, "Nome do cliente muito longo."),

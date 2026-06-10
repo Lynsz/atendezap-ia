@@ -7,6 +7,7 @@ import { UserPlus, MessageCircle } from "lucide-react";
 import { SUPABASE_CONNECTION_ERROR, useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase/browser";
 import { getAttribution, trackEvent } from "@/lib/tracking";
+import { getPostAuthRedirect } from "@/services/auth-flow";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -20,9 +21,12 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (!auth.loading && auth.isAuthenticated) {
-      router.replace("/dashboard");
+      queueMicrotask(async () => {
+        const nextPath = auth.user ? await getPostAuthRedirect(auth.user, "/dashboard") : "/dashboard";
+        router.replace(nextPath);
+      });
     }
-  }, [auth.isAuthenticated, auth.loading, router]);
+  }, [auth.isAuthenticated, auth.loading, auth.user, router]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,7 +76,8 @@ export default function SignupPage() {
     setLoading(false);
 
     if (data.session) {
-      router.push("/dashboard");
+      const nextPath = data.user ? await getPostAuthRedirect(data.user, "/dashboard") : "/onboarding";
+      router.push(nextPath);
       return;
     }
 

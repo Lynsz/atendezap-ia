@@ -423,16 +423,28 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           updated_at: profileRow.updated_at
         } satisfies Business)
       : null;
+    const effectiveBusiness = businessRow || profileBusinessFallback;
+    if (initialTab !== "business" && !effectiveBusiness?.onboarding_completed) {
+      setLoading(false);
+      router.replace("/onboarding");
+      return;
+    }
+    if (initialTab === "business" && effectiveBusiness?.onboarding_completed) {
+      setLoading(false);
+      router.replace("/dashboard");
+      return;
+    }
+
     setUserProfile(profileRow);
-    setBusiness(businessRow);
-    setBusinessDraft(toBusinessDraft(businessRow || profileBusinessFallback));
+    setBusiness(effectiveBusiness);
+    setBusinessDraft(toBusinessDraft(effectiveBusiness));
     setHistory(responsesWithFeedback);
     setCustomers((customerData as CustomerLead[] | null) || []);
     setSubscription(subscriptionRow);
     setCurrentPlan(matchedPlan || null);
     setMonthlyUsage(((monthlyUsageData as AiUsage | null)?.count) || 0);
     setLoading(false);
-  }, [router, supabase]);
+  }, [initialTab, router, supabase]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -442,7 +454,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
 
   async function handleLogout() {
     if (supabase) await supabase.auth.signOut();
-    router.push("/login");
+    router.replace("/");
   }
 
   async function handleSaveBusiness(event?: FormEvent, options?: { completeOnboarding?: boolean; successMessage?: string }) {
@@ -476,9 +488,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       business_area: parsed.data.business_area || parsed.data.business_type,
       onboarding_completed: options?.completeOnboarding ? true : parsed.data.onboarding_completed
     };
-    const existingBusiness = business
-      ? business
-      : (await supabase.from("businesses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle()).data as Business | null;
+    const existingBusiness = (await supabase.from("businesses").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle()).data as Business | null;
     const request = existingBusiness
       ? supabase.from("businesses").update(payload).eq("id", existingBusiness.id).eq("user_id", user.id).select("*").single()
       : supabase.from("businesses").insert(payload).select("*").single();
@@ -612,12 +622,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     try {
       const isFirstGeneratedResponse = history.length === 0;
       const { generatedAnswer: answer, savedResponse, usage } = await generateCustomerResponse({
-        customerQuestion: question,
-        responseType,
-        business: {
-          id: business.id,
-          ...businessDraft
-        }
+        customerMessage: question,
+        responseType
       });
 
       setGeneratedAnswer(answer);
