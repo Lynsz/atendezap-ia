@@ -16,6 +16,10 @@ export function errorResponse(error: unknown) {
     return Response.json({ error: error.message }, { status: error.status });
   }
 
+  if (error instanceof Error && "status" in error && typeof error.status === "number") {
+    return Response.json({ error: error.message }, { status: error.status });
+  }
+
   if (error instanceof ZodError) {
     return Response.json(
       {

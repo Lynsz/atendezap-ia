@@ -14,9 +14,11 @@ type GenerateCustomerResponseResult = {
   savedResponse?: GeneratedResponse | null;
   savedResponseId: string | null;
   usage: {
+    count?: number;
     used: number;
     limit: number;
     remaining: number;
+    plan?: string;
   };
 };
 

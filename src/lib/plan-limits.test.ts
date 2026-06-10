@@ -5,10 +5,10 @@ describe("getPlanResponseLimit", () => {
   it("aplica os limites mensais do MVP por plano", () => {
     expect(getPlanResponseLimit("free")).toBe(20);
     expect(getPlanResponseLimit("qualquer", "trial")).toBe(20);
-    expect(getPlanResponseLimit("Inicial")).toBe(150);
-    expect(getPlanResponseLimit("Starter")).toBe(150);
-    expect(getPlanResponseLimit("Pro")).toBe(600);
-    expect(getPlanResponseLimit("Premium")).toBe(2000);
+    expect(getPlanResponseLimit("Inicial")).toBe(100);
+    expect(getPlanResponseLimit("Starter")).toBe(100);
+    expect(getPlanResponseLimit("Pro")).toBe(500);
+    expect(getPlanResponseLimit("Premium")).toBe(1500);
   });
 
   it("usa free como fallback seguro", () => {
@@ -17,7 +17,7 @@ describe("getPlanResponseLimit", () => {
   });
 
   it("expose descricao centralizada de limite e limite da demo", () => {
-    expect(getPlanLimitDescription("Pro")).toEqual({ plan: "pro", monthlyResponseLimit: 600 });
+    expect(getPlanLimitDescription("Pro")).toEqual({ plan: "pro", monthlyResponseLimit: 500 });
     expect(DEMO_DAILY_LIMIT).toBe(6);
   });
 

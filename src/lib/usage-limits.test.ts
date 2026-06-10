@@ -38,6 +38,12 @@ describe("usage-limits", () => {
 
   it("mantem mensagens amigaveis por status", () => {
     expect(subscriptionBlockMessage("past_due", "pro")).toContain("pagamento");
-    expect(getUsageLimit({ plan: "premium", status: "active" })).toBe(2000);
+    expect(getUsageLimit({ plan: "premium", status: "active" })).toBe(1500);
+  });
+
+  it("ignora limite pago quando assinatura nao esta ativa", () => {
+    expect(getUsageLimit({ plan: "pro", status: "canceled", monthly_limit: 500 })).toBe(20);
+    expect(getUsageLimit({ plan: "pro", status: "unpaid", monthly_limit: 500 })).toBe(20);
+    expect(getUsageLimit({ plan: "pro", status: "incomplete", monthly_limit: 500 })).toBe(20);
   });
 });

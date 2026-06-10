@@ -3,14 +3,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { AlertCircle, BadgeDollarSign, CalendarClock, CheckCircle2, CreditCard, MessageCircle, RefreshCw, ShieldCheck, Wallet } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
 import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
 import { cancellationFeedbackReasonLabels, cancellationFeedbackReasons, type CancellationFeedbackReason } from "@/lib/cancellation-feedback";
-import { getPlanResponseLimit } from "@/lib/plan-limits";
 import { isSupabaseBrowserConfigured, supabase } from "@/lib/supabase/browser";
 import { trackEvent } from "@/lib/tracking";
+import { getUsageLimit } from "@/lib/usage-limits";
 import { cn } from "@/lib/utils";
 import type { AiUsage, Subscription } from "@/types/mvp";
 
@@ -49,6 +50,7 @@ function statusLabel(status?: string | null) {
 
 function statusMessage(status?: string | null) {
   const normalizedStatus = status?.toLowerCase();
+  if (!normalizedStatus || normalizedStatus === "free") return "Você está no plano gratuito.";
   if (normalizedStatus === "active") return "Sua assinatura está ativa.";
   if (normalizedStatus === "trial" || normalizedStatus === "trialing") return "Sua assinatura está em período de teste.";
   if (normalizedStatus === "pending" || normalizedStatus === "incomplete") return "Seu checkout foi iniciado, mas a assinatura ainda não foi confirmada pela Stripe.";
@@ -94,6 +96,7 @@ function getCurrentUsageMonth() {
 }
 
 function BillingContent() {
+  const searchParams = useSearchParams();
   const [subscription, setSubscription] = useState<BillingSubscription | null>(null);
   const [monthlyUsage, setMonthlyUsage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -108,7 +111,7 @@ function BillingContent() {
 
   const currentPlanId = normalizePlanId(subscription?.plan || subscription?.plan_name);
   const currentPlan = currentPlanId ? SAAS_PLANS[currentPlanId] : null;
-  const monthlyLimit = subscription?.monthly_limit || getPlanResponseLimit(subscription?.plan || subscription?.plan_name, subscription?.status);
+  const monthlyLimit = getUsageLimit(subscription);
   const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
   const usagePercent = monthlyLimit > 0 ? Math.min(100, Math.round((monthlyUsage / monthlyLimit) * 100)) : 0;
   const activeSubscription = isActiveStatus(subscription?.status);
@@ -119,6 +122,7 @@ function BillingContent() {
   const canManageStripeSubscription =
     subscription?.provider === "stripe" && Boolean(subscription.provider_customer_id || subscription.stripe_customer_id);
   const hasStripePublicConfig = Boolean(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  const checkoutStatus = searchParams.get("checkout");
 
   const planCards = useMemo(() => PLAN_IDS.map((planId) => SAAS_PLANS[planId]), []);
 
@@ -326,6 +330,16 @@ function BillingContent() {
         </header>
 
         {error ? <div className="mb-5 rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm font-bold text-red-200">{error}</div> : null}
+        {checkoutStatus === "success" ? (
+          <div className="mb-5 rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm font-bold text-emerald-100">
+            Checkout concluído. Sua assinatura será atualizada em instantes.
+          </div>
+        ) : null}
+        {checkoutStatus === "cancelled" ? (
+          <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4 text-sm font-bold text-amber-100">
+            Checkout cancelado. Você pode escolher um plano quando quiser.
+          </div>
+        ) : null}
         {!hasStripePublicConfig ? (
           <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4 text-sm font-bold text-amber-100">
             Stripe ainda não configurado no ambiente local.
@@ -340,7 +354,7 @@ function BillingContent() {
                   <ShieldCheck className="h-4 w-4" />
                   Plano atual
                 </p>
-                <h2 className="text-3xl font-black text-white">{activeSubscription && currentPlan ? currentPlan.name : "Sem plano ativo"}</h2>
+                <h2 className="text-3xl font-black text-white">{activeSubscription && currentPlan ? currentPlan.name : "Free"}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
                   {statusMessage(subscription?.status)}
                 </p>
@@ -353,7 +367,7 @@ function BillingContent() {
             <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Uso mensal</p>
-                <p className="mt-2 font-black text-white">{monthlyUsage} / {monthlyLimit}</p>
+                <p className="mt-2 font-black text-white">{monthlyUsage} de {monthlyLimit}</p>
               </div>
               <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Restantes</p>

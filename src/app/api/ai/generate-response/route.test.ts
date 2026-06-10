@@ -297,7 +297,8 @@ describe("POST /api/ai/generate-response", () => {
       count: 1,
       used: 1,
       limit: 20,
-      remaining: 19
+      remaining: 19,
+      plan: "free"
     });
     expect(mocks.generateCustomerResponseWithAi).toHaveBeenCalledTimes(1);
     expect(mocks.insertPayload).toMatchObject({
@@ -331,5 +332,35 @@ describe("POST /api/ai/generate-response", () => {
     expect(body.error).toContain("Nao foi possivel gerar");
     expect(mocks.generateCustomerResponseWithAi).toHaveBeenCalledTimes(1);
     expect(mocks.insertPayload).toBeNull();
+  });
+
+  it("usa limite free quando assinatura paga esta cancelada", async () => {
+    mocks.usageCount = 0;
+    mocks.subscription = { plan_name: "pro", plan: "pro", status: "canceled", subscription_status: "canceled", monthly_limit: null };
+
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/ai/generate-response", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          customerMessage: "Tem horario hoje?",
+          responseType: "atendimento"
+        })
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.usage).toMatchObject({
+      used: 1,
+      limit: 20,
+      plan: "free"
+    });
+    expect(mocks.generateCustomerResponseWithAi).toHaveBeenCalledTimes(1);
   });
 });

@@ -30,7 +30,6 @@ import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
 import { businessTypeOptions, getBusinessExamples, getBusinessTemplate, getBusinessTypeLabel } from "@/lib/ai/business-templates";
 import { copyResponseText } from "@/lib/clipboard";
 import { businessSchema, customerSchema, customerStatuses, responseTypes } from "@/lib/mvp-validators";
-import { getPlanResponseLimit } from "@/lib/plan-limits";
 import {
   filterSavedResponses,
   sortSavedResponses,
@@ -49,6 +48,7 @@ import {
   type WhatsAppTemplate
 } from "@/lib/templates/whatsapp-templates";
 import { trackEvent } from "@/lib/tracking";
+import { getUsageLimit } from "@/lib/usage-limits";
 import { generateCustomerResponse } from "@/services/ai";
 import {
   deleteSavedResponse,
@@ -166,8 +166,8 @@ function getCurrentUsageMonth() {
   return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
-function getPlanLimit(subscription: Subscription | null, plan: Plan | null) {
-  return plan?.response_limit || getPlanResponseLimit(subscription?.plan || subscription?.plan_name, subscription?.status);
+function getPlanLimit(subscription: Subscription | null) {
+  return getUsageLimit(subscription);
 }
 
 function formatDate(value: string) {
@@ -1223,7 +1223,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   }
 
   const planName = subscription?.plan || subscription?.plan_name || currentPlan?.name || "Sem assinatura";
-  const monthlyLimit = getPlanLimit(subscription, currentPlan);
+  const monthlyLimit = getPlanLimit(subscription);
   const monthlyRemaining = Math.max(monthlyLimit - monthlyUsage, 0);
   const hasReachedMonthlyLimit = monthlyUsage >= monthlyLimit;
   const subscriptionPlanName = subscription?.plan || subscription?.plan_name;

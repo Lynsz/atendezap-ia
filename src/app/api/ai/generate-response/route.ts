@@ -17,18 +17,6 @@ import {
 
 export const runtime = "nodejs";
 
-function isUsableSubscriptionStatus(status?: string | null) {
-  const normalized = status?.trim().toLowerCase();
-  return normalized === "active" || normalized === "trialing" || normalized === "trial";
-}
-
-function inactiveSubscriptionMessage(status?: string | null, hasPlan?: boolean) {
-  const normalized = status?.trim().toLowerCase();
-  if (!hasPlan || normalized === "free") return "Escolha um plano para continuar usando.";
-  if (normalized === "past_due" || normalized === "unpaid") return "Atualize o pagamento para continuar usando o AtendeZap IA.";
-  return "Sua assinatura nao esta ativa no momento.";
-}
-
 export async function POST(request: Request) {
   let userId: string | null = null;
 
@@ -69,25 +57,8 @@ export async function POST(request: Request) {
 
     const planName = getSubscriptionPlanName(subscription);
     const subscriptionStatus = getSubscriptionStatus(subscription);
-    if (subscription && !isUsableSubscriptionStatus(subscriptionStatus)) {
-      await logEvent("ai_generation_blocked_by_limit", {
-        source: "dashboard",
-        reason: "subscription_inactive",
-        plan: planName || "sem_plano",
-        status: subscriptionStatus || "sem_status"
-      });
-      serverLog({
-        level: "warn",
-        event: "ai_generation_blocked",
-        route: "/api/ai/generate-response",
-        userId: user.id,
-        status: 403,
-        metadata: { reason: "subscription_inactive", plan: planName || "sem_plano", subscription_status: subscriptionStatus || "sem_status" }
-      });
-      return NextResponse.json({ error: inactiveSubscriptionMessage(subscriptionStatus, Boolean(planName && planName !== "free")) }, { status: 403 });
-    }
-
     const limit = getUsageLimit(subscription);
+    const effectivePlan = limit > 20 ? planName || "free" : "free";
     const usageMonth = getCurrentUsageMonth();
     const { snapshot: usage } = await assertAiUsageAvailable(user.id, limit, usageMonth);
 
@@ -111,7 +82,7 @@ export async function POST(request: Request) {
         reason: "monthly_limit",
         plan: planName || "sem_plano"
       });
-      return NextResponse.json({ error: MONTHLY_LIMIT_EXCEEDED_MESSAGE, usage }, { status: 403 });
+      return NextResponse.json({ error: MONTHLY_LIMIT_EXCEEDED_MESSAGE, usage: { ...usage, count: usage.used, plan: effectivePlan } }, { status: 403 });
     }
 
     const { data: savedBusiness } = await supabase
@@ -208,7 +179,8 @@ export async function POST(request: Request) {
       savedResponseId: savedResponse.id,
       usage: {
         ...nextUsage,
-        count: nextUsage.used
+        count: nextUsage.used,
+        plan: effectivePlan
       }
     });
   } catch (error) {

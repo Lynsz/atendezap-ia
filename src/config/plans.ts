@@ -1,3 +1,5 @@
+import { BILLING_PLANS } from "@/lib/billing/plans";
+
 export type PlanId = "starter" | "pro" | "premium";
 
 export type SaasPlan = {
@@ -26,10 +28,10 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     priceEnv: "STRIPE_PRICE_STARTER",
     monthlyPrice: 49,
     monthlyPriceLabel: "R$ 49/mês",
-    responseLimit: 150,
+    responseLimit: BILLING_PLANS.starter.monthlyLimit,
     badge: "Entrada",
     features: [
-      "Até 150 respostas com IA por mês",
+      "Até 100 respostas com IA por mês",
       "Cadastro do negócio, serviço ou atividade",
       "Geração de respostas com IA",
       "Dashboard",
@@ -49,11 +51,11 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     firstMonthPrice: 29,
     firstMonthPriceLabel: "R$ 29 no primeiro mês",
     recurringPriceLabel: "Depois, R$ 97/mês",
-    responseLimit: 600,
+    responseLimit: BILLING_PLANS.pro.monthlyLimit,
     badge: "Mais recomendado",
     recommended: true,
     features: [
-      "Até 600 respostas com IA por mês",
+      "Até 500 respostas com IA por mês",
       "Tudo do Starter",
       "Histórico completo",
       "Organização de clientes",
@@ -70,10 +72,10 @@ export const SAAS_PLANS: Record<PlanId, SaasPlan> = {
     priceEnv: "STRIPE_PRICE_PREMIUM",
     monthlyPrice: 197,
     monthlyPriceLabel: "R$ 197/mês",
-    responseLimit: 2000,
+    responseLimit: BILLING_PLANS.premium.monthlyLimit,
     badge: "Alto volume",
     features: [
-      "Até 2.000 respostas com IA por mês",
+      "Até 1.500 respostas com IA por mês",
       "Tudo do Pro",
       "Biblioteca premium de respostas",
       "Modelos avançados para vendas, suporte, cobrança e pós-venda",

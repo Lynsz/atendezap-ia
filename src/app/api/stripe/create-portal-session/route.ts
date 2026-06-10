@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     const customerId =
       (subscription?.provider_customer_id as string | null | undefined) || (subscription?.stripe_customer_id as string | null | undefined);
     if (!customerId) {
-      throw new AppError("Nenhuma assinatura Stripe encontrada para este usuário.", 404);
+      throw new AppError("Portal de assinatura ainda nao disponivel para sua conta.", 404);
     }
 
     const portalSession = await getStripe().billingPortal.sessions.create({

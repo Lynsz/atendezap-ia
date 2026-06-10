@@ -174,7 +174,7 @@ export const conversionFaqItems: FaqItem[] = [
 const comparisonRows: Array<{ label: string; values: Record<PlanId, string> }> = [
   {
     label: "Respostas com IA",
-    values: { starter: "Até 150/mês", pro: "Até 600/mês", premium: "Até 2.000/mês" }
+    values: { starter: "Até 100/mês", pro: "Até 500/mês", premium: "Até 1.500/mês" }
   },
   {
     label: "Histórico de respostas",

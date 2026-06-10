@@ -65,7 +65,12 @@ async function markEventProcessed(event: Stripe.Event) {
   const { error } = await supabase.from("stripe_webhook_events").insert({
     provider_event_id: event.id,
     event_type: event.type,
-    payload: event,
+    payload: {
+      id: event.id,
+      type: event.type,
+      created: event.created,
+      livemode: event.livemode
+    },
     processed_at: new Date().toISOString()
   });
 

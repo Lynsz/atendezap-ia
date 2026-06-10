@@ -209,7 +209,7 @@ describe("Stripe API routes", () => {
         line_items: [{ price: "price_starter", quantity: 1 }],
         discounts: undefined,
         success_url: "https://app.example.com/assinatura?checkout=success",
-        cancel_url: "https://app.example.com/assinatura?checkout=cancel",
+        cancel_url: "https://app.example.com/assinatura?checkout=cancelled",
         metadata: expect.objectContaining({
           user_id: "11111111-1111-4111-8111-111111111111",
           plan: "starter",
@@ -226,6 +226,39 @@ describe("Stripe API routes", () => {
       }),
       { onConflict: "user_id" }
     );
+  });
+
+  it("checkout rejeita preco enviado pelo client", async () => {
+    const { POST } = await import("./create-checkout-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
+        body: JSON.stringify({ plan: "starter", price: "price_malicioso" })
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.checkoutCreate).not.toHaveBeenCalled();
+  });
+
+  it("checkout retorna erro amigavel quando price id nao esta configurado", async () => {
+    delete process.env.STRIPE_PRICE_STARTER;
+
+    const { POST } = await import("./create-checkout-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
+        body: JSON.stringify({ plan: "starter" })
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBeGreaterThanOrEqual(500);
+    expect(body.error).toContain("Preco Stripe nao configurado");
+    expect(mocks.checkoutCreate).not.toHaveBeenCalled();
   });
 
   it("cria checkout do Pro com price recorrente e cupom de primeiro mes", async () => {
@@ -311,7 +344,7 @@ describe("Stripe API routes", () => {
     const body = await response.json();
 
     expect(response.status).toBe(404);
-    expect(body.error).toContain("Nenhuma assinatura Stripe");
+    expect(body.error).toContain("Portal de assinatura");
     expect(mocks.portalCreate).not.toHaveBeenCalled();
   });
 
@@ -413,7 +446,7 @@ describe("Stripe API routes", () => {
         provider_subscription_id: "sub_test",
         stripe_subscription_id: "sub_test",
         subscription_status: "active",
-        monthly_limit: 600
+        monthly_limit: 500
       }),
       { onConflict: "user_id" }
     );
@@ -456,7 +489,7 @@ describe("Stripe API routes", () => {
         user_id: "11111111-1111-4111-8111-111111111111",
         plan: "pro",
         provider_price_id: "price_pro",
-        monthly_limit: 600,
+        monthly_limit: 500,
         first_month_price_applied: true,
         promo_code: "stripe_pro_first_month_29"
       }),
@@ -495,7 +528,7 @@ describe("Stripe API routes", () => {
         plan: "pro",
         status: "unpaid",
         subscription_status: "unpaid",
-        monthly_limit: 600
+        monthly_limit: 500
       }),
       { onConflict: "user_id" }
     );

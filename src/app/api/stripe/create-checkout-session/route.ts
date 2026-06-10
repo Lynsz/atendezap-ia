@@ -140,7 +140,7 @@ export async function POST(request: Request) {
       discounts: couponId ? [{ coupon: couponId }] : undefined,
       allow_promotion_codes: false,
       success_url: `${appUrl}/assinatura?checkout=success`,
-      cancel_url: `${appUrl}/assinatura?checkout=cancel`,
+      cancel_url: `${appUrl}/assinatura?checkout=cancelled`,
       metadata,
       subscription_data: {
         metadata

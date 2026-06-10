@@ -52,7 +52,10 @@ export function subscriptionBlockMessage(status?: string | null, planName?: stri
 export function getUsageLimit(subscription?: UsageSubscription | null) {
   const status = getSubscriptionStatus(subscription);
   const planName = getSubscriptionPlanName(subscription);
-  return subscription?.monthly_limit || getPlanResponseLimit(planName, status);
+  if (isUsableSubscriptionStatus(status) && subscription?.monthly_limit) {
+    return subscription.monthly_limit;
+  }
+  return getPlanResponseLimit(planName, status);
 }
 
 export function getUsageCycle(subscription?: UsageSubscription | null, now = new Date()): UsageCycle {

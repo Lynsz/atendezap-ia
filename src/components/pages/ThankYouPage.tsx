@@ -34,7 +34,7 @@ export default function ThankYouPage() {
           </h2>
           <p className="mt-3 text-sm font-bold leading-6 text-slate-300">Oferta válida para novos usuários.</p>
           <div className="mt-6 grid gap-3 text-sm leading-6 text-slate-200 md:grid-cols-2">
-            {["Até 600 respostas com IA por mês", "Histórico completo", "Organização de clientes", "Modelos por tipo de atendimento"].map((item) => (
+            {["Até 500 respostas com IA por mês", "Histórico completo", "Organização de clientes", "Modelos por tipo de atendimento"].map((item) => (
               <div className="flex items-center gap-2 rounded-md bg-white/[0.04] p-3" key={item}>
                 <CheckCircle2 className="h-4 w-4 text-emerald-300" />
                 <span>{item}</span>
