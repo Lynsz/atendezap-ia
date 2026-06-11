@@ -1,14 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 import { AppError } from "@/lib/errors";
 import { serverLog } from "@/lib/logger";
+import { ENV_ERROR_MESSAGES, requireSupabasePublicEnv } from "@/lib/server/env";
 
 export async function getAuthenticatedSupabase(request: Request, route: string) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  let supabaseEnv: ReturnType<typeof requireSupabasePublicEnv>;
 
-  if (!url || !anonKey) {
+  try {
+    supabaseEnv = requireSupabasePublicEnv();
+  } catch {
     serverLog({ level: "error", event: "authenticated_supabase_missing_config", route });
-    throw new AppError("Supabase nao configurado no servidor. Revise as variaveis de ambiente.", 500);
+    throw new AppError(ENV_ERROR_MESSAGES.supabase, 500);
   }
 
   const authorization = request.headers.get("authorization");
@@ -16,7 +18,7 @@ export async function getAuthenticatedSupabase(request: Request, route: string) 
     throw new AppError("Voce precisa estar logado para gerar respostas.", 401);
   }
 
-  const supabase = createClient(url, anonKey, {
+  const supabase = createClient(supabaseEnv.url, supabaseEnv.anonKey, {
     global: {
       headers: {
         Authorization: authorization

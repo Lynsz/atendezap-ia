@@ -342,7 +342,7 @@ function BillingContent() {
         ) : null}
         {!hasStripePublicConfig ? (
           <div className="mb-5 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4 text-sm font-bold text-amber-100">
-            Stripe ainda não configurado no ambiente local.
+            Stripe ainda não está configurado neste ambiente.
           </div>
         ) : null}
 

@@ -257,7 +257,7 @@ describe("Stripe API routes", () => {
     const body = await response.json();
 
     expect(response.status).toBeGreaterThanOrEqual(500);
-    expect(body.error).toContain("Preco Stripe nao configurado");
+    expect(body.error).toContain("Stripe ainda não está configurado neste ambiente.");
     expect(mocks.checkoutCreate).not.toHaveBeenCalled();
   });
 

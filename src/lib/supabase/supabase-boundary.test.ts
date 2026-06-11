@@ -30,9 +30,11 @@ function collectSourceFiles(directory: string): string[] {
 describe("fronteira Supabase server/client", () => {
   it("mantem o cliente service role restrito ao servidor", () => {
     const source = readSource("src/lib/supabase/server.ts");
+    const envSource = readSource("src/lib/server/env.ts");
 
     expect(source).toContain('import "server-only";');
-    expect(source).toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(source).toContain("requireSupabaseAdminEnv");
+    expect(envSource).toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(source).toContain("persistSession: false");
   });
 

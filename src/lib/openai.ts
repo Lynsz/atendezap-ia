@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { AppError } from "@/lib/errors";
+import { requireOpenAiEnv } from "@/lib/server/env";
 import type { KitFormData } from "@/lib/validators";
 
 export const kitJsonSchema = {
@@ -94,11 +95,8 @@ Regras:
 }
 
 export async function generateKitWithOpenAI(formData: KitFormData) {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new AppError("OpenAI não configurada. Defina OPENAI_API_KEY.", 500);
-  }
-
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const { apiKey } = requireOpenAiEnv();
+  const openai = new OpenAI({ apiKey });
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
   const completion = await openai.chat.completions.create(
     {

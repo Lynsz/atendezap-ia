@@ -21,7 +21,7 @@ describe("Stripe service helpers", () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", "");
 
     expect(() => getStripe()).toThrow("Stripe");
-    expect(() => getStripeWebhookSecret()).toThrow("Webhook Stripe");
+    expect(() => getStripeWebhookSecret()).toThrow("Stripe");
   });
 
   it("valida price obrigatorio e deixa cupom do Pro opcional", () => {

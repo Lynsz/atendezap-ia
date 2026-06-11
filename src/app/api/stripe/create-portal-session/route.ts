@@ -3,19 +3,15 @@ import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
+import { requireSupabasePublicEnv } from "@/lib/server/env";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { getAppUrl, getStripe } from "@/services/stripe";
 
 export const runtime = "nodejs";
 
 async function authenticateRequest(request: Request) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const { url, anonKey } = requireSupabasePublicEnv();
   const authorization = request.headers.get("authorization");
-
-  if (!url || !anonKey) {
-    throw new AppError("Supabase não configurado no servidor.", 500);
-  }
 
   if (!authorization) {
     throw new AppError("Faça login para gerenciar sua assinatura.", 401);

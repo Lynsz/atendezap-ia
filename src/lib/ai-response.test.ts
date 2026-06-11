@@ -59,7 +59,7 @@ describe("buildCustomerResponsePrompt", () => {
     delete process.env.OPENAI_API_KEY;
 
     await expect(generateCustomerResponseWithAi(baseInput)).rejects.toMatchObject({
-      message: "A chave da OpenAI nao esta configurada no ambiente local.",
+      message: "A chave da OpenAI não está configurada neste ambiente.",
       status: 500
     });
   });

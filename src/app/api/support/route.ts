@@ -6,6 +6,7 @@ import { logEvent } from "@/lib/events";
 import { sendTransactionalEmail } from "@/lib/email";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
+import { requireSupabasePublicEnv } from "@/lib/server/env";
 import { createSupportRequestSchema, inferSupportPriority } from "@/lib/support";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
@@ -13,12 +14,17 @@ export const runtime = "nodejs";
 
 async function getOptionalUser(request: Request) {
   const authorization = request.headers.get("authorization");
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!authorization || !url || !anonKey) return null;
+  if (!authorization) return null;
 
-  const supabase = createClient(url, anonKey, {
+  let supabaseEnv: ReturnType<typeof requireSupabasePublicEnv>;
+  try {
+    supabaseEnv = requireSupabasePublicEnv();
+  } catch {
+    return null;
+  }
+
+  const supabase = createClient(supabaseEnv.url, supabaseEnv.anonKey, {
     global: {
       headers: {
         Authorization: authorization
@@ -39,12 +45,7 @@ async function getOptionalUser(request: Request) {
 
 async function requireAuthenticatedSupabase(request: Request) {
   const authorization = request.headers.get("authorization");
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !anonKey) {
-    throw new AppError("Supabase nao configurado no servidor.", 500);
-  }
+  const { url, anonKey } = requireSupabasePublicEnv();
 
   if (!authorization) {
     throw new AppError("Sessao nao encontrada. Faca login novamente.", 401);

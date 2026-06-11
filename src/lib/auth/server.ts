@@ -2,15 +2,11 @@ import "server-only";
 
 import { createClient, type User } from "@supabase/supabase-js";
 import { AppError } from "@/lib/errors";
+import { requireSupabasePublicEnv } from "@/lib/server/env";
 
 export function createSupabaseAuthClient(request: Request) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const { url, anonKey } = requireSupabasePublicEnv();
   const authorization = request.headers.get("authorization");
-
-  if (!url || !anonKey) {
-    throw new AppError("Supabase não configurado no servidor.", 500);
-  }
 
   if (!authorization) {
     throw new AppError("Sessão não encontrada. Faça login novamente.", 401);

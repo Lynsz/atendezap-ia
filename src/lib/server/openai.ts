@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { AppError } from "@/lib/errors";
+import { requireOpenAiEnv } from "@/lib/server/env";
 
 const DEFAULT_OPENAI_MODEL = "gpt-4o-mini";
 
@@ -8,11 +8,7 @@ export function getOpenAIModel() {
 }
 
 export function getOpenAIClient() {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-
-  if (!apiKey) {
-    throw new AppError("A chave da OpenAI nao esta configurada no ambiente local.", 500);
-  }
+  const { apiKey } = requireOpenAiEnv();
 
   return new OpenAI({ apiKey });
 }

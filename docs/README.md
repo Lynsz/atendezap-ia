@@ -33,6 +33,9 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [environments](environments.md)
 - [operations-1.0](operations-1.0.md)
 - [production-readiness](production-readiness.md)
+- [vercel-deploy-checklist](vercel-deploy-checklist.md)
+- [production-smoke-test](production-smoke-test.md)
+- [deploy-readiness-report](deploy-readiness-report.md)
 - [staging-checklist](staging-checklist.md)
 - [production-deploy-checklist](production-deploy-checklist.md)
 - [post-deploy-smoke-test](post-deploy-smoke-test.md)
@@ -119,6 +122,9 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 ## Integracoes
 
 - [vercel-env-vars](vercel-env-vars.md)
+- [vercel-supabase-setup](vercel-supabase-setup.md)
+- [vercel-stripe-setup](vercel-stripe-setup.md)
+- [vercel-openai-setup](vercel-openai-setup.md)
 - [stripe](stripe-setup.md)
 - [supabase](supabase-setup.md)
 - [openai](openai-production.md)

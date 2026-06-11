@@ -7,6 +7,7 @@ import {
   type SaasPlan
 } from "@/config/plans";
 import { AppError } from "@/lib/errors";
+import { readServerEnv, requireStripePriceId, requireStripeSecretKey, requireStripeWebhookSecret } from "@/lib/server/env";
 
 export type StripeSubscriptionStatus =
   | "active"
@@ -21,10 +22,7 @@ export type StripeSubscriptionStatus =
 let stripeClient: Stripe | null = null;
 
 export function getStripe() {
-  const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
-  if (!secretKey) {
-    throw new AppError("Stripe ainda não configurado no ambiente local.", 503);
-  }
+  const secretKey = requireStripeSecretKey();
 
   if (!stripeClient) {
     stripeClient = new Stripe(secretKey, {
@@ -36,11 +34,7 @@ export function getStripe() {
 }
 
 export function getStripeWebhookSecret() {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
-  if (!webhookSecret) {
-    throw new AppError("Webhook Stripe nao esta configurado neste ambiente.", 500);
-  }
-  return webhookSecret;
+  return requireStripeWebhookSecret();
 }
 
 export function getAppUrl() {
@@ -52,12 +46,12 @@ export function getAppUrl() {
 
   if (process.env.NODE_ENV !== "production") return "http://localhost:3000";
 
-  throw new AppError("URL publica do app nao configurada. Defina NEXT_PUBLIC_APP_URL na Vercel.", 500);
+  throw new AppError("URL publica do app nao configurada neste ambiente.", 500);
 }
 
 function envValue(...names: string[]) {
   for (const name of names) {
-    const value = process.env[name]?.trim();
+    const value = readServerEnv(name as Parameters<typeof readServerEnv>[0]);
     if (value) return value;
   }
   return "";
@@ -80,10 +74,7 @@ export function getStripePlanPriceIds(planId: PlanId) {
 
 export function getStripePriceId(plan: SaasPlan) {
   const priceId = getCheckoutStripePriceId(plan.id);
-  if (!priceId) {
-    throw new AppError(`Preco Stripe nao configurado para o plano ${plan.name}.`, 503);
-  }
-  return priceId;
+  return requireStripePriceId(priceId);
 }
 
 export function getStripeCouponId(plan: SaasPlan, shouldApplyFirstMonthOffer: boolean) {

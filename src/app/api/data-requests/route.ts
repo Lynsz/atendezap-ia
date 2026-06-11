@@ -6,16 +6,18 @@ import { AppError } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
+import { ENV_ERROR_MESSAGES, requireSupabasePublicEnv } from "@/lib/server/env";
 
 export const runtime = "nodejs";
 
 async function getAuthenticatedSupabase(request: Request) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  let supabaseEnv: ReturnType<typeof requireSupabasePublicEnv>;
 
-  if (!url || !anonKey) {
+  try {
+    supabaseEnv = requireSupabasePublicEnv();
+  } catch {
     serverLog({ level: "error", event: "data_requests_missing_supabase_config", route: "/api/data-requests" });
-    return { response: NextResponse.json({ error: "Supabase nao configurado no servidor. Revise as variaveis de ambiente." }, { status: 500 }) };
+    return { response: NextResponse.json({ error: ENV_ERROR_MESSAGES.supabase }, { status: 500 }) };
   }
 
   const authorization = request.headers.get("authorization");
@@ -23,7 +25,7 @@ async function getAuthenticatedSupabase(request: Request) {
     return { response: NextResponse.json({ error: "Sessao nao encontrada. Faca login novamente." }, { status: 401 }) };
   }
 
-  const supabase = createClient(url, anonKey, {
+  const supabase = createClient(supabaseEnv.url, supabaseEnv.anonKey, {
     global: {
       headers: {
         Authorization: authorization

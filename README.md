@@ -53,7 +53,7 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 - Playwright.
 - Deploy compativel com Vercel.
 
-## Como rodar localmente
+## Rodando localmente
 
 ```bash
 npm install
@@ -61,6 +61,8 @@ npm run dev
 ```
 
 Abra `http://localhost:3000`.
+
+Copie `.env.example` para `.env.local` e preencha apenas os valores necessarios para o fluxo que sera testado. Nunca commite `.env.local`.
 
 Para simular um ambiente de producao local:
 
@@ -165,7 +167,7 @@ Esse comando executa `check:secrets`, `lint`, `typecheck`, `build` e `test`.
 
 A GitHub Action de validacao roda em pull requests e pushes para `main`, sem secrets reais e sem ler `.env.local`. O repositorio deve continuar privado.
 
-## Deploy privado e ambientes
+## Deploy
 
 - O repositorio continua privado no GitHub.
 - Use a Vercel conectada ao repositorio privado.
@@ -173,7 +175,10 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Valide o Preview/Staging antes de promover qualquer mudanca para producao.
 - Configure secrets reais apenas no painel da Vercel e no `.env.local` local.
 - `.env.local` nunca deve ir para o Git.
-- Use `docs/staging-checklist.md`, `docs/production-deploy-checklist.md` e `docs/post-deploy-smoke-test.md` antes de producao.
+- Configure `NEXT_PUBLIC_APP_URL` com a URL publica do ambiente.
+- Configure Supabase, Stripe e OpenAI seguindo `docs/vercel-supabase-setup.md`, `docs/vercel-stripe-setup.md` e `docs/vercel-openai-setup.md`.
+- Use `docs/vercel-deploy-checklist.md` antes de promover e `docs/production-smoke-test.md` depois do deploy.
+- Use tambem `docs/staging-checklist.md`, `docs/production-deploy-checklist.md` e `docs/post-deploy-smoke-test.md` quando fizerem parte do ciclo operacional.
 
 ## Monitoramento e operacao
 
@@ -323,6 +328,12 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - `docs/production-readiness.md`: preparacao para producao controlada.
 - `docs/go-live-checklist.md`: checklist final no dominio real.
 - `docs/deploy-vercel.md`: deploy na Vercel.
+- `docs/vercel-deploy-checklist.md`: checklist curto de deploy na Vercel.
+- `docs/vercel-supabase-setup.md`: setup Supabase para Vercel.
+- `docs/vercel-stripe-setup.md`: setup Stripe para Vercel.
+- `docs/vercel-openai-setup.md`: setup OpenAI para Vercel.
+- `docs/production-smoke-test.md`: smoke test de producao.
+- `docs/deploy-readiness-report.md`: relatorio desta auditoria de prontidao.
 - `docs/stripe-setup.md`: Stripe.
 - `docs/supabase-setup.md`: Supabase.
 - `docs/openai-production.md`: OpenAI em producao.
