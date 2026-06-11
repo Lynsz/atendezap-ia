@@ -57,7 +57,7 @@ export default function SignupPage() {
 
     if (signUpError) {
       setLoading(false);
-      setError(signUpError instanceof Error ? signUpError.message : signUpError || "Não foi possível criar sua conta. Tente outro e-mail.");
+      setError("Não foi possível criar sua conta agora. Verifique sua conexão e tente novamente.");
       return;
     }
 

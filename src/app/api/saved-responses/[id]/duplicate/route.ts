@@ -37,7 +37,7 @@ async function getAuthenticatedSupabase(request: Request) {
 
   const authorization = request.headers.get("authorization");
   if (!authorization) {
-    return { response: NextResponse.json({ error: "Sessao nao encontrada. Faca login novamente." }, { status: 401 }) };
+    return { response: NextResponse.json({ error: "Você precisa estar logado para continuar." }, { status: 401 }) };
   }
 
   const supabase = createClient(url, anonKey, {

@@ -1,7 +1,7 @@
 import { getPlanResponseLimit } from "@/lib/plan-limits";
 
 export const MONTHLY_LIMIT_EXCEEDED_MESSAGE =
-  "Voce atingiu o limite mensal do seu plano. Aguarde a renovacao do ciclo ou altere seu plano.";
+  "Seu limite mensal de respostas foi atingido. Veja os planos para continuar gerando respostas.";
 
 export const SUBSCRIPTION_INACTIVE_MESSAGE = "Sua assinatura nao esta ativa no momento.";
 export const SUBSCRIPTION_PAST_DUE_MESSAGE = "Atualize o pagamento para continuar usando o AtendeZap IA.";

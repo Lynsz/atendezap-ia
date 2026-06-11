@@ -24,7 +24,7 @@ async function getAccessToken() {
   } = await supabase.auth.getSession();
 
   if (!session?.access_token) {
-    throw new Error("Sessao nao encontrada. Faca login novamente.");
+    throw new Error("Você precisa estar logado para continuar.");
   }
 
   return session.access_token;
