@@ -67,6 +67,104 @@ describe("saved responses service", () => {
     vi.unstubAllGlobals();
   });
 
+  it("listSavedResponses chama a API autenticada e retorna a biblioteca", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          savedResponses: [
+            {
+              id: "33333333-3333-4333-8333-333333333333",
+              user_id: "11111111-1111-4111-8111-111111111111",
+              response_id: null,
+              title: "Resposta",
+              content: "Conteudo",
+              category: "geral",
+              source: "manual",
+              is_favorite: false,
+              created_at: "2026-05-26T12:00:00.000Z",
+              updated_at: "2026-05-26T12:00:00.000Z"
+            }
+          ]
+        }),
+        { status: 200 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { listSavedResponses } = await import("./saved-responses");
+    const savedResponses = await listSavedResponses();
+
+    expect(savedResponses).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/saved-responses",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer test-token"
+        })
+      })
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it("updateSavedResponse chama PATCH autenticado com titulo, conteudo e categoria", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          savedResponse: {
+            id: "33333333-3333-4333-8333-333333333333",
+            title: "Novo titulo",
+            content: "Novo conteudo",
+            category: "Delivery"
+          }
+        }),
+        { status: 200 }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { updateSavedResponse } = await import("./saved-responses");
+    await updateSavedResponse("33333333-3333-4333-8333-333333333333", {
+      title: "Novo titulo",
+      content: "Novo conteudo",
+      category: "Delivery"
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/saved-responses/33333333-3333-4333-8333-333333333333",
+      expect.objectContaining({
+        method: "PATCH",
+        headers: expect.objectContaining({
+          Authorization: "Bearer test-token"
+        }),
+        body: JSON.stringify({
+          title: "Novo titulo",
+          content: "Novo conteudo",
+          category: "Delivery"
+        })
+      })
+    );
+    vi.unstubAllGlobals();
+  });
+
+  it("deleteSavedResponse chama DELETE autenticado", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ deleted: true }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { deleteSavedResponse } = await import("./saved-responses");
+    await deleteSavedResponse("33333333-3333-4333-8333-333333333333");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/saved-responses/33333333-3333-4333-8333-333333333333",
+      expect.objectContaining({
+        method: "DELETE",
+        headers: expect.objectContaining({
+          Authorization: "Bearer test-token"
+        })
+      })
+    );
+    vi.unstubAllGlobals();
+  });
+
   it("duplicateSavedResponse chama a API autenticada", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(

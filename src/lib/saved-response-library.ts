@@ -1,20 +1,21 @@
 import type { SavedResponse } from "@/types/mvp";
 
-export type SavedResponseSourceFilter = "all" | "ai_generated" | "template" | "manual";
+export type SavedResponseSourceFilter = "all" | "ai" | "template" | "manual";
 export type SavedResponseFavoriteFilter = "all" | "favorites";
 export type SavedResponseSortOrder = "recent" | "oldest" | "updated" | "favorites" | "category";
 
 export function getSavedResponseSource(item: Pick<SavedResponse, "response_id" | "source_template_id" | "source">): Exclude<SavedResponseSourceFilter, "all"> {
-  if (item.source === "ai_generated" || item.source === "template" || item.source === "manual") return item.source;
+  if (item.source === "ai" || item.source === "ai_generated") return "ai";
+  if (item.source === "template" || item.source === "manual") return item.source;
   if (item.source_template_id) return "template";
-  if (item.response_id) return "ai_generated";
+  if (item.response_id) return "ai";
   return "manual";
 }
 
 export function getSavedResponseSourceLabel(source: SavedResponseSourceFilter) {
   const labels: Record<SavedResponseSourceFilter, string> = {
     all: "Todas",
-    ai_generated: "IA",
+    ai: "IA",
     template: "Template",
     manual: "Manual"
   };

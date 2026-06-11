@@ -208,22 +208,10 @@ create table if not exists public.saved_responses (
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   constraint saved_responses_category_check check (
-    category is null or category in (
-      'Preco',
-      'Agendamento',
-      'Entrega',
-      'Pagamento',
-      'Horario',
-      'Informacoes gerais',
-      'Pos-venda',
-      'Orcamento',
-      'Confirmacao',
-      'Cancelamento',
-      'Outro'
-    )
+    category is null or char_length(category) <= 80
   ),
   constraint saved_responses_source_check check (
-    source in ('ai_generated', 'template', 'manual')
+    source in ('ai', 'ai_generated', 'template', 'manual')
   ),
   constraint saved_responses_copy_count_non_negative check (
     copy_count >= 0

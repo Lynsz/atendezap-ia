@@ -14,8 +14,8 @@ describe("SaasDashboardPage UX", () => {
     const source = readDashboardSource();
 
     expect(source).toContain('data-testid="saved-responses-empty-state"');
-    expect(source).toContain("Você ainda não tem respostas salvas.");
-    expect(source).toContain("Gere uma resposta com IA, salve um template pronto ou crie uma resposta manual");
+    expect(source).toContain("Você ainda não salvou respostas.");
+    expect(source).toContain("Gere uma resposta no dashboard e salve para reutilizar depois.");
   });
 
   it("mantem estado de carregamento acessivel na biblioteca", () => {

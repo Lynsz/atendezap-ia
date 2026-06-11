@@ -692,7 +692,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     }
   }, [savedResponsesLoaded]);
 
-  async function handleSaveGeneratedResponse(input: { responseId?: string | null; sourceTemplateId?: string | null; content: string; title?: string | null; category?: string | null; source?: "ai_generated" | "template" | "manual" }) {
+  async function handleSaveGeneratedResponse(input: { responseId?: string | null; sourceTemplateId?: string | null; content: string; title?: string | null; category?: string | null; source?: "ai" | "template" | "manual" }) {
     setError("");
 
     if (!input.responseId && !input.content.trim()) {
@@ -705,7 +705,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       const result = await saveResponseToLibrary({
         response_id: input.responseId || undefined,
         source_template_id: input.sourceTemplateId || undefined,
-        source: input.source || (input.sourceTemplateId ? "template" : input.responseId ? "ai_generated" : "manual"),
+        source: input.source || (input.sourceTemplateId ? "template" : input.responseId ? "ai" : "manual"),
         title: input.title || undefined,
         content: input.content,
         category: input.category || undefined
@@ -728,12 +728,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         });
       } else {
         trackEvent("saved_response_create", {
-          source: input.responseId ? "ai_generated" : "manual",
+          source: input.responseId ? "ai" : "manual",
           category: result.savedResponse.category || "sem_categoria",
           action: "create"
         });
         trackEvent("activation_response_saved", {
-          source: input.responseId ? "ai_generated" : "manual",
+          source: input.responseId ? "ai" : "manual",
           category: result.savedResponse.category || "sem_categoria",
           businessType: businessDraft.business_type,
           step: "response_saved"
@@ -758,14 +758,19 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
 
   async function handleUpdateSavedResponse(item: SavedResponse) {
     setError("");
+    const title = savedResponseDraft.title.trim();
     const content = savedResponseDraft.content.trim();
+    if (!title) {
+      setError("Informe o titulo da resposta salva.");
+      return;
+    }
     if (!content) {
       setError("Informe o conteudo da resposta salva.");
       return;
     }
     try {
       const updated = await updateSavedResponse(item.id, {
-        title: savedResponseDraft.title.trim() || null,
+        title,
         category: savedResponseDraft.category || null,
         content
       });
@@ -785,7 +790,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
 
   async function handleDeleteSavedResponse(item: SavedResponse) {
     setError("");
-    if (!window.confirm("Tem certeza que deseja excluir esta resposta salva?")) return;
+    if (!window.confirm("Tem certeza que deseja excluir esta resposta?")) return;
     try {
       await deleteSavedResponse(item.id);
       setSavedResponses((current) => current.filter((savedResponse) => savedResponse.id !== item.id));
@@ -1085,7 +1090,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           category: template.category
         });
       }
-      showFeedback(source === "template" ? "Template copiado." : "Resposta copiada.");
+      showFeedback("Copiado!");
     } catch {
       setError("Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.");
     }
@@ -1322,6 +1327,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const favoriteSavedResponses = sortSavedResponses(savedResponses.filter((item) => item.is_favorite), "updated");
   const quickFavoriteSavedResponses = favoriteSavedResponses.slice(0, 3);
   const libraryFavoritePreview = favoriteSavedResponses.slice(0, 5);
+  const savedResponseCategoryOptions = Array.from(
+    new Set([...savedResponseCategories, ...savedResponses.map((item) => item.category).filter(Boolean)])
+  ) as string[];
 
   const savedGeneratedResponseIds = new Set(savedResponses.map((item) => item.response_id).filter(Boolean) as string[]);
   const savedTemplateIds = new Set(savedResponses.map((item) => item.source_template_id).filter(Boolean) as string[]);
@@ -1331,6 +1339,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     search: templateSearch
   });
   const recommendedTemplates = getRecommendedWhatsAppTemplates(business?.business_type || business?.business_area || businessDraft.business_type, 4);
+  const generatedResponseCategory = business?.business_type || userProfile?.business_type || businessDraft.business_type || "geral";
+  const generatedResponseTitle = question.trim().slice(0, 120) || generatedAnswer.trim().slice(0, 120) || "Resposta salva";
   const shouldShowTemplateRecommendations = tab === "assistant" && (!history.length || monthlyUsage <= 2);
   const hasFirstResponse = history.length > 0;
   const assistantExampleQuestions = hasFirstResponse ? exampleQuestions : firstResponseExampleQuestions;
@@ -1762,7 +1772,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               ))
             ) : (
               <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-4 text-sm text-slate-400 md:col-span-3">
-                Salve respostas como favoritas para acessar mais rápido aqui.
+                Favorite respostas importantes para acessar mais rápido aqui.
               </div>
             )}
           </div>
@@ -2064,7 +2074,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer })}
+                      onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer, title: generatedResponseTitle, category: generatedResponseCategory })}
                       disabled={savingResponseId === (generatedResponseId || "generated") || Boolean(generatedResponseId && savedGeneratedResponseIds.has(generatedResponseId))}
                       className="inline-flex min-h-9 items-center gap-2 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-3 text-xs font-black text-emerald-100 hover:bg-emerald-400/20 disabled:opacity-60"
                     >
@@ -2091,7 +2101,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer })}
+                        onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer, title: generatedResponseTitle, category: generatedResponseCategory })}
                         disabled={savingResponseId === (generatedResponseId || "generated") || Boolean(generatedResponseId && savedGeneratedResponseIds.has(generatedResponseId))}
                         className="inline-flex min-h-9 items-center justify-center rounded-md border border-emerald-400/30 bg-[#101821] px-3 text-xs font-black text-emerald-100 disabled:opacity-60"
                       >
@@ -2122,7 +2132,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer })}
+                          onClick={() => handleSaveGeneratedResponse({ responseId: generatedResponseId, content: generatedAnswer, title: generatedResponseTitle, category: generatedResponseCategory })}
                           disabled={savingResponseId === (generatedResponseId || "generated") || Boolean(generatedResponseId && savedGeneratedResponseIds.has(generatedResponseId))}
                           className="inline-flex min-h-9 items-center justify-center rounded-md border border-amber-300/30 bg-[#101821] px-3 text-xs font-black text-amber-100 disabled:opacity-60"
                         >
@@ -2282,7 +2292,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   <div className="mt-4 flex flex-wrap gap-2">
                     <button
                       type="button"
-                      onClick={() => handleSaveGeneratedResponse({ responseId: item.id, content: item.generated_answer })}
+                      onClick={() => handleSaveGeneratedResponse({ responseId: item.id, content: item.generated_answer, title: item.customer_question, category: item.business_type || item.response_type || "geral" })}
                       disabled={savingResponseId === item.id || savedGeneratedResponseIds.has(item.id)}
                       className="inline-flex min-h-9 items-center gap-2 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-3 text-xs font-black text-emerald-100 disabled:opacity-60"
                     >
@@ -2315,6 +2325,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Salve respostas úteis, organize por categoria simples e copie rapidamente quando a pergunta voltar.</p>
               </div>
               <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={() => setTab("assistant")} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-white/10 bg-white/10 px-4 text-xs font-black text-slate-100 hover:bg-white/15">
+                  Voltar ao dashboard
+                </button>
                 <button type="button" onClick={() => setShowManualSavedResponseForm((current) => !current)} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-emerald-400 px-4 text-xs font-black text-slate-950 hover:bg-emerald-300">
                   <Plus className="h-3.5 w-3.5" />
                   Nova resposta
@@ -2337,7 +2350,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                     Categoria
                     <select value={manualSavedResponseDraft.category} onChange={(event) => setManualSavedResponseDraft((current) => ({ ...current, category: event.target.value }))} className="field-input">
                       <option value="">Sem categoria</option>
-                      {savedResponseCategories.map((category) => (
+                      {savedResponseCategoryOptions.map((category) => (
                         <option value={category} key={category}>{category}</option>
                       ))}
                     </select>
@@ -2407,13 +2420,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               </div>
               <select value={savedResponseCategoryFilter} onChange={(event) => handleSavedResponseCategoryFilter(event.target.value)} className="field-input">
                 <option value="Todas">Todas as categorias</option>
-                {savedResponseCategories.map((category) => (
+                {savedResponseCategoryOptions.map((category) => (
                   <option value={category} key={category}>{category}</option>
                 ))}
               </select>
               <select value={savedResponseSourceFilter} onChange={(event) => handleSavedResponseSourceFilter(event.target.value as SavedResponseSourceFilter)} className="field-input">
                 <option value="all">Todas as origens</option>
-                <option value="ai_generated">IA</option>
+                <option value="ai">IA</option>
                 <option value="template">Template</option>
                 <option value="manual">Manual</option>
               </select>
@@ -2447,7 +2460,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                             Categoria
                             <select value={savedResponseDraft.category} onChange={(event) => setSavedResponseDraft((current) => ({ ...current, category: event.target.value }))} className="field-input">
                               <option value="">Sem categoria</option>
-                              {savedResponseCategories.map((category) => (
+                              {savedResponseCategoryOptions.map((category) => (
                                 <option value={category} key={category}>{category}</option>
                               ))}
                             </select>
@@ -2526,8 +2539,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               ) : (
                 <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-8 text-center text-sm text-slate-400" data-testid="saved-responses-empty-state">
                   <Star className="mx-auto mb-4 h-8 w-8 text-slate-500" />
-                  <p className="font-bold text-slate-200">Você ainda não tem respostas salvas.</p>
-                  <p className="mt-2">Gere uma resposta com IA, salve um template pronto ou crie uma resposta manual para reutilizar depois.</p>
+                  <p className="font-bold text-slate-200">Você ainda não salvou respostas.</p>
+                  <p className="mt-2">Gere uma resposta no dashboard e salve para reutilizar depois.</p>
                   <button type="button" onClick={() => setTab("assistant")} className="mt-4 rounded-md bg-emerald-400 px-4 py-2 text-xs font-black text-slate-950 hover:bg-emerald-300">
                     Gerar resposta
                   </button>

@@ -34,11 +34,11 @@ describe("saved response library helpers", () => {
     const items: SavedResponse[] = [
       baseItem,
       { ...baseItem, id: "44444444-4444-4444-8444-444444444444", source: "template", source_template_id: "delivery-1", category: "Entrega" },
-      { ...baseItem, id: "55555555-5555-4555-8555-555555555555", source: "ai_generated", response_id: "22222222-2222-4222-8222-222222222222", category: "Preco" }
+      { ...baseItem, id: "55555555-5555-4555-8555-555555555555", source: "ai", response_id: "22222222-2222-4222-8222-222222222222", category: "Preco" }
     ];
 
     expect(filterSavedResponses(items, { category: "Entrega" }).map((item) => item.id)).toEqual(["44444444-4444-4444-8444-444444444444"]);
-    expect(filterSavedResponses(items, { source: "ai_generated" }).map((item) => item.id)).toEqual(["55555555-5555-4555-8555-555555555555"]);
+    expect(filterSavedResponses(items, { source: "ai" }).map((item) => item.id)).toEqual(["55555555-5555-4555-8555-555555555555"]);
   });
 
   it("filtra favoritas com busca, categoria e origem combinadas", () => {
@@ -65,13 +65,14 @@ describe("saved response library helpers", () => {
   });
 
   it("infere origem quando registros antigos ainda nao tem source", () => {
-    expect(getSavedResponseSource({ response_id: "22222222-2222-4222-8222-222222222222", source_template_id: null, source: null })).toBe("ai_generated");
+    expect(getSavedResponseSource({ response_id: "22222222-2222-4222-8222-222222222222", source_template_id: null, source: null })).toBe("ai");
+    expect(getSavedResponseSource({ response_id: "22222222-2222-4222-8222-222222222222", source_template_id: null, source: "ai_generated" })).toBe("ai");
     expect(getSavedResponseSource({ response_id: null, source_template_id: "delivery-1", source: null })).toBe("template");
     expect(getSavedResponseSource({ response_id: null, source_template_id: null, source: null })).toBe("manual");
   });
 
   it("retorna labels simples de origem e titulo de copia", () => {
-    expect(getSavedResponseSourceLabel("ai_generated")).toBe("IA");
+    expect(getSavedResponseSourceLabel("ai")).toBe("IA");
     expect(getSavedResponseSourceLabel("template")).toBe("Template");
     expect(buildDuplicateSavedResponseTitle("Orcamento")).toBe("Orcamento (Copia)");
   });

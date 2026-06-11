@@ -141,6 +141,42 @@ describe("/api/saved-responses/[id]", () => {
     expect(response.status).toBe(404);
   });
 
+  it("rejeita titulo vazio na edicao", async () => {
+    const { PATCH } = await import("./route");
+    const response = await PATCH(
+      new Request("https://app.example.test/api/saved-responses/33333333-3333-4333-8333-333333333333", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({ title: "" })
+      }),
+      { params: Promise.resolve({ id: "33333333-3333-4333-8333-333333333333" }) }
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.updatePayload).toBeNull();
+  });
+
+  it("rejeita conteudo vazio na edicao", async () => {
+    const { PATCH } = await import("./route");
+    const response = await PATCH(
+      new Request("https://app.example.test/api/saved-responses/33333333-3333-4333-8333-333333333333", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({ content: "" })
+      }),
+      { params: Promise.resolve({ id: "33333333-3333-4333-8333-333333333333" }) }
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.updatePayload).toBeNull();
+  });
+
   it("favorita somente resposta salva do usuario autenticado", async () => {
     const { PATCH } = await import("./route");
     const response = await PATCH(

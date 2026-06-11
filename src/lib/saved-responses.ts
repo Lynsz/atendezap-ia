@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const savedResponseCategories = [
+  "geral",
   "Preco",
   "Agendamento",
   "Entrega",
@@ -16,7 +17,7 @@ export const savedResponseCategories = [
 
 export type SavedResponseCategory = (typeof savedResponseCategories)[number];
 
-export const savedResponseSources = ["ai_generated", "template", "manual"] as const;
+export const savedResponseSources = ["ai", "ai_generated", "template", "manual"] as const;
 
 export type SavedResponseSource = (typeof savedResponseSources)[number];
 
@@ -28,9 +29,10 @@ const optionalText = (max: number, message: string) =>
     .optional()
     .transform((value) => value || undefined);
 
-export const savedResponseCategorySchema = z.enum(savedResponseCategories, {
-  errorMap: () => ({ message: "Escolha uma categoria valida." })
-});
+const editableText = (max: number, emptyMessage: string, maxMessage: string) =>
+  z.string().trim().min(1, emptyMessage).max(max, maxMessage).optional();
+
+export const savedResponseCategorySchema = z.string().trim().min(1, "Escolha uma categoria valida.").max(80, "Categoria muito longa. Use ate 80 caracteres.");
 
 export const savedResponseSourceSchema = z.enum(savedResponseSources, {
   errorMap: () => ({ message: "Escolha uma origem valida." })
@@ -53,8 +55,8 @@ export const createSavedResponseSchema = z
 
 export const updateSavedResponseSchema = z
   .object({
-    title: optionalText(120, "Titulo muito longo. Use ate 120 caracteres.").nullable(),
-    content: optionalText(5000, "Resposta muito longa. Use ate 5000 caracteres."),
+    title: editableText(120, "Informe o titulo da resposta salva.", "Titulo muito longo. Use ate 120 caracteres.").nullable(),
+    content: editableText(5000, "Informe o conteudo da resposta salva.", "Resposta muito longa. Use ate 5000 caracteres."),
     category: savedResponseCategorySchema.optional().nullable(),
     is_favorite: z.boolean().optional(),
     copy_count_action: z.literal("increment").optional()
@@ -66,12 +68,13 @@ export const updateSavedResponseSchema = z
 
 export function normalizeSavedResponseCategory(category?: string | null) {
   if (!category) return null;
-  return savedResponseCategories.find((item) => item === category) ?? null;
+  return category.trim().slice(0, 80) || null;
 }
 
 export function inferSavedResponseSource(input: { response_id?: string | null; source_template_id?: string | null; source?: SavedResponseSource }) {
+  if (input.source === "ai_generated") return "ai";
   if (input.source) return input.source;
   if (input.source_template_id) return "template";
-  if (input.response_id) return "ai_generated";
+  if (input.response_id) return "ai";
   return "manual";
 }

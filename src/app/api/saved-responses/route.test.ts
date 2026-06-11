@@ -19,7 +19,7 @@ const mocks = vi.hoisted(() => ({
       title: "Qual o preço?",
       content: "O valor depende do serviço. Posso te passar as opções.",
       category: "Preco",
-      source: "ai_generated",
+      source: "ai",
       created_at: "2026-05-26T12:00:00.000Z",
       updated_at: "2026-05-26T12:00:00.000Z"
     }
@@ -145,7 +145,7 @@ describe("/api/saved-responses", () => {
     expect(mocks.insertPayload).toMatchObject({
       user_id: "11111111-1111-4111-8111-111111111111",
       response_id: "22222222-2222-4222-8222-222222222222",
-      source: "ai_generated",
+      source: "ai",
       category: "Preco"
     });
     expect(mocks.tableFilters).toEqual(
@@ -256,7 +256,7 @@ describe("/api/saved-responses", () => {
     expect(mocks.insertPayload).toBeNull();
   });
 
-  it("rejeita categoria invalida", async () => {
+  it("rejeita categoria longa demais", async () => {
     const { POST } = await import("./route");
     const response = await POST(
       new Request("https://app.example.test/api/saved-responses", {
@@ -267,14 +267,14 @@ describe("/api/saved-responses", () => {
         },
         body: JSON.stringify({
           content: "Resposta pronta",
-          category: "CRM"
+          category: "x".repeat(81)
         })
       })
     );
 
     const body = await response.json();
     expect(response.status).toBe(400);
-    expect(body.error).toContain("categoria");
+    expect(body.error).toContain("Categoria");
   });
 
   it("rejeita conteudo vazio sem resposta original", async () => {

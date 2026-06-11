@@ -3,8 +3,19 @@ import { savedResponseCategories, type SavedResponseCategory } from "@/lib/saved
 
 export type WhatsAppTemplateCategory = SavedResponseCategory;
 
+export type WhatsAppTemplateNiche =
+  | "delivery"
+  | "estetica"
+  | "restaurante"
+  | "loja"
+  | "assistencia_tecnica"
+  | "prestador_servico"
+  | "autonomo"
+  | "geral";
+
 export type WhatsAppTemplate = {
   id: string;
+  niche: WhatsAppTemplateNiche;
   businessType: BusinessTypeOption;
   category: WhatsAppTemplateCategory;
   title: string;
@@ -12,7 +23,7 @@ export type WhatsAppTemplate = {
   description?: string;
 };
 
-type TemplateSeed = Omit<WhatsAppTemplate, "id" | "businessType">;
+type TemplateSeed = Omit<WhatsAppTemplate, "id" | "niche" | "businessType">;
 
 const templatesByBusinessType: Record<BusinessTypeOption, TemplateSeed[]> = {
   Delivery: [
@@ -234,9 +245,21 @@ const templatesByBusinessType: Record<BusinessTypeOption, TemplateSeed[]> = {
   ]
 };
 
+const templateNicheByBusinessType: Record<BusinessTypeOption, WhatsAppTemplateNiche> = {
+  Delivery: "delivery",
+  Estetica: "estetica",
+  Restaurante: "restaurante",
+  Loja: "loja",
+  "Assistencia tecnica": "assistencia_tecnica",
+  "Prestador de servico": "prestador_servico",
+  Autonomo: "autonomo",
+  Outro: "geral"
+};
+
 export const whatsappTemplates: WhatsAppTemplate[] = businessTypeOptions.flatMap((businessType) =>
   templatesByBusinessType[businessType].map((template, index) => ({
-    id: `${businessType.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index + 1}`,
+    id: `${templateNicheByBusinessType[businessType].replace(/_/g, "-")}-${index + 1}`,
+    niche: templateNicheByBusinessType[businessType],
     businessType,
     ...template
   }))
@@ -252,7 +275,7 @@ export function filterWhatsAppTemplates(options: { businessType?: string; catego
     if (options.businessType && options.businessType !== "Todos" && template.businessType !== getBusinessTemplate(options.businessType).type) return false;
     if (options.category && options.category !== "Todas" && template.category !== options.category) return false;
     if (!search) return true;
-    return [template.title, template.description, template.content, template.category, template.businessType]
+    return [template.title, template.description, template.content, template.category, template.businessType, template.niche]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(search));
   });

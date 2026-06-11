@@ -12,6 +12,7 @@ describe("whatsapp templates catalog", () => {
   it("cada template tem id, categoria, titulo e conteudo", () => {
     for (const template of whatsappTemplates) {
       expect(template.id).toBeTruthy();
+      expect(template.niche).toBeTruthy();
       expect(template.category).toBeTruthy();
       expect(template.title).toBeTruthy();
       expect(template.content).toBeTruthy();
@@ -40,5 +41,11 @@ describe("whatsapp templates catalog", () => {
     const templates = getRecommendedWhatsAppTemplates("Estetica", 3);
     expect(templates).toHaveLength(3);
     expect(templates.every((template) => template.businessType === "Estetica")).toBe(true);
+  });
+
+  it("expoe os nichos minimos em slug", () => {
+    expect(new Set(whatsappTemplates.map((template) => template.niche))).toEqual(
+      new Set(["delivery", "estetica", "restaurante", "loja", "assistencia_tecnica", "prestador_servico", "autonomo", "geral"])
+    );
   });
 });
