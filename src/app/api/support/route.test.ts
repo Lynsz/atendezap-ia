@@ -44,6 +44,10 @@ vi.mock("@/lib/events", () => ({
   logEvent: vi.fn()
 }));
 
+vi.mock("@/lib/analytics/server", () => ({
+  trackServerAppEvent: vi.fn()
+}));
+
 vi.mock("@/lib/logger", () => ({
   serverLog: vi.fn()
 }));

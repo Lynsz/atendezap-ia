@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { trackServerAppEvent } from "@/lib/analytics/server";
 import { AppError } from "@/lib/errors";
 import { serverLog } from "@/lib/logger";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
 
     const { data: generatedResponse, error: responseError } = await supabase
       .from("generated_responses")
-      .select("id")
+      .select("id, business_type")
       .eq("id", payload.data.responseId)
       .eq("user_id", user.id)
       .maybeSingle();
@@ -102,12 +103,26 @@ export async function POST(request: Request) {
           user_id: user.id,
           response_id: payload.data.responseId,
           rating: payload.data.rating,
-          comment: payload.data.comment || null
+          comment: payload.data.comment || null,
+          business_type: typeof generatedResponse.business_type === "string" ? generatedResponse.business_type : null
         },
         { onConflict: "user_id,response_id" }
       )
       .select("*")
       .single();
+
+    await trackServerAppEvent({
+      user_id: user.id,
+      event_name: "ai_feedback_submitted",
+      source: "dashboard",
+      page: "/dashboard",
+      business_type: typeof generatedResponse.business_type === "string" ? generatedResponse.business_type : null,
+      metadata: {
+        source: "dashboard",
+        business_type: typeof generatedResponse.business_type === "string" ? generatedResponse.business_type : null,
+        category: payload.data.rating
+      }
+    });
 
     if (upsertError || !feedback) {
       serverLog({ level: "error", event: "ai_feedback_save_failed", route: "/api/ai/response-feedback", userId: user.id, error: upsertError });

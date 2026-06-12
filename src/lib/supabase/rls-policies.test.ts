@@ -54,6 +54,7 @@ describe("politicas RLS criticas", () => {
   it("mantem leads e eventos internos sem acesso direto pelo client", () => {
     const initialMigration = readRepoFile("supabase/migrations/0001_initial_schema.sql");
     const ebookMigration = readRepoFile("supabase/migrations/0002_funnel_pricing_ebook.sql");
+    const appEventsMigration = readRepoFile("supabase/migrations/0024_app_events.sql");
 
     expect(initialMigration).toContain("alter table public.events enable row level security");
     expect(initialMigration).toContain('create policy "events_no_client_access"');
@@ -61,6 +62,10 @@ describe("politicas RLS criticas", () => {
     expect(ebookMigration).toContain("alter table public.ebook_leads enable row level security");
     expect(ebookMigration).toContain('create policy "ebook_leads_no_client_access"');
     expect(ebookMigration).toContain("revoke all on public.ebook_leads from anon, authenticated");
+    expect(appEventsMigration).toContain("alter table public.app_events enable row level security");
+    expect(appEventsMigration).toContain('create policy "app_events_insert_own_or_anonymous"');
+    expect(appEventsMigration).toContain('create policy "app_events_no_select_for_clients"');
+    expect(appEventsMigration).toContain("revoke all on public.app_events from anon, authenticated");
   });
 
   it("mantem campanhas e resultados sem acesso direto pelo client", () => {

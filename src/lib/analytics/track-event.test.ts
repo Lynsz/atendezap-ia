@@ -1,0 +1,78 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+describe("safe app events", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    Reflect.deleteProperty(globalThis, "window");
+    Reflect.deleteProperty(globalThis, "navigator");
+  });
+
+  it("sanitize event metadata without sensitive content", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "first_response_generated",
+      page: "/dashboard",
+      source: "dashboard",
+      plan: "pro",
+      business_type: "Delivery",
+      metadata: {
+        category: "atendimento",
+        response_length_range: "medium",
+        usage_count: 4,
+        usage_limit: 30,
+        customerQuestion: "Meu pedido atrasou?",
+        generatedAnswer: "Sinto muito pelo atraso.",
+        email: "cliente@example.com",
+        phone: "11999999999",
+        stripe_customer_id: "cus_123"
+      }
+    });
+
+    expect(event).toMatchObject({
+      event_name: "first_response_generated",
+      page: "/dashboard",
+      source: "dashboard",
+      plan: "pro",
+      business_type: "Delivery"
+    });
+    expect(event?.metadata).toMatchObject({
+      category: "atendimento",
+      response_length_range: "medium",
+      usage_count: 4,
+      usage_limit: 30
+    });
+    expect(event?.metadata.customerQuestion).toBeUndefined();
+    expect(event?.metadata.generatedAnswer).toBeUndefined();
+    expect(event?.metadata.email).toBeUndefined();
+    expect(event?.metadata.phone).toBeUndefined();
+    expect(event?.metadata.stripe_customer_id).toBeUndefined();
+  });
+
+  it("normalizes existing UI aliases into MVP event names", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+
+    expect(sanitizeAppEvent({ event_name: "activation_response_copied" })?.event_name).toBe("response_copied");
+    expect(sanitizeAppEvent({ event_name: "template_copy" })?.event_name).toBe("template_copied");
+    expect(sanitizeAppEvent({ event_name: "saved_responses_view" })?.event_name).toBe("library_viewed");
+    expect(sanitizeAppEvent({ event_name: "unknown_event" })).toBeNull();
+  });
+
+  it("does not throw when event delivery fails", async () => {
+    vi.stubGlobal("window", { location: { pathname: "/dashboard" } });
+    vi.stubGlobal("navigator", {});
+    vi.stubGlobal("fetch", vi.fn(() => {
+      throw new Error("network unavailable");
+    }));
+
+    const { trackSafeAppEvent } = await import("./track-event");
+
+    expect(() =>
+      trackSafeAppEvent({
+        event_name: "dashboard_viewed",
+        metadata: {
+          question: "conteudo sensivel"
+        }
+      })
+    ).not.toThrow();
+  });
+});

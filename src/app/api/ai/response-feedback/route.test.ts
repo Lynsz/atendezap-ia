@@ -11,6 +11,10 @@ vi.mock("@supabase/supabase-js", () => ({
   createClient: mocks.createClient
 }));
 
+vi.mock("@/lib/analytics/server", () => ({
+  trackServerAppEvent: vi.fn()
+}));
+
 type QueryChain = {
   select: ReturnType<typeof vi.fn>;
   eq: ReturnType<typeof vi.fn>;

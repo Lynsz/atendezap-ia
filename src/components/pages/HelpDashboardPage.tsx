@@ -38,7 +38,7 @@ function statusClass(status: string) {
 
 function HelpDashboardContent() {
   const [requests, setRequests] = useState<SupportRequest[]>([]);
-  const [category, setCategory] = useState<SupportCategory>("Duvida");
+  const [category, setCategory] = useState<SupportCategory>("duvida sobre IA");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);

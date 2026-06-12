@@ -69,7 +69,8 @@ export default function SignupPage() {
       });
       trackEvent("signup_completed", {
         plan,
-        funnel: attribution.funnel || "pricing"
+        source: attribution.funnel || "pricing",
+        page: "/cadastro"
       });
     }
 

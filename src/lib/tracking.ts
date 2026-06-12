@@ -1,5 +1,7 @@
 "use client";
 
+import { trackSafeAppEvent } from "@/lib/analytics/track-event";
+
 export const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
 
 export type UtmKey = (typeof UTM_KEYS)[number];
@@ -82,6 +84,7 @@ export type TrackingEventName =
   | "signup_completed"
   | "onboarding_started"
   | "onboarding_completed"
+  | "dashboard_viewed"
   | "first_response_generated"
   | "activation_onboarding_completed"
   | "activation_first_response_generated"
@@ -321,4 +324,18 @@ export function trackEvent(eventName: TrackingEventName, properties: TrackingPro
       window.fbq("trackCustom", eventName, sanitizedProperties);
     }
   }
+
+  trackSafeAppEvent({
+    event_name: eventName,
+    page: typeof sanitizedProperties.page === "string" ? sanitizedProperties.page : window.location.pathname,
+    source: typeof sanitizedProperties.source === "string" ? sanitizedProperties.source : undefined,
+    plan: typeof sanitizedProperties.plan === "string" ? sanitizedProperties.plan : undefined,
+    business_type:
+      typeof sanitizedProperties.business_type === "string"
+        ? sanitizedProperties.business_type
+        : typeof sanitizedProperties.businessType === "string"
+          ? sanitizedProperties.businessType
+          : undefined,
+    metadata: sanitizedProperties
+  });
 }

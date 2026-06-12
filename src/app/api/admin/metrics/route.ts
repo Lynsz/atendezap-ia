@@ -224,6 +224,7 @@ export async function GET(request: Request) {
       aiResponseFeedbackResult,
       savedResponsesResult,
       eventsResult,
+      appEventsResult,
       stripeWebhookEventsResult,
       supportRequestsResult,
       cancellationFeedbackResult
@@ -237,6 +238,7 @@ export async function GET(request: Request) {
       supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000),
       supabase.from("saved_responses").select("user_id, source_template_id, category, copy_count, is_favorite, created_at").limit(20000),
       supabase.from("events").select("event_name, metadata, created_at").limit(20000),
+      supabase.from("app_events").select("event_name, metadata, created_at").limit(20000),
       supabase.from("stripe_webhook_events").select("event_type, processed_at, created_at").limit(10000),
       supabase.from("support_requests").select("status, created_at").limit(10000),
       supabase.from("cancellation_feedback").select("reason, created_at").limit(10000)
@@ -251,7 +253,7 @@ export async function GET(request: Request) {
       feedback: resultAvailable(feedbackResult),
       aiResponseFeedback: resultAvailable(aiResponseFeedbackResult),
       savedResponses: resultAvailable(savedResponsesResult),
-      events: resultAvailable(eventsResult),
+      events: resultAvailable(eventsResult) || resultAvailable(appEventsResult),
       stripeWebhookEvents: resultAvailable(stripeWebhookEventsResult),
       supportRequests: resultAvailable(supportRequestsResult),
       cancellationFeedback: resultAvailable(cancellationFeedbackResult)
@@ -265,7 +267,9 @@ export async function GET(request: Request) {
     const feedback = (feedbackResult.data || []) as FeedbackMetricRow[];
     const aiResponseFeedback = (aiResponseFeedbackResult.data || []) as AiResponseFeedbackMetricRow[];
     const savedResponses = (savedResponsesResult.data || []) as SavedResponseMetricRow[];
-    const events = (eventsResult.data || []) as EventMetricRow[];
+    const legacyEvents = (eventsResult.data || []) as EventMetricRow[];
+    const appEvents = (appEventsResult.data || []) as EventMetricRow[];
+    const events = [...legacyEvents, ...appEvents];
     const stripeWebhookEvents = (stripeWebhookEventsResult.data || []) as StripeWebhookEventMetricRow[];
     const supportRequests = (supportRequestsResult.data || []) as SupportRequestMetricRow[];
     const cancellationFeedback = (cancellationFeedbackResult.data || []) as CancellationFeedbackMetricRow[];

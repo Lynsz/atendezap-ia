@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { AppError, errorResponse } from "@/lib/errors";
+import { trackServerAppEvent } from "@/lib/analytics/server";
 import { logEvent } from "@/lib/events";
 import { sendTransactionalEmail } from "@/lib/email";
 import { serverLog } from "@/lib/logger";
@@ -210,6 +211,16 @@ export async function POST(request: NextRequest) {
       source: body.source || "support_form",
       category: body.category,
       status: "pending"
+    });
+    await trackServerAppEvent({
+      user_id: user?.id || null,
+      event_name: "support_request_created",
+      source: body.source || "support_form",
+      page: "/suporte",
+      metadata: {
+        source: body.source || "support_form",
+        category: body.category
+      }
     });
     serverLog({ event: "support_request_created", route: "/api/support", userId, status: "ok", metadata: { category: body.category, priority } });
     return Response.json({ ok: true, supportRequest: toUserSupportRequest(data as Record<string, unknown>) }, { status: 201 });

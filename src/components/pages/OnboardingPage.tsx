@@ -146,8 +146,9 @@ export default function OnboardingPage() {
       createdAt: profile.createdAt || new Date().toISOString()
     });
     trackEvent("onboarding_completed", {
-      segment: profile.segment,
-      channel_count: profile.channels.length
+      business_type: profile.segment,
+      source: "onboarding",
+      page: "/onboarding"
     });
     router.push("/dashboard");
   }

@@ -189,6 +189,13 @@ function formatShortDate(value?: string | null) {
   }).format(new Date(value));
 }
 
+function getResponseLengthRange(text: string) {
+  const length = text.length;
+  if (length < 300) return "short";
+  if (length < 900) return "medium";
+  return "long";
+}
+
 function toBusinessDraft(business: Business | null): BusinessDraft {
   if (!business) return emptyBusiness;
   const businessType = getBusinessTemplate(business.business_type || business.business_area || "Prestador de servico").type;
@@ -302,6 +309,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [hasViewedTemplatesThisSession, setHasViewedTemplatesThisSession] = useState(false);
   const [hasViewedPricingThisSession, setHasViewedPricingThisSession] = useState(false);
   const trackedActiveSubscriptionRef = useRef(false);
+  const trackedDashboardViewedRef = useRef(false);
   const trackedDashboardOnboardingRef = useRef(false);
   const trackedUsageWarningRef = useRef(false);
   const trackedUsageReachedRef = useRef(false);
@@ -634,7 +642,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         if (isFirstGeneratedResponse) {
           trackEvent("first_response_generated", {
             source: "dashboard",
-            response_type: responseType
+            category: responseType,
+            business_type: businessDraft.business_type,
+            plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+            response_length_range: getResponseLengthRange(answer),
+            usage_count: usage.used,
+            usage_limit: usage.limit
           });
           trackEvent("activation_first_response_generated", {
             source: "dashboard",
@@ -1249,6 +1262,18 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       : "Assinatura ainda não configurada";
 
   useEffect(() => {
+    if (!loading && !shouldShowOnboarding && !trackedDashboardViewedRef.current) {
+      trackedDashboardViewedRef.current = true;
+      trackEvent("dashboard_viewed", {
+        source: "dashboard",
+        page: "/dashboard",
+        plan: currentPlanId || subscription?.plan || subscription?.plan_name || "sem_plano",
+        business_type: businessDraft.business_type
+      });
+    }
+  }, [businessDraft.business_type, currentPlanId, loading, shouldShowOnboarding, subscription?.plan, subscription?.plan_name]);
+
+  useEffect(() => {
     if (!trackedActiveSubscriptionRef.current && hasActiveSubscription(subscription?.status)) {
       trackedActiveSubscriptionRef.current = true;
       trackEvent("subscription_active", {
@@ -1265,7 +1290,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       trackEvent("usage_limit_reached", {
         source: "dashboard",
         plan: currentPlanId || "none",
-        usage_percent: usagePercent
+        usage_count: monthlyUsage,
+        usage_limit: monthlyLimit
       });
       return;
     }
@@ -1277,7 +1303,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         usage_percent: usagePercent
       });
     }
-  }, [currentPlanId, hasReachedMonthlyLimit, isNearMonthlyLimit, loading, usagePercent]);
+  }, [currentPlanId, hasReachedMonthlyLimit, isNearMonthlyLimit, loading, monthlyLimit, monthlyUsage, usagePercent]);
 
   useEffect(() => {
     if (!loading && shouldShowOnboarding && !trackedDashboardOnboardingRef.current) {
