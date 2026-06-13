@@ -1,5 +1,34 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Analise pos-beta do MVP - 2026-06-12
+
+Status: pronto para nova rodada beta controlada, nao pronto para escala publica.
+
+O que foi feito:
+
+- Relatorios pos-beta criados para analise, diagnostico de funil, plano de correcoes, decisao e proxima rodada.
+- `docs/beta-test-report.md` atualizado com aprendizados, bugs corrigidos, bugs pendentes, decisao e proxima acao.
+- Onboarding revisado para clareza.
+- Primeira resposta revisada com instrucao mais direta e CTA "Gerar resposta".
+- Prompt reforcado para nao inventar preco, prazo, estoque, agenda ou disponibilidade.
+- Teste pos-beta adicionado para travar os principais pontos de ativacao.
+
+Status atual:
+
+- beta: analisado, mas sem metricas reais suficientes.
+- bugs P0/P1: nenhum confirmado nos documentos revisados.
+- maior gargalo: ausencia de dados reais e validacao externa completa.
+- decisao: rodar nova rodada beta controlada antes de lancamento pequeno.
+
+Recomendacao:
+
+- manter acesso restrito.
+- validar Vercel, Supabase/Auth/RLS, OpenAI, Stripe, eventos, suporte e feedback em ambiente real.
+- preencher funil de beta antes de decidir lancamento pequeno.
+- corrigir qualquer P0/P1 antes de liberar campanha ou escala.
+
+Nota estimada: 96/100 local, condicionada a validacao real de producao e ausencia de P0/P1.
+
 ## Planejamento detalhado da versao 1.3 - 2026-06-05
 
 Status: 1.3 planejada, nao entregue.

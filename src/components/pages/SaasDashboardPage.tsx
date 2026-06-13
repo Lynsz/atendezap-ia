@@ -1594,11 +1594,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             {onboardingStep === 1 ? (
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Nome do negócio ou nome profissional
-                  <input value={businessDraft.business_name} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_name: event.target.value }))} className="field-input" placeholder="Ex.: Studio Ana Lima" />
+                  Nome do seu negócio ou atendimento
+                  <input value={businessDraft.business_name} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_name: event.target.value }))} className="field-input" placeholder="Ex.: Studio Ana Lima, Dr. Carlos, Oficina Boa Vista" />
                 </label>
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Tipo de atuação
+                  Tipo de atendimento
                   <select value={businessDraft.business_type} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_type: event.target.value, business_area: event.target.value }))} className="field-input">
                     {businessTypeOptions.map((option) => <option value={option} key={option}>{getBusinessTypeLabel(option)}</option>)}
                   </select>
@@ -1634,8 +1634,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             {onboardingStep === 3 ? (
               <div className="grid gap-4">
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  O que você vende ou oferece
-                  <textarea value={businessDraft.products_services} onChange={(event) => setBusinessDraft((current) => ({ ...current, products_services: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: limpeza de pele, design de sobrancelhas e pacotes mensais" />
+                  Explique rapidamente o que você vende, atende ou oferece
+                  <textarea value={businessDraft.products_services} onChange={(event) => setBusinessDraft((current) => ({ ...current, products_services: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: limpeza de pele, design de sobrancelhas, conserto de celular ou marmitas no bairro" />
                 </label>
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
                   Perguntas mais comuns dos clientes
@@ -1646,7 +1646,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   <textarea value={businessDraft.important_info} onChange={(event) => setBusinessDraft((current) => ({ ...current, important_info: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: precisa agendar antes, atendimento com hora marcada, pagamento via Pix" />
                 </label>
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Tom de voz desejado
+                  Tom das respostas
                   <select value={businessDraft.brand_tone} onChange={(event) => setBusinessDraft((current) => ({ ...current, brand_tone: event.target.value }))} className="field-input">
                     {toneOptions.map((option) => <option value={option} key={option}>{option}</option>)}
                   </select>
@@ -2068,8 +2068,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               <h2 className="text-xl font-black text-white">{hasFirstResponse ? "Responder cliente" : "Gere sua primeira resposta"}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-400">
                 {hasFirstResponse
-                  ? "Cole a mensagem recebida no WhatsApp e escolha o objetivo. A IA gera uma sugestão para você revisar, copiar e enviar manualmente."
-                  : "Cole ou digite uma mensagem que um cliente mandaria no WhatsApp. A IA vai sugerir uma resposta curta para você copiar, ajustar e enviar."}
+                  ? "Cole aqui uma mensagem que um cliente mandaria no WhatsApp. Escolha o objetivo e revise a sugestão antes de copiar e enviar manualmente."
+                  : "Cole aqui uma mensagem que um cliente mandaria no WhatsApp. A IA vai sugerir uma resposta curta para você copiar, ajustar e enviar."}
               </p>
               <label className="mt-5 grid gap-2 text-sm font-bold text-slate-300">
                 Pergunta do cliente
@@ -2097,7 +2097,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               </p>
               <button type="submit" disabled={generating || !business || hasReachedMonthlyLimit} className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300 disabled:opacity-60">
                 <Send className="h-4 w-4" />
-                {hasReachedMonthlyLimit ? "Limite mensal atingido" : generating ? "Gerando resposta..." : "Gerar resposta com IA"}
+                {hasReachedMonthlyLimit ? "Limite mensal atingido" : generating ? "Gerando resposta..." : "Gerar resposta"}
               </button>
             </form>
 
@@ -2243,7 +2243,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             <p className="mt-2 text-sm leading-6 text-slate-400">Atualize o contexto do seu atendimento. As próximas respostas geradas pela IA vão usar essas informações, e você pode ajustar tudo depois.</p>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {([
-                ["business_name", "Nome do negócio ou nome profissional"],
+                ["business_name", "Nome do seu negócio ou atendimento"],
                 ["location", "Cidade/estado"],
                 ["opening_hours", "Horário de atendimento"],
                 ["address", "Endereço"],
@@ -2257,7 +2257,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                 </label>
               ))}
               <label className="grid gap-2 text-sm font-bold text-slate-300">
-                Tipo de atuação
+                Tipo de atendimento
                 <select value={businessDraft.business_type} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_type: event.target.value, business_area: event.target.value }))} className="field-input">
                     {businessTypeOptions.map((option) => <option value={option} key={option}>{getBusinessTypeLabel(option)}</option>)}
                 </select>
@@ -2269,14 +2269,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                 </select>
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300">
-                Tom de voz desejado
+                Tom das respostas
                 <select value={businessDraft.brand_tone} onChange={(event) => setBusinessDraft((current) => ({ ...current, brand_tone: event.target.value }))} className="field-input">
                   {toneOptions.map((option) => <option value={option} key={option}>{option}</option>)}
                 </select>
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
-                Descrição do negócio
-                <textarea value={businessDraft.description} onChange={(event) => setBusinessDraft((current) => ({ ...current, description: event.target.value }))} className="field-input min-h-24 resize-none py-3" />
+                Explique rapidamente o que você vende, atende ou oferece
+                <textarea value={businessDraft.description} onChange={(event) => setBusinessDraft((current) => ({ ...current, description: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: faço manutenção de celulares, vendo bolos por encomenda ou atendo clientes com horário marcado." />
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
                 Produtos ou serviços

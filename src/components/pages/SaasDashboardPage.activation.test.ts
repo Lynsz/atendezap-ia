@@ -27,7 +27,7 @@ describe("dashboard de ativacao", () => {
     const source = readDashboardSource();
 
     expect(source).toContain("Gere sua primeira resposta");
-    expect(source).toContain("Cole ou digite uma mensagem que um cliente mandaria no WhatsApp.");
+    expect(source).toContain("Cole aqui uma mensagem que um cliente mandaria no WhatsApp.");
     expect(source).toContain("Qual o valor?");
     expect(source).toContain("Boa. Agora");
     expect(source).toContain("Vocês atendem hoje?");

@@ -22,7 +22,7 @@ describe("prontidao para beta controlado", () => {
     const dashboard = readRepoFile("src/components/pages/SaasDashboardPage.tsx");
 
     expect(dashboard).toContain("Gere sua primeira resposta");
-    expect(dashboard).toContain("Cole ou digite uma mensagem que um cliente mandaria no WhatsApp.");
+    expect(dashboard).toContain("Cole aqui uma mensagem que um cliente mandaria no WhatsApp.");
     expect(dashboard).toContain("Qual o valor?");
     expect(dashboard).toContain("Vocês atendem hoje?");
     expect(dashboard).toContain("Tem entrega?");

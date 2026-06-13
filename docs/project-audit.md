@@ -1,5 +1,15 @@
 # Auditoria do AtendeZap IA
 
+## Analise pos-beta do MVP - 2026-06-12
+
+- Criados `docs/beta-analysis.md`, `docs/beta-funnel-diagnosis.md`, `docs/beta-fix-plan.md`, `docs/beta-decision.md` e `docs/next-beta-or-launch-plan.md`.
+- Beta analisado com os relatorios disponiveis, mas sem dados reais suficientes para aprovar lancamento publico.
+- Bugs P0/P1: nenhum confirmado nos documentos revisados.
+- Gargalo principal: falta de metricas reais de ativacao e validacao externa de Vercel, Supabase/Auth/RLS, OpenAI, Stripe, eventos, suporte e feedback.
+- Ajustes aplicados: onboarding mais claro, CTA "Gerar resposta", instrucao inicial da primeira resposta mais direta, prompt anti-alucinacao reforcado e teste de cobertura para templates comuns.
+- Decisao: rodar nova rodada beta controlada antes de lancamento pequeno.
+- Recomendacao: manter privado ou restrito, validar ambiente real, preencher indicadores do beta e corrigir qualquer P0/P1 antes de escalar.
+
 ## Planejamento detalhado da versao 1.3 - 2026-06-05
 
 - Criados `docs/version-1.3-plan.md`, `docs/version-1.3-intake-criteria.md`, `docs/version-1.3-roadmap.md`, `docs/version-1.3-backlog.md`, `docs/version-1.3-success-metrics.md`, `docs/version-1.3-release-checklist.md`, `docs/release-notes-1.3-draft.md`, `docs/version-1.3-campaign-plan.md` e `docs/version-1.3-prioritization.md`.

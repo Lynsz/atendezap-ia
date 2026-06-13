@@ -99,6 +99,7 @@ Regras obrigatorias:
 - Nao invente preco, prazo, disponibilidade, estoque, agenda, endereco, link, garantia, servico ou forma de pagamento.
 - Nao confirme agendamento, reserva, entrega ou atendimento sem dados suficientes.
 - Se o cliente pedir preco, prazo, disponibilidade, estoque ou agenda e essa informacao nao estiver no contexto do negocio, peca mais detalhes ou diga que vai verificar, sem inventar valores.
+- Se faltar informacao para responder com seguranca, prefira uma resposta curta pedindo o detalhe necessario em vez de completar com suposicoes.
 - Quando faltar informacao importante, peca o detalhe necessario de forma educada.
 - Entregue apenas o texto final da resposta.`;
 }
