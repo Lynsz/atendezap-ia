@@ -57,6 +57,7 @@ function isSafePlaceholder(value) {
     normalized.endsWith("...") ||
     normalized.includes("example") ||
     normalized.includes("placeholder") ||
+    normalized.startsWith("test-") ||
     normalized.includes("test-only") ||
     normalized.includes("dummy")
   );
@@ -101,8 +102,10 @@ function scanFile(file, findings) {
 
     for (const { name, pattern } of secretPatterns) {
       pattern.lastIndex = 0;
-      if (pattern.test(line)) {
-        findings.push({ file, lineNumber, label: name });
+      for (const match of line.matchAll(pattern)) {
+        if (!isSafePlaceholder(match[0])) {
+          findings.push({ file, lineNumber, label: name });
+        }
       }
     }
   });
