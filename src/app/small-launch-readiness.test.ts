@@ -17,6 +17,12 @@ describe("prontidao para lancamento pequeno", () => {
     const dailyReport = readRepoFile("docs/small-launch-daily-report.md");
     const pauseCriteria = readRepoFile("docs/small-launch-pause-criteria.md");
     const analysisTemplate = readRepoFile("docs/small-launch-analysis-template.md");
+    const analysis = readRepoFile("docs/small-launch-analysis.md");
+    const diagnosis = readRepoFile("docs/small-launch-funnel-diagnosis.md");
+    const fixPlan = readRepoFile("docs/small-launch-fix-plan.md");
+    const decision = readRepoFile("docs/small-launch-decision.md");
+    const nextRound = readRepoFile("docs/next-small-launch-plan.md");
+    const campaignPlan = readRepoFile("docs/first-small-campaign-plan.md");
 
     expect(plan).toContain("Metricas obrigatorias");
     expect(plan).toContain("checkout iniciado");
@@ -25,6 +31,12 @@ describe("prontidao para lancamento pequeno", () => {
     expect(dailyReport).toContain("Decisao do dia");
     expect(pauseCriteria).toContain("usuario comum acessar admin");
     expect(analysisTemplate).toContain("Principal gargalo");
+    expect(analysis).toContain("Sem dados suficientes");
+    expect(diagnosis).toContain("Gargalo principal");
+    expect(fixPlan).toContain("Nenhum P0 confirmado");
+    expect(decision).toContain("Repetir rodada pequena");
+    expect(nextRound).toContain("Validar as correcoes feitas apos o lancamento pequeno.");
+    expect(campaignPlan).toContain("bloqueado ate correcoes e dados da proxima rodada pequena");
   });
 
   it("mantem landing com aviso obrigatorio e CTAs principais", () => {
@@ -58,6 +70,8 @@ describe("prontidao para lancamento pequeno", () => {
 
     expect(admin).toContain("Lancamento pequeno");
     expect(admin).toContain("Acompanhamento do lancamento pequeno");
+    expect(admin).toContain("Usuarios convidados");
+    expect(admin).toContain("Sem dados suficientes");
     expect(admin).toContain("Visitantes");
     expect(admin).toContain("Cadastros");
     expect(admin).toContain("Onboardings");
@@ -79,5 +93,17 @@ describe("prontidao para lancamento pequeno", () => {
     expect(admin).not.toContain("customer_question");
     expect(admin).not.toContain("generated_answer");
     expect(admin).not.toContain("payment_method");
+  });
+
+  it("mantem onboarding sem promessa de automacao de WhatsApp", () => {
+    const onboarding = readRepoFile("src/components/pages/OnboardingPage.tsx");
+    const settings = readRepoFile("src/components/pages/SettingsPage.tsx");
+
+    expect(onboarding).toContain("Gerar sugestão de mensagem");
+    expect(onboarding).toContain("organizar atendimentos");
+    expect(onboarding).not.toContain("automatizar atendimento");
+    expect(onboarding).not.toContain("Gerar mensagem automática");
+    expect(settings).toContain("manter respostas consistentes");
+    expect(settings).not.toContain("automatizar atendimento");
   });
 });

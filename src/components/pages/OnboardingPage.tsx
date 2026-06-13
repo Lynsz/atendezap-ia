@@ -38,7 +38,7 @@ const channels: Array<{ value: ServiceChannel; label: string }> = [
   { value: "presencial", label: "Presencial" }
 ];
 
-const goals = ["vender mais", "responder mais rápido", "organizar leads", "automatizar atendimento", "melhorar follow-up"];
+const goals = ["vender mais", "responder mais rápido", "organizar atendimentos", "manter respostas consistentes", "melhorar follow-up"];
 
 const steps: Array<{ value: OnboardingStep; title: string }> = [
   { value: 1, title: "Empresa" },
@@ -291,7 +291,7 @@ export default function OnboardingPage() {
                     className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-4 text-sm font-black text-emerald-200 transition hover:bg-emerald-400/20"
                   >
                     <Wand2 className="h-4 w-4" />
-                    Gerar mensagem automática
+                    Gerar sugestão de mensagem
                   </button>
                 </div>
               </FormField>

@@ -70,7 +70,7 @@ const tones: Array<{ value: AITone; label: string }> = [
   { value: "premium", label: "Premium" }
 ];
 
-const goals = ["vender mais", "responder mais rápido", "organizar leads", "automatizar atendimento", "melhorar follow-up"];
+const goals = ["vender mais", "responder mais rápido", "organizar atendimentos", "manter respostas consistentes", "melhorar follow-up"];
 
 function inputClass() {
   return "field-input";

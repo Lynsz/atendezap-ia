@@ -665,7 +665,7 @@ function getSmallLaunchDiagnosis(metrics: ProductMetricsPayload) {
   if (checkouts >= 2 && subscriptions === 0) {
     return "Revisar Stripe/pricing/confianca";
   }
-  return "Continuar controlado ate preencher mais dados";
+  return "Sem dados suficientes - repetir rodada pequena";
 }
 
 export default function AdminDashboardPage() {
@@ -1045,12 +1045,13 @@ export default function AdminDashboardPage() {
                 </p>
               </div>
               <span className="rounded-full border border-violet-300/30 bg-violet-300/10 px-3 py-1 text-xs font-black text-violet-100">
-                Planejado
+                Sem dados suficientes
               </span>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <MetricCard label="Status do lancamento" value="Planejado" icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Status do lancamento" value="Sem dados suficientes" icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Usuarios convidados" value="Nao disponivel" icon={<Users className="h-5 w-5" />} />
               <MetricCard label="Visitantes" value="Nao disponivel" icon={<Users className="h-5 w-5" />} />
               <MetricCard label="Cadastros" value={availableValue(productMetrics.availability.profiles, productMetrics.funnel.totalUsers)} icon={<Users className="h-5 w-5" />} />
               <MetricCard label="Onboardings" value={availableValue(productMetrics.availability.businesses, productMetrics.funnel.completedOnboardingUsers)} icon={<CheckCircle2 className="h-5 w-5" />} />

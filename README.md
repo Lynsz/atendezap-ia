@@ -205,7 +205,7 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Use `docs/cautious-scale-execution-plan.md`, `docs/scale-control-matrix.md`, `docs/daily-scale-checklist.md`, `docs/cautious-scale-report.md`, `docs/ad-budget-guardrails.md`, `docs/scale-contingency-plan.md` e `docs/after-scale-next-step-criteria.md` para planejar escala cautelosa sem aumentar verba agressivamente.
 - Use `docs/ux-polish-checklist.md`, `docs/ux-review.md` e `docs/technical-seo.md` para polimento final de UX, acessibilidade, mobile e SEO tecnico.
 - Use `docs/daily-ops-checklist.md` para a checagem diaria.
-- Use `docs/small-launch-plan.md`, `docs/small-launch-checklist.md`, `docs/small-launch-daily-report.md`, `docs/small-launch-pause-criteria.md`, `docs/small-launch-invite-copy.md` e `docs/small-launch-analysis-template.md` para o lancamento pequeno com poucos usuarios reais.
+- Use `docs/small-launch-plan.md`, `docs/small-launch-checklist.md`, `docs/small-launch-daily-report.md`, `docs/small-launch-pause-criteria.md`, `docs/small-launch-invite-copy.md`, `docs/small-launch-analysis-template.md`, `docs/small-launch-analysis.md`, `docs/small-launch-funnel-diagnosis.md`, `docs/small-launch-fix-plan.md`, `docs/small-launch-decision.md`, `docs/next-small-launch-plan.md` e `docs/first-small-campaign-plan.md` para analisar o lancamento pequeno, decidir a proxima rodada e manter campanha pequena bloqueada ate haver dados reais.
 - Use `docs/critical-failure-checklist.md` quando checkout, webhook, IA, login ou seguranca falharem.
 - Use `docs/error-messages.md` para manter mensagens amigaveis e sem stack trace.
 - Logs e analytics nao devem conter dados sensiveis, prompts completos, respostas completas de IA, tokens ou chaves.

@@ -1,5 +1,33 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Analise do lancamento pequeno - 2026-06-13
+
+Status: sem dados suficientes; repetir rodada pequena apos smoke real.
+
+O que foi feito:
+
+- Analise pos-lancamento pequeno criada.
+- Diagnostico do funil criado.
+- Plano de correcoes pos-lancamento pequeno criado.
+- Decisao pos-lancamento pequeno criada.
+- Proxima rodada pequena planejada.
+- Plano de primeira campanha pequena criado como bloqueado ate correcoes e dados reais.
+- Onboarding ajustado para nao sugerir automacao como objetivo.
+
+Status atual:
+
+- lancamento pequeno: sem metricas reais preenchidas.
+- bugs P0/P1: nenhum confirmado.
+- bugs pendentes: validacoes reais de Vercel, Supabase/Auth/RLS, OpenAI, Stripe, webhook, suporte, feedback, tracking, admin e mobile.
+- decisao: nao liberar campanha pequena nem lancamento publico controlado agora.
+
+Recomendacao:
+
+- manter repositorio privado.
+- rodar smoke real e checklist pre-lancamento.
+- chamar apenas poucos usuarios se o ambiente real estiver verde.
+- pausar por qualquer P0/P1, falha de seguranca, checkout/webhook instavel ou IA instavel.
+
 ## Lancamento pequeno planejado - 2026-06-12
 
 Status: pronto para checklist pre-lancamento e smoke real; nao iniciar se houver falha P0/P1.

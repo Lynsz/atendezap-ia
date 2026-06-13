@@ -1,5 +1,15 @@
 # Auditoria do AtendeZap IA
 
+## Analise do lancamento pequeno - 2026-06-13
+
+- Criados `docs/small-launch-analysis.md`, `docs/small-launch-funnel-diagnosis.md`, `docs/small-launch-fix-plan.md`, `docs/small-launch-decision.md`, `docs/next-small-launch-plan.md` e `docs/first-small-campaign-plan.md`.
+- Resultado do lancamento pequeno: sem dados suficientes, porque os documentos nao registram usuarios convidados, visitantes, cadastros, onboardings, primeiras respostas, copias, salvamentos, feedbacks, suporte, checkouts ou assinaturas reais.
+- Bugs P0/P1: nenhum confirmado nos documentos revisados.
+- Bug/friccao corrigida: onboarding deixou de sugerir automacao de atendimento como objetivo, preservando o escopo de resposta manual para WhatsApp.
+- Gargalo principal: falta de evidencia real de ambiente e funil.
+- Decisao: repetir rodada pequena somente depois de checklist pre-lancamento verde e smoke real aprovado; campanha pequena segue bloqueada.
+- Proxima acao: validar Vercel, Supabase/Auth/RLS, OpenAI, Stripe, webhook, suporte, feedback, tracking, admin e mobile antes de chamar mais usuarios.
+
 ## Lancamento pequeno planejado - 2026-06-12
 
 - Criados `docs/small-launch-plan.md`, `docs/small-launch-checklist.md`, `docs/small-launch-invite-copy.md`, `docs/small-launch-daily-report.md`, `docs/small-launch-pause-criteria.md` e `docs/small-launch-analysis-template.md`.

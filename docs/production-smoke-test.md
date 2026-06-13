@@ -1,5 +1,23 @@
 # Smoke Test de Producao
 
+## Atualizacao pos-analise do lancamento pequeno - 2026-06-13
+
+Resultado do lancamento pequeno: sem dados suficientes.
+
+Bugs corrigidos nesta etapa:
+
+- Onboarding revisado para nao sugerir automacao de atendimento como objetivo.
+
+Bugs pendentes:
+
+- Nenhum P0/P1 confirmado nos documentos.
+- Validar ambiente Vercel/Production com Supabase Auth/RLS, OpenAI, Stripe checkout, portal, webhook assinado, suporte, feedback, tracking e mobile.
+
+Decisao:
+
+- Repetir rodada pequena somente apos smoke real aprovado.
+- Campanha pequena segue bloqueada ate existir evidencia real de ativacao e ausencia de P0/P1.
+
 Status usado:
 
 - aprovado
