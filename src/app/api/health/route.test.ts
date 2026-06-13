@@ -9,9 +9,15 @@ describe("GET /api/health", () => {
     expect(response.status).toBe(200);
     expect(body).toMatchObject({
       status: "ok",
-      app: "AtendeZap IA"
+      app: "AtendeZap IA",
+      services: {
+        supabase: expect.any(Boolean),
+        openai: expect.any(Boolean),
+        stripe: expect.any(Boolean),
+        resend: expect.any(Boolean)
+      }
     });
-    expect(Object.keys(body).sort()).toEqual(["app", "status"]);
-    expect(JSON.stringify(body)).not.toMatch(/secret|token|key|email|user|supabase|stripe|openai/i);
+    expect(Object.keys(body).sort()).toEqual(["app", "services", "status"]);
+    expect(JSON.stringify(body)).not.toMatch(/sk_|pk_|whsec|secret|token|key|email|user|service_role/i);
   });
 });

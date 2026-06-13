@@ -61,6 +61,8 @@ alter table public.support_requests
 alter table public.support_requests
   add constraint support_requests_category_check
   check (category in (
+    'problema no beta',
+    'erro ao gerar resposta',
     'problema tecnico',
     'duvida sobre assinatura',
     'duvida sobre IA',

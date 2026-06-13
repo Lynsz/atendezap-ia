@@ -177,6 +177,30 @@ describe("/api/support", () => {
     });
   });
 
+  it("aceita categoria especifica do beta", async () => {
+    mocks.createClient.mockReturnValue(createAuthSupabase(null));
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/support", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "beta@example.com",
+          category: "problema no beta",
+          subject: "Fluxo confuso",
+          message: "Tive dificuldade para entender o primeiro passo."
+        })
+      }) as never
+    );
+
+    expect(response.status).toBe(201);
+    expect(mocks.insertPayload).toMatchObject({
+      email: "beta@example.com",
+      category: "problema no beta",
+      priority: "medium"
+    });
+  });
+
   it("visitante sem e-mail recebe erro", async () => {
     mocks.createClient.mockReturnValue(createAuthSupabase(null));
     const { POST } = await import("./route");

@@ -306,6 +306,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [currentPlan, setCurrentPlan] = useState<Plan | null>(null);
   const [monthlyUsage, setMonthlyUsage] = useState(0);
   const [hasCopiedResponseThisSession, setHasCopiedResponseThisSession] = useState(false);
+  const [hasOpenedLibraryThisSession, setHasOpenedLibraryThisSession] = useState(false);
   const [hasViewedTemplatesThisSession, setHasViewedTemplatesThisSession] = useState(false);
   const [hasViewedPricingThisSession, setHasViewedPricingThisSession] = useState(false);
   const trackedActiveSubscriptionRef = useRef(false);
@@ -1145,6 +1146,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     if (target === "templates") {
       setHasViewedTemplatesThisSession(true);
     }
+    if (target === "library") {
+      setHasOpenedLibraryThisSession(true);
+    }
     setTab(target);
     setError("");
   }
@@ -1371,17 +1375,17 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const hasFirstResponse = history.length > 0;
   const assistantExampleQuestions = hasFirstResponse ? exampleQuestions : firstResponseExampleQuestions;
   const hasSavedResponse = savedResponses.length > 0;
-  const hasFavoriteResponse = savedResponses.some((item) => item.is_favorite);
   const hasCopiedResponse = hasCopiedResponseThisSession || savedResponses.some((item) => (item.copy_count || 0) > 0);
-  const hasViewedTemplates = hasViewedTemplatesThisSession || savedTemplateIds.size > 0 || tab === "templates";
+  const hasTestedTemplate = hasViewedTemplatesThisSession || savedTemplateIds.size > 0 || tab === "templates";
+  const hasOpenedLibrary = hasOpenedLibraryThisSession || tab === "library";
   const hasViewedPricing = hasViewedPricingThisSession || activeSubscription || tab === "billing";
   const activationStepCount = [
     Boolean(business?.onboarding_completed),
     hasFirstResponse,
     hasCopiedResponse,
     hasSavedResponse,
-    hasViewedTemplates,
-    hasFavoriteResponse,
+    hasTestedTemplate,
+    hasOpenedLibrary,
     hasViewedPricing
   ].filter(Boolean).length;
   const activationSteps: Array<{ label: string; done: boolean; target: "business" | "assistant" | "library" | "templates" | "billing" | "pricing"; detail: string }> = [
@@ -1410,19 +1414,19 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       detail: "Guarde mensagens boas na biblioteca."
     },
     {
-      label: "Ver templates prontos",
-      done: hasViewedTemplates,
+      label: "Testar um template",
+      done: hasTestedTemplate,
       target: "templates",
       detail: "Use modelos por nicho para começar rápido."
     },
     {
-      label: "Marcar uma resposta como favorita",
-      done: hasFavoriteResponse,
+      label: "Abrir biblioteca",
+      done: hasOpenedLibrary,
       target: "library",
-      detail: "Deixe respostas frequentes à mão."
+      detail: "Confira respostas salvas e favoritas."
     },
     {
-      label: "Conhecer os planos",
+      label: "Ver planos",
       done: hasViewedPricing,
       target: "pricing",
       detail: "Veja limites mensais antes de escalar o uso."
@@ -1543,6 +1547,10 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             </div>
           </div>
         </header>
+
+        <div className="mb-5 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm font-bold leading-6 text-emerald-50">
+          Você está usando uma versão inicial do AtendeZap IA. Alguns ajustes ainda podem ser feitos com base nos feedbacks dos usuários.
+        </div>
 
         {shouldShowOnboarding ? (
           <section className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-2xl shadow-black/30">
@@ -2057,11 +2065,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         {tab === "assistant" ? (
           <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
             <form onSubmit={handleGenerateResponse} className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
-              <h2 className="text-xl font-black text-white">{hasFirstResponse ? "Responder cliente" : "Gere sua primeira resposta para cliente"}</h2>
+              <h2 className="text-xl font-black text-white">{hasFirstResponse ? "Responder cliente" : "Gere sua primeira resposta"}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-400">
                 {hasFirstResponse
                   ? "Cole a mensagem recebida no WhatsApp e escolha o objetivo. A IA gera uma sugestão para você revisar, copiar e enviar manualmente."
-                  : "Digite uma pergunta comum que você recebe no WhatsApp. A IA vai criar uma sugestão de resposta para você copiar, ajustar e enviar."}
+                  : "Cole ou digite uma mensagem que um cliente mandaria no WhatsApp. A IA vai sugerir uma resposta curta para você copiar, ajustar e enviar."}
               </p>
               <label className="mt-5 grid gap-2 text-sm font-bold text-slate-300">
                 Pergunta do cliente
@@ -2121,6 +2129,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                     <p className="mt-2 text-sm leading-6 text-emerald-100">
                       Boa. Agora você pode copiar essa resposta para usar no atendimento ou salvar na biblioteca para reutilizar depois.
                     </p>
+                    <p className="mt-2 text-sm font-bold leading-6 text-emerald-50">
+                      Revise a resposta antes de enviar ao cliente. A IA pode errar informações específicas como preço, prazo, estoque ou agenda.
+                    </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <button type="button" onClick={() => copyText(generatedAnswer, "generated")} className="inline-flex min-h-9 items-center justify-center rounded-md bg-white px-3 text-xs font-black text-slate-950">
                         Copiar resposta
@@ -2171,9 +2182,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                     </div>
                   ) : null}
                   <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] p-4">
-                    <p className="text-sm font-bold leading-6 text-slate-200">
-                      A resposta ajudou? Copie, ajuste se precisar e envie manualmente pelo WhatsApp.
-                    </p>
+                    <p className="text-sm font-black leading-6 text-slate-100">Essa resposta foi útil?</p>
+                    <p className="mt-1 text-sm font-bold leading-6 text-slate-300">Copie, ajuste se precisar e envie manualmente pelo WhatsApp.</p>
                     <label className="mt-3 grid gap-2 text-xs font-bold text-slate-300">
                       O que poderia melhorar? (opcional)
                       <textarea

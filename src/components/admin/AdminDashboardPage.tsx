@@ -616,6 +616,31 @@ function stageRate(current: number, previous: number) {
   return `${Number(((current / previous) * 100).toFixed(1))}%`;
 }
 
+function getBetaAlerts(metrics: ProductMetricsPayload) {
+  const alerts: string[] = [];
+  const totalUsers = metrics.funnel.totalUsers;
+  const onboardings = metrics.funnel.completedOnboardingUsers;
+  const firstResponses = metrics.funnel.usersWithFirstResponse;
+
+  if (totalUsers >= 3 && onboardings < Math.max(1, Math.ceil(totalUsers * 0.5))) {
+    alerts.push("Muitos usuarios sem onboarding.");
+  }
+  if (onboardings >= 3 && firstResponses < Math.max(1, Math.ceil(onboardings * 0.5))) {
+    alerts.push("Muitos usuarios sem primeira resposta.");
+  }
+  if (metrics.aiQuality.negativeFeedbacks >= Math.max(3, metrics.aiQuality.positiveFeedbacks)) {
+    alerts.push("Muitos feedbacks negativos.");
+  }
+  if (metrics.supportQuality.openSupportRequests >= 3) {
+    alerts.push("Suporte aberto sem resposta.");
+  }
+  if (metrics.operationalHealth.aiFailuresToday >= 3) {
+    alerts.push("Falha recorrente de IA.");
+  }
+
+  return alerts.length ? alerts : ["Sem alertas criticos para o beta agora."];
+}
+
 export default function AdminDashboardPage() {
   const [data, setData] = useState<AdminPayload | null>(null);
   const [productMetrics, setProductMetrics] = useState<ProductMetricsPayload | null>(null);
@@ -727,6 +752,7 @@ export default function AdminDashboardPage() {
 
   const metrics = data?.metrics;
   const likelyBottleneck = useMemo(() => getLikelyBottleneck(campaignReport, productMetrics), [campaignReport, productMetrics]);
+  const betaAlerts = useMemo(() => (productMetrics ? getBetaAlerts(productMetrics) : []), [productMetrics]);
   const subscriptionGroups = useMemo(() => {
     const subscriptions = data?.subscriptions || [];
     return {
@@ -939,6 +965,46 @@ export default function AdminDashboardPage() {
             Regra simples baseada em leads, cadastros, onboarding, primeira resposta, checkout e assinatura. Use como triagem inicial antes de decidir a próxima melhoria.
           </p>
         </section>
+
+        {productMetrics ? (
+          <section className="mb-6 rounded-lg border border-sky-300/20 bg-sky-400/10 p-5 shadow-xl shadow-black/20">
+            <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-100">Beta</p>
+                <h2 className="mt-2 text-2xl font-black text-white">Acompanhamento do beta controlado</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-sky-50/80">
+                  Sinais agregados para acompanhar poucos usuarios reais. Nao mostra pergunta, resposta, dados de pagamento ou secrets.
+                </p>
+              </div>
+              <span className="rounded-full border border-sky-300/30 bg-sky-300/10 px-3 py-1 text-xs font-black text-sky-100">
+                Beta fechado
+              </span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Usuarios cadastrados" value={availableValue(productMetrics.availability.profiles, productMetrics.funnel.totalUsers)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Usuarios com onboarding" value={availableValue(productMetrics.availability.businesses, productMetrics.funnel.completedOnboardingUsers)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Geraram resposta" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.funnel.usersWithFirstResponse)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Respostas copiadas" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.usersWithCopiedResponse)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Respostas salvas" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.usersWithSavedResponses)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Feedbacks positivos" value={availableValue(productMetrics.availability.aiResponseFeedback, productMetrics.aiQuality.positiveFeedbacks)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Feedbacks negativos" value={availableValue(productMetrics.availability.aiResponseFeedback, productMetrics.aiQuality.negativeFeedbacks)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Suporte aberto" value={availableValue(productMetrics.availability.supportRequests, productMetrics.supportQuality.openSupportRequests)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Limites atingidos" value={availableValue(productMetrics.availability.generatedResponses && productMetrics.availability.subscriptions, productMetrics.usage.usersAtLimit)} icon={<BarChart3 className="h-5 w-5" />} />
+            </div>
+
+            <div className="mt-5 rounded-lg border border-sky-300/20 bg-[#0b1118] p-4">
+              <p className="text-sm font-black text-white">Alertas simples</p>
+              <div className="mt-3 grid gap-2">
+                {betaAlerts.map((alert) => (
+                  <p className="rounded-md border border-white/10 bg-white/[0.04] p-3 text-sm font-bold text-slate-200" key={alert}>
+                    {alert}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
 
         {productMetrics ? (
           <section className="mb-6 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">

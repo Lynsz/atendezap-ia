@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const supportCategories = ["problema tecnico", "duvida sobre assinatura", "duvida sobre IA", "sugestao", "outro"] as const;
+export const supportCategories = ["problema no beta", "erro ao gerar resposta", "duvida sobre assinatura", "sugestao", "outro"] as const;
 export const legacySupportCategories = ["Duvida", "Bug", "Assinatura", "Cobranca", "Geracao de resposta", "Conta/Login", "Sugestao", "Outro"] as const;
 const acceptedSupportCategories = [...supportCategories, ...legacySupportCategories] as const;
 export const supportStatuses = ["pending", "in_progress", "resolved", "rejected"] as const;
@@ -48,7 +48,7 @@ export function supportPriorityLabel(priority: SupportPriority | string) {
 }
 
 export function inferSupportPriority(category: AcceptedSupportCategory): SupportPriority {
-  if (["duvida sobre assinatura", "duvida sobre IA", "Assinatura", "Cobranca", "Geracao de resposta", "Conta/Login"].includes(category)) return "high";
-  if (["problema tecnico", "Bug", "Duvida"].includes(category)) return "medium";
+  if (["erro ao gerar resposta", "duvida sobre assinatura", "Assinatura", "Cobranca", "Geracao de resposta", "Conta/Login"].includes(category)) return "high";
+  if (["problema no beta", "Bug", "Duvida"].includes(category)) return "medium";
   return "low";
 }

@@ -18,16 +18,16 @@ describe("dashboard de ativacao", () => {
     expect(source).toContain("Gerar primeira resposta");
     expect(source).toContain("Copiar uma resposta");
     expect(source).toContain("Salvar uma resposta útil");
-    expect(source).toContain("Ver templates prontos");
-    expect(source).toContain("Marcar uma resposta como favorita");
-    expect(source).toContain("Conhecer os planos");
+    expect(source).toContain("Testar um template");
+    expect(source).toContain("Abrir biblioteca");
+    expect(source).toContain("Ver planos");
   });
 
   it("mantem orientacao para primeira resposta e proximos passos", () => {
     const source = readDashboardSource();
 
-    expect(source).toContain("Gere sua primeira resposta para cliente");
-    expect(source).toContain("Digite uma pergunta comum que");
+    expect(source).toContain("Gere sua primeira resposta");
+    expect(source).toContain("Cole ou digite uma mensagem que um cliente mandaria no WhatsApp.");
     expect(source).toContain("Qual o valor?");
     expect(source).toContain("Boa. Agora");
     expect(source).toContain("Vocês atendem hoje?");

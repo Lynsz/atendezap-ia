@@ -64,7 +64,7 @@ export function SupportForm() {
       </label>
       <label className="grid gap-2 text-sm font-bold text-ink">
         Mensagem
-        <Textarea name="message" required maxLength={3000} placeholder="Conte em poucas linhas como podemos ajudar. Nao envie senhas, dados de cartao ou informacoes sensiveis." />
+        <Textarea name="message" required maxLength={3000} placeholder="Descreva o que aconteceu. Nao envie senhas, chaves, dados de cartao ou informacoes sensiveis." />
       </label>
       <Button type="submit" disabled={loading}>
         {loading ? "Enviando..." : "Enviar suporte"}
