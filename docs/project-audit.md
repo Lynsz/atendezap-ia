@@ -1,5 +1,16 @@
 # Auditoria do AtendeZap IA
 
+## Lancamento pequeno planejado - 2026-06-12
+
+- Criados `docs/small-launch-plan.md`, `docs/small-launch-checklist.md`, `docs/small-launch-invite-copy.md`, `docs/small-launch-daily-report.md`, `docs/small-launch-pause-criteria.md` e `docs/small-launch-analysis-template.md`.
+- `docs/production-smoke-test.md` atualizado com landing, cadastro/login, onboarding, dashboard, IA, copiar resposta, salvar resposta, biblioteca, templates, feedback IA, suporte, assinatura, checkout teste, admin protegido e health check.
+- Admin protegido recebeu bloco `Lancamento pequeno` com status, visitantes, cadastros, onboardings, primeiras respostas, respostas copiadas/salvas, templates usados, feedbacks, suporte, limites, checkouts, assinaturas e decisao recomendada.
+- Bugs P0/P1: nenhum confirmado nos documentos revisados.
+- Gargalos atuais: validacao real de Vercel, Supabase/Auth/RLS, OpenAI, Stripe, eventos, suporte, feedback e mobile antes de chamar usuarios.
+- Status atual: planejado; pode iniciar apenas apos checklist pre-lancamento verde e smoke real aprovado.
+- Nota estimada: 96/100 local, condicionada a validacao real de producao e ausencia de P0/P1.
+- Recomendacao: corrigir antes de chamar usuarios se o checklist falhar; se passar, iniciar lancamento pequeno com poucos usuarios reais e pausar se houver P0/P1.
+
 ## Analise pos-beta do MVP - 2026-06-12
 
 - Criados `docs/beta-analysis.md`, `docs/beta-funnel-diagnosis.md`, `docs/beta-fix-plan.md`, `docs/beta-decision.md` e `docs/next-beta-or-launch-plan.md`.

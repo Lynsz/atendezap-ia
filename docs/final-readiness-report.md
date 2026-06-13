@@ -1,5 +1,38 @@
 # Relatorio Final de Prontidao - AtendeZap IA
 
+## Lancamento pequeno planejado - 2026-06-12
+
+Status: pronto para checklist pre-lancamento e smoke real; nao iniciar se houver falha P0/P1.
+
+O que foi feito:
+
+- Plano de lancamento pequeno criado.
+- Checklist pre-lancamento criado.
+- Criterios de pausa criados.
+- Mensagem de convite criada.
+- Relatorio diario criado.
+- Template de analise pos-lancamento criado.
+- Admin atualizado com bloco agregado `Lancamento pequeno`.
+- Smoke test de producao atualizado para cobrir produto, assinatura, suporte, feedback, admin e health check.
+
+Status atual:
+
+- lancamento pequeno: planejado.
+- bugs P0/P1: nenhum confirmado nos documentos revisados.
+- maior risco: ambiente real ainda precisa de validacao completa.
+- mobile: deve ser validado no smoke real antes de chamar usuarios.
+- checkout: depende de Stripe teste, webhook assinado e usuario autenticado.
+- suporte: fluxo existe, mas precisa ser monitorado diariamente no admin.
+
+Recomendacao:
+
+- se `docs/small-launch-checklist.md` ficar verde e smoke real passar, iniciar lancamento pequeno com poucos usuarios reais.
+- corrigir antes de chamar usuarios se cadastro, onboarding, IA, biblioteca, checkout, webhook, RLS, admin ou suporte falhar.
+- manter beta fechado se nao houver evidencia real suficiente.
+- pausar imediatamente se houver P0/P1 ou exposicao de dados.
+
+Nota estimada: 96/100 local, condicionada a validacao real de producao, checkout, webhook, IA, tracking, suporte, admin, RLS e ausencia de P0/P1.
+
 ## Analise pos-beta do MVP - 2026-06-12
 
 Status: pronto para nova rodada beta controlada, nao pronto para escala publica.

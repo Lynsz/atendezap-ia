@@ -31,6 +31,10 @@ describe("AdminDashboardPage go-live", () => {
     expect(source).toContain("Falhas de webhook hoje");
     expect(source).toContain("Incidentes recentes");
     expect(source).toContain("Nao disponivel");
+    expect(source).toContain("Lancamento pequeno");
+    expect(source).toContain("Acompanhamento do lancamento pequeno");
+    expect(source).toContain("Decisao recomendada");
+    expect(source).toContain("Revisar Stripe/pricing/confianca");
     expect(source).not.toContain("customer_question");
     expect(source).not.toContain("generated_answer");
     expect(source).not.toContain("payment_method");

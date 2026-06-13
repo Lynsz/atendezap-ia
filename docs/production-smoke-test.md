@@ -21,11 +21,17 @@ Ambiente Vercel Preview/Production: bloqueado, porque a URL do deploy e credenci
 | Onboarding | aprovado com observacoes | `/onboarding` usa o fluxo real do `SaasDashboardPage` e grava `businesses`/`user_profiles` com usuario autenticado. Validacao RLS real exige Supabase. |
 | Dashboard | aprovado com observacoes | `/dashboard` redirecionou para `/login?redirectTo=%2Fdashboard` sem sessao. Fluxo autenticado real exige Supabase. |
 | IA | aprovado com observacoes | API privada retorna 401 sem sessao. Testes cobrem limite, onboarding, falha de IA e persistencia. Geracao real exige `OPENAI_API_KEY`. |
+| Copiar resposta | aprovado com observacoes | Fluxo existe no dashboard e registra evento seguro sem conteudo completo. Validacao real exige usuario autenticado. |
+| Salvar resposta | aprovado com observacoes | Biblioteca e respostas salvas usam usuario autenticado e isolamento por `user_id`. Validacao real exige Supabase/RLS. |
 | Biblioteca | aprovado com observacoes | `/biblioteca` redirecionou para login sem sessao. APIs exigem usuario autenticado e filtram por `user_id`. Fluxo real exige Supabase. |
 | Templates | aprovado com observacoes | `/dashboard/templates` redirecionou para login sem sessao. Templates estao no dashboard autenticado. |
+| Feedback IA | aprovado com observacoes | Feedback positivo/negativo existe apos resposta gerada e nao salva pergunta/resposta completa em eventos. Validacao real exige usuario autenticado. |
+| Suporte | aprovado com observacoes | `/suporte` carrega publicamente e `/api/support` registra solicitacoes. Monitoramento real exige admin e Supabase remoto. |
 | Assinatura | aprovado com observacoes | `/assinatura` redirecionou para login sem sessao. Checkout real exige Stripe e Supabase configurados. |
 | Checkout Stripe teste | bloqueado | Precisa de Preview/Production com `STRIPE_SECRET_KEY`, Price IDs e usuario autenticado. |
 | Webhook Stripe | aprovado com observacoes | Rota publica, usa raw body e valida assinatura. Evento real bloqueado sem endpoint Vercel e signing secret real. |
+| Admin protegido | aprovado com observacoes | `/admin` e `/api/admin/*` exigem `requireAdmin`. Validacao real exige `ADMIN_EMAILS` e usuario admin no ambiente. |
+| Health check | aprovado | `/api/health` retorna contrato simples sem secrets. |
 | Seguranca | aprovado com observacoes | `npm run validate` passou e `check:secrets` nao encontrou secrets obvios. RLS real ainda precisa ser validado com dois usuarios no Supabase. |
 
 ## Smoke HTTP local
@@ -51,7 +57,10 @@ Nao promover se qualquer item abaixo falhar no ambiente Vercel:
 - login/cadastro com Supabase real;
 - onboarding salvando `user_profiles` e `businesses`;
 - geracao OpenAI com limite mensal;
+- copiar resposta, salvar resposta, biblioteca, templates, feedback IA e suporte;
 - biblioteca salvando/listando dados do proprio usuario;
 - checkout Stripe teste;
 - webhook Stripe recebendo evento assinado;
+- admin protegido por `ADMIN_EMAILS`;
+- health check respondendo sem dados sensiveis;
 - RLS com dois usuarios reais.
