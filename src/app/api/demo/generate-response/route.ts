@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { z } from "zod";
 import { businessTypeOptions, formatBusinessTemplateForPrompt, getBusinessTemplate } from "@/lib/ai/business-templates";
+import { buildDemoFallbackResponse } from "@/lib/demo/demo-fallback-response";
 import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
@@ -25,7 +26,23 @@ export function fallbackDemoResponse(question: string, businessType: string, ton
   const tonePrefix = tone === "Direto" ? "Oi! Vamos la:" : tone === "Acolhedor" ? "Oi! Claro, vou te ajudar com isso." : "Ola! Claro, posso te ajudar.";
   const context = template.expectedResponseExamples[0] || "Me envie mais detalhes sobre o que voce precisa para eu te orientar melhor.";
 
-  return `${tonePrefix} Sobre "${question.trim()}", ${context} Se faltar valor, prazo ou disponibilidade, eu confirmo antes de te passar uma resposta final.`;
+  return `${tonePrefix} ${buildDemoFallbackResponse(question)} ${context} Se faltar valor, prazo ou disponibilidade, eu confirmo antes de te passar uma resposta final.`;
+}
+
+function hasUsableDemoOpenAiKey(apiKey?: string): apiKey is string {
+  const normalized = apiKey?.trim();
+
+  if (!normalized) return false;
+
+  return !(
+    normalized === "..." ||
+    normalized.endsWith("...") ||
+    normalized.includes("example") ||
+    normalized.includes("placeholder") ||
+    normalized.includes("dummy") ||
+    normalized.includes("test-only") ||
+    normalized.startsWith("test-")
+  );
 }
 
 export function buildDemoPrompt(question: string, businessType: string, tone: string) {
@@ -65,7 +82,9 @@ export async function POST(request: Request) {
 
     const body = demoSchema.parse(await request.json());
 
-    if (!process.env.OPENAI_API_KEY) {
+    const openAiApiKey = process.env.OPENAI_API_KEY;
+
+    if (!hasUsableDemoOpenAiKey(openAiApiKey)) {
       const answer = fallbackDemoResponse(body.question, body.businessType, body.tone);
       serverLog({
         event: "demo_response_generated",
@@ -76,7 +95,7 @@ export async function POST(request: Request) {
       return Response.json({ answer, mode: "fallback_without_openai_key" });
     }
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ apiKey: openAiApiKey });
     const completion = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       messages: [
