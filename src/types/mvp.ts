@@ -118,6 +118,44 @@ export type Subscription = {
   updated_at: string;
 };
 
+export type AppEvent = {
+  id: string;
+  user_id: string | null;
+  event_name: string;
+  page: string | null;
+  source: string | null;
+  plan: string | null;
+  business_type: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+};
+
+export type SupportRequest = {
+  id: string;
+  user_id: string;
+  email: string | null;
+  category: string;
+  subject: string;
+  message: string;
+  status: string;
+  priority: string;
+  admin_notes: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AiResponseFeedback = {
+  id: string;
+  user_id: string;
+  response_id: string;
+  rating: "positive" | "negative";
+  comment: string | null;
+  business_type: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Plan = {
   id: string;
   name: string;

@@ -43,12 +43,48 @@ describe("politicas RLS criticas", () => {
 
   it("mantem assinatura somente leitura para o usuario autenticado", () => {
     const migration = readRepoFile("supabase/migrations/0001_initial_schema.sql");
+    const mvpMigration = readRepoFile("supabase/migrations/0021_create_mvp_core_tables.sql");
 
     expect(migration).toContain("alter table public.subscriptions enable row level security");
     expect(migration).toContain('create policy "subscriptions_select_own"');
     expect(migration).toContain("using ((select auth.uid()) = user_id)");
     expect(migration).toContain("revoke all privileges on public.subscriptions from anon, authenticated");
     expect(migration).toContain("grant select on public.subscriptions to authenticated");
+    expect(mvpMigration).toContain('drop policy if exists "subscriptions_insert_own" on public.subscriptions');
+    expect(mvpMigration).toContain('drop policy if exists "subscriptions_update_own" on public.subscriptions');
+    expect(mvpMigration).toContain('drop policy if exists "subscriptions_delete_own" on public.subscriptions');
+    expect(mvpMigration).toContain("revoke all privileges on public.subscriptions from anon, authenticated");
+    expect(mvpMigration).toContain("grant select on public.subscriptions to authenticated");
+  });
+
+  it("mantem user_profiles isolado por usuario com RLS e user_id unico", () => {
+    const migration = readRepoFile("supabase/migrations/0021_create_mvp_core_tables.sql");
+
+    expect(migration).toContain("create table if not exists public.user_profiles");
+    expect(migration).toContain("user_id uuid not null references auth.users(id) on delete cascade");
+    expect(migration).toContain("create unique index if not exists user_profiles_user_id_unique_idx");
+    expect(migration).toContain("alter table public.user_profiles enable row level security");
+    expect(migration).toContain('create policy "user_profiles_select_own"');
+    expect(migration).toContain('create policy "user_profiles_insert_own"');
+    expect(migration).toContain('create policy "user_profiles_update_own"');
+    expect(migration).toContain("using ((select auth.uid()) = user_id)");
+    expect(migration).toContain("with check ((select auth.uid()) = user_id)");
+  });
+
+  it("mantem ai_usage somente leitura para o client e mutacao pelo backend", () => {
+    const migration = readRepoFile("supabase/migrations/0021_create_mvp_core_tables.sql");
+
+    expect(migration).toContain("create table if not exists public.ai_usage");
+    expect(migration).toContain("create unique index if not exists ai_usage_user_month_unique_idx");
+    expect(migration).toContain("alter table public.ai_usage enable row level security");
+    expect(migration).toContain('create policy "ai_usage_select_own"');
+    expect(migration).toContain('create policy "ai_usage_no_client_insert"');
+    expect(migration).toContain('create policy "ai_usage_no_client_update"');
+    expect(migration).toContain('create policy "ai_usage_no_client_delete"');
+    expect(migration).toContain("with check (false)");
+    expect(migration).toContain("using (false)");
+    expect(migration).toContain("revoke all on public.ai_usage from anon, authenticated");
+    expect(migration).toContain("grant select on public.ai_usage to authenticated");
   });
 
   it("mantem leads e eventos internos sem acesso direto pelo client", () => {

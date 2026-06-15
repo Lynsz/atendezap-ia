@@ -66,7 +66,15 @@ export async function POST(request: Request) {
       await enforceRateLimit({ request, route: "api:events:user", identifier: userId, limit: 180, windowMs: 5 * 60_000 });
     }
 
-    const supabase = getSupabaseAdmin();
+    let supabase: ReturnType<typeof getSupabaseAdmin>;
+
+    try {
+      supabase = getSupabaseAdmin();
+    } catch (error) {
+      serverLog({ level: "warn", event: "app_event_persistence_skipped", route: "/api/events", error, metadata: { event_name: event.event_name } });
+      return NextResponse.json({ ok: true, skipped: true }, { status: 202 });
+    }
+
     const { error } = await supabase.from("app_events").insert({
       user_id: userId,
       event_name: event.event_name,

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { AUTH_HINT_COOKIE, buildLoginRedirect, isPrivateRoute, isPublicRoute, isStaticAssetPath } from "@/lib/auth/routes";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (isStaticAssetPath(pathname) || isPublicRoute(pathname)) {
@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "Sessão não encontrada. Faça login novamente." }, { status: 401 });
+    return NextResponse.json({ error: "Sessao nao encontrada. Faca login novamente." }, { status: 401 });
   }
 
   const loginUrl = request.nextUrl.clone();

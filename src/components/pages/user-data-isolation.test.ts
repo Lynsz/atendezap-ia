@@ -10,7 +10,7 @@ describe("isolamento multiusuario nas telas SaaS", () => {
   it("dashboard consulta dados sensiveis filtrando pelo user_id da sessao", () => {
     const source = readSource("./SaasDashboardPage.tsx");
 
-    for (const table of ["businesses", "generated_responses", "customers", "subscriptions"]) {
+    for (const table of ["user_profiles", "businesses", "generated_responses", "customers", "subscriptions", "ai_usage"]) {
       expect(source).toContain(`from("${table}")`);
     }
     expect(source.match(/\.eq\("user_id", user\.id\)/g)?.length ?? 0).toBeGreaterThanOrEqual(6);
@@ -18,6 +18,9 @@ describe("isolamento multiusuario nas telas SaaS", () => {
     expect(source).toContain('.delete().eq("id", itemId).eq("user_id", user.id)');
     expect(source).toContain('.update(updates).eq("id", item.id).eq("user_id", user.id)');
     expect(source).toContain("user_id: user.id");
+    expect(source).toContain('user_id: user.id,');
+    expect(source).not.toContain('user_id: businessDraft');
+    expect(source).not.toContain('user_id: payload.user_id');
   });
 
   it("assinatura usa a sessao para buscar assinatura do usuario atual", () => {

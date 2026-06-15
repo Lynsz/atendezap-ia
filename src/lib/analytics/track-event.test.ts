@@ -22,6 +22,9 @@ describe("safe app events", () => {
         usage_limit: 30,
         customerQuestion: "Meu pedido atrasou?",
         generatedAnswer: "Sinto muito pelo atraso.",
+        message: "texto completo enviado pelo cliente",
+        content: "conteudo completo de resposta",
+        resposta: "resposta completa",
         email: "cliente@example.com",
         phone: "11999999999",
         stripe_customer_id: "cus_123"
@@ -43,6 +46,9 @@ describe("safe app events", () => {
     });
     expect(event?.metadata.customerQuestion).toBeUndefined();
     expect(event?.metadata.generatedAnswer).toBeUndefined();
+    expect(event?.metadata.message).toBeUndefined();
+    expect(event?.metadata.content).toBeUndefined();
+    expect(event?.metadata.resposta).toBeUndefined();
     expect(event?.metadata.email).toBeUndefined();
     expect(event?.metadata.phone).toBeUndefined();
     expect(event?.metadata.stripe_customer_id).toBeUndefined();
