@@ -25,11 +25,13 @@
 * `npm run build`
 * `npm test`
 * `npm run validate`
+* `npm test -- src/app/api/demo/generate-response/route.test.ts`
 
 ## Erros encontrados
 
 * Nenhum erro de CI local encontrado.
 * Ajuste preventivo aplicado em `/api/health`: a rota retornava flags internas de servicos configurados.
+* Teste da demo sem `OPENAI_API_KEY` corrigido e validado localmente.
 
 ## Correcoes aplicadas
 
@@ -42,6 +44,13 @@
 * Placeholders seguros do CI foram mantidos no workflow.
 * Nenhum secret obvio encontrado em arquivos versionados.
 * `.env.local` permanece ignorado pelo Git e nao deve ser commitado.
+
+## Validacao atual
+
+* Suite completa executada: 59 arquivos e 253 testes passaram.
+* CI esperado passando com Node.js `24.x`.
+* `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` mantido.
+* Workflow mantem `check:secrets`, lint, typecheck, build e testes.
 
 ## Proximo passo
 

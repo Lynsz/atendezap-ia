@@ -4,22 +4,37 @@
 
 * corrigido
 
-## Erro
+## Problema
 
-A rota `/api/demo/generate-response` retornava 500 quando `OPENAI_API_KEY` estava ausente ou configurada com placeholder de CI.
+A rota publica de demo retornava 500 quando `OPENAI_API_KEY` estava ausente.
 
-## Correcao
+## Correcao aplicada
 
 * Criado fallback local em `src/lib/demo/demo-fallback-response.ts`.
-* A rota demo agora trata placeholders como `test-openai-key` como ausencia de chave real.
-* A rota demo nao cria client OpenAI nem chama OpenAI quando a chave real nao existe.
+* A rota demo valida pergunta vazia e pergunta acima de 280 caracteres.
+* A rota demo retorna `mode: "fallback_without_openai_key"` quando nao existe chave OpenAI usavel.
+* A rota demo nao cria client OpenAI nem chama OpenAI antes de confirmar a chave.
+* O fallback e local, nao exige login, nao depende do Supabase e nao retorna stack trace.
 * A rota autenticada de IA nao foi alterada.
 
-## Testes executados
+## Teste especifico
 
-* `npm test -- src/app/api/demo/generate-response/route.test.ts`
-* `OPENAI_API_KEY=test-openai-key npm test -- src/app/api/demo/generate-response/route.test.ts`
+* `npm test -- src/app/api/demo/generate-response/route.test.ts` passou.
+* Cenario confirmado: status 200, `answer` contem a mensagem enviada e `mode` e `fallback_without_openai_key`.
+
+## Testes completos
+
+* `npm test` passou com 59 arquivos e 253 testes.
+
+## Validacoes
+
+* `npm run check:secrets` passou.
+* `npm run lint` passou.
+* `npm run typecheck` passou.
+* `npm run build` passou.
+* `npm run validate` passou.
 
 ## Observacoes
 
-* O fallback retorna status 200, `mode: "fallback_without_openai_key"` e inclui a mensagem original do usuario.
+* Demo publica pode usar fallback controlado sem OpenAI key.
+* Geracao autenticada real continua exigindo OpenAI configurada e retorna erro amigavel quando a chave falta.
