@@ -1,5 +1,6 @@
 import { getBusinessTemplate } from "@/lib/ai/business-templates";
 import { buildWhatsappResponsePrompt, normalizeBusinessContextForPrompt } from "@/lib/ai/build-whatsapp-response-prompt";
+import { AppError } from "@/lib/errors";
 import { getOpenAIClient, getOpenAIModel } from "@/lib/server/openai";
 import type { ResponseType } from "@/types/mvp";
 
@@ -76,9 +77,12 @@ export async function generateCustomerResponseWithAi(input: GenerateAiResponseIn
   });
 
   const generatedAnswer = completion.choices[0]?.message?.content?.trim();
+  if (!generatedAnswer) {
+    throw new AppError("Nao foi possivel gerar a resposta agora. Tente novamente em instantes.", 502);
+  }
 
   return {
-    generatedAnswer: generatedAnswer || generateFallbackCustomerResponse(input),
-    mode: generatedAnswer ? ("openai" as const) : ("fallback_empty_openai_response" as const)
+    generatedAnswer,
+    mode: "openai" as const
   };
 }

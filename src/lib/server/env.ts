@@ -1,7 +1,7 @@
 import { AppError } from "@/lib/errors";
 
 export const ENV_ERROR_MESSAGES = {
-  openai: "A chave da OpenAI não está configurada neste ambiente.",
+  openai: "A geracao de IA nao esta configurada neste ambiente.",
   stripe: "Stripe ainda não está configurado neste ambiente.",
   supabase: "Supabase não está configurado corretamente."
 } as const;

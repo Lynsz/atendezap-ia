@@ -6,6 +6,7 @@ import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
 import { generateResponseSchema } from "@/lib/mvp-validators";
 import { assertRequestSize, enforceRateLimit } from "@/lib/rate-limit";
+import { hasOpenAIConfigured } from "@/lib/server/openai";
 import { getAuthenticatedSupabase } from "@/lib/supabase/authenticated";
 import {
   MONTHLY_LIMIT_EXCEEDED_MESSAGE,
@@ -99,8 +100,12 @@ export async function POST(request: Request) {
       .eq("user_id", user.id)
       .maybeSingle();
 
-    if (!userProfile && !savedBusiness) {
+    if (!userProfile) {
       return NextResponse.json({ error: "Complete o onboarding antes de gerar respostas." }, { status: 403 });
+    }
+
+    if (!hasOpenAIConfigured()) {
+      return NextResponse.json({ error: "A geracao de IA nao esta configurada neste ambiente." }, { status: 500 });
     }
 
     const businessDataForAi = savedBusiness

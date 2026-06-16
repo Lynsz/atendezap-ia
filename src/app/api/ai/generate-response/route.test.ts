@@ -4,6 +4,12 @@ const mocks = vi.hoisted(() => ({
   usageCount: 30,
   usageLimit: 30,
   subscription: { plan_name: "free", status: "trial", current_period_start: null, current_period_end: null } as Record<string, unknown> | null,
+  userProfile: {
+    business_name: "Studio Maria",
+    business_type: "Estetica",
+    tone: "Acolhedor",
+    description: "Atendimento de estetica"
+  } as Record<string, unknown> | null,
   createClient: vi.fn(),
   generateCustomerResponseWithAi: vi.fn(),
   tableFilters: [] as Array<{ table: string; column: string; value: unknown }>,
@@ -17,6 +23,11 @@ vi.mock("@supabase/supabase-js", () => ({
 
 vi.mock("@/lib/ai-response", () => ({
   generateCustomerResponseWithAi: mocks.generateCustomerResponseWithAi
+}));
+
+vi.mock("@/lib/rate-limit", () => ({
+  assertRequestSize: vi.fn(),
+  enforceRateLimit: vi.fn(async () => ({ ip: "127.0.0.1" }))
 }));
 
 type QueryChain = {
@@ -97,12 +108,7 @@ function createSupabaseMock() {
 
       if (table === "user_profiles") {
         return createChain(table, async () => ({
-          data: {
-            business_name: "Studio Maria",
-            business_type: "Estetica",
-            tone: "Acolhedor",
-            description: "Atendimento de estetica"
-          },
+          data: mocks.userProfile,
           error: null
         }));
       }
@@ -131,9 +137,16 @@ describe("POST /api/ai/generate-response", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-key";
     process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
+    process.env.OPENAI_API_KEY = "test-openai-key";
     mocks.usageCount = 30;
     mocks.usageLimit = 20;
     mocks.subscription = { plan_name: "free", status: "trial", current_period_start: null, current_period_end: null };
+    mocks.userProfile = {
+      business_name: "Studio Maria",
+      business_type: "Estetica",
+      tone: "Acolhedor",
+      description: "Atendimento de estetica"
+    };
     mocks.tableFilters = [];
     mocks.insertPayload = null;
     mocks.usageUpdatePayload = null;
@@ -235,6 +248,61 @@ describe("POST /api/ai/generate-response", () => {
     expect(body.error).toContain("mensagem esta muito longa");
   });
 
+  it("retorna 403 quando onboarding nao foi concluido", async () => {
+    mocks.usageCount = 0;
+    mocks.userProfile = null;
+
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/ai/generate-response", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          customerMessage: "Tem horario hoje?",
+          responseType: "atendimento"
+        })
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(body.error).toBe("Complete o onboarding antes de gerar respostas.");
+    expect(mocks.generateCustomerResponseWithAi).not.toHaveBeenCalled();
+    expect(mocks.insertPayload).toBeNull();
+  });
+
+  it("retorna erro amigavel quando OPENAI_API_KEY esta ausente", async () => {
+    mocks.usageCount = 0;
+    delete process.env.OPENAI_API_KEY;
+
+    const { POST } = await import("./route");
+    const response = await POST(
+      new Request("https://app.example.test/api/ai/generate-response", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer test-token"
+        },
+        body: JSON.stringify({
+          customerMessage: "Tem horario hoje?",
+          responseType: "atendimento"
+        })
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(body.error).toBe("A geracao de IA nao esta configurada neste ambiente.");
+    expect(mocks.generateCustomerResponseWithAi).not.toHaveBeenCalled();
+    expect(mocks.insertPayload).toBeNull();
+    expect(mocks.usageUpdatePayload).toBeNull();
+  });
+
   it("filtra negocio e historico pelo user_id da sessao", async () => {
     mocks.usageCount = 0;
     const { POST } = await import("./route");
@@ -257,6 +325,7 @@ describe("POST /api/ai/generate-response", () => {
       expect.arrayContaining([
         { table: "subscriptions", column: "user_id", value: "11111111-1111-4111-8111-111111111111" },
         { table: "ai_usage", column: "user_id", value: "11111111-1111-4111-8111-111111111111" },
+        { table: "user_profiles", column: "user_id", value: "11111111-1111-4111-8111-111111111111" },
         { table: "businesses", column: "user_id", value: "11111111-1111-4111-8111-111111111111" }
       ])
     );
@@ -332,6 +401,7 @@ describe("POST /api/ai/generate-response", () => {
     expect(body.error).toContain("Nao foi possivel gerar");
     expect(mocks.generateCustomerResponseWithAi).toHaveBeenCalledTimes(1);
     expect(mocks.insertPayload).toBeNull();
+    expect(mocks.usageUpdatePayload).toBeNull();
   });
 
   it("usa limite free quando assinatura paga esta cancelada", async () => {

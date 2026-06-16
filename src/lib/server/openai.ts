@@ -7,6 +7,10 @@ export function getOpenAIModel() {
   return process.env.OPENAI_MODEL?.trim() || DEFAULT_OPENAI_MODEL;
 }
 
+export function hasOpenAIConfigured() {
+  return Boolean(process.env.OPENAI_API_KEY?.trim());
+}
+
 export function getOpenAIClient() {
   const { apiKey } = requireOpenAiEnv();
 
