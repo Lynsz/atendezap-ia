@@ -19,7 +19,6 @@ export const runtime = "nodejs";
 
 const createCheckoutSchema = z.object({
   planId: z.string().trim().max(40).optional(),
-  plan: z.string().trim().max(40).optional(),
   source: z.string().trim().max(80).optional(),
   funnel: z.string().trim().max(80).optional(),
   utm_source: z.string().trim().max(160).optional(),
@@ -70,7 +69,7 @@ export async function POST(request: Request) {
     userId = user.id;
     await enforceRateLimit({ request, route: "api:stripe-checkout:user", identifier: user.id, limit: 6, windowMs: 5 * 60_000 });
     const body = createCheckoutSchema.parse(await request.json());
-    const requestedPlan = body.plan || body.planId;
+    const requestedPlan = body.planId;
 
     if (!isPlanId(requestedPlan)) {
       throw new AppError("Plano invalido.", 400);

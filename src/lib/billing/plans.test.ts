@@ -8,7 +8,10 @@ describe("billing plans", () => {
     expect(BILLING_PLANS.pro.monthlyLimit).toBe(500);
     expect(BILLING_PLANS.premium.monthlyLimit).toBe(1500);
     expect(BILLING_PLANS.starter.stripePriceIdEnvName).toBe("STRIPE_PRICE_STARTER");
+    expect(BILLING_PLANS.pro.stripePriceIdEnvName).toBe("STRIPE_PRICE_PRO");
+    expect(BILLING_PLANS.premium.stripePriceIdEnvName).toBe("STRIPE_PRICE_PREMIUM");
     expect(BILLING_PLANS.pro.recommended).toBe(true);
+    expect(BILLING_PLANS.pro.note).toBe("Primeiro mes por R$ 29 para novos usuarios.");
     expect(PAID_BILLING_PLAN_IDS).toEqual(["starter", "pro", "premium"]);
   });
 

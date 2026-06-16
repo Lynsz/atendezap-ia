@@ -39,7 +39,7 @@ export const BILLING_PLANS: Record<BillingPlanId, BillingPlan> = {
     priceLabel: "R$ 97/mes",
     stripePriceIdEnvName: "STRIPE_PRICE_PRO",
     recommended: true,
-    note: "Primeiro mes por R$ 29 para novos usuarios",
+    note: "Primeiro mes por R$ 29 para novos usuarios.",
     features: ["500 respostas com IA por mes", "Tudo do Starter", "Templates por tipo de atendimento", "Prioridade nas melhorias"]
   },
   premium: {

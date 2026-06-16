@@ -53,11 +53,11 @@ function statusMessage(status?: string | null) {
   if (!normalizedStatus || normalizedStatus === "free") return "Você está no plano gratuito.";
   if (normalizedStatus === "active") return "Sua assinatura está ativa.";
   if (normalizedStatus === "trial" || normalizedStatus === "trialing") return "Sua assinatura está em período de teste.";
-  if (normalizedStatus === "pending" || normalizedStatus === "incomplete") return "Seu checkout foi iniciado, mas a assinatura ainda não foi confirmada pela Stripe.";
-  if (normalizedStatus === "past_due" || normalizedStatus === "unpaid") return "Identificamos um problema no pagamento. Atualize sua forma de pagamento para evitar interrupções.";
-  if (normalizedStatus === "incomplete_expired") return "O checkout expirou antes da confirmação do pagamento. Você pode escolher um plano novamente.";
+  if (normalizedStatus === "pending" || normalizedStatus === "incomplete") return "Sua assinatura ainda não foi concluída.";
+  if (normalizedStatus === "past_due" || normalizedStatus === "unpaid") return "Há um problema no pagamento. Atualize sua forma de pagamento pelo portal.";
+  if (normalizedStatus === "incomplete_expired") return "Sua assinatura ainda não foi concluída.";
   if (normalizedStatus === "paused") return "Sua assinatura está pausada na Stripe. Acesse o portal para revisar o status.";
-  if (normalizedStatus === "canceled") return "Sua assinatura foi cancelada. Você pode escolher um plano novamente quando quiser.";
+  if (normalizedStatus === "canceled") return "Sua assinatura foi cancelada.";
   return "Escolha um plano para liberar mais respostas mensais.";
 }
 
@@ -356,7 +356,7 @@ function BillingContent() {
                 </p>
                 <h2 className="text-3xl font-black text-white">{activeSubscription && currentPlan ? currentPlan.name : "Free"}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                  {statusMessage(subscription?.status)}
+                  {statusMessage(subscription?.subscription_status || subscription?.status)}
                 </p>
               </div>
               <span className={cn("inline-flex w-fit rounded-full border px-3 py-1 text-xs font-black", statusClass(subscription?.status))}>
@@ -460,6 +460,12 @@ function BillingContent() {
                 O dashboard e esta página leem a mesma assinatura em `subscriptions`, sincronizada pelo webhook da Stripe.
               </p>
             </div>
+            <div className="rounded-lg border border-white/10 bg-[#101821] p-5">
+              <MessageCircle className="mb-3 h-5 w-5 text-emerald-300" />
+              <p className="text-sm leading-6 text-slate-300">
+                O AtendeZap IA gera respostas para copiar, ajustar e enviar manualmente. Ele não envia mensagens automaticamente no WhatsApp.
+              </p>
+            </div>
             {subscription ? (
               <form onSubmit={submitCancellationFeedback} className="rounded-lg border border-white/10 bg-[#101821] p-5">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Cancelamento</p>
@@ -528,7 +534,7 @@ function BillingContent() {
                     {plan.recommended ? <p className="mb-3 w-fit rounded-full bg-emerald-300 px-3 py-1 text-xs font-black text-slate-950">Mais recomendado</p> : null}
                     <h3 className="text-xl font-black text-white">{plan.name}</h3>
                     <p className="mt-2 text-3xl font-black text-emerald-300">{plan.firstMonthPriceLabel || plan.monthlyPriceLabel}</p>
-                    {plan.id === "pro" ? <p className="mt-2 text-sm font-black text-emerald-100">Primeiro mês por R$ 29 para novos usuários</p> : null}
+                    {plan.id === "pro" ? <p className="mt-2 text-sm font-black text-emerald-100">Primeiro mês por R$ 29 para novos usuários.</p> : null}
                     {plan.recurringPriceLabel ? <p className="mt-1 text-xs font-bold text-slate-400">{plan.recurringPriceLabel}</p> : null}
                   </div>
 

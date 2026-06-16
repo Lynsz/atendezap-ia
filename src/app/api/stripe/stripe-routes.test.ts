@@ -173,13 +173,30 @@ describe("Stripe API routes", () => {
     expect(mocks.checkoutCreate).not.toHaveBeenCalled();
   });
 
+  it("rejeita plano free no checkout", async () => {
+    const { POST } = await import("./create-checkout-session/route");
+    const response = await POST(
+      new Request("https://app.example.com/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
+        body: JSON.stringify({ planId: "free" })
+      })
+    );
+
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(body.error).toContain("Plano invalido");
+    expect(mocks.checkoutCreate).not.toHaveBeenCalled();
+  });
+
   it("retorna 401 quando checkout nao tem usuario logado", async () => {
     const { POST } = await import("./create-checkout-session/route");
     const response = await POST(
       new Request("https://app.example.com/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: "starter" })
+        body: JSON.stringify({ planId: "starter" })
       })
     );
 
@@ -193,7 +210,7 @@ describe("Stripe API routes", () => {
       new Request("https://app.example.com/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
-        body: JSON.stringify({ plan: "starter", source: "pricing", utm_source: "meta" })
+        body: JSON.stringify({ planId: "starter", source: "pricing", utm_source: "meta" })
       })
     );
 
@@ -234,7 +251,7 @@ describe("Stripe API routes", () => {
       new Request("https://app.example.com/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
-        body: JSON.stringify({ plan: "starter", price: "price_malicioso" })
+        body: JSON.stringify({ planId: "starter", price: "price_malicioso" })
       })
     );
 
@@ -250,7 +267,7 @@ describe("Stripe API routes", () => {
       new Request("https://app.example.com/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
-        body: JSON.stringify({ plan: "starter" })
+        body: JSON.stringify({ planId: "starter" })
       })
     );
 
@@ -267,7 +284,7 @@ describe("Stripe API routes", () => {
       new Request("https://app.example.com/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
-        body: JSON.stringify({ plan: "pro" })
+        body: JSON.stringify({ planId: "pro" })
       })
     );
 
@@ -293,7 +310,7 @@ describe("Stripe API routes", () => {
       new Request("https://app.example.com/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
-        body: JSON.stringify({ plan: "pro" })
+        body: JSON.stringify({ planId: "pro" })
       })
     );
 
@@ -319,7 +336,7 @@ describe("Stripe API routes", () => {
       new Request("https://app.example.com/api/stripe/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer token" },
-        body: JSON.stringify({ plan: "premium" })
+        body: JSON.stringify({ planId: "premium" })
       })
     );
 
