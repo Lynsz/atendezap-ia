@@ -24,18 +24,27 @@ const ignoredPathPatterns = [
 ];
 
 const secretPatterns = [
+  { name: "OpenAI API key", pattern: /\bsk-(?:proj|svcacct)-[A-Za-z0-9_-]{20,}\b/g },
   { name: "Stripe secret key", pattern: /\bsk_(?:test|live)_[A-Za-z0-9]{10,}\b/g },
   { name: "Stripe restricted key", pattern: /\brk_(?:test|live)_[A-Za-z0-9]{10,}\b/g },
   { name: "Stripe webhook secret", pattern: /\bwhsec_[A-Za-z0-9]{10,}\b/g },
+  { name: "JWT-like token", pattern: /\beyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\b/g },
+  { name: "GitHub token", pattern: /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}\b/g },
+  { name: "GitHub fine-grained token", pattern: /\bgithub_pat_[A-Za-z0-9_]{20,}\b/g },
+  { name: "Vercel token", pattern: /\bvercel_[A-Za-z0-9]{20,}\b/g },
   { name: "Private key block", pattern: new RegExp("BEGIN " + "PRIVATE KEY", "g") }
 ];
 
 const sensitiveEnvNames = [
+  "KIWIFY_WEBHOOK_SECRET",
   "OPENAI_API_KEY",
+  "SENTRY_AUTH_TOKEN",
   "SUPABASE_SERVICE_ROLE_KEY",
   "RESEND_API_KEY",
+  "STRIPE_RESTRICTED_KEY",
   "STRIPE_SECRET_KEY",
-  "STRIPE_WEBHOOK_SECRET"
+  "STRIPE_WEBHOOK_SECRET",
+  "UPSTASH_REDIS_REST_TOKEN"
 ];
 
 function normalizePath(file) {
@@ -47,6 +56,13 @@ function candidateFiles() {
     .split(/\r?\n/)
     .filter(Boolean)
     .filter((file) => !ignoredPathPatterns.some((pattern) => pattern.test(normalizePath(file))));
+}
+
+function trackedEnvFiles() {
+  return execFileSync("git", ["ls-files"], { encoding: "utf8" })
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .filter((file) => /^\.env(?:$|\.)/.test(normalizePath(file)) && normalizePath(file) !== ".env.example");
 }
 
 function isSafePlaceholder(value) {
@@ -112,6 +128,10 @@ function scanFile(file, findings) {
 }
 
 const findings = [];
+
+for (const file of trackedEnvFiles()) {
+  findings.push({ file, lineNumber: 1, label: "arquivo de ambiente rastreado" });
+}
 
 for (const file of candidateFiles()) {
   scanFile(file, findings);
