@@ -123,6 +123,15 @@ export type TrackingEventName =
   | "support_page_view"
   | "support_request_created"
   | "support_request_failed"
+  | "beta_signup_completed"
+  | "beta_onboarding_completed"
+  | "beta_first_response_generated"
+  | "beta_response_copied"
+  | "beta_response_saved"
+  | "beta_template_used"
+  | "beta_pricing_viewed"
+  | "beta_feedback_submitted"
+  | "beta_support_request_created"
   | "help_faq_view"
   | "help_contact_click";
 

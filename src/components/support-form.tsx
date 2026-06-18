@@ -32,6 +32,7 @@ export function SupportForm() {
       event.currentTarget.reset();
       setMessage("Solicitacao enviada. Retornaremos pelo e-mail informado.");
       trackEvent("support_request_created", { source: "public_support", category, status: "pending" });
+      trackEvent("beta_support_request_created", { source: "public_support", page: "/suporte", category });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro inesperado.");
       trackEvent("support_request_failed", { source: "public_support", category, status: "failed" });

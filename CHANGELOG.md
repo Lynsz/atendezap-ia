@@ -2,6 +2,35 @@
 
 ## [Unreleased]
 
+## [Closed Beta Preparation]
+
+### Adicionado
+
+- Plano do beta fechado, roteiro de usuarios, checklist operacional, relatorio e template de analise pos-beta.
+- Eventos seguros `beta_signup_completed`, `beta_onboarding_completed`, `beta_first_response_generated`, `beta_response_copied`, `beta_response_saved`, `beta_template_used`, `beta_pricing_viewed`, `beta_feedback_submitted` e `beta_support_request_created`.
+- Migration para permitir eventos `beta_*` em `app_events`.
+
+### Corrigido
+
+- Tracking do beta conectado aos fluxos existentes de cadastro, onboarding, primeira resposta, copia, salvamento, templates, pricing, feedback e suporte.
+- Admin passa a considerar eventos beta em metricas agregadas de pricing, primeira resposta e respostas salvas.
+
+### Seguranca
+
+- Eventos beta usam a mesma sanitizacao de metadados seguros, bloqueando mensagem completa, resposta completa, e-mail, telefone, tokens, secrets e dados de pagamento.
+- Nenhuma integracao direta com WhatsApp, CRM novo ou automacao complexa foi adicionada.
+
+### Operacao
+
+- Preparacao documentada para testar com 3 a 10 usuarios reais sem campanha grande e sem escala.
+- Relatorio de beta criado em status inicial de preparacao.
+
+### Pendencias
+
+- Rodar smoke test autenticado em Preview/Producao com Supabase, OpenAI e Stripe configurados.
+- Confirmar migrations e RLS no Supabase real antes de convidar usuarios.
+- Conferir visualmente o ultimo run do GitHub Actions antes de qualquer convite externo.
+
 ### Adicionado
 
 - Execucao da campanha pos-1.2 preparada com plano, acompanhamento diario, checklist de ativacao, checklist de pausa e template de analise.

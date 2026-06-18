@@ -539,6 +539,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         source: "dashboard",
         business_type: payload.business_type
       });
+      trackEvent("beta_onboarding_completed", {
+        source: "dashboard",
+        page: "/dashboard",
+        business_type: payload.business_type
+      });
       trackEvent("activation_onboarding_completed", {
         source: "dashboard",
         businessType: payload.business_type,
@@ -650,6 +655,16 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             usage_count: usage.used,
             usage_limit: usage.limit
           });
+          trackEvent("beta_first_response_generated", {
+            source: "dashboard",
+            page: "/dashboard",
+            category: responseType,
+            business_type: businessDraft.business_type,
+            plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+            response_length_range: getResponseLengthRange(answer),
+            usage_count: usage.used,
+            usage_limit: usage.limit
+          });
           trackEvent("activation_first_response_generated", {
             source: "dashboard",
             businessType: businessDraft.business_type,
@@ -734,6 +749,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           templateId: input.sourceTemplateId,
           category: result.savedResponse.category || "sem_categoria"
         });
+        trackEvent("beta_template_used", {
+          source: "dashboard",
+          page: "/dashboard",
+          category: result.savedResponse.category || "sem_categoria",
+          business_type: businessDraft.business_type
+        });
         trackEvent("activation_template_saved", {
           source: "dashboard",
           category: result.savedResponse.category || "sem_categoria",
@@ -745,6 +766,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           source: input.responseId ? "ai" : "manual",
           category: result.savedResponse.category || "sem_categoria",
           action: "create"
+        });
+        trackEvent("beta_response_saved", {
+          source: input.responseId ? "ai" : "manual",
+          page: "/dashboard",
+          category: result.savedResponse.category || "sem_categoria",
+          business_type: businessDraft.business_type
         });
         trackEvent("activation_response_saved", {
           source: input.responseId ? "ai" : "manual",
@@ -1074,6 +1101,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         businessType: template?.businessType || businessDraft.business_type,
         step: "response_copied"
       });
+      trackEvent(source === "template" ? "beta_template_used" : "beta_response_copied", {
+        source,
+        page: "/dashboard",
+        category: savedResponse?.category || template?.category || responseType,
+        business_type: template?.businessType || businessDraft.business_type
+      });
       if (source === "library") {
         if (savedResponse) {
           void recordSavedResponseCopy(savedResponse.id)
@@ -1124,6 +1157,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       plan: subscription?.plan || subscription?.plan_name || "sem_plano",
       businessType: businessDraft.business_type,
       step: "pricing_viewed"
+    });
+    trackEvent("beta_pricing_viewed", {
+      source: "dashboard",
+      page: "/dashboard",
+      plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+      business_type: businessDraft.business_type
     });
     router.push(destination);
   }

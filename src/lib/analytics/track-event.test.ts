@@ -63,6 +63,36 @@ describe("safe app events", () => {
     expect(sanitizeAppEvent({ event_name: "unknown_event" })).toBeNull();
   });
 
+  it("allows beta events with only safe metadata", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "beta_first_response_generated",
+      page: "/dashboard",
+      source: "dashboard",
+      business_type: "Servicos",
+      metadata: {
+        category: "atendimento",
+        response_length_range: "short",
+        usage_count: 1,
+        usage_limit: 20,
+        pergunta: "quanto custa?",
+        resposta: "resposta completa",
+        email: "cliente@example.com"
+      }
+    });
+
+    expect(event?.event_name).toBe("beta_first_response_generated");
+    expect(event?.metadata).toEqual({
+      business_type: "Servicos",
+      category: "atendimento",
+      page: "/dashboard",
+      response_length_range: "short",
+      source: "dashboard",
+      usage_count: 1,
+      usage_limit: 20
+    });
+  });
+
   it("does not throw when event delivery fails", async () => {
     vi.stubGlobal("window", { location: { pathname: "/dashboard" } });
     vi.stubGlobal("navigator", {});

@@ -118,6 +118,11 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [ux-review](ux-review.md)
 - [technical-seo](technical-seo.md)
 - [internal-faq](internal-faq.md)
+- [closed-beta-plan](closed-beta-plan.md)
+- [closed-beta-user-script](closed-beta-user-script.md)
+- [closed-beta-operations-checklist](closed-beta-operations-checklist.md)
+- [closed-beta-report](closed-beta-report.md)
+- [closed-beta-analysis-template](closed-beta-analysis-template.md)
 
 ## Integracoes
 

@@ -12,7 +12,16 @@ export const safeAppEventNames = [
   "checkout_started",
   "usage_limit_reached",
   "support_request_created",
-  "ai_feedback_submitted"
+  "ai_feedback_submitted",
+  "beta_signup_completed",
+  "beta_onboarding_completed",
+  "beta_first_response_generated",
+  "beta_response_copied",
+  "beta_response_saved",
+  "beta_template_used",
+  "beta_pricing_viewed",
+  "beta_feedback_submitted",
+  "beta_support_request_created"
 ] as const;
 
 export type SafeAppEventName = (typeof safeAppEventNames)[number];
