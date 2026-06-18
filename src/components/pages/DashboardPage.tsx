@@ -225,7 +225,7 @@ function RevenueChart({ data }: { data: RevenuePoint[] }) {
           </p>
           <h2 className="text-xl font-black text-white">Receita potencial e leads</h2>
         </div>
-        <p className="text-xs font-bold text-slate-500">Simulado a partir dos dados locais do CRM.</p>
+        <p className="text-xs font-bold text-slate-500">Simulado a partir de dados locais simples. Nao e um CRM completo.</p>
       </div>
 
       <div className="flex h-72 items-end gap-3 border-b border-white/10 pb-4">

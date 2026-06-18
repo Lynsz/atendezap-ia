@@ -122,7 +122,11 @@ Este indice aponta os documentos principais para operar a versao 1.0. Documentos
 - [closed-beta-user-script](closed-beta-user-script.md)
 - [closed-beta-operations-checklist](closed-beta-operations-checklist.md)
 - [closed-beta-report](closed-beta-report.md)
+- [closed-beta-analysis](closed-beta-analysis.md)
 - [closed-beta-analysis-template](closed-beta-analysis-template.md)
+- [closed-beta-bug-prioritization](closed-beta-bug-prioritization.md)
+- [closed-beta-decision](closed-beta-decision.md)
+- [post-beta-fix-plan](post-beta-fix-plan.md)
 
 ## Integracoes
 

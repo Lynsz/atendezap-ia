@@ -135,9 +135,9 @@ function WhatsAppIntegrationContent() {
                 <Smartphone className="h-4 w-4" />
                 Integrações
               </p>
-              <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Integração WhatsApp</h1>
+              <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">WhatsApp em modo demo</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-                Conecte e gerencie o canal de atendimento do AtendeZap IA em modo demo.
+                Esta tela e apenas uma simulacao interna. A versao atual do AtendeZap IA gera respostas para copiar, ajustar e enviar manualmente, sem conectar ao WhatsApp.
               </p>
             </div>
             <span className="inline-flex rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs font-black text-sky-200">
@@ -147,7 +147,7 @@ function WhatsAppIntegrationContent() {
         </header>
 
         <div className="mb-6 rounded-lg border border-amber-400/20 bg-amber-400/10 p-4 text-sm leading-6 text-amber-100">
-          Esta integração está em modo demo. Nenhuma mensagem real será enviada ou recebida.
+          Esta tela nao faz parte do beta fechado nem do lancamento pequeno. Nenhuma mensagem real sera enviada ou recebida, e nao ha integracao direta com WhatsApp nesta versao.
         </div>
 
         {feedback ? (
@@ -169,15 +169,14 @@ function WhatsAppIntegrationContent() {
           <article className="rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
             <h2 className="mb-4 flex items-center gap-2 text-xl font-black text-white">
               <Webhook className="h-5 w-5 text-emerald-300" />
-              Como será a integração real
+              Fora do escopo atual
             </h2>
             <div className="grid gap-3 text-sm leading-6 text-slate-300">
               {[
-                ["WhatsApp Cloud API", "Canal oficial da Meta para envio e recebimento de mensagens."],
-                ["Provedor terceirizado", "Opções futuras como Z-API, Evolution API ou outro gateway."],
-                ["Webhook de mensagens recebidas", "Backend recebe eventos e cria/atualiza conversas."],
-                ["Envio de respostas", "Atendente aprova e o provedor envia a mensagem."],
-                ["Sincronização", "Leads e conversas ficam vinculados ao backend e ao tenant."]
+                ["Sem conexao oficial", "O produto atual nao conecta com WhatsApp Cloud API ou provedores terceirizados."],
+                ["Sem webhook de mensagens", "O backend nao recebe conversas reais do WhatsApp nesta versao."],
+                ["Sem envio automatico", "A IA apenas gera texto. O usuario revisa, copia e envia manualmente."],
+                ["Sem CRM completo", "Esta simulacao nao substitui uma area completa de atendimento ou relacionamento."]
               ].map(([title, description]) => (
                 <div className="rounded-md border border-white/10 bg-white/[0.04] p-4" key={title}>
                   <p className="font-black text-white">{title}</p>

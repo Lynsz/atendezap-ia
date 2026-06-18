@@ -224,10 +224,10 @@ export default function LeadsPage() {
         <header className="mb-5 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-2xl shadow-black/30">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-emerald-300">Mini CRM AtendeZap IA</p>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-emerald-300">Lista simples AtendeZap IA</p>
               <h1 className="text-3xl font-black tracking-tight text-white">Clientes & Leads</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-                Organize oportunidades vindas do WhatsApp, Instagram, site e indicações com funil comercial local.
+                Organize contatos e oportunidades de forma simples. Isto nao e um CRM completo e nao envia mensagens automaticamente.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">

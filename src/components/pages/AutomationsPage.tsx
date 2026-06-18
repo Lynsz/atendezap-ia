@@ -219,7 +219,7 @@ export default function AutomationsPage() {
               </p>
               <h1 className="text-3xl font-black tracking-tight text-white">Automações IA</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-                Simule respostas automáticas, follow-ups e ações inteligentes para WhatsApp e CRM sem usar backend.
+                Simule rascunhos e lembretes locais sem usar backend. A versao atual nao envia WhatsApp automaticamente e nao e um CRM completo.
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">

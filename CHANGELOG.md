@@ -2,6 +2,34 @@
 
 ## [Unreleased]
 
+## [Closed Beta Analysis]
+
+### Corrigido
+
+- Copy de telas legadas ajustada para nao sugerir integracao direta com WhatsApp, envio automatico ou CRM completo.
+- Relatorio do beta fechado atualizado sem inventar metricas ausentes.
+
+### Melhorado
+
+- Analise pos-beta, priorizacao de bugs, decisao pos-beta e plano de correcao pos-beta adicionados.
+- Checklist operacional do beta atualizado com itens validados, ausentes, corrigidos e que precisam repetir.
+
+### Seguranca
+
+- Escopo do MVP reforcado: sem WhatsApp automatico, sem integracao direta, sem CRM completo e sem secrets no client.
+- Decisao pos-beta mantem lancamento pequeno bloqueado ate smoke test real e metricas de beta estarem comprovados.
+
+### Operacao
+
+- Decisao recomendada: repetir/completar beta com dados reais antes de lancamento pequeno controlado.
+- P0/P1 confirmados: nenhum nos documentos lidos.
+
+### Pendencias
+
+- Consolidar metricas reais do beta.
+- Aplicar migrations no Supabase real e validar RLS com dois usuarios.
+- Rodar smoke test em Preview/Producao com Supabase, OpenAI, Stripe, suporte, feedback e admin.
+
 ## [Closed Beta Preparation]
 
 ### Adicionado
