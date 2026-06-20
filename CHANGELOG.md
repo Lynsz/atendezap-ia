@@ -2,6 +2,39 @@
 
 ## [Unreleased]
 
+## [Small Controlled Launch Preparation]
+
+### Adicionado
+
+- Plano de lancamento pequeno controlado, checklist pre-lancamento, mensagens de convite, template de relatorio diario e criterios de decisao.
+- Eventos seguros `small_launch_signup_completed`, `small_launch_onboarding_completed`, `small_launch_first_response_generated`, `small_launch_response_copied`, `small_launch_response_saved`, `small_launch_template_used`, `small_launch_pricing_viewed`, `small_launch_checkout_started`, `small_launch_feedback_submitted`, `small_launch_support_request_created` e `small_launch_usage_limit_reached`.
+- Migration para permitir eventos `small_launch_*` em `app_events`.
+
+### Corrigido
+
+- Nenhum P0/P1 confirmado foi encontrado nos relatorios finais lidos para correcao imediata.
+
+### Melhorado
+
+- Tracking do lancamento pequeno conectado aos fluxos existentes de cadastro, onboarding, primeira resposta, copia, salvamento, templates, pricing, checkout, feedback, suporte e limite de uso.
+- Admin passa a considerar eventos `small_launch_*` em metricas agregadas de pricing, primeira resposta e respostas salvas.
+
+### Seguranca
+
+- Eventos do lancamento pequeno usam a allowlist de metadados seguros e bloqueiam pergunta completa, resposta completa, e-mail, telefone, tokens, secrets e dados de pagamento.
+- Escopo reforcado: sem envio automatico, sem integracao direta com WhatsApp, sem CRM completo e sem secrets no client.
+
+### Operacao
+
+- Decisao operacional preservada: lancamento pequeno segue condicionado a smoke test autenticado, CI verde, ambiente real validado e ausencia de P0/P1 critico.
+- Relatorios indicam que `docs/post-deploy-smoke-test-report.md` e `docs/production-smoke-test-final.md` ainda nao existem com esses nomes.
+
+### Pendencias
+
+- Consolidar metricas reais do beta ou de nova rodada pequena.
+- Aplicar migrations no Supabase real e validar RLS com dois usuarios.
+- Rodar smoke test autenticado em Preview/Producao com Supabase, OpenAI, Stripe, suporte, feedback, admin e `/api/health`.
+
 ## [Closed Beta Analysis]
 
 ### Corrigido

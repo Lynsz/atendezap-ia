@@ -404,7 +404,9 @@ export async function GET(request: Request) {
       }))
       .sort((a, b) => b.leads - a.leads || a.campaign.localeCompare(b.campaign))
       .slice(0, 8);
-    const pricingPageViews = events.filter((event) => ["pricing_page_view", "pricing_view", "pricing_viewed", "beta_pricing_viewed"].includes(event.event_name)).length;
+    const pricingPageViews = events.filter((event) =>
+      ["pricing_page_view", "pricing_view", "pricing_viewed", "beta_pricing_viewed", "small_launch_pricing_viewed"].includes(event.event_name)
+    ).length;
     const planClicks = events.filter((event) => ["plan_cta_click", "plan_click", "pricing_cta_click"].includes(event.event_name)).length;
     const checkoutsStartedByEvent = events.filter((event) => event.event_name === "checkout_started").length;
     const checkoutFailures = events.filter((event) => ["checkout_failed", "checkout_error"].includes(event.event_name)).length;
@@ -443,12 +445,15 @@ export async function GET(request: Request) {
         definition: "Usuario ativado = concluiu onboarding e gerou pelo menos 1 resposta.",
         newUsersLast7Days: profiles.filter((profile) => isAtOrAfter(profile.created_at, sevenDaysStart)).length,
         onboardingCompletedLast7Days: businesses.filter((business) => business.onboarding_completed && isAtOrAfter(business.updated_at || business.created_at, sevenDaysStart)).length,
-        firstResponsesGenerated: Math.max(usersWithFirstResponse, events.filter((event) => event.event_name === "beta_first_response_generated").length),
+        firstResponsesGenerated: Math.max(
+          usersWithFirstResponse,
+          events.filter((event) => ["beta_first_response_generated", "small_launch_first_response_generated"].includes(event.event_name)).length
+        ),
         firstResponsesLast7Days: Math.max(
           [...firstResponseAtByUser.values()].filter((createdAt) => isAtOrAfter(createdAt, sevenDaysStart)).length,
-          events.filter((event) => event.event_name === "beta_first_response_generated" && isAtOrAfter(event.created_at, sevenDaysStart)).length
+          events.filter((event) => ["beta_first_response_generated", "small_launch_first_response_generated"].includes(event.event_name) && isAtOrAfter(event.created_at, sevenDaysStart)).length
         ),
-        responsesSaved: Math.max(savedResponses.length, events.filter((event) => event.event_name === "beta_response_saved").length),
+        responsesSaved: Math.max(savedResponses.length, events.filter((event) => ["beta_response_saved", "small_launch_response_saved"].includes(event.event_name)).length),
         usersWithSavedResponses: savedResponseUsers.size,
         usersWithCopiedResponse: copiedResponseUsers.size,
         usersWithFavoriteResponse: favoriteResponseUsers.size,

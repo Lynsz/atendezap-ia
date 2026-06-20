@@ -93,6 +93,39 @@ describe("safe app events", () => {
     });
   });
 
+  it("allows small launch events with only safe metadata", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "small_launch_first_response_generated",
+      page: "/dashboard",
+      source: "dashboard",
+      plan: "pro",
+      business_type: "Servicos",
+      metadata: {
+        category: "atendimento",
+        response_length_range: "medium",
+        usage_count: 2,
+        usage_limit: 50,
+        customerMessage: "texto completo do cliente",
+        generatedResponse: "texto completo da IA",
+        email: "cliente@example.com",
+        token: "secret-token"
+      }
+    });
+
+    expect(event?.event_name).toBe("small_launch_first_response_generated");
+    expect(event?.metadata).toEqual({
+      business_type: "Servicos",
+      category: "atendimento",
+      page: "/dashboard",
+      plan: "pro",
+      response_length_range: "medium",
+      source: "dashboard",
+      usage_count: 2,
+      usage_limit: 50
+    });
+  });
+
   it("does not throw when event delivery fails", async () => {
     vi.stubGlobal("window", { location: { pathname: "/dashboard" } });
     vi.stubGlobal("navigator", {});

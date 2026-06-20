@@ -1,33 +1,27 @@
-# Convite para Lancamento Pequeno - AtendeZap IA
+# Mensagens de Convite - Lancamento Pequeno AtendeZap IA
 
-## Mensagem curta
+## Versao curta para WhatsApp
 
-Oi! Estou testando uma ferramenta chamada AtendeZap IA.
+Oi! Estou testando o AtendeZap IA com poucas pessoas.
 
-Ela ajuda a criar respostas para atendimento no WhatsApp, para voce copiar, ajustar e enviar manualmente.
+Ele gera sugestoes de respostas com IA para atendimento no WhatsApp. Voce copia, ajusta e envia manualmente. Ela nao envia mensagens automaticamente no WhatsApp. Ele tambem nao conecta direto ao WhatsApp.
 
-Ainda e uma versao inicial, entao seu feedback vai ajudar bastante.
+Se fizer sentido para sua rotina, posso te mandar o link. Feedback sincero e bem-vindo.
 
-Voce pode testar aqui:
-[LINK]
+## Versao para LinkedIn
 
-## Mensagem com contexto
+Estou abrindo um teste pequeno do AtendeZap IA para autonomos, MEIs e pequenos negocios que atendem clientes pelo WhatsApp.
 
-Oi! Estou validando o AtendeZap IA, uma ferramenta para pequenos negocios, autonomos e prestadores que respondem clientes pelo WhatsApp.
+O produto ajuda a gerar respostas com IA para perguntas de clientes, mantendo o usuario no controle: copiar, ajustar e enviar manualmente. Nao e automacao de WhatsApp, nao integra oficialmente com WhatsApp e nao e CRM completo.
 
-Voce coloca uma mensagem parecida com a que recebe de um cliente, e a IA cria uma sugestao de resposta curta para voce revisar, copiar e enviar.
+Nesta rodada, a prioridade e validar clareza, utilidade das respostas e pontos de atrito no uso diario. Se voce atende clientes pelo WhatsApp e puder testar com feedback direto, me chame.
 
-Ela nao envia mensagens automaticamente no WhatsApp.
+## Versao para Instagram/Stories
 
-Pode testar e me dizer se ficou claro, util e facil de usar?
-[LINK]
+Estou testando o AtendeZap IA com poucas pessoas.
 
-## Perguntas para pedir feedback
+Ele cria respostas com IA para voce copiar, ajustar e enviar no WhatsApp.
 
-- Voce entendeu o que a ferramenta faz?
-- Conseguiu gerar uma resposta?
-- A resposta foi util?
-- Alguma parte ficou confusa?
-- Voce usaria no seu atendimento?
-- O que faltou?
+Nao envia mensagens automaticamente.
 
+Quer testar e me dar feedback? Me chama.

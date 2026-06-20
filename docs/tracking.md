@@ -74,6 +74,17 @@ As duas variaveis sao opcionais e publicas. Se estiverem vazias, o app nao carre
 - `feedback_success`: feedback salvo.
 - `feedback_error`: falha ao salvar feedback.
 - `feedback_cta_click`: clique em CTA para feedback.
+- `small_launch_signup_completed`: cadastro concluido na rodada pequena.
+- `small_launch_onboarding_completed`: onboarding concluido na rodada pequena.
+- `small_launch_first_response_generated`: primeira resposta gerada na rodada pequena.
+- `small_launch_response_copied`: resposta copiada na rodada pequena, sem conteudo.
+- `small_launch_response_saved`: resposta salva na rodada pequena, sem conteudo.
+- `small_launch_template_used`: template copiado ou salvo na rodada pequena.
+- `small_launch_pricing_viewed`: pricing ou assinatura visualizados na rodada pequena.
+- `small_launch_checkout_started`: checkout iniciado na rodada pequena.
+- `small_launch_feedback_submitted`: feedback enviado na rodada pequena.
+- `small_launch_support_request_created`: suporte aberto na rodada pequena.
+- `small_launch_usage_limit_reached`: limite mensal atingido na rodada pequena.
 - `admin_campaign_created`: campanha interna criada por admin, sem payload sensivel.
 - `admin_campaign_updated`: campanha interna atualizada por admin, sem observacoes completas.
 - `admin_campaign_result_recorded`: resultado manual agregado registrado por admin.

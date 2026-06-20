@@ -101,6 +101,11 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
         plan: planId,
         funnel
       });
+      trackEvent("small_launch_checkout_started", {
+        plan: planId,
+        source: "pricing",
+        page: typeof window !== "undefined" ? window.location.pathname : "/precos"
+      });
       window.location.href = result.url;
     } catch {
       setFeedback("Não foi possível iniciar o checkout agora. Verifique a configuração do Stripe.");

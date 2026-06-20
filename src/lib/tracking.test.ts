@@ -247,4 +247,44 @@ describe("tracking seguro", () => {
     expect(payload.phone).toBeUndefined();
     expect(payload.stripe_checkout_session_id).toBeUndefined();
   });
+
+  it("mantem tracking do lancamento pequeno sem pergunta ou resposta completa", async () => {
+    const gtag = vi.fn();
+    vi.stubGlobal("window", {
+      location: { pathname: "/dashboard", search: "?utm_source=manual&utm_campaign=lancamento_pequeno_01" },
+      localStorage: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn()
+      },
+      gtag
+    });
+    vi.stubGlobal("document", { title: "AtendeZap IA" });
+
+    const { trackEvent } = await import("./tracking");
+    trackEvent("small_launch_response_copied", {
+      source: "generated",
+      page: "/dashboard",
+      category: "atendimento",
+      business_type: "servicos",
+      question: "Qual o preco?",
+      answer: "Resposta completa",
+      email: "cliente@example.com",
+      phone: "11999999999"
+    });
+
+    const payload = gtag.mock.calls[0][2] as Record<string, unknown>;
+    expect(payload).toMatchObject({
+      source: "generated",
+      page: "/dashboard",
+      category: "atendimento",
+      business_type: "servicos",
+      utm_source: "manual",
+      utm_campaign: "lancamento_pequeno_01"
+    });
+    expect(payload.question).toBeUndefined();
+    expect(payload.answer).toBeUndefined();
+    expect(payload.email).toBeUndefined();
+    expect(payload.phone).toBeUndefined();
+  });
 });

@@ -21,7 +21,18 @@ export const safeAppEventNames = [
   "beta_template_used",
   "beta_pricing_viewed",
   "beta_feedback_submitted",
-  "beta_support_request_created"
+  "beta_support_request_created",
+  "small_launch_signup_completed",
+  "small_launch_onboarding_completed",
+  "small_launch_first_response_generated",
+  "small_launch_response_copied",
+  "small_launch_response_saved",
+  "small_launch_template_used",
+  "small_launch_pricing_viewed",
+  "small_launch_checkout_started",
+  "small_launch_feedback_submitted",
+  "small_launch_support_request_created",
+  "small_launch_usage_limit_reached"
 ] as const;
 
 export type SafeAppEventName = (typeof safeAppEventNames)[number];

@@ -123,6 +123,18 @@ export async function POST(request: Request) {
         category: payload.data.rating
       }
     });
+    await trackServerAppEvent({
+      user_id: user.id,
+      event_name: "small_launch_feedback_submitted",
+      source: "dashboard",
+      page: "/dashboard",
+      business_type: typeof generatedResponse.business_type === "string" ? generatedResponse.business_type : null,
+      metadata: {
+        source: "dashboard",
+        business_type: typeof generatedResponse.business_type === "string" ? generatedResponse.business_type : null,
+        category: payload.data.rating
+      }
+    });
 
     if (upsertError || !feedback) {
       serverLog({ level: "error", event: "ai_feedback_save_failed", route: "/api/ai/response-feedback", userId: user.id, error: upsertError });

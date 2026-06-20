@@ -193,6 +193,13 @@ function BillingContent() {
         plan: currentPlanId || "none",
         usage_percent: usagePercent
       });
+      trackEvent("small_launch_usage_limit_reached", {
+        source: "billing_page",
+        page: "/assinatura",
+        plan: currentPlanId || "none",
+        usage_count: monthlyUsage,
+        usage_limit: monthlyLimit
+      });
       return;
     }
     if (usagePercent >= 80 && !trackedUsageWarningRef.current) {
@@ -203,7 +210,7 @@ function BillingContent() {
         usage_percent: usagePercent
       });
     }
-  }, [currentPlanId, loading, usagePercent]);
+  }, [currentPlanId, loading, monthlyLimit, monthlyUsage, usagePercent]);
 
   async function openStripePortal() {
     setError("");

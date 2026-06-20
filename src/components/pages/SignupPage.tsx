@@ -77,6 +77,11 @@ export default function SignupPage() {
         source: attribution.funnel || "pricing",
         page: "/cadastro"
       });
+      trackEvent("small_launch_signup_completed", {
+        plan,
+        source: attribution.funnel || "pricing",
+        page: "/cadastro"
+      });
     }
 
     setLoading(false);

@@ -544,6 +544,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         page: "/dashboard",
         business_type: payload.business_type
       });
+      trackEvent("small_launch_onboarding_completed", {
+        source: "dashboard",
+        page: "/dashboard",
+        business_type: payload.business_type
+      });
       trackEvent("activation_onboarding_completed", {
         source: "dashboard",
         businessType: payload.business_type,
@@ -665,6 +670,16 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             usage_count: usage.used,
             usage_limit: usage.limit
           });
+          trackEvent("small_launch_first_response_generated", {
+            source: "dashboard",
+            page: "/dashboard",
+            category: responseType,
+            business_type: businessDraft.business_type,
+            plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+            response_length_range: getResponseLengthRange(answer),
+            usage_count: usage.used,
+            usage_limit: usage.limit
+          });
           trackEvent("activation_first_response_generated", {
             source: "dashboard",
             businessType: businessDraft.business_type,
@@ -755,6 +770,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           category: result.savedResponse.category || "sem_categoria",
           business_type: businessDraft.business_type
         });
+        trackEvent("small_launch_template_used", {
+          source: "dashboard",
+          page: "/dashboard",
+          category: result.savedResponse.category || "sem_categoria",
+          business_type: businessDraft.business_type
+        });
         trackEvent("activation_template_saved", {
           source: "dashboard",
           category: result.savedResponse.category || "sem_categoria",
@@ -768,6 +789,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           action: "create"
         });
         trackEvent("beta_response_saved", {
+          source: input.responseId ? "ai" : "manual",
+          page: "/dashboard",
+          category: result.savedResponse.category || "sem_categoria",
+          business_type: businessDraft.business_type
+        });
+        trackEvent("small_launch_response_saved", {
           source: input.responseId ? "ai" : "manual",
           page: "/dashboard",
           category: result.savedResponse.category || "sem_categoria",
@@ -1107,6 +1134,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         category: savedResponse?.category || template?.category || responseType,
         business_type: template?.businessType || businessDraft.business_type
       });
+      trackEvent(source === "template" ? "small_launch_template_used" : "small_launch_response_copied", {
+        source,
+        page: "/dashboard",
+        category: savedResponse?.category || template?.category || responseType,
+        business_type: template?.businessType || businessDraft.business_type
+      });
       if (source === "library") {
         if (savedResponse) {
           void recordSavedResponseCopy(savedResponse.id)
@@ -1159,6 +1192,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       step: "pricing_viewed"
     });
     trackEvent("beta_pricing_viewed", {
+      source: "dashboard",
+      page: "/dashboard",
+      plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+      business_type: businessDraft.business_type
+    });
+    trackEvent("small_launch_pricing_viewed", {
       source: "dashboard",
       page: "/dashboard",
       plan: subscription?.plan || subscription?.plan_name || "sem_plano",
@@ -1332,6 +1371,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       trackedUsageReachedRef.current = true;
       trackEvent("usage_limit_reached", {
         source: "dashboard",
+        plan: currentPlanId || "none",
+        usage_count: monthlyUsage,
+        usage_limit: monthlyLimit
+      });
+      trackEvent("small_launch_usage_limit_reached", {
+        source: "dashboard",
+        page: "/dashboard",
         plan: currentPlanId || "none",
         usage_count: monthlyUsage,
         usage_limit: monthlyLimit

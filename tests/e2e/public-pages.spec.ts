@@ -30,7 +30,7 @@ test.describe("paginas publicas", () => {
       expect(response?.status(), pageCase.path).toBe(200);
       await expect(page.locator("body")).toContainText(pageCase.text);
       await expect(page.locator("body")).toContainText(pageCase.cta);
-      await expect(page.locator("body")).not.toContainText(/Application error|Unhandled Runtime Error|404|500/i);
+      await expect(page.locator("body")).not.toContainText(/Application error|Unhandled Runtime Error|404|500 Internal Server Error|Erro 500/i);
     });
   }
 

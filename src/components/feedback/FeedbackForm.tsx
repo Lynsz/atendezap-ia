@@ -122,6 +122,11 @@ export function FeedbackForm() {
         page: page || "/feedback",
         category: type
       });
+      trackEvent("small_launch_feedback_submitted", {
+        source: "feedback_page",
+        page: page || "/feedback",
+        category: type
+      });
       trackEvent("feedback_success", {
         feedback_type: type,
         feedback_context: context,
