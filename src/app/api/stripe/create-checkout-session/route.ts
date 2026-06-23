@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getSaasPlan, isPlanId } from "@/config/plans";
+import { trackServerAppEvent } from "@/lib/analytics/server";
 import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
@@ -195,6 +196,17 @@ export async function POST(request: Request) {
       funnel: body.funnel || "pricing",
       plan: plan.id,
       first_month_offer: firstMonthOfferApplied
+    });
+    await trackServerAppEvent({
+      user_id: user.id,
+      event_name: "small_launch_checkout_started",
+      source: body.source || "pricing",
+      page: "/precos",
+      plan: plan.id,
+      metadata: {
+        source: body.source || "pricing",
+        plan: plan.id
+      }
     });
     serverLog({
       event: "stripe_checkout_created",

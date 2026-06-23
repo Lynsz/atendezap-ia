@@ -30,6 +30,10 @@ vi.mock("@/lib/rate-limit", () => ({
   enforceRateLimit: vi.fn(async () => ({ ip: "127.0.0.1" }))
 }));
 
+vi.mock("@/lib/analytics/server", () => ({
+  trackServerAppEvent: vi.fn()
+}));
+
 type QueryChain = {
   select: ReturnType<typeof vi.fn>;
   eq: ReturnType<typeof vi.fn>;

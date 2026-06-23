@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { assertAiUsageAvailable, getCurrentUsageMonth, incrementAiUsage } from "@/lib/ai-usage";
 import { generateCustomerResponseWithAi } from "@/lib/ai-response";
+import { trackServerAppEvent } from "@/lib/analytics/server";
 import { AppError } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
@@ -78,6 +79,19 @@ export async function POST(request: Request) {
         used: usage.used,
         limit: usage.limit
       });
+      await trackServerAppEvent({
+        user_id: user.id,
+        event_name: "small_launch_usage_limit_reached",
+        source: "dashboard",
+        page: "/dashboard",
+        plan: planName || "sem_plano",
+        metadata: {
+          source: "dashboard",
+          plan: planName || "sem_plano",
+          usage_count: usage.used,
+          usage_limit: usage.limit
+        }
+      });
       await logEvent("ai_generation_blocked_by_limit", {
         source: "dashboard",
         reason: "monthly_limit",
@@ -103,6 +117,13 @@ export async function POST(request: Request) {
     if (!userProfile) {
       return NextResponse.json({ error: "Complete o onboarding antes de gerar respostas." }, { status: 403 });
     }
+
+    const { data: previousResponse } = await supabase
+      .from("generated_responses")
+      .select("id")
+      .eq("user_id", user.id)
+      .limit(1)
+      .maybeSingle();
 
     if (!hasOpenAIConfigured()) {
       return NextResponse.json({ error: "A geracao de IA nao esta configurada neste ambiente." }, { status: 500 });
@@ -174,6 +195,23 @@ export async function POST(request: Request) {
       mode,
       plan: planName || "sem_plano"
     });
+    if (!previousResponse) {
+      await trackServerAppEvent({
+        user_id: user.id,
+        event_name: "small_launch_first_response_generated",
+        source: "dashboard",
+        page: "/dashboard",
+        plan: planName || "sem_plano",
+        business_type: typeof businessDataForAi.business_type === "string" ? businessDataForAi.business_type : null,
+        metadata: {
+          source: "dashboard",
+          plan: planName || "sem_plano",
+          business_type: typeof businessDataForAi.business_type === "string" ? businessDataForAi.business_type : null,
+          category: payload.data.responseType,
+          response_length_range: generatedAnswer.length < 300 ? "short" : generatedAnswer.length < 900 ? "medium" : "long"
+        }
+      });
+    }
     serverLog({ event: "ai_response_generated", route: "/api/ai/generate-response", userId: user.id, status: "ok", metadata: { response_type: payload.data.responseType, mode } });
 
     return NextResponse.json({

@@ -33,6 +33,10 @@ vi.mock("@/lib/logger", () => ({
   serverLog: vi.fn()
 }));
 
+vi.mock("@/lib/analytics/server", () => ({
+  trackServerAppEvent: vi.fn()
+}));
+
 vi.mock("@/services/stripe", async () => {
   const actual = await vi.importActual<typeof import("@/services/stripe")>("@/services/stripe");
   return {

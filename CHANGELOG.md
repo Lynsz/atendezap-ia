@@ -2,6 +2,32 @@
 
 ## [Unreleased]
 
+## [Small Launch Execution]
+
+### Adicionado
+
+- Checklist de ativacao, acompanhamento ao vivo, relatorio Dia 1, resposta rapida a incidentes e decisao de execucao do lancamento pequeno.
+- Tracking server-side seguro para `small_launch_first_response_generated`, `small_launch_usage_limit_reached`, `small_launch_checkout_started` e `small_launch_support_request_created`.
+
+### Corrigido
+
+- Monitoramento de checkouts no admin agora considera tambem `small_launch_checkout_started`.
+
+### Seguranca
+
+- Eventos reforcados usam apenas metadados permitidos como plano, origem, pagina, categoria, tipo de negocio, faixa de tamanho e limites de uso.
+- Nenhum secret, token, payload Stripe completo, pergunta completa ou resposta completa foi adicionado aos eventos.
+
+### Operacao
+
+- Decisao operacional registrada como `corrigir e continuar`, mantendo divulgacao bloqueada ate smoke test autenticado em Preview/Producao.
+- Relatorios seguem sem inventar metricas: campos sem evidencia real foram marcados como `nao disponivel`.
+
+### Pendencias
+
+- Rodar smoke test autenticado em Preview/Producao com Supabase, OpenAI, Stripe, suporte, feedback, admin e `/api/health`.
+- Confirmar RLS com dois usuarios reais e aplicar migrations no Supabase real antes de divulgar.
+
 ## [Small Controlled Launch Preparation]
 
 ### Adicionado

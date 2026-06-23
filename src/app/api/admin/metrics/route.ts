@@ -408,7 +408,7 @@ export async function GET(request: Request) {
       ["pricing_page_view", "pricing_view", "pricing_viewed", "beta_pricing_viewed", "small_launch_pricing_viewed"].includes(event.event_name)
     ).length;
     const planClicks = events.filter((event) => ["plan_cta_click", "plan_click", "pricing_cta_click"].includes(event.event_name)).length;
-    const checkoutsStartedByEvent = events.filter((event) => event.event_name === "checkout_started").length;
+    const checkoutsStartedByEvent = events.filter((event) => ["checkout_started", "small_launch_checkout_started"].includes(event.event_name)).length;
     const checkoutFailures = events.filter((event) => ["checkout_failed", "checkout_error"].includes(event.event_name)).length;
     const firstResponsePricingClicks = events.filter((event) => event.event_name === "first_response_to_pricing_click").length;
     const demoSignupClicks = events.filter((event) => ["demo_to_signup_click", "demo_signup_cta_click"].includes(event.event_name)).length;
@@ -508,7 +508,7 @@ export async function GET(request: Request) {
         responsesGeneratedToday: responses.filter((response) => isAtOrAfter(response.created_at, todayStart)).length,
         aiFailuresToday: events.filter((event) => event.event_name === "ai_generation_failed" && isAtOrAfter(event.created_at, todayStart)).length,
         leadsToday: leads.filter((lead) => isAtOrAfter(lead.created_at, todayStart)).length,
-        checkoutsStartedToday: events.filter((event) => event.event_name === "checkout_started" && isAtOrAfter(event.created_at, todayStart)).length,
+        checkoutsStartedToday: events.filter((event) => ["checkout_started", "small_launch_checkout_started"].includes(event.event_name) && isAtOrAfter(event.created_at, todayStart)).length,
         stripeWebhooksProcessedToday: stripeWebhookEvents.filter((event) => Boolean(event.processed_at) && isAtOrAfter(event.created_at, todayStart)).length,
         stripeWebhookFailuresToday: events.filter((event) => event.event_name === "stripe_webhook_failed" && isAtOrAfter(event.created_at, todayStart)).length,
         recentNegativeFeedbacks:
