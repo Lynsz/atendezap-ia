@@ -1,43 +1,85 @@
 # Plano da Versao 1.1 - AtendeZap IA
 
+## Status
+
+- status: planejada
+- tipo: consolidacao operacional
+- base de dados reais: insuficiente
+- P0 confirmado: nenhum
+
 ## Objetivo
 
-Consolidar as melhorias pos-go-live e pos-escala cautelosa em uma versao estavel.
+Consolidar a operacao pos-MVP com validacao real, medicao minima e melhorias pequenas guiadas por evidencia. A 1.1 nao deve ampliar escopo nem criar uma nova categoria de produto.
 
-## Escopo sugerido
+## Principios
 
-- correcoes P0/P1
-- melhorias de ativacao
-- melhorias de copy
-- melhorias de onboarding
-- ajustes de billing
-- ajustes de IA
-- ajustes de suporte
-- melhorias nos relatorios internos
-- documentacao atualizada
+- Nao inventar metricas.
+- Marcar dados ausentes como `nao disponivel` ou `nao medido`.
+- Corrigir P0/P1 antes de qualquer melhoria.
+- Preservar secrets no backend.
+- Manter eventos sem pergunta completa, resposta completa, e-mail, telefone, token, secret ou dado de pagamento.
+- Manter o produto como gerador de sugestoes para revisar, copiar e enviar manualmente.
+
+## Escopo aprovado
+
+- Validacao real de Preview/Producao.
+- Validacao de Supabase RLS com dois usuarios.
+- Validacao de Stripe Checkout, Customer Portal e webhook assinado.
+- Validacao de OpenAI e Resend no ambiente final.
+- Medicao do funil de ativacao.
+- Categorizacao de suporte.
+- Monitoramento de custo OpenAI.
+- Melhorias pequenas de onboarding/copy com base em gargalos medidos.
+- Melhorias pequenas de prompt/templates com base em feedback agregado.
+- Relatorios internos simples para operacao.
+- Documentacao atualizada.
+
+## P0
+
+- Nenhum P0 confirmado na analise atual.
+
+## P1
+
+- Smoke autenticado em Preview/Producao ainda precisa ser executado.
+- RLS real com dois usuarios ainda precisa ser validado.
+- Stripe Checkout, Customer Portal e webhook assinado ainda precisam ser validados no ambiente final.
+- GitHub Actions precisa de confirmacao visual no GitHub quando aplicavel.
+- Metricas reais de ativacao, suporte, billing, feedback e custo ainda nao estao consolidadas.
+
+## P2
+
+- Ajustar onboarding apos medir queda.
+- Ajustar templates apos medir uso.
+- Ajustar prompt apos revisar feedback agregado.
+- Melhorar relatorios internos sem virar BI avancado.
+- Melhorar suporte/FAQ com base em perguntas recorrentes.
 
 ## Fora do escopo
 
 - integracao direta com WhatsApp
+- envio automatico de mensagens
 - CRM completo
 - automacoes avancadas
 - multiplos atendentes
 - app mobile
 - BI avancado
+- campanha grande
+- escala sem dados
 
 ## Criterios para fechar 1.1
 
-- npm run validate passando
-- sem bugs P0
-- sem bugs P1 graves
-- checkout estavel
-- webhook estavel
-- IA estavel
-- suporte sob controle
-- documentacao atualizada
-- CHANGELOG atualizado
+- `npm run check:secrets` passando.
+- `npm run lint` passando.
+- `npm run typecheck` passando.
+- `npm run build` passando.
+- `npm test` passando.
+- `npm run validate` passando.
+- Sem P0.
+- Sem P1 grave aberto.
+- Pendencias de ambiente real concluidas ou documentadas como bloqueio.
+- README atualizado.
+- CHANGELOG atualizado.
 
 ## Decisao de produto
 
-A versao 1.1 deve ser uma consolidacao privada e operacional. Nao deve ampliar escopo para WhatsApp API, CRM, automacao complexa ou BI avancado.
-
+A versao 1.1 deve ser uma consolidacao privada e operacional. Ela so deve liberar nova campanha pequena se o ambiente real estiver validado e se os relatorios tiverem dados agregados suficientes para acompanhar risco, custo e suporte.

@@ -39,6 +39,14 @@ npm run validate
 - Sem CRM completo.
 - Acompanhar estabilidade, uso, custo OpenAI, suporte, feedback, billing e bugs antes de planejar versao 1.1.
 
+## Planejamento da versao 1.1
+
+- A versao 1.1 esta planejada como consolidacao operacional, nao como expansao grande de produto.
+- Prioridades: validar ambiente real, medir ativacao, acompanhar billing, suporte, feedback e custo OpenAI.
+- Dados ausentes devem ser registrados como `nao disponivel` ou `nao medido`; nao usar numeros estimados como se fossem reais.
+- Fora do escopo: WhatsApp API, envio automatico, CRM completo, app mobile, automacoes complexas, BI avancado e campanha grande.
+- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
+
 Comandos de validacao:
 
 ```bash

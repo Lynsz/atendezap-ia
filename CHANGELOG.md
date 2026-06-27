@@ -2,6 +2,36 @@
 
 ## [Unreleased]
 
+## [Version 1.1 Planning]
+
+### Adicionado
+
+- Analise da operacao pos-MVP em `docs/post-mvp-operation-analysis.md`.
+- Priorizacao, checklist, roadmap, criterios de saida e kickoff da versao 1.1.
+- Secao de planejamento da versao 1.1 no README.
+
+### Alterado
+
+- Plano da versao 1.1 atualizado para tratar a release como consolidacao operacional baseada em dados reais.
+- Backlog pos-MVP classificado em P0, P1, P2, Futuro e Nao fazer agora.
+
+### Decidido
+
+- Nenhum P0 confirmado na analise documental.
+- 1.1 deve priorizar validacao real, ativacao, billing, suporte, feedback, custo OpenAI e documentacao.
+- Dados ausentes devem permanecer como `nao disponivel` ou `nao medido`.
+
+### Fora do escopo
+
+- WhatsApp API, envio automatico, CRM completo, app mobile, automacoes complexas, BI avancado, campanha grande e escala sem dados.
+
+### Pendencias
+
+- Rodar smoke autenticado em Preview/Producao.
+- Validar Supabase RLS com dois usuarios reais.
+- Validar Stripe Checkout, Customer Portal e webhook assinado.
+- Confirmar OpenAI, Resend, GitHub Actions e metricas reais no ambiente final.
+
 ## [Post-MVP Controlled Operation]
 
 ### Adicionado
