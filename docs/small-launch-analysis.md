@@ -1,83 +1,102 @@
 # Analise do Lancamento Pequeno - AtendeZap IA
 
-## Status geral
+## Status
 
-Sem dados suficientes.
+* bloqueado
 
-O lancamento pequeno esta planejado e documentado, mas os relatorios atuais ainda nao trazem metricas reais preenchidas de usuarios convidados, visitantes, cadastros, ativacao, conversao, suporte ou feedback. Nao ha bug P0/P1 confirmado nos documentos revisados.
+## Resumo
 
-## Periodo analisado
-
-- inicio: nao informado
-- fim: 2026-06-13
-
-## Aquisicao
-
-- usuarios convidados: nao informado
-- visitantes: nao informado
-- cadastros: nao informado
-- taxa aproximada visitante -> cadastro: nao disponivel
-
-## Ativacao
-
-- onboardings concluidos: nao informado
-- primeiras respostas geradas: nao informado
-- respostas copiadas: nao informado
-- respostas salvas: nao informado
-- templates usados: nao informado
-
-## Conversao
-
-- assinatura visualizada: nao informado
-- checkouts iniciados: nao informado
-- assinaturas concluidas: nao informado
-
-## Qualidade
-
-- feedbacks positivos: nao informado
-- feedbacks negativos: nao informado
-- principais comentarios: sem amostra real registrada
-- principais duvidas: sem amostra real registrada
-
-## Operacao
-
-- suporte aberto: nao informado
-- bugs P0: nenhum confirmado
-- bugs P1: nenhum confirmado
-- falhas de IA: nao informadas
-- falhas Stripe: nao informadas
-- falhas webhook: nao informadas
-- problemas mobile: validacao real pendente
+* Sem dados suficientes para considerar o lancamento pequeno concluido.
+* Os documentos revisados nao registram usuarios alcancados, cadastros, onboardings, respostas geradas, copias, salvamentos, templates usados, checkouts, assinaturas, feedbacks ou suporte reais.
+* Nenhum P0 ou P1 critico foi confirmado.
+* A pendencia principal segue sendo validar o ambiente real em Preview/Producao antes de repetir a rodada.
 
 ## O que funcionou
 
-- Fluxo e criterios do lancamento pequeno foram documentados.
-- Landing, pricing, suporte, admin, health check e rotas privadas ja aparecem no smoke local como aprovados ou aprovados com observacoes.
-- O produto continua posicionado como IA para revisar, copiar e enviar manualmente, sem envio automatico pelo WhatsApp.
-- Admin protegido ja apresenta metricas agregadas do lancamento pequeno sem conteudo completo de pergunta, resposta, pagamento ou secrets.
+* Planejamento, checklist, criterios de pausa, incident response e tracking seguro foram criados.
+* Smoke local documentado indica paginas publicas carregando, rotas privadas redirecionando e APIs criticas sem sessao retornando 401.
+* Copy principal mantem o escopo correto: o AtendeZap IA gera respostas para copiar, ajustar e enviar; nao envia mensagens automaticamente no WhatsApp.
+* Admin e eventos usam visao agregada e nao devem expor pergunta completa, resposta completa, dados de pagamento, tokens ou secrets.
 
-## O que travou
+## O que nao funcionou
 
-- Nao ha dados reais preenchidos do lancamento pequeno.
-- Smoke real em Vercel, Supabase/Auth/RLS, OpenAI, Stripe, webhook, suporte, feedback e mobile ainda depende de ambiente real.
-- Checkout Stripe teste segue bloqueado sem URL de deploy, credenciais e usuario autenticado.
+* O lancamento pequeno nao gerou amostra real registrada no repositorio.
+* Checkout Stripe teste, webhook assinado, OpenAI real, Supabase Auth/RLS e fluxo autenticado completo continuam sem validacao real registrada em Preview/Producao.
+* Nao ha feedback real suficiente para alterar prompt, templates, pricing ou onboarding alem de pequenos ajustes de copy.
 
-## Principal gargalo
+## Metricas disponiveis
 
-Falta de evidencia real. A decisao nao deve ser tomada por percepcao de produto, e sim apos validar ambiente real e coletar o funil minimo.
+* Smoke local: paginas publicas aprovadas, rotas privadas protegidas, `/api/health` aprovado e APIs privadas retornando 401 sem sessao.
+* Bugs P0 confirmados: nenhum.
+* Bugs P1 confirmados: nenhum.
+* Seguranca local: aprovada com observacoes nos relatorios existentes.
 
-## Decisao recomendada
+## Metricas nao disponiveis
 
-Repetir rodada pequena somente depois de checklist pre-lancamento verde e smoke real aprovado.
+* usuarios alcancados: nao disponivel
+* cadastros: nao disponivel
+* onboardings concluidos: nao disponivel
+* primeiras respostas geradas: nao disponivel
+* respostas copiadas: nao disponivel
+* respostas salvas: nao disponivel
+* templates usados: nao disponivel
+* acessos a assinatura: nao disponivel
+* checkouts iniciados: nao disponivel
+* assinaturas concluidas: nao disponivel
+* feedbacks positivos: nao disponivel
+* feedbacks negativos: nao disponivel
+* suportes abertos: nao disponivel
+* custo estimado da OpenAI: nao disponivel
 
-Prioridade atual:
+## Problemas de ativacao
 
-- corrigir bugs: apenas se aparecer P0/P1 no smoke real
-- repetir rodada pequena: sim, apos validacao real
-- melhorar onboarding: ajuste pequeno aplicado para remover linguagem que sugeria automacao
-- melhorar IA: manter prompt atual ate existir feedback negativo real
-- melhorar templates: manter catalogo atual ate existir uso por nicho
-- melhorar pricing: manter Pro R$ 29 e explicacao Stripe atual
-- preparar campanha pequena: bloquear ate haver dados da rodada pequena
-- pausar: sim, se surgir P0/P1 ou falha de seguranca
-- avancar para lancamento publico controlado: nao aprovado agora
+* Nao medido. Falta amostra real entre cadastro, onboarding, primeira resposta, copia e salvamento.
+
+## Problemas de onboarding
+
+* Nenhum P1 confirmado.
+* Copy revisada para evitar leitura de automacao do produto.
+
+## Problemas de IA
+
+* Nenhum problema real confirmado.
+* Geracao real ainda depende de `OPENAI_API_KEY` no ambiente Preview/Producao.
+* Prompt atual ja exige portugues do Brasil, estilo WhatsApp, resposta curta, sem markdown pesado e sem inventar preco, prazo, estoque, agenda ou disponibilidade.
+
+## Problemas de biblioteca/templates
+
+* Nenhum problema real confirmado.
+* Uso de templates nao medido.
+
+## Problemas de assinatura/pricing
+
+* Nenhum problema real confirmado.
+* Pagina de assinatura mostra plano atual, uso mensal, limite mensal, planos e aviso de que o produto nao envia WhatsApp automaticamente.
+* Texto obrigatorio do Pro esta presente: "Primeiro mes por R$ 29 para novos usuarios."
+
+## Problemas de checkout/Stripe
+
+* Checkout teste e webhook assinado seguem pendentes de validacao real.
+* Rota de checkout exige usuario autenticado, usa Price ID server-side e retorna success/cancel para `/assinatura`.
+
+## Problemas de suporte/feedback
+
+* Nenhum problema real confirmado.
+* Suporte tem validacao de categoria, limite de mensagem e mensagem amigavel.
+* Feedback de resposta nao salva pergunta/resposta completa em eventos e nao deve bloquear o fluxo principal.
+
+## Problemas tecnicos
+
+* `docs/post-deploy-smoke-test-report.md` e `docs/production-smoke-test-final.md` nao existem com esses nomes; foram usadas as referencias operacionais existentes.
+* Validacao autenticada real ainda depende de URL, usuarios de teste e secrets configurados fora do Git.
+
+## Problemas de seguranca
+
+* Nenhum vazamento confirmado.
+* Pendencia: confirmar migrations e RLS no Supabase real com dois usuarios.
+* Repositorio deve permanecer privado e `.env.local` nao deve ser versionado.
+
+## Conclusao
+
+* Nao fechar MVP final nesta etapa.
+* Decisao recomendada: repetir lancamento pequeno somente depois de smoke autenticado em Preview/Producao, RLS real validado, Stripe teste validado e relatorios preenchidos com dados reais.

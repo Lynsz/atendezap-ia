@@ -2,19 +2,15 @@
 
 ## Status
 
-* nao iniciado
-* em execucao
-* pausado
-* concluido
 * bloqueado
 
 ## Periodo monitorado
 
-* nao disponivel
+* nao medido
 
 ## Canais usados
 
-* nao disponivel
+* nao medido
 
 ## Usuarios alcancados
 
@@ -78,9 +74,6 @@
 
 ## Decisao atual
 
-* continuar
-* pausar
-* corrigir e continuar
-* encerrar rodada
+* repetir lancamento pequeno apos smoke autenticado em Preview/Producao
 
 Observacao: os documentos existentes indicam ausencia de P0/P1 confirmado, mas o lancamento pequeno segue bloqueado ate smoke test autenticado em Preview/Producao e metricas reais suficientes.

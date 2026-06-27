@@ -62,8 +62,10 @@ describe("prontidao para beta controlado", () => {
     const healthRoute = readRepoFile("src/app/api/health/route.ts");
 
     expect(statusPage).toContain("Status do sistema");
-    expect(statusPage).toContain("sem expor valores de variaveis, tokens ou dados internos");
+    expect(statusPage).toContain("sem expor valores de variaveis, tokens, configuracao de provedores ou dados internos");
     expect(healthRoute).not.toMatch(/process\.env\.[A-Z0-9_]+[^)]*}/);
+    expect(statusPage).not.toContain("OPENAI_API_KEY");
+    expect(statusPage).not.toContain("STRIPE_SECRET_KEY");
     expect(statusPage).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(statusPage).not.toContain("STRIPE_WEBHOOK_SECRET");
   });

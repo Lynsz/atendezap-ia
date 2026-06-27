@@ -12,6 +12,25 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 - Pronto para campanhas pequenas com baixo orcamento depois de validar checkout, webhook, Supabase, Resend, OpenAI, tracking, admin e suporte.
 - Ainda nao pronto para escala ampla.
 
+## Status do MVP
+
+- MVP funcional, com fechamento final bloqueado ate smoke autenticado em Preview/Producao e validacoes reais de Supabase/RLS e Stripe.
+- Gera respostas com IA para copiar, ajustar e enviar manualmente.
+- Nao envia mensagens automaticamente no WhatsApp.
+- Nao e CRM.
+- Projeto privado; nao tornar o repositorio publico.
+
+Principais comandos de validacao:
+
+```bash
+npm run check:secrets
+npm run lint
+npm run typecheck
+npm run build
+npm test
+npm run validate
+```
+
 ## Principais features
 
 - Landing page.

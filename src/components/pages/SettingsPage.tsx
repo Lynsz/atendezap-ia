@@ -357,17 +357,17 @@ function SettingsContent() {
                   <SettingsToggle
                     checked={ai.autoSuggestReplies}
                     onChange={(checked) => updateAI({ autoSuggestReplies: checked })}
-                    label="Sugerir respostas automaticamente"
+                    label="Sugerir rascunhos de respostas"
                   />
                   <SettingsToggle
                     checked={ai.autoSummarizeConversations}
                     onChange={(checked) => updateAI({ autoSummarizeConversations: checked })}
-                    label="Resumir conversas automaticamente"
+                    label="Preparar resumo de conversas"
                   />
                   <SettingsToggle
                     checked={ai.autoClassifyLeads}
                     onChange={(checked) => updateAI({ autoClassifyLeads: checked })}
-                    label="Classificar leads automaticamente"
+                    label="Sugerir classificacao de leads"
                   />
                 </div>
 

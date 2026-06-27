@@ -10,19 +10,15 @@ export const metadata = {
   }
 };
 
-function isConfigured(value?: string) {
-  return Boolean(value?.trim());
-}
-
-function StatusRow({ label, configured, detail }: { label: string; configured: boolean; detail: string }) {
+function StatusRow({ label, detail }: { label: string; detail: string }) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="font-black text-white">{label}</p>
         <p className="mt-1 text-sm leading-6 text-slate-400">{detail}</p>
       </div>
-      <span className={`inline-flex min-h-9 items-center justify-center rounded-full border px-3 text-xs font-black ${configured ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-100" : "border-amber-400/30 bg-amber-400/10 text-amber-100"}`}>
-        {configured ? "Configurado" : "Nao configurado"}
+      <span className="inline-flex min-h-9 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 text-xs font-black text-emerald-100">
+        Operacional
       </span>
     </div>
   );
@@ -32,23 +28,19 @@ export default function StatusPage() {
   const statuses = [
     {
       label: "Sistema",
-      configured: true,
       detail: "Aplicacao carregando normalmente neste ambiente."
     },
     {
-      label: "Supabase",
-      configured: isConfigured(process.env.NEXT_PUBLIC_SUPABASE_URL) && isConfigured(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-      detail: "Conexao publica configurada para autenticacao e dados."
+      label: "Health check",
+      detail: "O endpoint publico /api/health retorna apenas o status basico do app."
     },
     {
-      label: "IA",
-      configured: isConfigured(process.env.OPENAI_API_KEY),
-      detail: "Chave de IA presente no servidor para gerar respostas."
+      label: "Seguranca",
+      detail: "Esta pagina nao consulta nem exibe configuracao de provedores, variaveis, tokens ou dados internos."
     },
     {
-      label: "Stripe",
-      configured: isConfigured(process.env.STRIPE_SECRET_KEY),
-      detail: "Checkout e assinatura podem ser iniciados quando as variaveis do Stripe estiverem presentes."
+      label: "Operacao",
+      detail: "Validacoes detalhadas devem ser feitas por checklist interno e logs restritos."
     }
   ];
 
@@ -59,7 +51,7 @@ export default function StatusPage() {
           <p className="mb-2 text-xs font-black uppercase tracking-[0.22em] text-emerald-300">Status</p>
           <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">Status do sistema</h1>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-            Visao simples para o beta. Esta pagina mostra apenas se os servicos principais estao configurados, sem expor valores de variaveis, tokens ou dados internos.
+            Visao simples para o beta. Esta pagina mostra apenas o estado geral do app, sem expor valores de variaveis, tokens, configuracao de provedores ou dados internos.
           </p>
         </div>
 

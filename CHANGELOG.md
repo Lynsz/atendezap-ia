@@ -2,6 +2,63 @@
 
 ## [Unreleased]
 
+## [MVP Final]
+
+### Adicionado
+
+- Checklist final, smoke test final, relatorio final, decisao final e plano pos-MVP.
+
+### Corrigido
+
+- Pagina `/status` deixou de consultar e exibir estado de configuracao de Supabase, OpenAI e Stripe.
+
+### Seguranca
+
+- Auditoria final manteve secrets fora do client e reforcou teste para `/status` nao referenciar chaves sensiveis.
+- Decisao final preserva repositorio privado, `.env.local` fora do Git e eventos sem pergunta/resposta completa.
+
+### Operacao
+
+- Fechamento final do MVP marcado como bloqueado ate smoke autenticado em Preview/Producao, RLS real com dois usuarios e Stripe teste/webhook assinado.
+
+### Validacao
+
+- Documentos finais consolidados a partir dos relatorios de CI, seguranca, OpenAI, Stripe, Supabase/RLS, beta fechado e lancamento pequeno.
+
+### Pendencias conhecidas
+
+- Confirmar GitHub Actions verde no GitHub.
+- Rodar smoke autenticado em Preview/Producao.
+- Validar Supabase/RLS no banco real com dois usuarios.
+- Validar Stripe checkout teste, portal e webhook assinado no ambiente real.
+
+## [Small Launch Analysis]
+
+### Corrigido
+
+- Copy de configuracoes ajustada para evitar expectativa de automacao do produto.
+
+### Melhorado
+
+- Analise pos-lancamento pequeno, diagnostico do funil, priorizacao de bugs, decisao pos-lancamento, plano de correcao e plano da proxima rodada criados.
+- Acompanhamento do lancamento pequeno atualizado para explicitar metricas nao medidas ou nao disponiveis.
+
+### Seguranca
+
+- Decisao manteve o repositorio privado, sem secrets versionados e sem dados sensiveis em eventos.
+- Nenhuma mudanca expôs OpenAI, Stripe ou Supabase service role no client.
+
+### Operacao
+
+- Decisao registrada: repetir lancamento pequeno apos smoke autenticado em Preview/Producao.
+- MVP final nao foi marcado como fechado por falta de metricas reais e validacao real de ambiente.
+
+### Pendencias
+
+- Rodar smoke autenticado em Preview/Producao.
+- Validar Supabase/RLS com dois usuarios reais.
+- Validar OpenAI, Stripe checkout, portal, webhook, suporte, feedback, admin e `/api/health` em ambiente real.
+
 ## [Small Launch Execution]
 
 ### Adicionado
