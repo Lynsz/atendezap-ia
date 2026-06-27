@@ -126,6 +126,42 @@ describe("safe app events", () => {
     });
   });
 
+  it("allows post-MVP events with only operational safe metadata", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "post_mvp_error_occurred",
+      page: "/dashboard",
+      source: "dashboard",
+      plan: "pro",
+      business_type: "Servicos",
+      metadata: {
+        category: "ia",
+        error_type: "openai_unavailable",
+        response_length_range: "short",
+        usage_count: 20,
+        usage_limit: 20,
+        pergunta: "texto completo do cliente",
+        resposta: "texto completo da IA",
+        email: "cliente@example.com",
+        stripe_payload: "{...}",
+        token: "secret-token"
+      }
+    });
+
+    expect(event?.event_name).toBe("post_mvp_error_occurred");
+    expect(event?.metadata).toEqual({
+      business_type: "Servicos",
+      category: "ia",
+      error_type: "openai_unavailable",
+      page: "/dashboard",
+      plan: "pro",
+      response_length_range: "short",
+      source: "dashboard",
+      usage_count: 20,
+      usage_limit: 20
+    });
+  });
+
   it("does not throw when event delivery fails", async () => {
     vi.stubGlobal("window", { location: { pathname: "/dashboard" } });
     vi.stubGlobal("navigator", {});

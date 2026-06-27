@@ -111,6 +111,12 @@ export function FeedbackForm() {
           feedback_context: context,
           reason: "api_error"
         });
+        trackEvent("post_mvp_error_occurred", {
+          source: "feedback_page",
+          page: page || "/feedback",
+          category: type,
+          error_type: "feedback_api_error"
+        });
         return;
       }
 
@@ -127,6 +133,11 @@ export function FeedbackForm() {
         page: page || "/feedback",
         category: type
       });
+      trackEvent("post_mvp_feedback_submitted", {
+        source: "feedback_page",
+        page: page || "/feedback",
+        category: type
+      });
       trackEvent("feedback_success", {
         feedback_type: type,
         feedback_context: context,
@@ -138,6 +149,12 @@ export function FeedbackForm() {
         feedback_type: type,
         feedback_context: context,
         reason: "network_error"
+      });
+      trackEvent("post_mvp_error_occurred", {
+        source: "feedback_page",
+        page: page || "/feedback",
+        category: type,
+        error_type: "feedback_network_error"
       });
     } finally {
       setSubmitting(false);

@@ -99,6 +99,10 @@ const metricsQuerySchema = z.object({
 });
 
 const feedbackTypes = ["bug", "duvida", "sugestao", "elogio", "dificuldade_uso"] as const;
+const pricingViewedEvents = ["pricing_page_view", "pricing_view", "pricing_viewed", "beta_pricing_viewed", "small_launch_pricing_viewed", "post_mvp_pricing_viewed"];
+const checkoutStartedEvents = ["checkout_started", "small_launch_checkout_started", "post_mvp_checkout_started"];
+const firstResponseEvents = ["beta_first_response_generated", "small_launch_first_response_generated", "post_mvp_first_response_generated"];
+const responseSavedEvents = ["beta_response_saved", "small_launch_response_saved", "post_mvp_response_saved"];
 
 function getPeriodStart(period: PeriodFilter) {
   const now = new Date();
@@ -404,11 +408,9 @@ export async function GET(request: Request) {
       }))
       .sort((a, b) => b.leads - a.leads || a.campaign.localeCompare(b.campaign))
       .slice(0, 8);
-    const pricingPageViews = events.filter((event) =>
-      ["pricing_page_view", "pricing_view", "pricing_viewed", "beta_pricing_viewed", "small_launch_pricing_viewed"].includes(event.event_name)
-    ).length;
+    const pricingPageViews = events.filter((event) => pricingViewedEvents.includes(event.event_name)).length;
     const planClicks = events.filter((event) => ["plan_cta_click", "plan_click", "pricing_cta_click"].includes(event.event_name)).length;
-    const checkoutsStartedByEvent = events.filter((event) => ["checkout_started", "small_launch_checkout_started"].includes(event.event_name)).length;
+    const checkoutsStartedByEvent = events.filter((event) => checkoutStartedEvents.includes(event.event_name)).length;
     const checkoutFailures = events.filter((event) => ["checkout_failed", "checkout_error"].includes(event.event_name)).length;
     const firstResponsePricingClicks = events.filter((event) => event.event_name === "first_response_to_pricing_click").length;
     const demoSignupClicks = events.filter((event) => ["demo_to_signup_click", "demo_signup_cta_click"].includes(event.event_name)).length;
@@ -447,13 +449,13 @@ export async function GET(request: Request) {
         onboardingCompletedLast7Days: businesses.filter((business) => business.onboarding_completed && isAtOrAfter(business.updated_at || business.created_at, sevenDaysStart)).length,
         firstResponsesGenerated: Math.max(
           usersWithFirstResponse,
-          events.filter((event) => ["beta_first_response_generated", "small_launch_first_response_generated"].includes(event.event_name)).length
+          events.filter((event) => firstResponseEvents.includes(event.event_name)).length
         ),
         firstResponsesLast7Days: Math.max(
           [...firstResponseAtByUser.values()].filter((createdAt) => isAtOrAfter(createdAt, sevenDaysStart)).length,
-          events.filter((event) => ["beta_first_response_generated", "small_launch_first_response_generated"].includes(event.event_name) && isAtOrAfter(event.created_at, sevenDaysStart)).length
+          events.filter((event) => firstResponseEvents.includes(event.event_name) && isAtOrAfter(event.created_at, sevenDaysStart)).length
         ),
-        responsesSaved: Math.max(savedResponses.length, events.filter((event) => ["beta_response_saved", "small_launch_response_saved"].includes(event.event_name)).length),
+        responsesSaved: Math.max(savedResponses.length, events.filter((event) => responseSavedEvents.includes(event.event_name)).length),
         usersWithSavedResponses: savedResponseUsers.size,
         usersWithCopiedResponse: copiedResponseUsers.size,
         usersWithFavoriteResponse: favoriteResponseUsers.size,
@@ -508,7 +510,7 @@ export async function GET(request: Request) {
         responsesGeneratedToday: responses.filter((response) => isAtOrAfter(response.created_at, todayStart)).length,
         aiFailuresToday: events.filter((event) => event.event_name === "ai_generation_failed" && isAtOrAfter(event.created_at, todayStart)).length,
         leadsToday: leads.filter((lead) => isAtOrAfter(lead.created_at, todayStart)).length,
-        checkoutsStartedToday: events.filter((event) => ["checkout_started", "small_launch_checkout_started"].includes(event.event_name) && isAtOrAfter(event.created_at, todayStart)).length,
+        checkoutsStartedToday: events.filter((event) => checkoutStartedEvents.includes(event.event_name) && isAtOrAfter(event.created_at, todayStart)).length,
         stripeWebhooksProcessedToday: stripeWebhookEvents.filter((event) => Boolean(event.processed_at) && isAtOrAfter(event.created_at, todayStart)).length,
         stripeWebhookFailuresToday: events.filter((event) => event.event_name === "stripe_webhook_failed" && isAtOrAfter(event.created_at, todayStart)).length,
         recentNegativeFeedbacks:

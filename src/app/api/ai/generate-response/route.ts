@@ -92,6 +92,19 @@ export async function POST(request: Request) {
           usage_limit: usage.limit
         }
       });
+      await trackServerAppEvent({
+        user_id: user.id,
+        event_name: "post_mvp_usage_limit_reached",
+        source: "dashboard",
+        page: "/dashboard",
+        plan: planName || "sem_plano",
+        metadata: {
+          source: "dashboard",
+          plan: planName || "sem_plano",
+          usage_count: usage.used,
+          usage_limit: usage.limit
+        }
+      });
       await logEvent("ai_generation_blocked_by_limit", {
         source: "dashboard",
         reason: "monthly_limit",
@@ -199,6 +212,21 @@ export async function POST(request: Request) {
       await trackServerAppEvent({
         user_id: user.id,
         event_name: "small_launch_first_response_generated",
+        source: "dashboard",
+        page: "/dashboard",
+        plan: planName || "sem_plano",
+        business_type: typeof businessDataForAi.business_type === "string" ? businessDataForAi.business_type : null,
+        metadata: {
+          source: "dashboard",
+          plan: planName || "sem_plano",
+          business_type: typeof businessDataForAi.business_type === "string" ? businessDataForAi.business_type : null,
+          category: payload.data.responseType,
+          response_length_range: generatedAnswer.length < 300 ? "short" : generatedAnswer.length < 900 ? "medium" : "long"
+        }
+      });
+      await trackServerAppEvent({
+        user_id: user.id,
+        event_name: "post_mvp_first_response_generated",
         source: "dashboard",
         page: "/dashboard",
         plan: planName || "sem_plano",

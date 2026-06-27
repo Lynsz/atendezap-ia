@@ -31,6 +31,25 @@ npm test
 npm run validate
 ```
 
+## Operacao pos-MVP
+
+- Operacao controlada com poucos usuarios reais e monitoramento diario.
+- Sem campanha grande ainda.
+- Sem integracao com WhatsApp e sem envio automatico de mensagens.
+- Sem CRM completo.
+- Acompanhar estabilidade, uso, custo OpenAI, suporte, feedback, billing e bugs antes de planejar versao 1.1.
+
+Comandos de validacao:
+
+```bash
+npm run check:secrets
+npm run lint
+npm run typecheck
+npm run build
+npm test
+npm run validate
+```
+
 ## Principais features
 
 - Landing page.

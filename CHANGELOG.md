@@ -2,6 +2,35 @@
 
 ## [Unreleased]
 
+## [Post-MVP Controlled Operation]
+
+### Adicionado
+
+- Plano de operacao controlada pos-MVP, checklist diario, template semanal, matriz de incidentes, monitoramento de custo OpenAI, playbook de suporte, backlog pos-MVP e criterios de entrada da versao 1.1.
+- Eventos seguros `post_mvp_*` para cadastro, onboarding, primeira resposta, copia, salvamento, templates, pricing, checkout, feedback, suporte, limite atingido e erro operacional.
+- Migration para permitir eventos `post_mvp_*` em `app_events`.
+
+### Corrigido
+
+- Nenhum P0/P1 confirmado nos documentos finais foi encontrado para correcao imediata.
+
+### Segurança
+
+- Eventos pos-MVP usam a mesma sanitizacao de metadata segura, bloqueando pergunta completa, resposta completa, e-mail, telefone, tokens, secrets e dados de pagamento.
+- Admin continua protegido por `requireAdmin`; usuario comum permanece bloqueado.
+
+### Operacao
+
+- Admin passa a considerar eventos pos-MVP nas metricas de pricing, checkout, primeira resposta e respostas salvas.
+- README documenta operacao controlada, sem campanha grande, sem integracao com WhatsApp e sem CRM completo.
+
+### Pendencias
+
+- Rodar smoke autenticado em Preview/Producao.
+- Validar RLS no Supabase real com dois usuarios.
+- Validar Stripe checkout teste, portal e webhook assinado no ambiente real.
+- Confirmar CI verde no GitHub.
+
 ## [MVP Final]
 
 ### Adicionado

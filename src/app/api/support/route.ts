@@ -232,6 +232,16 @@ export async function POST(request: NextRequest) {
         category: body.category
       }
     });
+    await trackServerAppEvent({
+      user_id: user?.id || null,
+      event_name: "post_mvp_support_request_created",
+      source: body.source || "support_form",
+      page: "/suporte",
+      metadata: {
+        source: body.source || "support_form",
+        category: body.category
+      }
+    });
     serverLog({ event: "support_request_created", route: "/api/support", userId, status: "ok", metadata: { category: body.category, priority } });
     return Response.json({ ok: true, supportRequest: toUserSupportRequest(data as Record<string, unknown>) }, { status: 201 });
   } catch (error) {

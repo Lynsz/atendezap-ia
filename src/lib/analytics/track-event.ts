@@ -32,7 +32,19 @@ export const safeAppEventNames = [
   "small_launch_checkout_started",
   "small_launch_feedback_submitted",
   "small_launch_support_request_created",
-  "small_launch_usage_limit_reached"
+  "small_launch_usage_limit_reached",
+  "post_mvp_signup_completed",
+  "post_mvp_onboarding_completed",
+  "post_mvp_first_response_generated",
+  "post_mvp_response_copied",
+  "post_mvp_response_saved",
+  "post_mvp_template_used",
+  "post_mvp_pricing_viewed",
+  "post_mvp_checkout_started",
+  "post_mvp_feedback_submitted",
+  "post_mvp_support_request_created",
+  "post_mvp_usage_limit_reached",
+  "post_mvp_error_occurred"
 ] as const;
 
 export type SafeAppEventName = (typeof safeAppEventNames)[number];
@@ -70,7 +82,8 @@ const allowedMetadataKeys = new Set([
   "template_niche",
   "response_length_range",
   "usage_count",
-  "usage_limit"
+  "usage_limit",
+  "error_type"
 ]);
 
 const forbiddenKeyPattern = /(email|mail|phone|telefone|whatsapp|nome|name|message|mensagem|question|pergunta|answer|resposta|generated|content|conteudo|token|secret|key|password|senha|card|cartao|payment|pagamento|stripe|checkout_session|customer|subscription)/i;

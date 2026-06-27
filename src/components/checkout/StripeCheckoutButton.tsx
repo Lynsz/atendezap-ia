@@ -94,6 +94,12 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
           funnel,
           reason: "api_error"
         });
+        trackEvent("post_mvp_error_occurred", {
+          plan: planId,
+          source: "pricing",
+          page: typeof window !== "undefined" ? window.location.pathname : "/precos",
+          error_type: "checkout_api_error"
+        });
         return;
       }
 
@@ -102,6 +108,11 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
         funnel
       });
       trackEvent("small_launch_checkout_started", {
+        plan: planId,
+        source: "pricing",
+        page: typeof window !== "undefined" ? window.location.pathname : "/precos"
+      });
+      trackEvent("post_mvp_checkout_started", {
         plan: planId,
         source: "pricing",
         page: typeof window !== "undefined" ? window.location.pathname : "/precos"
@@ -118,6 +129,12 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
         plan: planId,
         funnel,
         reason: "network_error"
+      });
+      trackEvent("post_mvp_error_occurred", {
+        plan: planId,
+        source: "pricing",
+        page: typeof window !== "undefined" ? window.location.pathname : "/precos",
+        error_type: "checkout_network_error"
       });
     } finally {
       setLoading(false);

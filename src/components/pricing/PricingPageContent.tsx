@@ -15,6 +15,7 @@ export function PricingPageContent() {
       <TrackOnMount eventName="pricing_page_view" properties={{ page: "pricing" }} />
       <TrackOnMount eventName="beta_pricing_viewed" properties={{ page: "pricing", source: "pricing_page" }} />
       <TrackOnMount eventName="small_launch_pricing_viewed" properties={{ page: "pricing", source: "pricing_page" }} />
+      <TrackOnMount eventName="post_mvp_pricing_viewed" properties={{ page: "pricing", source: "pricing_page" }} />
       <section className="mx-auto max-w-6xl px-4 py-16 text-center">
         <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-300">Planos</p>
         <h1 className="mx-auto mt-3 max-w-3xl text-4xl font-black tracking-tight md:text-5xl">

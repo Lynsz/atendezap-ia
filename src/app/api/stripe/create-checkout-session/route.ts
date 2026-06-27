@@ -208,6 +208,17 @@ export async function POST(request: Request) {
         plan: plan.id
       }
     });
+    await trackServerAppEvent({
+      user_id: user.id,
+      event_name: "post_mvp_checkout_started",
+      source: body.source || "pricing",
+      page: "/precos",
+      plan: plan.id,
+      metadata: {
+        source: body.source || "pricing",
+        plan: plan.id
+      }
+    });
     serverLog({
       event: "stripe_checkout_created",
       route: "/api/stripe/create-checkout-session",

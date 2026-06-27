@@ -82,6 +82,11 @@ export default function SignupPage() {
         source: attribution.funnel || "pricing",
         page: "/cadastro"
       });
+      trackEvent("post_mvp_signup_completed", {
+        plan,
+        source: attribution.funnel || "pricing",
+        page: "/cadastro"
+      });
     }
 
     setLoading(false);

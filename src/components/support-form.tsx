@@ -34,9 +34,11 @@ export function SupportForm() {
       trackEvent("support_request_created", { source: "public_support", category, status: "pending" });
       trackEvent("beta_support_request_created", { source: "public_support", page: "/suporte", category });
       trackEvent("small_launch_support_request_created", { source: "public_support", page: "/suporte", category });
+      trackEvent("post_mvp_support_request_created", { source: "public_support", page: "/suporte", category });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro inesperado.");
       trackEvent("support_request_failed", { source: "public_support", category, status: "failed" });
+      trackEvent("post_mvp_error_occurred", { source: "public_support", page: "/suporte", category, error_type: "support_request_failed" });
     } finally {
       setLoading(false);
     }

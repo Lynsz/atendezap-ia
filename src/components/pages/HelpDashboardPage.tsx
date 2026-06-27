@@ -88,9 +88,11 @@ function HelpDashboardContent() {
       setMessage("");
       setSuccess("Solicitacao enviada. Voce pode acompanhar o status nesta pagina.");
       trackEvent("support_request_created", { source: "dashboard_help", category, status: "pending" });
+      trackEvent("post_mvp_support_request_created", { source: "dashboard_help", page: "/dashboard/ajuda", category });
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Nao foi possivel enviar sua solicitacao agora.");
       trackEvent("support_request_failed", { source: "dashboard_help", category, status: "failed" });
+      trackEvent("post_mvp_error_occurred", { source: "dashboard_help", page: "/dashboard/ajuda", category, error_type: "support_request_failed" });
     } finally {
       setSubmitting(false);
     }
