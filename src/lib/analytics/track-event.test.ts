@@ -57,10 +57,44 @@ describe("safe app events", () => {
   it("normalizes existing UI aliases into MVP event names", async () => {
     const { sanitizeAppEvent } = await import("./track-event");
 
-    expect(sanitizeAppEvent({ event_name: "activation_response_copied" })?.event_name).toBe("response_copied");
+    expect(sanitizeAppEvent({ event_name: "activation_response_copied" })?.event_name).toBe("activation_first_response_copied");
+    expect(sanitizeAppEvent({ event_name: "activation_response_saved" })?.event_name).toBe("activation_first_response_saved");
+    expect(sanitizeAppEvent({ event_name: "activation_template_viewed" })?.event_name).toBe("activation_templates_viewed");
     expect(sanitizeAppEvent({ event_name: "template_copy" })?.event_name).toBe("template_copied");
     expect(sanitizeAppEvent({ event_name: "saved_responses_view" })?.event_name).toBe("library_viewed");
     expect(sanitizeAppEvent({ event_name: "unknown_event" })).toBeNull();
+  });
+
+  it("allows activation events with safe metadata only", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "activation_first_response_generated",
+      page: "/dashboard",
+      source: "dashboard",
+      plan: "pro",
+      business_type: "Delivery",
+      metadata: {
+        category: "atendimento",
+        response_length_range: "short",
+        usage_count: 1,
+        usage_limit: 30,
+        customerMessage: "texto completo",
+        generatedAnswer: "resposta completa",
+        email: "cliente@example.com"
+      }
+    });
+
+    expect(event?.event_name).toBe("activation_first_response_generated");
+    expect(event?.metadata).toEqual({
+      business_type: "Delivery",
+      category: "atendimento",
+      page: "/dashboard",
+      plan: "pro",
+      response_length_range: "short",
+      source: "dashboard",
+      usage_count: 1,
+      usage_limit: 30
+    });
   });
 
   it("allows beta events with only safe metadata", async () => {

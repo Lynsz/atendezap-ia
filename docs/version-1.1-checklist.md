@@ -21,10 +21,10 @@
 
 ## Produto
 
-- [ ] Onboarding revisado com base em gargalo medido.
-- [ ] Primeira resposta revisada com base em feedback agregado.
-- [ ] Copia/salvamento medidos.
-- [ ] Templates revisados apenas se houver uso real suficiente.
+- [x] Onboarding revisado na Sprint 2 com base no risco documental do funil ainda nao medido.
+- [x] Primeira resposta revisada para orientar revisar, copiar e enviar manualmente.
+- [x] Copia/salvamento com feedback visual e eventos seguros.
+- [x] Templates/exemplos por nicho revisados sem gerar automaticamente.
 - [ ] Pricing revisado sem prometer automacao do WhatsApp.
 - [ ] Suporte/FAQ revisado com base em categorias reais.
 
@@ -45,6 +45,16 @@
 - [ ] `npm test`
 - [ ] `npm run validate`
 
+## Sprint 2
+
+- [x] Plano da Sprint 2 criado.
+- [x] Smoke test da Sprint 2 criado.
+- [x] Relatorio da Sprint 2 criado.
+- [x] Tracking seguro de ativacao adicionado.
+- [x] Admin existente validado/ajustado para agregados de ativacao.
+- [ ] Smoke real em Preview/Producao movido para Sprint 3.
+- [ ] Metricas reais de ativacao seguem `nao medido` ate operacao real.
+
 ## Saida
 
 - [ ] Sem P0.
@@ -52,4 +62,3 @@
 - [ ] Documentacao atualizada.
 - [ ] CHANGELOG atualizado.
 - [ ] Relatorio final da 1.1 preenchido com dados reais ou marcacoes explicitas de ausencia.
-

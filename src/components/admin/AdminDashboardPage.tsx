@@ -162,11 +162,15 @@ type ProductMetricsPayload = {
   };
   activation: {
     definition: string;
+    signupsCompleted: number;
+    onboardingStarted: number;
+    dashboardViewed: number;
     newUsersLast7Days: number;
     onboardingCompletedLast7Days: number;
     firstResponsesGenerated: number;
     firstResponsesLast7Days: number;
     responsesSaved: number;
+    responsesCopied: number;
     usersWithSavedResponses: number;
     usersWithCopiedResponse: number;
     usersWithFavoriteResponse: number;
@@ -1275,9 +1279,12 @@ export default function AdminDashboardPage() {
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <MetricCard label="Usuarios novos 7 dias" value={availableValue(productMetrics.availability.profiles, productMetrics.activation.newUsersLast7Days)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Cadastros concluidos" value={availableValue(productMetrics.availability.events || productMetrics.availability.profiles, productMetrics.activation.signupsCompleted)} icon={<Users className="h-5 w-5" />} />
+              <MetricCard label="Onboarding iniciado" value={availableValue(productMetrics.availability.events, productMetrics.activation.onboardingStarted)} icon={<CheckCircle2 className="h-5 w-5" />} />
               <MetricCard label="Onboardings concluidos" value={availableValue(productMetrics.availability.businesses, productMetrics.activation.onboardingCompletedLast7Days)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Dashboard visualizado" value={availableValue(productMetrics.availability.events, productMetrics.activation.dashboardViewed)} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Primeiras respostas" value={availableValue(productMetrics.availability.generatedResponses, productMetrics.activation.firstResponsesGenerated)} icon={<MessageSquare className="h-5 w-5" />} />
-              <MetricCard label="Respostas copiadas" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.usersWithCopiedResponse)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Respostas copiadas" value={availableValue(productMetrics.availability.events || productMetrics.availability.savedResponses, Math.max(productMetrics.activation.responsesCopied, productMetrics.activation.usersWithCopiedResponse))} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Respostas salvas" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.usersWithSavedResponses)} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Templates salvos" value={availableValue(productMetrics.availability.savedResponses, productMetrics.usage.totalSavedTemplates)} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Favoritos criados" value={availableValue(productMetrics.availability.savedResponses, productMetrics.activation.usersWithFavoriteResponse)} icon={<BarChart3 className="h-5 w-5" />} />

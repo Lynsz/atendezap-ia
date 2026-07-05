@@ -43,9 +43,10 @@ npm run validate
 
 - A versao 1.1 esta planejada como consolidacao operacional, nao como expansao grande de produto.
 - Prioridades: validar ambiente real, medir ativacao, acompanhar billing, suporte, feedback e custo OpenAI.
+- Sprint 2 da versao 1.1 entregou melhorias pequenas de ativacao: cadastro/login revisados, onboarding inicial mais curto, checklist de primeiros passos, exemplos por nicho, contador no campo de mensagem e tracking seguro `activation_*`.
 - Dados ausentes devem ser registrados como `nao disponivel` ou `nao medido`; nao usar numeros estimados como se fossem reais.
 - Fora do escopo: WhatsApp API, envio automatico, CRM completo, app mobile, automacoes complexas, BI avancado e campanha grande.
-- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
+- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-sprint-2-plan.md`, `docs/version-1.1-sprint-2-smoke-test.md`, `docs/version-1.1-sprint-2-report.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
 
 Comandos de validacao:
 

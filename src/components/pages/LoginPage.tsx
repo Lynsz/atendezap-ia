@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LogIn, MessageCircle, UserPlus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { trackEvent } from '@/lib/tracking';
 import { getPostAuthRedirect } from '@/services/auth-flow';
 
 type AuthMode = 'login' | 'signup';
@@ -84,6 +85,11 @@ export default function LoginPage() {
           setErrorMessage('Não foi possível criar sua conta. Confira os dados e tente novamente.');
           return;
         }
+
+        trackEvent('activation_signup_completed', {
+          source: 'login_page',
+          page: '/login',
+        });
 
         setSuccessMessage(
           'Conta criada. Se a confirmação por e-mail estiver ativada no Supabase, confirme seu e-mail antes de entrar.',

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
+import { FirstStepsChecklist, type FirstStepItem, type FirstStepTarget } from "@/components/dashboard/first-steps-checklist";
 import { PLAN_IDS, SAAS_PLANS, type PlanId } from "@/config/plans";
 import { businessTypeOptions, getBusinessExamples, getBusinessTemplate, getBusinessTypeLabel } from "@/lib/ai/business-templates";
 import { copyResponseText } from "@/lib/clipboard";
@@ -154,6 +155,8 @@ const firstResponseExampleQuestions = [
   "Quais formas de pagamento?",
   "Como faço para agendar?"
 ];
+
+const CUSTOMER_MESSAGE_LIMIT = 1200;
 
 const emptySavedResponseDraft: SavedResponseDraft = {
   title: "",
@@ -556,8 +559,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       });
       trackEvent("activation_onboarding_completed", {
         source: "dashboard",
-        businessType: payload.business_type,
-        step: "onboarding"
+        page: "/onboarding",
+        business_type: payload.business_type
       });
       setTab("assistant");
       setQuestion(getBusinessExamples(payload.business_type)[0] || "Qual o valor do servico?");
@@ -571,14 +574,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       if (!businessDraft.business_type.trim()) return "Escolha o tipo de atuação.";
     }
     if (onboardingStep === 2) {
-      if (!businessDraft.main_channel.trim()) return "Escolha o principal canal de atendimento.";
-      if (!businessDraft.opening_hours.trim()) return "Informe o horário de atendimento.";
-      if (!businessDraft.response_goal.trim()) return "Escolha o tempo médio desejado para resposta.";
-    }
-    if (onboardingStep === 3) {
-      if (!businessDraft.products_services.trim()) return "Informe o que você vende ou oferece.";
-      if (!businessDraft.common_questions.trim()) return "Informe algumas perguntas comuns dos clientes.";
-      if (!businessDraft.important_info.trim()) return "Informe o que a IA precisa saber para responder melhor.";
+      if (!businessDraft.description.trim()) return "Descreva rapidamente o que seu negócio faz.";
       if (!businessDraft.brand_tone.trim()) return "Escolha o tom de voz desejado.";
     }
     return "";
@@ -591,7 +587,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       return;
     }
     setError("");
-    setOnboardingStep((current) => Math.min(4, current + 1));
+    setOnboardingStep((current) => Math.min(3, current + 1));
   }
 
   function handleBackOnboardingStep() {
@@ -630,6 +626,10 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     }
     if (!question.trim()) {
       setError("Cole a pergunta do cliente.");
+      return;
+    }
+    if (question.length > CUSTOMER_MESSAGE_LIMIT) {
+      setError("A mensagem está muito longa. Resuma para até 1200 caracteres antes de gerar.");
       return;
     }
 
@@ -697,10 +697,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           });
           trackEvent("activation_first_response_generated", {
             source: "dashboard",
-            businessType: businessDraft.business_type,
+            page: "/dashboard",
+            business_type: businessDraft.business_type,
             category: responseType,
             plan: subscription?.plan || subscription?.plan_name || "sem_plano",
-            step: "first_response"
+            response_length_range: getResponseLengthRange(answer),
+            usage_count: usage.used,
+            usage_limit: usage.limit
           });
         }
       }
@@ -800,8 +803,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         trackEvent("activation_template_saved", {
           source: "dashboard",
           category: result.savedResponse.category || "sem_categoria",
-          businessType: businessDraft.business_type,
-          step: "template_saved"
+          business_type: businessDraft.business_type
         });
       } else {
         trackEvent("saved_response_create", {
@@ -827,11 +829,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           category: result.savedResponse.category || "sem_categoria",
           business_type: businessDraft.business_type
         });
-        trackEvent("activation_response_saved", {
+        trackEvent("activation_first_response_saved", {
           source: input.responseId ? "ai" : "manual",
+          page: "/dashboard",
           category: result.savedResponse.category || "sem_categoria",
-          businessType: businessDraft.business_type,
-          step: "response_saved"
+          business_type: businessDraft.business_type
         });
       }
       showFeedback(result.alreadySaved ? "Resposta já estava salva." : "Resposta salva na biblioteca.");
@@ -1149,11 +1151,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     try {
       await copyResponseText(value);
       setHasCopiedResponseThisSession(true);
-      trackEvent("activation_response_copied", {
+      trackEvent("activation_first_response_copied", {
         source,
+        page: "/dashboard",
         category: savedResponse?.category || template?.category || responseType,
-        businessType: template?.businessType || businessDraft.business_type,
-        step: "response_copied"
+        business_type: template?.businessType || businessDraft.business_type
       });
       trackEvent(source === "template" ? "beta_template_used" : "beta_response_copied", {
         source,
@@ -1221,8 +1223,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     trackEvent("activation_pricing_viewed", {
       source: "dashboard",
       plan: subscription?.plan || subscription?.plan_name || "sem_plano",
-      businessType: businessDraft.business_type,
-      step: "pricing_viewed"
+      business_type: businessDraft.business_type
     });
     trackEvent("beta_pricing_viewed", {
       source: "dashboard",
@@ -1391,8 +1392,16 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         plan: currentPlanId || subscription?.plan || subscription?.plan_name || "sem_plano",
         business_type: businessDraft.business_type
       });
+      trackEvent("activation_dashboard_viewed", {
+        source: "dashboard",
+        page: "/dashboard",
+        plan: currentPlanId || subscription?.plan || subscription?.plan_name || "sem_plano",
+        business_type: businessDraft.business_type,
+        usage_count: monthlyUsage,
+        usage_limit: monthlyLimit
+      });
     }
-  }, [businessDraft.business_type, currentPlanId, loading, shouldShowOnboarding, subscription?.plan, subscription?.plan_name]);
+  }, [businessDraft.business_type, currentPlanId, loading, monthlyLimit, monthlyUsage, shouldShowOnboarding, subscription?.plan, subscription?.plan_name]);
 
   useEffect(() => {
     if (!trackedActiveSubscriptionRef.current && hasActiveSubscription(subscription?.status)) {
@@ -1444,7 +1453,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     if (!loading && shouldShowOnboarding && !trackedDashboardOnboardingRef.current) {
       trackedDashboardOnboardingRef.current = true;
       trackEvent("onboarding_started", {
-        source: "dashboard"
+        source: "dashboard",
+        page: "/onboarding"
+      });
+      trackEvent("activation_onboarding_started", {
+        source: "dashboard",
+        page: "/onboarding"
       });
     }
   }, [loading, shouldShowOnboarding]);
@@ -1470,10 +1484,10 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       trackEvent("templates_view", {
         source: "dashboard"
       });
-      trackEvent("activation_template_viewed", {
+      trackEvent("activation_templates_viewed", {
         source: "dashboard",
-        businessType: businessDraft.business_type,
-        step: "templates_viewed"
+        page: "/dashboard/templates",
+        business_type: businessDraft.business_type
       });
     }
   }, [businessDraft.business_type, tab]);
@@ -1504,7 +1518,10 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const generatedResponseTitle = question.trim().slice(0, 120) || generatedAnswer.trim().slice(0, 120) || "Resposta salva";
   const shouldShowTemplateRecommendations = tab === "assistant" && (!history.length || monthlyUsage <= 2);
   const hasFirstResponse = history.length > 0;
-  const assistantExampleQuestions = hasFirstResponse ? exampleQuestions : firstResponseExampleQuestions;
+  const assistantExampleQuestions = (exampleQuestions.length ? exampleQuestions : firstResponseExampleQuestions).slice(0, 5);
+  const questionLength = question.length;
+  const isQuestionEmpty = !question.trim();
+  const isQuestionTooLong = questionLength > CUSTOMER_MESSAGE_LIMIT;
   const hasSavedResponse = savedResponses.length > 0;
   const hasCopiedResponse = hasCopiedResponseThisSession || savedResponses.some((item) => (item.copy_count || 0) > 0);
   const hasTestedTemplate = hasViewedTemplatesThisSession || savedTemplateIds.size > 0 || tab === "templates";
@@ -1519,7 +1536,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     hasOpenedLibrary,
     hasViewedPricing
   ].filter(Boolean).length;
-  const activationSteps: Array<{ label: string; done: boolean; target: "business" | "assistant" | "library" | "templates" | "billing" | "pricing"; detail: string }> = [
+  const activationSteps: FirstStepItem[] = [
     {
       label: "Concluir onboarding",
       done: Boolean(business?.onboarding_completed),
@@ -1688,8 +1705,8 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             <div className="mb-6">
               <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-emerald-300">Configuração inicial</p>
               <h2 className="text-2xl font-black text-white md:text-4xl">Vamos configurar sua IA em poucos minutos</h2>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-                Essas informações ajudam o AtendeZap IA a criar respostas melhores para seus clientes. Você poderá editar tudo depois. A IA não envia mensagens automaticamente: ela gera uma sugestão para você copiar, ajustar e enviar no WhatsApp.
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
+                Informe só o essencial para começar. Você poderá completar os dados depois. A IA não envia mensagens automaticamente: ela gera uma sugestão para você copiar, ajustar e enviar no WhatsApp.
               </p>
             </div>
 
@@ -1702,10 +1719,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             <div className="mb-6">
               <div className="mb-3 grid gap-2 sm:grid-cols-4">
                 {[
-                  [1, "Sobre seu atendimento"],
-                  [2, "Canais"],
-                  [3, "Produtos e IA"],
-                  [4, "Pronto para usar"]
+                  [1, "Negócio"],
+                  [2, "Contexto"],
+                  [3, "Pronto para usar"]
                 ].map(([stepId, label]) => (
                   <div
                     key={stepId}
@@ -1718,63 +1734,34 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                 ))}
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full rounded-full bg-emerald-400 transition-all" style={{ width: `${(onboardingStep / 4) * 100}%` }} />
+                <div className="h-full rounded-full bg-emerald-400 transition-all" style={{ width: `${(onboardingStep / 3) * 100}%` }} />
               </div>
             </div>
 
             {onboardingStep === 1 ? (
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Nome do seu negócio ou atendimento
-                  <input value={businessDraft.business_name} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_name: event.target.value }))} className="field-input" placeholder="Ex.: Studio Ana Lima, Dr. Carlos, Oficina Boa Vista" />
+                  Nome do negócio
+                  <input value={businessDraft.business_name} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_name: event.target.value }))} className="field-input" placeholder="Ex.: Doces da Ana" />
                 </label>
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Tipo de atendimento
+                  Tipo de negócio
                   <select value={businessDraft.business_type} onChange={(event) => setBusinessDraft((current) => ({ ...current, business_type: event.target.value, business_area: event.target.value }))} className="field-input">
                     {businessTypeOptions.map((option) => <option value={option} key={option}>{getBusinessTypeLabel(option)}</option>)}
                   </select>
                 </label>
                 <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
-                  Cidade/estado, opcional
-                  <input value={businessDraft.location} onChange={(event) => setBusinessDraft((current) => ({ ...current, location: event.target.value }))} className="field-input" placeholder="Ex.: Campinas/SP" />
+                  Descrição curta
+                  <input value={businessDraft.description} onChange={(event) => setBusinessDraft((current) => ({ ...current, description: event.target.value, products_services: event.target.value }))} className="field-input" placeholder="Ex.: Vendemos bolos e doces por encomenda e fazemos entregas em Curitiba." />
                 </label>
               </div>
             ) : null}
 
             {onboardingStep === 2 ? (
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Principal canal de atendimento
-                  <select value={businessDraft.main_channel} onChange={(event) => setBusinessDraft((current) => ({ ...current, main_channel: event.target.value }))} className="field-input">
-                    {mainChannelOptions.map((option) => <option value={option} key={option}>{option}</option>)}
-                  </select>
-                </label>
-                <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Tempo médio desejado para resposta
-                  <select value={businessDraft.response_goal} onChange={(event) => setBusinessDraft((current) => ({ ...current, response_goal: event.target.value }))} className="field-input">
-                    {responseGoalOptions.map((option) => <option value={option} key={option}>{option}</option>)}
-                  </select>
-                </label>
-                <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
-                  Horário de atendimento
-                  <input value={businessDraft.opening_hours} onChange={(event) => setBusinessDraft((current) => ({ ...current, opening_hours: event.target.value }))} className="field-input" placeholder="Ex.: segunda a sexta, 9h às 18h" />
-                </label>
-              </div>
-            ) : null}
-
-            {onboardingStep === 3 ? (
               <div className="grid gap-4">
-                <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Explique rapidamente o que você vende, atende ou oferece
-                  <textarea value={businessDraft.products_services} onChange={(event) => setBusinessDraft((current) => ({ ...current, products_services: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: limpeza de pele, design de sobrancelhas, conserto de celular ou marmitas no bairro" />
-                </label>
-                <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Perguntas mais comuns dos clientes
-                  <textarea value={businessDraft.common_questions} onChange={(event) => setBusinessDraft((current) => ({ ...current, common_questions: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: valores, horários disponíveis, formas de pagamento e localização" />
-                </label>
-                <label className="grid gap-2 text-sm font-bold text-slate-300">
-                  Informações importantes que a IA deve saber
-                  <textarea value={businessDraft.important_info} onChange={(event) => setBusinessDraft((current) => ({ ...current, important_info: event.target.value }))} className="field-input min-h-24 resize-none py-3" placeholder="Ex.: precisa agendar antes, atendimento com hora marcada, pagamento via Pix" />
+                <label className="grid gap-2 text-sm font-bold text-slate-300 md:col-span-2">
+                  Descrição do negócio
+                  <textarea value={businessDraft.description} onChange={(event) => setBusinessDraft((current) => ({ ...current, description: event.target.value, products_services: event.target.value }))} className="field-input min-h-28 resize-none py-3" placeholder="Ex.: Vendemos bolos e doces por encomenda e fazemos entregas em Curitiba." />
                 </label>
                 <label className="grid gap-2 text-sm font-bold text-slate-300">
                   Tom das respostas
@@ -1785,15 +1772,13 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               </div>
             ) : null}
 
-            {onboardingStep === 4 ? (
+            {onboardingStep === 3 ? (
               <div className="grid gap-4 lg:grid-cols-[1fr_0.85fr]">
                 <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                   <h3 className="text-lg font-black text-white">Resumo da configuração</h3>
                   <div className="mt-4 grid gap-3 text-sm leading-6 text-slate-300">
                     <p><strong className="text-white">Atendimento:</strong> {businessDraft.business_name} ({businessDraft.business_type})</p>
-                    <p><strong className="text-white">Canal:</strong> {businessDraft.main_channel} - {businessDraft.response_goal}</p>
-                    <p><strong className="text-white">Horário:</strong> {businessDraft.opening_hours}</p>
-                    <p><strong className="text-white">Produtos/serviços:</strong> {businessDraft.products_services}</p>
+                    <p><strong className="text-white">Descrição:</strong> {businessDraft.description}</p>
                     <p><strong className="text-white">Tom:</strong> {businessDraft.brand_tone}</p>
                   </div>
                 </div>
@@ -1815,7 +1800,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               <button type="button" onClick={handleBackOnboardingStep} disabled={onboardingStep === 1} className="inline-flex min-h-11 items-center justify-center rounded-md border border-white/10 bg-white/5 px-5 text-sm font-bold text-slate-200 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40">
                 Voltar
               </button>
-              {onboardingStep < 4 ? (
+              {onboardingStep < 3 ? (
                 <button type="button" onClick={handleNextOnboardingStep} className="inline-flex min-h-11 items-center justify-center rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 hover:bg-emerald-300">
                   Próximo
                 </button>
@@ -1871,40 +1856,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           ))}
         </section>
 
-        <section className="mb-5 rounded-lg border border-white/10 bg-[#101821] p-5 shadow-xl shadow-black/20">
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Primeiros passos</p>
-              <h2 className="mt-2 text-xl font-black text-white">Ative seu atendimento com IA</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
-                Complete os passos essenciais para gerar valor rápido: configurar o contexto, criar a primeira resposta, copiar ou salvar uma mensagem e conhecer templates.
-              </p>
-            </div>
-            <span className="inline-flex min-h-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-4 text-xs font-black text-slate-200">
-              {activationStepCount}/{activationSteps.length} concluídos
-            </span>
-          </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-7">
-            {activationSteps.map((step) => (
-              <button
-                key={step.label}
-                type="button"
-                onClick={() => navigateActivationStep(step.target)}
-                className={`min-h-32 rounded-lg border p-3 text-left transition ${
-                  step.done
-                    ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-50"
-                    : "border-white/10 bg-white/[0.04] text-slate-200 hover:bg-white/[0.07]"
-                }`}
-              >
-                <span className={`mb-3 flex h-8 w-8 items-center justify-center rounded-full ${step.done ? "bg-emerald-300 text-slate-950" : "bg-white/10 text-slate-400"}`}>
-                  <CheckCircle2 className="h-4 w-4" />
-                </span>
-                <span className="block text-sm font-black">{step.label}</span>
-                <span className="mt-2 block text-xs leading-5 text-slate-400">{step.detail}</span>
-              </button>
-            ))}
-          </div>
-        </section>
+        <FirstStepsChecklist steps={activationSteps} completedCount={activationStepCount} onSelectStep={navigateActivationStep} />
 
         <section className="mb-5 rounded-lg border border-white/10 bg-[#101821] p-4 shadow-xl shadow-black/20">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -1937,7 +1889,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               ))
             ) : (
               <div className="rounded-md border border-dashed border-white/15 bg-white/[0.04] p-4 text-sm text-slate-400 md:col-span-3">
-                Favorite respostas importantes para acessar mais rápido aqui.
+                Você ainda não marcou respostas como favoritas.
               </div>
             )}
           </div>
@@ -2204,8 +2156,22 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               </p>
               <label className="mt-5 grid gap-2 text-sm font-bold text-slate-300">
                 Pergunta do cliente
-                <textarea value={question} onChange={(event) => setQuestion(event.target.value)} className="field-input min-h-40 resize-none py-3" placeholder="Ex.: Oi, quanto custa e tem horário hoje?" />
+                <textarea
+                  value={question}
+                  onChange={(event) => setQuestion(event.target.value)}
+                  className="field-input min-h-40 resize-none py-3"
+                  placeholder="Cole aqui a mensagem que seu cliente enviou. Ex.: Vocês entregam no bairro Água Verde?"
+                  aria-describedby="customer-message-help"
+                />
               </label>
+              <div id="customer-message-help" className="mt-2 flex flex-col gap-1 text-xs font-bold sm:flex-row sm:items-center sm:justify-between">
+                <span className={isQuestionTooLong ? "text-red-200" : "text-slate-400"}>
+                  {isQuestionTooLong ? "A mensagem está acima do limite. Resuma antes de gerar." : "A IA não envia a mensagem. Revise antes de copiar."}
+                </span>
+                <span className={isQuestionTooLong ? "text-red-200" : "text-slate-500"}>
+                  {questionLength}/{CUSTOMER_MESSAGE_LIMIT}
+                </span>
+              </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {assistantExampleQuestions.map((example) => (
                   <button key={example} type="button" onClick={() => setQuestion(example)} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-300 hover:bg-white/10">
@@ -2226,7 +2192,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               <p className="mt-4 text-xs font-bold text-slate-400">
                 Respostas usadas neste mês: {monthlyUsage} / {responseLimit}. Restam {monthlyRemaining}.
               </p>
-              <button type="submit" disabled={generating || !business || hasReachedMonthlyLimit} className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300 disabled:opacity-60">
+              <button type="submit" disabled={generating || !business || hasReachedMonthlyLimit || isQuestionEmpty || isQuestionTooLong} className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-400 px-5 text-sm font-black text-slate-950 transition hover:bg-emerald-300 disabled:opacity-60">
                 <Send className="h-4 w-4" />
                 {hasReachedMonthlyLimit ? "Limite mensal atingido" : generating ? "Gerando resposta..." : "Gerar resposta"}
               </button>
@@ -2258,7 +2224,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   <div className="mt-4 rounded-lg border border-emerald-300/20 bg-emerald-300/10 p-4">
                     <h3 className="text-sm font-black text-emerald-50">Próximos passos</h3>
                     <p className="mt-2 text-sm leading-6 text-emerald-100">
-                      Boa. Agora você pode copiar essa resposta para usar no atendimento ou salvar na biblioteca para reutilizar depois.
+                      Resposta gerada. Revise, ajuste se necessário e copie para enviar manualmente pelo WhatsApp.
                     </p>
                     <p className="mt-2 text-sm font-bold leading-6 text-emerald-50">
                       Revise a resposta antes de enviar ao cliente. A IA pode errar informações específicas como preço, prazo, estoque ou agenda.

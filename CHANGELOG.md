@@ -2,6 +2,38 @@
 
 ## [Unreleased]
 
+## [Version 1.1 Sprint 2]
+
+### Melhorado
+
+- Cadastro, login, onboarding e dashboard inicial revisados para reduzir friccao de ativacao.
+- Onboarding inicial simplificado para nome do negocio, tipo, descricao curta e tom.
+- Campo de mensagem do cliente no dashboard com placeholder, contador e limite alinhado a API.
+- Exemplos rapidos por nicho preenchem o campo sem gerar resposta automaticamente.
+- Primeira resposta reforca revisar, ajustar, copiar e enviar manualmente pelo WhatsApp.
+
+### Corrigido
+
+- Eventos de ativacao da Sprint 2 adicionados a allowlist segura de analytics e migration do Supabase.
+- Admin existente passou a contar eventos novos de ativacao nos agregados operacionais.
+
+### Acessibilidade
+
+- Cadastro usa `role="alert"` e `role="status"` para feedback.
+- Campo de mensagem do cliente usa `aria-describedby` para ajuda e contador.
+
+### Ativacao
+
+- Checklist de primeiros passos extraido para componente dedicado.
+- Eventos seguros adicionados: `activation_signup_completed`, `activation_onboarding_started`, `activation_onboarding_completed`, `activation_dashboard_viewed`, `activation_first_response_generated`, `activation_first_response_copied`, `activation_first_response_saved` e `activation_templates_viewed`.
+- Eventos continuam sem pergunta completa, resposta completa, e-mail, telefone, tokens, secrets ou dados de pagamento.
+
+### Pendencias
+
+- Smoke autenticado em Preview/Producao.
+- Validacao de RLS real com dois usuarios.
+- Consolidacao de metricas reais de ativacao antes de novas melhorias.
+
 ## [Version 1.1 Planning]
 
 ### Adicionado

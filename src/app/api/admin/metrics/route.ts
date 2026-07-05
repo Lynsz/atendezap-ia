@@ -101,8 +101,12 @@ const metricsQuerySchema = z.object({
 const feedbackTypes = ["bug", "duvida", "sugestao", "elogio", "dificuldade_uso"] as const;
 const pricingViewedEvents = ["pricing_page_view", "pricing_view", "pricing_viewed", "beta_pricing_viewed", "small_launch_pricing_viewed", "post_mvp_pricing_viewed"];
 const checkoutStartedEvents = ["checkout_started", "small_launch_checkout_started", "post_mvp_checkout_started"];
-const firstResponseEvents = ["beta_first_response_generated", "small_launch_first_response_generated", "post_mvp_first_response_generated"];
-const responseSavedEvents = ["beta_response_saved", "small_launch_response_saved", "post_mvp_response_saved"];
+const signupCompletedEvents = ["signup_completed", "activation_signup_completed", "beta_signup_completed", "small_launch_signup_completed", "post_mvp_signup_completed"];
+const onboardingStartedEvents = ["onboarding_started", "activation_onboarding_started"];
+const dashboardViewedEvents = ["dashboard_viewed", "activation_dashboard_viewed"];
+const firstResponseEvents = ["first_response_generated", "activation_first_response_generated", "beta_first_response_generated", "small_launch_first_response_generated", "post_mvp_first_response_generated"];
+const responseCopiedEvents = ["response_copied", "activation_first_response_copied", "beta_response_copied", "small_launch_response_copied", "post_mvp_response_copied"];
+const responseSavedEvents = ["response_saved", "activation_first_response_saved", "beta_response_saved", "small_launch_response_saved", "post_mvp_response_saved"];
 
 function getPeriodStart(period: PeriodFilter) {
   const now = new Date();
@@ -445,6 +449,9 @@ export async function GET(request: Request) {
       },
       activation: {
         definition: "Usuario ativado = concluiu onboarding e gerou pelo menos 1 resposta.",
+        signupsCompleted: Math.max(totalUsers, events.filter((event) => signupCompletedEvents.includes(event.event_name)).length),
+        onboardingStarted: events.filter((event) => onboardingStartedEvents.includes(event.event_name)).length,
+        dashboardViewed: events.filter((event) => dashboardViewedEvents.includes(event.event_name)).length,
         newUsersLast7Days: profiles.filter((profile) => isAtOrAfter(profile.created_at, sevenDaysStart)).length,
         onboardingCompletedLast7Days: businesses.filter((business) => business.onboarding_completed && isAtOrAfter(business.updated_at || business.created_at, sevenDaysStart)).length,
         firstResponsesGenerated: Math.max(
@@ -456,6 +463,7 @@ export async function GET(request: Request) {
           events.filter((event) => firstResponseEvents.includes(event.event_name) && isAtOrAfter(event.created_at, sevenDaysStart)).length
         ),
         responsesSaved: Math.max(savedResponses.length, events.filter((event) => responseSavedEvents.includes(event.event_name)).length),
+        responsesCopied: events.filter((event) => responseCopiedEvents.includes(event.event_name)).length,
         usersWithSavedResponses: savedResponseUsers.size,
         usersWithCopiedResponse: copiedResponseUsers.size,
         usersWithFavoriteResponse: favoriteResponseUsers.size,

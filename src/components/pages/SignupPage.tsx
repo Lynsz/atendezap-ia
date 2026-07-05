@@ -19,6 +19,14 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const auth = useAuth();
 
+  function getSignupErrorMessage(signUpError: unknown) {
+    const message = signUpError instanceof Error ? signUpError.message.toLowerCase() : "";
+    if (message.includes("already") || message.includes("registered") || message.includes("exists") || message.includes("cadastrad")) {
+      return "Este e-mail já está cadastrado. Entre na sua conta ou use outro e-mail.";
+    }
+    return "Não foi possível criar sua conta agora. Confira os dados e tente novamente.";
+  }
+
   useEffect(() => {
     if (!auth.loading && auth.isAuthenticated) {
       queueMicrotask(async () => {
@@ -57,7 +65,7 @@ export default function SignupPage() {
 
     if (signUpError) {
       setLoading(false);
-      setError("Não foi possível criar sua conta agora. Verifique sua conexão e tente novamente.");
+      setError(getSignupErrorMessage(signUpError));
       return;
     }
 
@@ -68,6 +76,11 @@ export default function SignupPage() {
         email
       });
       trackEvent("signup_completed", {
+        plan,
+        source: attribution.funnel || "pricing",
+        page: "/cadastro"
+      });
+      trackEvent("activation_signup_completed", {
         plan,
         source: attribution.funnel || "pricing",
         page: "/cadastro"
@@ -114,20 +127,20 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {error ? <div className="mb-4 rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm font-bold text-red-200">{error}</div> : null}
-          {feedback ? <div className="mb-4 rounded-md border border-emerald-400/30 bg-emerald-400/10 p-3 text-sm font-bold text-emerald-200">{feedback}</div> : null}
+          {error ? <div className="mb-4 rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm font-bold text-red-200" role="alert">{error}</div> : null}
+          {feedback ? <div className="mb-4 rounded-md border border-emerald-400/30 bg-emerald-400/10 p-3 text-sm font-bold text-emerald-200" role="status">{feedback}</div> : null}
 
           <label className="mb-3 grid gap-2 text-sm font-bold text-slate-300">
             Nome
-            <input value={name} onChange={(event) => setName(event.target.value)} className="field-input" autoComplete="name" />
+            <input value={name} onChange={(event) => setName(event.target.value)} className="field-input" autoComplete="name" placeholder="Ex.: Ana Souza" />
           </label>
           <label className="mb-3 grid gap-2 text-sm font-bold text-slate-300">
             E-mail
-            <input value={email} onChange={(event) => setEmail(event.target.value)} className="field-input" type="email" autoComplete="email" />
+            <input value={email} onChange={(event) => setEmail(event.target.value)} className="field-input" type="email" autoComplete="email" placeholder="voce@email.com" />
           </label>
           <label className="mb-5 grid gap-2 text-sm font-bold text-slate-300">
             Senha
-            <input value={password} onChange={(event) => setPassword(event.target.value)} className="field-input" type="password" autoComplete="new-password" />
+            <input value={password} onChange={(event) => setPassword(event.target.value)} className="field-input" type="password" autoComplete="new-password" placeholder="Mínimo 6 caracteres" />
           </label>
 
           <button

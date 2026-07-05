@@ -14,13 +14,17 @@
 * Validar OpenAI e Resend no ambiente final sem expor secrets.
 * Preencher metricas reais de ativacao, suporte, billing, feedback e custo OpenAI.
 * Manter eventos sem pergunta completa, resposta completa, e-mail, telefone, token, secret ou dado de pagamento.
+* Sprint 3: confirmar em ambiente real o fluxo cadastro -> onboarding -> dashboard -> primeira resposta -> copiar/salvar.
 
 ## P2
 
-* Melhorar onboarding com base em gargalos medidos.
-* Melhorar templates por nicho com base em uso real.
+* Sprint 2 entregue: onboarding inicial simplificado e dashboard de usuario novo com checklist.
+* Sprint 2 entregue: exemplos por nicho no dashboard sem geracao automatica.
+* Melhorar onboarding novamente apenas com gargalos medidos.
+* Melhorar templates por nicho novamente apenas com uso real.
 * Melhorar qualidade da IA com base em feedback agregado.
-* Melhorar admin e relatorios internos sem criar BI avancado.
+* Sprint 2 entregue: admin existente considera agregados de ativacao.
+* Melhorar admin e relatorios internos sem criar BI avancado apenas se dados reais exigirem.
 * Melhorar FAQ/copy de suporte com base em perguntas recorrentes.
 * Melhorar pricing apenas se houver duvida ou queda medida.
 

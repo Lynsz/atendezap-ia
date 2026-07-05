@@ -72,11 +72,10 @@ describe("tracking seguro", () => {
     vi.stubGlobal("document", { title: "AtendeZap IA" });
 
     const { trackEvent } = await import("./tracking");
-    trackEvent("activation_response_copied", {
+    trackEvent("activation_first_response_copied", {
       source: "generated",
-      step: "response_copied",
       category: "atendimento",
-      businessType: "Delivery",
+      business_type: "Delivery",
       answer: "resposta completa",
       question: "pergunta do cliente",
       email: "cliente@example.com"
@@ -85,9 +84,8 @@ describe("tracking seguro", () => {
     const payload = gtag.mock.calls[0][2] as Record<string, unknown>;
     expect(payload).toMatchObject({
       source: "generated",
-      step: "response_copied",
       category: "atendimento",
-      businessType: "Delivery"
+      business_type: "Delivery"
     });
     expect(payload.answer).toBeUndefined();
     expect(payload.question).toBeUndefined();

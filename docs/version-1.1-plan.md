@@ -6,6 +6,7 @@
 - tipo: consolidacao operacional
 - base de dados reais: insuficiente
 - P0 confirmado: nenhum
+- sprint 2: concluida com observacoes, focada em ativacao e experiencia inicial
 
 ## Objetivo
 
@@ -48,11 +49,28 @@ Consolidar a operacao pos-MVP com validacao real, medicao minima e melhorias peq
 
 ## P2
 
-- Ajustar onboarding apos medir queda.
+- Ajustar onboarding apos medir queda. Sprint 2 fez simplificacao preventiva com base no risco documental do funil ainda `nao medido`.
 - Ajustar templates apos medir uso.
 - Ajustar prompt apos revisar feedback agregado.
 - Melhorar relatorios internos sem virar BI avancado.
 - Melhorar suporte/FAQ com base em perguntas recorrentes.
+
+## Entregas da Sprint 2
+
+- Plano, smoke test e relatorio da Sprint 2 criados.
+- Cadastro/login revisados com mensagens amigaveis e tracking seguro de ativacao.
+- Onboarding inicial simplificado para dados essenciais.
+- Dashboard de usuario novo reforcado com checklist de primeiros passos.
+- Exemplos por nicho usados para preencher a mensagem sem gerar automaticamente.
+- Campo de mensagem do cliente alinhado ao limite de 1200 caracteres da API.
+- Copia/salvamento com feedback visual e eventos seguros.
+- Admin existente passou a considerar agregados de ativacao.
+
+## Pendencias movidas para Sprint 3
+
+- Validar smoke autenticado real em Preview/Producao.
+- Validar RLS real com dois usuarios.
+- Consolidar metricas reais de ativacao antes de novas melhorias de produto.
 
 ## Fora do escopo
 
