@@ -264,6 +264,7 @@ type ProductMetricsPayload = {
     positiveFeedbacks: number;
     negativeFeedbacks: number;
     usefulRate: number;
+    negativeReasons: Array<{ label: string; count: number }>;
     recentComments: Array<{ rating: string; comment: string; created_at: string }>;
   };
   campaign: {
@@ -1433,10 +1434,8 @@ export default function AdminDashboardPage() {
                   <ConversionLine label="Taxa útil" value={`${productMetrics.aiQuality.usefulRate}%`} />
                 </div>
                 <div className="mt-4 grid gap-2">
-                  {(productMetrics.aiQuality.recentComments.length ? productMetrics.aiQuality.recentComments : [{ rating: "sem_dados", comment: "Sem comentários recentes.", created_at: "" }]).slice(0, 3).map((item, index) => (
-                    <p key={`${item.created_at}-${index}`} className="rounded-md border border-white/10 bg-[#0b1118] p-2 text-xs font-bold leading-5 text-slate-300">
-                      {item.rating === "positive" ? "Útil" : item.rating === "negative" ? "Não útil" : "Sem dados"}: {item.comment}
-                    </p>
+                  {(productMetrics.aiQuality.negativeReasons.length ? productMetrics.aiQuality.negativeReasons : [{ label: "sem_dados", count: 0 }]).slice(0, 4).map((item) => (
+                    <ConversionLine key={`ai-quality-reason-${item.label}`} label={`Motivo: ${item.label}`} value={item.count} />
                   ))}
                 </div>
               </div>

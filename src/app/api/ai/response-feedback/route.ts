@@ -13,6 +13,11 @@ const responseFeedbackSchema = z
   .object({
     responseId: z.string().uuid("Resposta invalida."),
     rating: z.enum(["positive", "negative"], { errorMap: () => ({ message: "Escolha uma avaliacao valida." }) }),
+    feedbackReason: z
+      .enum(["too_long", "too_generic", "wrong_tone", "invented_info", "did_not_answer", "other"], {
+        errorMap: () => ({ message: "Escolha um motivo valido." })
+      })
+      .optional(),
     comment: z.string().trim().max(500, "Comentario muito longo. Use ate 500 caracteres.").optional()
   })
   .strict();
@@ -103,6 +108,7 @@ export async function POST(request: Request) {
           user_id: user.id,
           response_id: payload.data.responseId,
           rating: payload.data.rating,
+          feedback_reason: payload.data.rating === "negative" ? payload.data.feedbackReason || null : null,
           comment: payload.data.comment || null,
           business_type: typeof generatedResponse.business_type === "string" ? generatedResponse.business_type : null
         },
@@ -113,14 +119,15 @@ export async function POST(request: Request) {
 
     await trackServerAppEvent({
       user_id: user.id,
-      event_name: "ai_feedback_submitted",
+      event_name: "ai_response_feedback_submitted",
       source: "dashboard",
       page: "/dashboard",
       business_type: typeof generatedResponse.business_type === "string" ? generatedResponse.business_type : null,
       metadata: {
         source: "dashboard",
         business_type: typeof generatedResponse.business_type === "string" ? generatedResponse.business_type : null,
-        category: payload.data.rating
+        feedback_rating: payload.data.rating,
+        feedback_reason: payload.data.feedbackReason || undefined
       }
     });
     await trackServerAppEvent({

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   createClient: vi.fn(),
+  trackServerAppEvent: vi.fn(),
   generatedResponse: { id: "22222222-2222-4222-8222-222222222222" } as Record<string, unknown> | null,
   upsertPayload: null as Record<string, unknown> | null,
   tableFilters: [] as Array<{ table: string; column: string; value: unknown }>
@@ -12,7 +13,7 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 
 vi.mock("@/lib/analytics/server", () => ({
-  trackServerAppEvent: vi.fn()
+  trackServerAppEvent: mocks.trackServerAppEvent
 }));
 
 type QueryChain = {
@@ -82,6 +83,7 @@ describe("POST /api/ai/response-feedback", () => {
     mocks.generatedResponse = { id: "22222222-2222-4222-8222-222222222222" };
     mocks.upsertPayload = null;
     mocks.tableFilters = [];
+    mocks.trackServerAppEvent.mockReset();
     mocks.createClient.mockReset();
     mocks.createClient.mockReturnValue(createSupabaseMock());
   });
@@ -100,6 +102,7 @@ describe("POST /api/ai/response-feedback", () => {
       createRequest({
         responseId: "22222222-2222-4222-8222-222222222222",
         rating: "negative",
+        feedbackReason: "too_generic",
         comment: "Ficou generica."
       })
     );
@@ -119,6 +122,7 @@ describe("POST /api/ai/response-feedback", () => {
       createRequest({
         responseId: "22222222-2222-4222-8222-222222222222",
         rating: "negative",
+        feedbackReason: "too_generic",
         comment: "Ficou generica."
       })
     );
@@ -128,7 +132,18 @@ describe("POST /api/ai/response-feedback", () => {
       user_id: "11111111-1111-4111-8111-111111111111",
       response_id: "22222222-2222-4222-8222-222222222222",
       rating: "negative",
+      feedback_reason: "too_generic",
       comment: "Ficou generica."
     });
+    expect(mocks.trackServerAppEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event_name: "ai_response_feedback_submitted",
+        metadata: expect.objectContaining({
+          feedback_rating: "negative",
+          feedback_reason: "too_generic"
+        })
+      })
+    );
+    expect(JSON.stringify(mocks.trackServerAppEvent.mock.calls[0][0])).not.toContain("Ficou generica");
   });
 });

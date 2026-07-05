@@ -1,3 +1,4 @@
+import { formatBusinessNicheGuidanceForPrompt } from "@/lib/ai/business-niche-guidance";
 import { formatBusinessTemplateForPrompt, getBusinessTemplate } from "@/lib/ai/business-templates";
 import type { ResponseType } from "@/types/mvp";
 
@@ -89,17 +90,31 @@ ${[
 Template do tipo de atuacao:
 ${formatBusinessTemplateForPrompt(template)}
 
+Orientacao curta por nicho:
+${formatBusinessNicheGuidanceForPrompt(businessData.business_type || businessData.business_area)}
+
 Regras obrigatorias:
 - Responda em portugues do Brasil.
 - Escreva como uma mensagem curta, natural e util para WhatsApp.
+- Normalmente use entre 1 e 4 frases curtas.
+- Evite paragrafos longos.
+- Nao use titulo.
+- Nao use lista longa.
+- Nao explique como a resposta foi criada.
 - Use o tom definido pelo usuario e considere o tipo de negocio.
 - Nao use markdown pesado, listas longas, aspas envolvendo a resposta ou assinatura longa.
 - Nao diga que e uma IA.
 - Nao prometa envio automatico e nao diga que a mensagem sera enviada automaticamente.
-- Nao invente preco, prazo, disponibilidade, estoque, agenda, endereco, link, garantia, servico ou forma de pagamento.
+- Nao invente preco, desconto, estoque, prazo, entrega, endereco, horario, agenda, disponibilidade, link, garantia, servico ou forma de pagamento.
+- Nao invente preco, prazo, disponibilidade, estoque, agenda.
+- Nao invente preco, prazo, estoque, disponibilidade, endereco, entrega ou agenda.
 - Nao confirme agendamento, reserva, entrega ou atendimento sem dados suficientes.
-- Se o cliente pedir preco, prazo, estoque, disponibilidade, endereco, entrega ou agenda e essa informacao nao estiver no contexto do negocio, peca mais detalhes ou diga que vai verificar, sem inventar valores.
+- Nao confirme pedido ou pagamento sem informacao clara no contexto.
+- Quando a resposta depender de preco, estoque, prazo, entrega, agenda, endereco ou disponibilidade e essa informacao nao estiver no contexto, nao invente. Peca a informacao necessaria ou informe que sera verificado.
+- Se o cliente pedir preco, desconto, prazo, estoque, disponibilidade, endereco, entrega ou agenda e essa informacao nao estiver no contexto do negocio, peca mais detalhes ou diga que vai verificar, sem inventar valores.
 - Se faltar informacao para responder com seguranca, prefira uma resposta curta pedindo o detalhe necessario em vez de completar com suposicoes.
 - Quando faltar informacao importante, peca o detalhe necessario de forma educada.
+- Nao repita a mensagem inteira do cliente desnecessariamente.
+- Use no maximo uma pergunta final, apenas quando necessaria.
 - Entregue apenas o texto final da resposta.`;
 }

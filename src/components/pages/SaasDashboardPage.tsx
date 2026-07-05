@@ -158,6 +158,17 @@ const firstResponseExampleQuestions = [
 
 const CUSTOMER_MESSAGE_LIMIT = 1200;
 
+const qualityFeedbackReasons = [
+  { value: "too_long", label: "Muito longa" },
+  { value: "too_generic", label: "Muito genérica" },
+  { value: "wrong_tone", label: "Tom inadequado" },
+  { value: "invented_info", label: "Inventou informação" },
+  { value: "did_not_answer", label: "Não respondeu ao cliente" },
+  { value: "other", label: "Outro" }
+] as const;
+
+type QualityFeedbackReason = (typeof qualityFeedbackReasons)[number]["value"];
+
 const emptySavedResponseDraft: SavedResponseDraft = {
   title: "",
   category: "",
@@ -281,6 +292,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
   const [generatedAnswer, setGeneratedAnswer] = useState("");
   const [generatedResponseId, setGeneratedResponseId] = useState<string | null>(null);
   const [qualityComment, setQualityComment] = useState("");
+  const [qualityReason, setQualityReason] = useState<QualityFeedbackReason>("too_generic");
   const [qualitySubmitting, setQualitySubmitting] = useState(false);
   const [qualitySubmittedRating, setQualitySubmittedRating] = useState<"positive" | "negative" | null>(null);
   const [history, setHistory] = useState<GeneratedResponse[]>([]);
@@ -387,12 +399,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     if (responseIds.length) {
       const { data: aiFeedbackData } = await supabase
         .from("ai_response_feedback")
-        .select("response_id, rating, comment, created_at")
+        .select("response_id, rating, feedback_reason, comment, created_at")
         .eq("user_id", user.id)
         .in("response_id", responseIds)
         .order("created_at", { ascending: false });
-      const feedbackByResponseId = new Map<string, { rating: string | null; comment: string | null; created_at: string | null }>();
-      ((aiFeedbackData as Array<{ response_id: string; rating: string | null; comment: string | null; created_at: string | null }> | null) || []).forEach((item) => {
+      const feedbackByResponseId = new Map<string, { rating: string | null; feedback_reason?: string | null; comment: string | null; created_at: string | null }>();
+      ((aiFeedbackData as Array<{ response_id: string; rating: string | null; feedback_reason?: string | null; comment: string | null; created_at: string | null }> | null) || []).forEach((item) => {
         if (!feedbackByResponseId.has(item.response_id)) feedbackByResponseId.set(item.response_id, item);
       });
       responsesWithFeedback = responses.map((response) => {
@@ -401,6 +413,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           ? {
               ...response,
               quality_feedback_rating: responseFeedback.rating,
+              quality_feedback_reason: responseFeedback.feedback_reason,
               quality_feedback_comment: responseFeedback.comment,
               quality_feedback_created_at: responseFeedback.created_at
             }
@@ -613,6 +626,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     setGeneratedAnswer("");
     setGeneratedResponseId(null);
     setQualityComment("");
+    setQualityReason("too_generic");
     setQualitySubmittedRating(null);
 
     if (!supabase) {
@@ -778,8 +792,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       });
       setSavedResponsesLoaded(true);
       if (input.sourceTemplateId) {
-        trackEvent("template_save", {
-          templateId: input.sourceTemplateId,
+        trackEvent("template_saved", {
+          source: "dashboard",
+          niche: businessDraft.business_type,
           category: result.savedResponse.category || "sem_categoria"
         });
         trackEvent("beta_template_used", {
@@ -806,10 +821,10 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           business_type: businessDraft.business_type
         });
       } else {
-        trackEvent("saved_response_create", {
+        trackEvent("saved_response_created", {
           source: input.responseId ? "ai" : "manual",
           category: result.savedResponse.category || "sem_categoria",
-          action: "create"
+          business_type: businessDraft.business_type
         });
         trackEvent("beta_response_saved", {
           source: input.responseId ? "ai" : "manual",
@@ -874,10 +889,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       setSavedResponses((current) => current.map((savedResponse) => (savedResponse.id === updated.id ? updated : savedResponse)));
       setEditingSavedResponseId(null);
       setSavedResponseDraft(emptySavedResponseDraft);
-      trackEvent("saved_response_edit", {
+      trackEvent("saved_response_edited", {
         category: updated.category || "sem_categoria",
-        source: getSavedResponseSource(updated),
-        action: "edit"
+        source: getSavedResponseSource(updated)
       });
       showFeedback("Resposta salva atualizada.");
     } catch (updateError) {
@@ -891,10 +905,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     try {
       await deleteSavedResponse(item.id);
       setSavedResponses((current) => current.filter((savedResponse) => savedResponse.id !== item.id));
-      trackEvent("saved_response_delete", {
+      trackEvent("saved_response_deleted", {
         category: item.category || "sem_categoria",
-        source: getSavedResponseSource(item),
-        action: "delete"
+        source: getSavedResponseSource(item)
       });
       showFeedback("Resposta excluida da biblioteca.");
     } catch (deleteError) {
@@ -922,10 +935,9 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       setSavedResponsesLoaded(true);
       setManualSavedResponseDraft(emptySavedResponseDraft);
       setShowManualSavedResponseForm(false);
-      trackEvent("saved_response_create_manual", {
+      trackEvent("saved_response_created", {
         category: result.savedResponse.category || "sem_categoria",
-        source: "manual",
-        action: "create_manual"
+        source: "manual"
       });
       showFeedback("Resposta manual criada na biblioteca.");
     } catch (createError) {
@@ -961,11 +973,10 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     try {
       const updated = await updateSavedResponseFavorite(item.id, nextFavorite);
       setSavedResponses((current) => current.map((savedResponse) => (savedResponse.id === updated.id ? updated : savedResponse)));
-      trackEvent(nextFavorite ? "saved_response_favorite" : "saved_response_unfavorite", {
+      trackEvent(nextFavorite ? "saved_response_favorited" : "saved_response_unfavorite", {
         category: updated.category || "sem_categoria",
         source: getSavedResponseSource(updated),
-        isFavorite: Boolean(updated.is_favorite),
-        action: nextFavorite ? "favorite" : "unfavorite"
+        isFavorite: Boolean(updated.is_favorite)
       });
       if (nextFavorite) {
         trackEvent("activation_favorite_created", {
@@ -988,6 +999,22 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       source: "template",
       title: template.title,
       content: template.content,
+      category: template.category
+    });
+  }
+
+  function handleUseTemplateAsBase(template: WhatsAppTemplate) {
+    setTab("assistant");
+    setGeneratedAnswer(template.content);
+    setGeneratedResponseId(null);
+    setQuestion("");
+    setResponseType("atendimento");
+    showFeedback("Template carregado para revisar, ajustar, copiar ou salvar.");
+    trackEvent("template_viewed", {
+      source: "use_as_base",
+      page: "/dashboard",
+      niche: template.niche,
+      business_type: template.businessType,
       category: template.category
     });
   }
@@ -1191,17 +1218,16 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               );
             });
         }
-        trackEvent("saved_response_copy", {
+        trackEvent("saved_response_copied", {
           category: savedResponse?.category || "sem_categoria",
           source: savedResponse ? getSavedResponseSource(savedResponse) : "library",
-          isFavorite: Boolean(savedResponse?.is_favorite),
-          action: "copy"
+          isFavorite: Boolean(savedResponse?.is_favorite)
         });
       }
       if (source === "template" && template) {
-        trackEvent("template_copy", {
-          templateId: template.id,
-          businessType: template.businessType,
+        trackEvent("template_copied", {
+          niche: template.niche,
+          business_type: template.businessType,
           category: template.category
         });
       }
@@ -1332,6 +1358,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         body: JSON.stringify({
           responseId: generatedResponseId,
           rating,
+          feedbackReason: rating === "negative" ? qualityReason : undefined,
           comment: qualityComment.trim() || undefined
         })
       });
@@ -1348,6 +1375,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             ? {
                 ...item,
                 quality_feedback_rating: rating,
+                quality_feedback_reason: rating === "negative" ? qualityReason : null,
                 quality_feedback_comment: qualityComment.trim() || null,
                 quality_feedback_created_at: new Date().toISOString()
               }
@@ -1483,6 +1511,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
     if (tab === "templates") {
       trackEvent("templates_view", {
         source: "dashboard"
+      });
+      trackEvent("template_viewed", {
+        source: "dashboard",
+        page: "/dashboard/templates",
+        business_type: businessDraft.business_type
       });
       trackEvent("activation_templates_viewed", {
         source: "dashboard",
@@ -2129,6 +2162,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{template.content}</p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     <button type="button" onClick={() => copyText(template.content, "template", template)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
+                    <button type="button" onClick={() => handleUseTemplateAsBase(template)} className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-100">Usar como base</button>
                     <button
                       type="button"
                       onClick={() => handleSaveTemplate(template)}
@@ -2220,7 +2254,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               </div>
               {generatedAnswer ? (
                 <>
-                  <p className="whitespace-pre-wrap rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-4 text-sm leading-7 text-emerald-50">{generatedAnswer}</p>
+                  <label className="grid gap-2 text-sm font-bold text-emerald-50">
+                    Revise e ajuste antes de copiar
+                    <textarea
+                      value={generatedAnswer}
+                      onChange={(event) => setGeneratedAnswer(event.target.value)}
+                      className="field-input min-h-56 resize-none border-emerald-400/30 bg-emerald-400/10 py-3 text-emerald-50 placeholder:text-emerald-100/50"
+                    />
+                  </label>
                   <div className="mt-4 rounded-lg border border-emerald-300/20 bg-emerald-300/10 p-4">
                     <h3 className="text-sm font-black text-emerald-50">Próximos passos</h3>
                     <p className="mt-2 text-sm leading-6 text-emerald-100">
@@ -2281,6 +2322,21 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                   <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.04] p-4">
                     <p className="text-sm font-black leading-6 text-slate-100">Essa resposta foi útil?</p>
                     <p className="mt-1 text-sm font-bold leading-6 text-slate-300">Copie, ajuste se precisar e envie manualmente pelo WhatsApp.</p>
+                    <label className="mt-3 grid gap-2 text-xs font-bold text-slate-300">
+                      Se não foi útil, escolha o motivo
+                      <select
+                        value={qualityReason}
+                        onChange={(event) => setQualityReason(event.target.value as QualityFeedbackReason)}
+                        disabled={Boolean(qualitySubmittedRating)}
+                        className="field-input text-sm"
+                      >
+                        {qualityFeedbackReasons.map((reason) => (
+                          <option value={reason.value} key={reason.value}>
+                            {reason.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                     <label className="mt-3 grid gap-2 text-xs font-bold text-slate-300">
                       O que poderia melhorar? (opcional)
                       <textarea
@@ -2742,6 +2798,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
                     <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-300">{template.content}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       <button type="button" onClick={() => copyText(template.content, "template", template)} className="rounded-md bg-white px-3 py-2 text-xs font-black text-slate-950">Copiar</button>
+                      <button type="button" onClick={() => handleUseTemplateAsBase(template)} className="rounded-md border border-white/10 bg-white/10 px-3 py-2 text-xs font-black text-slate-100">Usar como base</button>
                       <button
                         type="button"
                         onClick={() => handleSaveTemplate(template)}

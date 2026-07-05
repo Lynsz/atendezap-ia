@@ -79,6 +79,8 @@ export type TrackingEventName =
   | "demo_limit_reached"
   | "rate_limit_triggered"
   | "ai_generation_blocked_by_limit"
+  | "ai_response_generated"
+  | "ai_response_feedback_submitted"
   | "plan_upgrade_cta_clicked"
   | "signup_started"
   | "signup_completed"
@@ -117,8 +119,16 @@ export type TrackingEventName =
   | "templates_view"
   | "template_copy"
   | "template_save"
+  | "template_viewed"
+  | "template_copied"
+  | "template_saved"
   | "template_filter_change"
   | "template_search"
+  | "saved_response_created"
+  | "saved_response_copied"
+  | "saved_response_edited"
+  | "saved_response_favorited"
+  | "saved_response_deleted"
   | "subscription_active"
   | "feedback_page_view"
   | "feedback_submit"
@@ -187,7 +197,7 @@ declare global {
 
 const UTM_STORAGE_KEY = "atendezap_ia_utm_attribution_v1";
 const ATTRIBUTION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
-const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem|email|mail|phone|telefone|whatsapp|payment|pagamento|stripe|customer|checkout_session|subscription_id)/i;
+const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem|message|comment|comentario|email|mail|phone|telefone|whatsapp|payment|pagamento|stripe|customer|checkout_session|subscription_id)/i;
 const EMAIL_VALUE_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type StoredAttribution = UtmPayload & {

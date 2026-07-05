@@ -44,9 +44,10 @@ npm run validate
 - A versao 1.1 esta planejada como consolidacao operacional, nao como expansao grande de produto.
 - Prioridades: validar ambiente real, medir ativacao, acompanhar billing, suporte, feedback e custo OpenAI.
 - Sprint 2 da versao 1.1 entregou melhorias pequenas de ativacao: cadastro/login revisados, onboarding inicial mais curto, checklist de primeiros passos, exemplos por nicho, contador no campo de mensagem e tracking seguro `activation_*`.
+- Sprint 3 da versao 1.1 entregou melhorias de IA, templates e biblioteca: prompt mais conservador, orientacao por nicho, resposta editavel, templates como base, feedback de qualidade com motivo e tracking seguro da reutilizacao.
 - Dados ausentes devem ser registrados como `nao disponivel` ou `nao medido`; nao usar numeros estimados como se fossem reais.
 - Fora do escopo: WhatsApp API, envio automatico, CRM completo, app mobile, automacoes complexas, BI avancado e campanha grande.
-- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-sprint-2-plan.md`, `docs/version-1.1-sprint-2-smoke-test.md`, `docs/version-1.1-sprint-2-report.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
+- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-sprint-2-plan.md`, `docs/version-1.1-sprint-2-smoke-test.md`, `docs/version-1.1-sprint-2-report.md`, `docs/version-1.1-sprint-3-plan.md`, `docs/version-1.1-sprint-3-smoke-test.md`, `docs/version-1.1-sprint-3-report.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
 
 Comandos de validacao:
 
@@ -68,7 +69,10 @@ npm run validate
 - Cadastro/login com Supabase.
 - Onboarding no dashboard.
 - Geracao de respostas com IA em rota server-side.
+- Prompt com regras para nao inventar preco, desconto, estoque, prazo, entrega, agenda, endereco, disponibilidade, pagamento ou garantia.
+- Orientacoes simples por nicho para gerar respostas mais uteis e seguras.
 - Historico de respostas.
+- Templates por nicho, uso como base editavel e biblioteca de respostas salvas.
 - Limite mensal por plano.
 - Planos Starter, Pro e Premium.
 - Pro recomendado com primeiro mes por R$ 29 para novos usuarios.

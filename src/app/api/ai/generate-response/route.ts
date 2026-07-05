@@ -208,6 +208,23 @@ export async function POST(request: Request) {
       mode,
       plan: planName || "sem_plano"
     });
+    await trackServerAppEvent({
+      user_id: user.id,
+      event_name: "ai_response_generated",
+      source: "dashboard",
+      page: "/dashboard",
+      plan: planName || "sem_plano",
+      business_type: typeof businessDataForAi.business_type === "string" ? businessDataForAi.business_type : null,
+      metadata: {
+        source: "dashboard",
+        plan: planName || "sem_plano",
+        business_type: typeof businessDataForAi.business_type === "string" ? businessDataForAi.business_type : null,
+        category: payload.data.responseType,
+        response_length_range: generatedAnswer.length < 300 ? "short" : generatedAnswer.length < 900 ? "medium" : "long",
+        usage_count: nextUsage.used,
+        usage_limit: nextUsage.limit
+      }
+    });
     if (!previousResponse) {
       await trackServerAppEvent({
         user_id: user.id,

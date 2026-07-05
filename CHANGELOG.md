@@ -2,6 +2,43 @@
 
 ## [Unreleased]
 
+## [Version 1.1 Sprint 3]
+
+### Melhorado
+
+- Resposta gerada no dashboard pode ser revisada e ajustada antes de copiar ou salvar.
+- Templates recomendados agora podem ser usados como base editavel, sem envio automatico.
+- Admin de qualidade da IA prioriza motivos negativos agregados em vez de comentario livre.
+
+### Templates
+
+- Templates por nicho revisados para evitar promessa automatica de horario, garantia, estoque, entrega, prazo, pagamento ou desconto.
+- Testes reforcam nichos minimos, campos obrigatorios, IDs unicos, filtros e promessas proibidas obvias.
+
+### Biblioteca
+
+- Fluxos existentes de salvar, editar, copiar, favoritar e excluir foram preservados com tracking seguro atualizado.
+- Eventos de biblioteca normalizados para `saved_response_created`, `saved_response_copied`, `saved_response_edited`, `saved_response_favorited` e `saved_response_deleted`.
+
+### IA
+
+- Prompt server-side reforcado para respostas curtas, naturais, em portugues do Brasil e sem informacoes comerciais inventadas.
+- Orientacao tipada por nicho adicionada para delivery, restaurante, estetica, loja, assistencia tecnica, prestador de servico, autonomo e geral.
+- Feedback negativo ganhou motivo categorizado.
+
+### Seguranca
+
+- Tracking da Sprint 3 aceita apenas metadata categorica e bloqueia pergunta completa, resposta completa, comentario livre, contato, tokens, secrets e dados de pagamento.
+- OpenAI permanece server-side e `user_id` continua vindo da sessao nas rotas sensiveis.
+- Migration adiciona `feedback_reason` e eventos seguros da Sprint 3 sem desativar RLS.
+
+### Pendencias
+
+- Smoke autenticado em Preview/Producao.
+- Validacao de RLS real com dois usuarios.
+- Aplicar migration da Sprint 3 no Supabase real.
+- Consolidar metricas reais de qualidade da IA e uso de templates antes de novos ajustes.
+
 ## [Version 1.1 Sprint 2]
 
 ### Melhorado

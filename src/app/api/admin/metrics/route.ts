@@ -59,6 +59,7 @@ type FeedbackMetricRow = {
 
 type AiResponseFeedbackMetricRow = {
   rating: string | null;
+  feedback_reason?: string | null;
   comment: string | null;
   created_at: string;
 };
@@ -243,7 +244,7 @@ export async function GET(request: Request) {
       supabase.from("generated_responses").select("user_id, created_at").limit(20000),
       supabase.from("subscriptions").select("user_id, plan, plan_name, price, monthly_limit, status, acquisition_source, funnel_source, metadata, stripe_checkout_session_id, provider_subscription_id, stripe_subscription_id, created_at").limit(10000),
       supabase.from("user_feedback").select("type, status, created_at").limit(10000),
-      supabase.from("ai_response_feedback").select("rating, comment, created_at").limit(10000),
+      supabase.from("ai_response_feedback").select("rating, feedback_reason, comment, created_at").limit(10000),
       supabase.from("saved_responses").select("user_id, source_template_id, category, copy_count, is_favorite, created_at").limit(20000),
       supabase.from("events").select("event_name, metadata, created_at").limit(20000),
       supabase.from("app_events").select("event_name, metadata, created_at").limit(20000),
@@ -555,6 +556,12 @@ export async function GET(request: Request) {
         positiveFeedbacks: positiveAiFeedback.length,
         negativeFeedbacks: negativeAiFeedback.length,
         usefulRate: percent(positiveAiFeedback.length, aiResponseFeedback.length),
+        negativeReasons: topBreakdown(
+          negativeAiFeedback
+            .filter((item) => item.feedback_reason)
+            .map((item) => ({ label: cleanCampaignValue(item.feedback_reason) })),
+          8
+        ),
         recentComments: recentAiComments
       },
       campaign: {

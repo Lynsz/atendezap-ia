@@ -15,11 +15,14 @@
 * Preencher metricas reais de ativacao, suporte, billing, feedback e custo OpenAI.
 * Manter eventos sem pergunta completa, resposta completa, e-mail, telefone, token, secret ou dado de pagamento.
 * Sprint 3: confirmar em ambiente real o fluxo cadastro -> onboarding -> dashboard -> primeira resposta -> copiar/salvar.
+* Sprint 4: aplicar migration da Sprint 3 no Supabase real e validar feedback de qualidade com motivo.
 
 ## P2
 
 * Sprint 2 entregue: onboarding inicial simplificado e dashboard de usuario novo com checklist.
 * Sprint 2 entregue: exemplos por nicho no dashboard sem geracao automatica.
+* Sprint 3 entregue: prompt da IA reforcado contra informacoes inventadas e respostas longas.
+* Sprint 3 entregue: orientacao por nicho, templates revisados, resposta editavel e feedback negativo categorizado.
 * Melhorar onboarding novamente apenas com gargalos medidos.
 * Melhorar templates por nicho novamente apenas com uso real.
 * Melhorar qualidade da IA com base em feedback agregado.

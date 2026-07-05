@@ -20,6 +20,14 @@ describe("whatsapp templates catalog", () => {
     }
   });
 
+  it("mantem ids unicos e evita promessas automaticas em templates editaveis", () => {
+    expect(new Set(whatsappTemplates.map((template) => template.id)).size).toBe(whatsappTemplates.length);
+
+    for (const template of whatsappTemplates) {
+      expect(template.content).not.toMatch(/envio automatico|desconto garantido|estoque garantido|pagamento confirmado|entrega confirmada/i);
+    }
+  });
+
   it("filtra por nicho", () => {
     const templates = filterWhatsAppTemplates({ businessType: "Delivery" });
     expect(templates.length).toBeGreaterThanOrEqual(5);

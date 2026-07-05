@@ -31,8 +31,9 @@ Consolidar a operacao pos-MVP com validacao real, medicao minima e melhorias peq
 
 - Sprint 2: ajustar onboarding e primeira experiencia com base no risco documental do funil ainda nao medido.
 - Sprint 2: reforcar dashboard de usuario novo, checklist, exemplos por nicho, copiar/salvar e tracking seguro de ativacao.
+- Sprint 3: reforcar prompt, contexto por nicho, templates, biblioteca e feedback de qualidade sem ampliar o escopo.
 - Ajustar copy se houver duvida recorrente.
-- Ajustar prompt/templates se houver feedback agregado.
+- Ajustar prompt/templates novamente apenas se houver feedback agregado real.
 - Melhorar relatorios internos apenas para operacao.
 - Melhorar suporte/FAQ sem criar area complexa.
 
@@ -46,10 +47,19 @@ Consolidar a operacao pos-MVP com validacao real, medicao minima e melhorias peq
 
 ## Sprint 3 - Pendencias apos Sprint 2
 
-- Smoke autenticado em Preview/Producao.
-- RLS real com dois usuarios.
-- Consolidacao de metricas reais de ativacao.
+- Concluida com observacoes.
+- Prompt da IA, orientacoes por nicho, templates, biblioteca, feedback e tracking seguro revisados.
+- Smoke autenticado em Preview/Producao segue pendente.
+- RLS real com dois usuarios segue pendente.
+- Consolidacao de metricas reais de ativacao e qualidade segue pendente.
 - Ajustes adicionais apenas se dados reais mostrarem gargalo.
+
+## Sprint 4 - Pendencias de ambiente real
+
+- Rodar smoke autenticado em Preview/Producao.
+- Validar RLS real com dois usuarios.
+- Aplicar migrations pendentes no Supabase real.
+- Consolidar metricas reais de IA, templates, biblioteca, ativacao, billing e suporte.
 
 ## Fora do roadmap 1.1
 

@@ -60,9 +60,44 @@ describe("safe app events", () => {
     expect(sanitizeAppEvent({ event_name: "activation_response_copied" })?.event_name).toBe("activation_first_response_copied");
     expect(sanitizeAppEvent({ event_name: "activation_response_saved" })?.event_name).toBe("activation_first_response_saved");
     expect(sanitizeAppEvent({ event_name: "activation_template_viewed" })?.event_name).toBe("activation_templates_viewed");
+    expect(sanitizeAppEvent({ event_name: "ai_feedback_submitted" })?.event_name).toBe("ai_response_feedback_submitted");
     expect(sanitizeAppEvent({ event_name: "template_copy" })?.event_name).toBe("template_copied");
+    expect(sanitizeAppEvent({ event_name: "template_save" })?.event_name).toBe("template_saved");
+    expect(sanitizeAppEvent({ event_name: "saved_response_create_manual" })?.event_name).toBe("saved_response_created");
+    expect(sanitizeAppEvent({ event_name: "saved_response_edit" })?.event_name).toBe("saved_response_edited");
+    expect(sanitizeAppEvent({ event_name: "saved_response_favorite" })?.event_name).toBe("saved_response_favorited");
+    expect(sanitizeAppEvent({ event_name: "saved_response_delete" })?.event_name).toBe("saved_response_deleted");
     expect(sanitizeAppEvent({ event_name: "saved_responses_view" })?.event_name).toBe("library_viewed");
     expect(sanitizeAppEvent({ event_name: "unknown_event" })).toBeNull();
+  });
+
+  it("allows Sprint 3 quality events with categorical metadata only", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "ai_response_feedback_submitted",
+      page: "/dashboard",
+      source: "assistant",
+      plan: "pro",
+      business_type: "Delivery",
+      metadata: {
+        niche: "delivery",
+        feedbackRating: "negative",
+        feedbackReason: "too_generic",
+        comment: "Texto livre do cliente",
+        message: "resposta completa",
+        email: "cliente@example.com"
+      }
+    });
+
+    expect(event?.metadata).toEqual({
+      business_type: "Delivery",
+      feedback_rating: "negative",
+      feedback_reason: "too_generic",
+      niche: "delivery",
+      page: "/dashboard",
+      plan: "pro",
+      source: "assistant"
+    });
   });
 
   it("allows activation events with safe metadata only", async () => {

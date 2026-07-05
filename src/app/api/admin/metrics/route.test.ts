@@ -42,7 +42,8 @@ function createMetricsSupabase() {
       { type: "elogio", status: "resolved", created_at: new Date().toISOString() }
     ],
     ai_response_feedback: [
-      { rating: "positive", comment: null, created_at: new Date().toISOString() }
+      { rating: "positive", feedback_reason: null, comment: null, created_at: new Date().toISOString() },
+      { rating: "negative", feedback_reason: "too_generic", comment: "Texto livre", created_at: new Date().toISOString() }
     ],
     saved_responses: [
       { user_id: "user_1", source_template_id: null, category: "Atendimento", copy_count: 1, is_favorite: true, created_at: new Date().toISOString() },
@@ -105,6 +106,8 @@ describe("GET /api/admin/metrics", () => {
     expect(body.operationalHealth.checkoutsStartedToday).toBe(1);
     expect(body.operationalHealth.stripeWebhooksProcessedToday).toBe(1);
     expect(body.feedback.byType.bug).toBe(1);
+    expect(body.aiQuality.negativeFeedbacks).toBe(1);
+    expect(body.aiQuality.negativeReasons).toEqual([{ label: "too_generic", count: 1 }]);
     expect(body.activation.newUsersLast7Days).toBe(2);
     expect(body.activation.onboardingCompletedLast7Days).toBe(1);
     expect(body.activation.firstResponsesGenerated).toBe(1);

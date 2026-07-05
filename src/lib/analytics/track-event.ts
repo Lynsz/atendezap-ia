@@ -12,7 +12,16 @@ export const safeAppEventNames = [
   "checkout_started",
   "usage_limit_reached",
   "support_request_created",
-  "ai_feedback_submitted",
+  "ai_response_generated",
+  "ai_response_feedback_submitted",
+  "template_viewed",
+  "template_copied",
+  "template_saved",
+  "saved_response_created",
+  "saved_response_copied",
+  "saved_response_edited",
+  "saved_response_favorited",
+  "saved_response_deleted",
   "activation_signup_completed",
   "activation_onboarding_started",
   "activation_onboarding_completed",
@@ -70,12 +79,16 @@ const eventAliasMap: Record<string, SafeAppEventName> = {
   activation_response_copied: "activation_first_response_copied",
   activation_response_saved: "activation_first_response_saved",
   activation_template_viewed: "activation_templates_viewed",
-  saved_response_copy: "response_copied",
+  ai_feedback_submitted: "ai_response_feedback_submitted",
+  saved_response_copy: "saved_response_copied",
+  saved_response_create: "saved_response_created",
+  saved_response_create_manual: "saved_response_created",
+  saved_response_edit: "saved_response_edited",
+  saved_response_favorite: "saved_response_favorited",
+  saved_response_delete: "saved_response_deleted",
   template_copy: "template_copied",
   template_save: "template_saved",
   activation_template_saved: "template_saved",
-  saved_response_create: "response_saved",
-  saved_response_create_manual: "response_saved",
   saved_responses_view: "library_viewed",
   pricing_page_view: "pricing_viewed",
   pricing_view: "pricing_viewed",
@@ -85,9 +98,12 @@ const eventAliasMap: Record<string, SafeAppEventName> = {
 const allowedMetadataKeys = new Set([
   "plan",
   "business_type",
+  "niche",
   "source",
   "page",
   "category",
+  "feedback_rating",
+  "feedback_reason",
   "template_niche",
   "response_length_range",
   "usage_count",
@@ -107,6 +123,8 @@ function normalizeEventName(eventName: string): SafeAppEventName | null {
 function normalizeKey(key: string) {
   if (key === "businessType") return "business_type";
   if (key === "templateNiche") return "template_niche";
+  if (key === "feedbackRating") return "feedback_rating";
+  if (key === "feedbackReason") return "feedback_reason";
   if (key === "responseLengthRange") return "response_length_range";
   if (key === "usageCount" || key === "used") return "usage_count";
   if (key === "usageLimit" || key === "limit") return "usage_limit";

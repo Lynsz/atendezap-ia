@@ -25,6 +25,9 @@
 - [x] Primeira resposta revisada para orientar revisar, copiar e enviar manualmente.
 - [x] Copia/salvamento com feedback visual e eventos seguros.
 - [x] Templates/exemplos por nicho revisados sem gerar automaticamente.
+- [x] Prompt da IA revisado na Sprint 3 para respostas curtas e sem informacoes inventadas.
+- [x] Orientacao por nicho adicionada na Sprint 3.
+- [x] Feedback de qualidade da IA com motivo categorizado adicionado.
 - [ ] Pricing revisado sem prometer automacao do WhatsApp.
 - [ ] Suporte/FAQ revisado com base em categorias reais.
 
@@ -54,6 +57,23 @@
 - [x] Admin existente validado/ajustado para agregados de ativacao.
 - [ ] Smoke real em Preview/Producao movido para Sprint 3.
 - [ ] Metricas reais de ativacao seguem `nao medido` ate operacao real.
+
+## Sprint 3
+
+- [x] Plano da Sprint 3 criado.
+- [x] Smoke test da Sprint 3 criado.
+- [x] Relatorio da Sprint 3 criado.
+- [x] Prompt server-side revisado.
+- [x] Orientacoes por nicho implementadas.
+- [x] Templates revisados contra promessas automaticas obvias.
+- [x] Templates recomendados podem ser usados como base editavel.
+- [x] Resposta gerada pode ser ajustada antes de copiar ou salvar.
+- [x] Feedback negativo por motivo categorizado.
+- [x] Tracking seguro da Sprint 3 adicionado.
+- [x] Admin mostra motivos negativos agregados.
+- [ ] Smoke real em Preview/Producao movido para Sprint 4.
+- [ ] RLS real com dois usuarios movido para Sprint 4.
+- [ ] Metricas reais de qualidade seguem `nao medido` ate operacao real.
 
 ## Saida
 

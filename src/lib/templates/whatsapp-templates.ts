@@ -78,7 +78,7 @@ const templatesByBusinessType: Record<BusinessTypeOption, TemplateSeed[]> = {
     {
       category: "Confirmacao",
       title: "Confirmacao de horario",
-      content: "Confirmando seu horario: [servico] no dia [data], as [horario]. Se precisar remarcar, me avise com antecedencia para eu reorganizar a agenda."
+      content: "Posso deixar separado para conferir: [servico] no dia [data], as [horario]. Antes de fechar, vou verificar a agenda e te confirmo."
     }
   ],
   "Assistencia tecnica": [
@@ -95,7 +95,7 @@ const templatesByBusinessType: Record<BusinessTypeOption, TemplateSeed[]> = {
     {
       category: "Pos-venda",
       title: "Garantia",
-      content: "A garantia cobre [condicoes da garantia] pelo periodo de [periodo], conforme o servico realizado. Se notar qualquer problema relacionado, nos chame por aqui."
+      content: "Quando houver garantia, as condicoes sao [condicoes da garantia] pelo periodo de [periodo], conforme o servico realizado. Se notar qualquer problema relacionado, nos chame por aqui para avaliarmos."
     },
     {
       category: "Informacoes gerais",

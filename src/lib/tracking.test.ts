@@ -92,6 +92,46 @@ describe("tracking seguro", () => {
     expect(payload.email).toBeUndefined();
   });
 
+  it("mantem eventos de qualidade da IA com motivo categorizado e sem comentario livre", async () => {
+    const gtag = vi.fn();
+    vi.stubGlobal("window", {
+      location: { pathname: "/dashboard", search: "" },
+      localStorage: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn()
+      },
+      gtag
+    });
+    vi.stubGlobal("document", { title: "AtendeZap IA" });
+
+    const { trackEvent } = await import("./tracking");
+    trackEvent("ai_response_feedback_submitted", {
+      source: "assistant",
+      page: "/dashboard",
+      business_type: "Delivery",
+      niche: "delivery",
+      feedbackRating: "negative",
+      feedbackReason: "invented_info",
+      comment: "Inventou um preco",
+      answer: "resposta completa",
+      email: "cliente@example.com"
+    });
+
+    const payload = gtag.mock.calls[0][2] as Record<string, unknown>;
+    expect(payload).toMatchObject({
+      source: "assistant",
+      page: "/dashboard",
+      business_type: "Delivery",
+      niche: "delivery",
+      feedbackRating: "negative",
+      feedbackReason: "invented_info"
+    });
+    expect(payload.comment).toBeUndefined();
+    expect(payload.answer).toBeUndefined();
+    expect(payload.email).toBeUndefined();
+  });
+
   it("mantem eventos de nicho com metadados seguros", async () => {
     const gtag = vi.fn();
     vi.stubGlobal("window", {

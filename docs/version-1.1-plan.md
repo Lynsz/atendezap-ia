@@ -7,6 +7,7 @@
 - base de dados reais: insuficiente
 - P0 confirmado: nenhum
 - sprint 2: concluida com observacoes, focada em ativacao e experiencia inicial
+- sprint 3: concluida com observacoes, focada em IA, templates, biblioteca e feedback de qualidade
 
 ## Objetivo
 
@@ -71,6 +72,25 @@ Consolidar a operacao pos-MVP com validacao real, medicao minima e melhorias peq
 - Validar smoke autenticado real em Preview/Producao.
 - Validar RLS real com dois usuarios.
 - Consolidar metricas reais de ativacao antes de novas melhorias de produto.
+
+## Entregas da Sprint 3
+
+- Plano, smoke test e relatorio da Sprint 3 criados.
+- Prompt da IA reforcado para respostas curtas, naturais e sem informacoes comerciais inventadas.
+- Orientacao simples por nicho adicionada para delivery, restaurante, estetica, loja, assistencia tecnica, prestador de servico, autonomo e geral.
+- Templates revisados para evitar promessas automaticas e confirmar apenas informacoes verificadas.
+- Templates recomendados ganharam acao de usar como base editavel, sem envio automatico.
+- Resposta gerada no dashboard ficou editavel antes de copiar ou salvar.
+- Feedback negativo ganhou motivo categorizado.
+- Admin passou a mostrar motivos negativos agregados para qualidade da IA.
+- Tracking seguro da Sprint 3 adicionado sem pergunta completa, resposta completa, comentario livre, contato, token, secret ou dado de pagamento.
+
+## Pendencias movidas para Sprint 4
+
+- Validar smoke autenticado real em Preview/Producao.
+- Validar RLS real com dois usuarios.
+- Aplicar a migration da Sprint 3 no Supabase real.
+- Consolidar metricas reais de qualidade da IA, uso de templates e ativacao antes de novas melhorias de produto.
 
 ## Fora do escopo
 

@@ -65,6 +65,7 @@ export type GeneratedResponse = {
   business_type?: string | null;
   brand_tone?: string | null;
   quality_feedback_rating?: string | null;
+  quality_feedback_reason?: string | null;
   quality_feedback_comment?: string | null;
   quality_feedback_created_at?: string | null;
   created_at: string;
@@ -150,6 +151,7 @@ export type AiResponseFeedback = {
   user_id: string;
   response_id: string;
   rating: "positive" | "negative";
+  feedback_reason?: string | null;
   comment: string | null;
   business_type: string | null;
   created_at: string;
