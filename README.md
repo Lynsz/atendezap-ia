@@ -6,15 +6,16 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 
 ## Status
 
-- Versao 1.0 consolidada documentalmente.
-- MVP validado.
-- Pronto para producao controlada quando o checklist do ambiente real estiver verde.
-- Pronto para campanhas pequenas com baixo orcamento depois de validar checkout, webhook, Supabase, Resend, OpenAI, tracking, admin e suporte.
-- Ainda nao pronto para escala ampla.
+- Versao 1.1 fechada com observacoes para operacao controlada.
+- SaaS gera respostas para copiar, ajustar e enviar manualmente.
+- Nao envia mensagens automaticamente no WhatsApp.
+- Nao e CRM.
+- Projeto privado; nao tornar o repositorio publico.
+- Ainda depende de smoke autenticado em Preview/Producao, RLS real com dois usuarios, Stripe em ambiente final e GitHub Actions visualmente verde antes de campanha externa.
 
 ## Status do MVP
 
-- MVP funcional, com fechamento final bloqueado ate smoke autenticado em Preview/Producao e validacoes reais de Supabase/RLS e Stripe.
+- MVP funcional, com pendencias de ambiente real documentadas desde o fechamento do MVP.
 - Gera respostas com IA para copiar, ajustar e enviar manualmente.
 - Nao envia mensagens automaticamente no WhatsApp.
 - Nao e CRM.
@@ -46,9 +47,10 @@ npm run validate
 - Sprint 2 da versao 1.1 entregou melhorias pequenas de ativacao: cadastro/login revisados, onboarding inicial mais curto, checklist de primeiros passos, exemplos por nicho, contador no campo de mensagem e tracking seguro `activation_*`.
 - Sprint 3 da versao 1.1 entregou melhorias de IA, templates e biblioteca: prompt mais conservador, orientacao por nicho, resposta editavel, templates como base, feedback de qualidade com motivo e tracking seguro da reutilizacao.
 - Sprint 4 da versao 1.1 entregou revisao operacional de billing, assinatura, suporte, feedback, admin, eventos seguros e monitoramento de custo OpenAI.
+- Fechamento da versao 1.1 registrado como aprovado com observacoes em `docs/version-1.1-final-report.md` e `docs/version-1.1-final-decision.md`.
 - Dados ausentes devem ser registrados como `nao disponivel` ou `nao medido`; nao usar numeros estimados como se fossem reais.
 - Fora do escopo: WhatsApp API, envio automatico, CRM completo, app mobile, automacoes complexas, BI avancado e campanha grande.
-- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-sprint-2-plan.md`, `docs/version-1.1-sprint-2-smoke-test.md`, `docs/version-1.1-sprint-2-report.md`, `docs/version-1.1-sprint-3-plan.md`, `docs/version-1.1-sprint-3-smoke-test.md`, `docs/version-1.1-sprint-3-report.md`, `docs/version-1.1-sprint-4-plan.md`, `docs/version-1.1-sprint-4-smoke-test.md`, `docs/version-1.1-sprint-4-report.md`, `docs/version-1.1-final-readiness-checklist.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
+- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-sprint-2-plan.md`, `docs/version-1.1-sprint-2-smoke-test.md`, `docs/version-1.1-sprint-2-report.md`, `docs/version-1.1-sprint-3-plan.md`, `docs/version-1.1-sprint-3-smoke-test.md`, `docs/version-1.1-sprint-3-report.md`, `docs/version-1.1-sprint-4-plan.md`, `docs/version-1.1-sprint-4-smoke-test.md`, `docs/version-1.1-sprint-4-report.md`, `docs/version-1.1-final-checklist.md`, `docs/version-1.1-final-smoke-test.md`, `docs/version-1.1-final-report.md`, `docs/version-1.1-final-decision.md`, `docs/release-notes-1.1.md`, `docs/post-1.1-backlog.md`, `docs/post-1.1-plan.md`, `docs/version-1.1-final-readiness-checklist.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
 
 Comandos de validacao:
 

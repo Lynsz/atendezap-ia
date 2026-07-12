@@ -1,73 +1,80 @@
 # Release Notes - AtendeZap IA 1.1
 
-## Tipo
-
-Minor release de estabilidade.
-
 ## Resumo
 
-Versao focada em estabilizacao pos-go-live, pos-campanha pequena e pos-escala cautelosa. A 1.1 fecha documentacao, criterios operacionais, revisoes de billing, IA, ativacao, suporte, campanhas e uma correcao P1 de privacidade operacional no suporte.
+A versao 1.1 melhora estabilidade, ativacao, qualidade da IA, templates, biblioteca, billing, suporte, admin e operacao.
 
-## Melhorias entregues
+## Principais melhorias
 
-- Plano de execucao da 1.1 criado.
-- Criterios de escala cautelosa consolidados.
-- Backlog, roadmap, auditoria e prontidao atualizados para a release estavel.
-- QA final da 1.1 documentado com pendencias externas separadas.
+* Onboarding inicial mais curto.
+* Dashboard com checklist de primeiros passos.
+* Exemplos por nicho sem geracao automatica.
+* Resposta gerada editavel antes de copiar ou salvar.
+* Biblioteca de respostas reforcada.
+* Pagina de assinatura mais clara.
+* Eventos operacionais mais seguros.
 
-## Correcoes entregues
+## Correcoes importantes
 
-- Suporte do usuario nao retorna nem exibe mais `admin_notes`; notas internas permanecem no admin protegido.
+* Tracking passou a bloquear campos livres sensiveis.
+* Templates foram revisados para evitar promessas de preco, prazo, estoque, agenda, garantia ou envio automatico.
+* Admin deixou de priorizar comentario livre de feedback da IA.
+* Admin overview deixou de exibir texto livre completo de suporte e feedback.
 
 ## Seguranca
 
-- Repositorio permanece privado.
-- Sem instrucao para tornar o repositorio publico.
-- Sem secrets reais adicionados.
-- Sem `.env.local` versionado.
-- Suporte corrigido para nao expor notas internas ao usuario.
-- Tracking e logs continuam sem conteudo completo de perguntas, respostas, mensagens, e-mails ou dados de pagamento.
+* Secrets permanecem fora do client.
+* `check:secrets` permanece ativo.
+* Service role fica restrita ao backend.
+* Eventos e logs seguem sanitizados.
+* Admin continua protegido por login e `ADMIN_EMAILS`.
 
 ## Billing
 
-- Checkout, portal, webhook, status de assinatura, pagamentos falhos, cancelamento e feedback de churn permanecem documentados.
-- Validacao real de Stripe segue como pendencia antes de nova escala.
-- Nao ha cobranca fora da Stripe nem armazenamento de dados de cartao.
+* Planos Starter, Pro e Premium revisados.
+* Plano Pro mantem oferta de primeiro mes por R$ 29 para novos usuarios.
+* Checkout usa `planId` e Price ID server-side.
+* Portal usa customer buscado no servidor.
+* Webhook Stripe valida assinatura e salva apenas resumo seguro.
 
 ## IA
 
-- Geracao autenticada continua server-side.
-- Limite mensal e status de assinatura sao verificados antes da chamada OpenAI.
-- Falhas antes da persistencia nao contam como uso.
-- Demo publica segue com rate limit e fallback quando OpenAI nao esta configurada.
+* Prompt server-side revisado para respostas curtas e naturais.
+* Contexto do negocio e tom escolhido sao usados.
+* Prompt evita inventar preco, desconto, estoque, prazo, entrega, endereco, horario, agenda, link, garantia e pagamento.
+* Limite mensal e verificado antes da OpenAI.
 
-## Ativacao
+## Templates e biblioteca
 
-- Checklist de primeiros passos, primeira resposta, copiar, salvar, templates, favoritos e planos permanecem como fluxo de ativacao leve.
-- Produto continua deixando claro que a resposta deve ser revisada e enviada manualmente.
+* Templates por nicho revisados.
+* Templates recomendados podem ser usados como base editavel.
+* Biblioteca mantem criar, listar, buscar, filtrar, editar, copiar, favoritar e excluir.
 
-## Campanhas
+## Suporte e feedback
 
-- Escala cautelosa segue com dados insuficientes para aumento.
-- Proxima decisao deve depender de visitantes, leads, cadastros, onboarding, primeira resposta, checkout, assinatura, suporte, webhook e custo de IA agregados.
+* Suporte valida categoria e limita mensagem.
+* Feedback da IA aceita util/nao util e motivo negativo.
+* Comentario opcional segue limitado e nao entra em analytics.
 
-## Documentacao
+## Admin e operacao
 
-- `docs/version-1.1-execution-plan.md`
-- `docs/version-1.1-final-report.md`
-- `docs/version-1.1-qa-report.md`
-- `docs/version-1.1-release-checklist.md`
-- `docs/project-audit.md`
-- `docs/final-readiness-report.md`
-- `docs/roadmap-post-1.0.md`
-- `docs/roadmap-management.md`
-- `docs/product-backlog.md`
-- `CHANGELOG.md`
+* Admin mostra metricas e agregados seguros.
+* Eventos novos cobrem checkout finalizado/cancelado, portal, admin, aviso de uso OpenAI e webhook Stripe.
+* Monitoramento de custo OpenAI foi documentado.
 
-## Pendencias
+## O que continua fora do escopo
 
-- Rodar validacao completa final.
-- Validar staging/producao com Supabase, Stripe, OpenAI, Resend, tracking, admin e health check.
-- Preencher relatorios de campanha apenas com dados agregados reais.
-- Validar RLS com dois usuarios reais.
+* envio automatico para WhatsApp
+* integracao direta com WhatsApp
+* CRM completo
+* app mobile
+* automacoes complexas
 
+## Pendencias conhecidas
+
+* Smoke autenticado em Preview/Producao.
+* RLS real com dois usuarios.
+* Stripe checkout, portal e webhook assinado no ambiente final.
+* Aplicar migrations pendentes no Supabase real.
+* Confirmar GitHub Actions verde.
+* Consolidar metricas reais de operacao.

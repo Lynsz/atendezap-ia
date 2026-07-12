@@ -2,6 +2,57 @@
 
 ## [Unreleased]
 
+## [1.1.0]
+
+### Adicionado
+
+- Checklist final, smoke test final, relatorio final, decisao final e release notes da versao 1.1.
+- Backlog e plano pos-1.1 para orientar operacao controlada e proximos ciclos.
+- Eventos operacionais seguros para checkout concluido/cancelado, portal de billing, admin, aviso de uso OpenAI e webhook Stripe.
+
+### Melhorado
+
+- Onboarding, dashboard inicial, primeira experiencia, templates, biblioteca, assinatura, suporte e admin foram consolidados ao longo das sprints 1.1.
+- README atualizado para refletir o fechamento da versao 1.1 com observacoes.
+
+### Corrigido
+
+- Admin overview deixa de retornar texto livre completo de suporte e feedback no resumo operacional.
+- Tracking e analytics reforcados para bloquear conteudo livre sensivel.
+- Categorias principais de suporte alinhadas ao uso operacional da versao 1.1.
+
+### Seguranca
+
+- OpenAI, Stripe secret, Stripe webhook secret e Supabase service role permanecem server-side.
+- Eventos continuam sem pergunta completa, resposta completa, e-mail, telefone, token, secret, dados de pagamento ou payload Stripe completo.
+- `check:secrets` permanece ativo e validado localmente.
+
+### Billing
+
+- Planos, limites, pagina de assinatura, checkout, portal e webhook revisados.
+- Plano Pro mantem texto de primeiro mes por R$ 29 para novos usuarios.
+- Checkout continua sem aceitar preco vindo do client.
+
+### IA
+
+- Prompt server-side revisado para respostas curtas, naturais e sem informacoes comerciais inventadas.
+- Limite mensal continua antes da OpenAI; falha nao consome uso e sucesso incrementa uso.
+
+### Operacao
+
+- Versao 1.1 fechada com observacoes para operacao controlada.
+- Monitoramento de custo OpenAI documentado.
+- Admin protegido e metricas agregadas seguras preservadas.
+
+### Pendencias conhecidas
+
+- Smoke autenticado em Preview/Producao.
+- RLS real com dois usuarios.
+- Stripe Checkout, Customer Portal e webhook assinado no ambiente final.
+- Aplicar migrations pendentes no Supabase real.
+- Confirmar GitHub Actions verde.
+- Consolidar metricas reais de billing, suporte, feedback, ativacao e custo OpenAI.
+
 ## [Version 1.1 Sprint 4]
 
 ### Billing
