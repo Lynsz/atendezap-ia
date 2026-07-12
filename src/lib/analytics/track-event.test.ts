@@ -68,6 +68,13 @@ describe("safe app events", () => {
     expect(sanitizeAppEvent({ event_name: "saved_response_favorite" })?.event_name).toBe("saved_response_favorited");
     expect(sanitizeAppEvent({ event_name: "saved_response_delete" })?.event_name).toBe("saved_response_deleted");
     expect(sanitizeAppEvent({ event_name: "saved_responses_view" })?.event_name).toBe("library_viewed");
+    expect(sanitizeAppEvent({ event_name: "saved_response_duplicate" })?.event_name).toBe("saved_response_duplicate");
+    expect(sanitizeAppEvent({ event_name: "saved_response_unfavorite" })?.event_name).toBe("saved_response_unfavorite");
+    expect(sanitizeAppEvent({ event_name: "saved_response_filter" })?.event_name).toBe("saved_response_filter");
+    expect(sanitizeAppEvent({ event_name: "saved_response_filter_favorites" })?.event_name).toBe("saved_response_filter_favorites");
+    expect(sanitizeAppEvent({ event_name: "saved_response_search" })?.event_name).toBe("saved_response_search");
+    expect(sanitizeAppEvent({ event_name: "saved_response_sort_change" })?.event_name).toBe("saved_response_sort_change");
+    expect(sanitizeAppEvent({ event_name: "activation_favorite_created" })?.event_name).toBe("activation_favorite_created");
     expect(sanitizeAppEvent({ event_name: "unknown_event" })).toBeNull();
   });
 

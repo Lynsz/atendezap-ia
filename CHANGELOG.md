@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Corrigido
+
+- Allowlist segura de eventos alinhada aos eventos de ativacao e biblioteca ja disparados pelo dashboard.
+
 ## [1.1.0]
 
 ### Adicionado
