@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { trackServerAppEvent } from "@/lib/analytics/server";
 import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
@@ -72,6 +73,16 @@ export async function POST(request: Request) {
 
     await logEvent("portal_session_created", {
       source: "billing_page"
+    });
+    await trackServerAppEvent({
+      user_id: user.id,
+      event_name: "billing_portal_opened",
+      source: "billing_page",
+      page: "/assinatura",
+      metadata: {
+        source: "billing_page",
+        status: "created"
+      }
     });
     serverLog({ event: "portal_session_created", route: "/api/stripe/create-portal-session", userId: user.id, status: "ok" });
     return Response.json({ ok: true, url: portalSession.url });

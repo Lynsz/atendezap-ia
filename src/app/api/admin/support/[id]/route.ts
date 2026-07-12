@@ -16,6 +16,32 @@ type RouteContext = {
 
 const idSchema = z.string().uuid("Solicitacao invalida.");
 
+function maskEmail(email?: string | null) {
+  if (!email) return null;
+  const [local, domain] = email.split("@");
+  if (!local || !domain) return "[email]";
+  return `${local.slice(0, 2)}***@${domain}`;
+}
+
+function toSafeAdminSupportRequest(row: Record<string, unknown>) {
+  const userId = typeof row.user_id === "string" ? row.user_id : null;
+  return {
+    id: row.id,
+    user_id: row.user_id,
+    user_id_short: userId ? (userId.length > 12 ? `${userId.slice(0, 8)}...${userId.slice(-4)}` : userId) : null,
+    user_email_masked: typeof row.email === "string" ? maskEmail(row.email) : null,
+    email: null,
+    category: row.category,
+    subject: "Assunto oculto no resumo seguro",
+    message: "Mensagem de suporte ocultada no resumo admin. Use categoria, status e notas operacionais.",
+    status: row.status,
+    priority: row.priority,
+    admin_notes: row.admin_notes,
+    created_at: row.created_at,
+    updated_at: row.updated_at
+  };
+}
+
 function jsonError(error: unknown) {
   if (error instanceof AppError) {
     return NextResponse.json({ error: error.message }, { status: error.status });
@@ -66,7 +92,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
 
     serverLog({ event: "admin_support_status_updated", route: "/api/admin/support/[id]", userId, status: "ok", metadata: { request_status: payload.status || "unchanged", priority: payload.priority || "unchanged" } });
-    return NextResponse.json({ supportRequest: data });
+    return NextResponse.json({ supportRequest: toSafeAdminSupportRequest(data as Record<string, unknown>) });
   } catch (error) {
     serverLog({ level: "warn", event: "admin_support_update_failed", route: "/api/admin/support/[id]", userId, error });
     return jsonError(error);

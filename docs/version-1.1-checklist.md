@@ -28,8 +28,8 @@
 - [x] Prompt da IA revisado na Sprint 3 para respostas curtas e sem informacoes inventadas.
 - [x] Orientacao por nicho adicionada na Sprint 3.
 - [x] Feedback de qualidade da IA com motivo categorizado adicionado.
-- [ ] Pricing revisado sem prometer automacao do WhatsApp.
-- [ ] Suporte/FAQ revisado com base em categorias reais.
+- [x] Pricing revisado sem prometer automacao do WhatsApp.
+- [x] Suporte revisado com categorias operacionais da Sprint 4; categorias reais seguem `nao disponivel`.
 
 ## Seguranca
 
@@ -74,6 +74,22 @@
 - [ ] Smoke real em Preview/Producao movido para Sprint 4.
 - [ ] RLS real com dois usuarios movido para Sprint 4.
 - [ ] Metricas reais de qualidade seguem `nao medido` ate operacao real.
+
+## Sprint 4
+
+- [x] Plano da Sprint 4 criado.
+- [x] Smoke test da Sprint 4 criado.
+- [x] Relatorio operacional da Sprint 4 criado.
+- [x] Relatorio da Sprint 4 criado.
+- [x] Checklist final da versao 1.1 criado.
+- [x] Eventos operacionais seguros adicionados.
+- [x] Suporte revisado com categorias principais da operacao.
+- [x] Admin overview revisado para nao devolver texto livre completo de suporte e feedback.
+- [x] Monitoramento de custo OpenAI revisado.
+- [ ] Smoke real em Preview/Producao.
+- [ ] RLS real com dois usuarios.
+- [ ] Stripe checkout, portal e webhook assinado no ambiente final.
+- [ ] Metricas reais de billing, suporte, feedback e custo seguem `nao medido` ate operacao real.
 
 ## Saida
 

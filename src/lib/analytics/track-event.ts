@@ -10,10 +10,16 @@ export const safeAppEventNames = [
   "library_viewed",
   "pricing_viewed",
   "checkout_started",
+  "checkout_completed",
+  "checkout_cancelled",
+  "billing_portal_opened",
   "usage_limit_reached",
   "support_request_created",
   "ai_response_generated",
   "ai_response_feedback_submitted",
+  "admin_dashboard_viewed",
+  "openai_usage_warning",
+  "stripe_webhook_received",
   "template_viewed",
   "template_copied",
   "template_saved",
@@ -108,6 +114,8 @@ const allowedMetadataKeys = new Set([
   "response_length_range",
   "usage_count",
   "usage_limit",
+  "status",
+  "event_type",
   "error_type"
 ]);
 

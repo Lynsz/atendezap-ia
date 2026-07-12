@@ -2,6 +2,44 @@
 
 ## [Unreleased]
 
+## [Version 1.1 Sprint 4]
+
+### Billing
+
+- Pagina `/assinatura`, planos, limites, checkout, portal e webhook revisados contra os criterios operacionais da Sprint 4.
+- Eventos seguros adicionados para checkout concluido/cancelado e abertura do portal de billing.
+- Webhook Stripe passa a registrar recebimento seguro sem salvar payload completo.
+
+### Operacao
+
+- Monitoramento de custo OpenAI atualizado com estimativa por volume, sinais de abuso e investigacao de consumo anormal.
+- Aviso operacional `openai_usage_warning` adicionado quando o uso passa de 80% do limite.
+- Relatorios, smoke test e checklist final da Sprint 4 criados.
+
+### Admin
+
+- `admin_dashboard_viewed` adicionado na API protegida de metricas.
+- Overview admin deixa de devolver texto livre completo de suporte e feedback no resumo operacional.
+
+### Suporte
+
+- Categorias principais de suporte alinhadas a acesso, erro de IA, assinatura, limite mensal, feedback do produto, bug e outro.
+- Categorias legadas continuam aceitas para compatibilidade.
+
+### Seguranca
+
+- Migration `0030_sprint4_operational_events.sql` amplia a allowlist de eventos seguros.
+- Testes reforcam sanitizacao de eventos e rejeicao de comentario longo/campos sensiveis em feedback de IA.
+- Nenhum secret real ou `.env.local` foi adicionado.
+
+### Pendencias
+
+- Smoke autenticado em Preview/Producao.
+- RLS real com dois usuarios.
+- Stripe Checkout, Customer Portal e webhook assinado no ambiente final.
+- Aplicar migrations pendentes no Supabase real.
+- Consolidar metricas reais de billing, suporte, feedback, ativacao e custo OpenAI.
+
 ## [Version 1.1 Sprint 3]
 
 ### Melhorado

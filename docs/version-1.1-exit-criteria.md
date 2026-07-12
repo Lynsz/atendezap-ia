@@ -18,6 +18,8 @@
 - Suporte categorizado ou marcado como `nao disponivel` com plano de coleta.
 - Custo OpenAI monitorado ou marcado como `nao medido` com fonte definida.
 - Documentacao, README e CHANGELOG atualizados.
+- Checklist final da 1.1 criado e preenchido com evidencia real ou bloqueio explicito.
+- Sprint 4 documentada como concluida localmente com observacoes.
 
 ## Validacoes obrigatorias
 
@@ -39,3 +41,10 @@
 - IA indisponivel para usuarios reais sem fallback operacional.
 - Promessa de WhatsApp automatico, CRM completo ou integracao direta fora do escopo.
 
+## Pendencias conhecidas apos Sprint 4
+
+- Smoke autenticado em Preview/Producao ainda precisa ser executado.
+- RLS real com dois usuarios ainda precisa ser validado.
+- Stripe Checkout, Customer Portal e webhook assinado ainda precisam de validacao no ambiente final.
+- Migrations pendentes precisam ser aplicadas no Supabase real.
+- Metricas reais de ativacao, suporte, billing, feedback e custo OpenAI ainda precisam ser consolidadas.

@@ -8,6 +8,7 @@
 - P0 confirmado: nenhum
 - sprint 2: concluida com observacoes, focada em ativacao e experiencia inicial
 - sprint 3: concluida com observacoes, focada em IA, templates, biblioteca e feedback de qualidade
+- sprint 4: concluida com observacoes, focada em billing, admin, suporte, metricas e operacao
 
 ## Objetivo
 
@@ -91,6 +92,24 @@ Consolidar a operacao pos-MVP com validacao real, medicao minima e melhorias peq
 - Validar RLS real com dois usuarios.
 - Aplicar a migration da Sprint 3 no Supabase real.
 - Consolidar metricas reais de qualidade da IA, uso de templates e ativacao antes de novas melhorias de produto.
+
+## Entregas da Sprint 4
+
+- Plano, smoke test, relatorio operacional, relatorio da sprint e checklist final da 1.1 criados.
+- Eventos operacionais seguros adicionados: `checkout_completed`, `checkout_cancelled`, `billing_portal_opened`, `admin_dashboard_viewed`, `openai_usage_warning` e `stripe_webhook_received`.
+- Migration da Sprint 4 criada para ampliar a allowlist de `app_events`.
+- Suporte teve categorias principais alinhadas a acesso, IA, assinatura, limite mensal, feedback, bug e outro.
+- Admin overview deixou de retornar texto livre completo de suporte e feedback no resumo operacional.
+- Monitoramento de custo OpenAI documentado com estimativa por volume, sinais de abuso e investigacao.
+
+## Pendencias para fechamento apos Sprint 4
+
+- Validar smoke autenticado real em Preview/Producao.
+- Validar RLS real com dois usuarios.
+- Aplicar migrations pendentes no Supabase real, incluindo Sprint 3 e Sprint 4.
+- Validar Stripe Checkout, Customer Portal e webhook assinado no ambiente final.
+- Confirmar GitHub Actions verde.
+- Consolidar metricas reais de ativacao, suporte, billing, feedback e custo OpenAI.
 
 ## Fora do escopo
 

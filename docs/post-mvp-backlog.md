@@ -16,6 +16,8 @@
 * Manter eventos sem pergunta completa, resposta completa, e-mail, telefone, token, secret ou dado de pagamento.
 * Sprint 3: confirmar em ambiente real o fluxo cadastro -> onboarding -> dashboard -> primeira resposta -> copiar/salvar.
 * Sprint 4: aplicar migration da Sprint 3 no Supabase real e validar feedback de qualidade com motivo.
+* Sprint 4: aplicar migration `0030_sprint4_operational_events.sql` no Supabase real.
+* Sprint 4: validar eventos operacionais de billing, admin, OpenAI e webhook em ambiente final.
 
 ## P2
 
@@ -23,6 +25,8 @@
 * Sprint 2 entregue: exemplos por nicho no dashboard sem geracao automatica.
 * Sprint 3 entregue: prompt da IA reforcado contra informacoes inventadas e respostas longas.
 * Sprint 3 entregue: orientacao por nicho, templates revisados, resposta editavel e feedback negativo categorizado.
+* Sprint 4 entregue: billing/admin/suporte/metricas operacionais revisados localmente.
+* Sprint 4 entregue: eventos operacionais seguros e documentacao de custo OpenAI revisados.
 * Melhorar onboarding novamente apenas com gargalos medidos.
 * Melhorar templates por nicho novamente apenas com uso real.
 * Melhorar qualidade da IA com base em feedback agregado.
@@ -30,6 +34,7 @@
 * Melhorar admin e relatorios internos sem criar BI avancado apenas se dados reais exigirem.
 * Melhorar FAQ/copy de suporte com base em perguntas recorrentes.
 * Melhorar pricing apenas se houver duvida ou queda medida.
+* Melhorar admin e relatorios internos apenas com demanda real; BI avancado segue fora do escopo.
 
 ## Futuro
 

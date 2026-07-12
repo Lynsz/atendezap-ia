@@ -56,10 +56,19 @@ Consolidar a operacao pos-MVP com validacao real, medicao minima e melhorias peq
 
 ## Sprint 4 - Pendencias de ambiente real
 
-- Rodar smoke autenticado em Preview/Producao.
-- Validar RLS real com dois usuarios.
-- Aplicar migrations pendentes no Supabase real.
-- Consolidar metricas reais de IA, templates, biblioteca, ativacao, billing e suporte.
+- Concluida localmente com observacoes.
+- Billing, suporte, admin, eventos operacionais, custo OpenAI e relatorios internos revisados.
+- Rodar smoke autenticado em Preview/Producao segue pendente.
+- Validar RLS real com dois usuarios segue pendente.
+- Aplicar migrations pendentes no Supabase real segue pendente.
+- Validar Stripe Checkout, Customer Portal e webhook assinado no ambiente final segue pendente.
+- Consolidar metricas reais de IA, templates, biblioteca, ativacao, billing, suporte e custo segue pendente.
+
+## Fechamento da versao 1.1
+
+- Usar `docs/version-1.1-final-readiness-checklist.md` para a decisao final.
+- Nao liberar campanha grande antes de smoke real, RLS real, Stripe real/test mode e CI verde.
+- Itens sem dados reais devem continuar marcados como `nao medido` ou `nao disponivel`.
 
 ## Fora do roadmap 1.1
 

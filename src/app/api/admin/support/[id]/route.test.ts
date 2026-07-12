@@ -76,11 +76,16 @@ describe("PATCH /api/admin/support/[id]", () => {
     );
 
     expect(response.status).toBe(200);
+    const body = await response.json();
     expect(mocks.updatePayload).toMatchObject({
       status: "in_progress",
       priority: "high",
       admin_notes: "Em analise"
     });
+    expect(body.supportRequest.email).toBeNull();
+    expect(body.supportRequest.user_email_masked).toBe("us***@example.com");
+    expect(body.supportRequest.subject).not.toContain("Erro");
+    expect(body.supportRequest.message).not.toContain("Erro no produto");
   });
 
   it("usuario comum nao acessa admin support", async () => {

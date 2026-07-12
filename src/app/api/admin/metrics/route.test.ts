@@ -9,6 +9,10 @@ vi.mock("@/lib/admin", () => ({
   requireAdmin: mocks.requireAdmin
 }));
 
+vi.mock("@/lib/analytics/server", () => ({
+  trackServerAppEvent: vi.fn()
+}));
+
 vi.mock("@/lib/rate-limit", () => ({
   enforceRateLimit: vi.fn()
 }));

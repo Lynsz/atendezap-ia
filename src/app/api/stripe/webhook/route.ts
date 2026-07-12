@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { getSaasPlan } from "@/config/plans";
+import { trackServerAppEvent } from "@/lib/analytics/server";
 import { AppError, errorResponse } from "@/lib/errors";
 import { logEvent } from "@/lib/events";
 import { serverLog } from "@/lib/logger";
@@ -177,6 +178,25 @@ async function updateSubscriptionFromCheckoutSession(session: Stripe.Checkout.Se
   const subscription = await getStripe().subscriptions.retrieve(session.subscription);
   const sessionUserId = session.metadata?.user_id || session.client_reference_id || null;
   await updateSubscriptionFromStripe(subscription, eventId, session.payment_status || null, sessionUserId);
+  const plan = session.metadata?.plan || session.metadata?.plan_id || null;
+
+  await logEvent("checkout_completed", {
+    source: "stripe_webhook",
+    plan: plan || "sem_plano",
+    status: session.payment_status || "completed"
+  });
+  await trackServerAppEvent({
+    user_id: sessionUserId,
+    event_name: "checkout_completed",
+    source: "stripe_webhook",
+    page: "/assinatura",
+    plan,
+    metadata: {
+      source: "stripe_webhook",
+      plan: plan || "sem_plano",
+      status: session.payment_status || "completed"
+    }
+  });
 
   const supabase = getSupabaseAdmin();
   await supabase
@@ -243,6 +263,15 @@ export async function POST(request: Request) {
     }
 
     serverLog({ event: "webhook_received", route: "/api/stripe/webhook", status: "ok", metadata: { provider: "stripe", event_type: event.type } });
+    await trackServerAppEvent({
+      event_name: "stripe_webhook_received",
+      source: "stripe",
+      page: "/api/stripe/webhook",
+      metadata: {
+        source: "stripe",
+        event_type: event.type
+      }
+    });
 
     const shouldProcess = await markEventProcessed(event);
     if (!shouldProcess) {

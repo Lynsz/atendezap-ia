@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { trackServerAppEvent } from "@/lib/analytics/server";
 import { AppError } from "@/lib/errors";
 import { requireAdmin } from "@/lib/admin";
 import { serverLog } from "@/lib/logger";
@@ -222,6 +223,17 @@ export async function GET(request: Request) {
     const todayStart = getDayStart();
     const sevenDaysStart = daysAgo(7);
     const thirtyDaysStart = daysAgo(30);
+
+    await trackServerAppEvent({
+      user_id: user.id,
+      event_name: "admin_dashboard_viewed",
+      source: "admin",
+      page: "/admin",
+      metadata: {
+        source: "admin",
+        page: "/admin"
+      }
+    });
 
     const [
       leadsResult,

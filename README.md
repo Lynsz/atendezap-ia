@@ -45,9 +45,10 @@ npm run validate
 - Prioridades: validar ambiente real, medir ativacao, acompanhar billing, suporte, feedback e custo OpenAI.
 - Sprint 2 da versao 1.1 entregou melhorias pequenas de ativacao: cadastro/login revisados, onboarding inicial mais curto, checklist de primeiros passos, exemplos por nicho, contador no campo de mensagem e tracking seguro `activation_*`.
 - Sprint 3 da versao 1.1 entregou melhorias de IA, templates e biblioteca: prompt mais conservador, orientacao por nicho, resposta editavel, templates como base, feedback de qualidade com motivo e tracking seguro da reutilizacao.
+- Sprint 4 da versao 1.1 entregou revisao operacional de billing, assinatura, suporte, feedback, admin, eventos seguros e monitoramento de custo OpenAI.
 - Dados ausentes devem ser registrados como `nao disponivel` ou `nao medido`; nao usar numeros estimados como se fossem reais.
 - Fora do escopo: WhatsApp API, envio automatico, CRM completo, app mobile, automacoes complexas, BI avancado e campanha grande.
-- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-sprint-2-plan.md`, `docs/version-1.1-sprint-2-smoke-test.md`, `docs/version-1.1-sprint-2-report.md`, `docs/version-1.1-sprint-3-plan.md`, `docs/version-1.1-sprint-3-smoke-test.md`, `docs/version-1.1-sprint-3-report.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
+- Documentos principais: `docs/post-mvp-operation-analysis.md`, `docs/version-1.1-prioritization.md`, `docs/version-1.1-plan.md`, `docs/version-1.1-checklist.md`, `docs/version-1.1-roadmap.md`, `docs/version-1.1-sprint-2-plan.md`, `docs/version-1.1-sprint-2-smoke-test.md`, `docs/version-1.1-sprint-2-report.md`, `docs/version-1.1-sprint-3-plan.md`, `docs/version-1.1-sprint-3-smoke-test.md`, `docs/version-1.1-sprint-3-report.md`, `docs/version-1.1-sprint-4-plan.md`, `docs/version-1.1-sprint-4-smoke-test.md`, `docs/version-1.1-sprint-4-report.md`, `docs/version-1.1-final-readiness-checklist.md`, `docs/version-1.1-exit-criteria.md` e `docs/version-1.1-kickoff-report.md`.
 
 Comandos de validacao:
 
@@ -87,6 +88,16 @@ npm run validate
 - Central de ajuda no dashboard com FAQ e solicitacoes simples de suporte.
 - Checklist de ativacao no dashboard para primeiros passos.
 - Paginas legais.
+
+## Assinatura, planos e operacao
+
+- Planos: Free, Starter, Pro e Premium, com limites mensais por plano.
+- O plano Pro e recomendado e informa primeiro mes por R$ 29 para novos usuarios.
+- Checkout, portal e webhook usam Stripe; Price IDs ficam em variaveis de ambiente.
+- A pagina `/assinatura` mostra plano atual, status, uso mensal, limite, planos e portal quando houver customer Stripe.
+- Suporte aceita categorias operacionais e nao deve pedir senha, token, chave ou dados de cartao.
+- Admin e APIs admin exigem login e e-mail autorizado em `ADMIN_EMAILS`.
+- Eventos operacionais devem continuar sem pergunta completa, resposta completa, conteudo sensivel de suporte, e-mail, telefone, token, secret, dados de pagamento ou payload Stripe completo.
 
 ## Stack usada
 

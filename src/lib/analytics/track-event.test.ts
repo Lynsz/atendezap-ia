@@ -231,6 +231,34 @@ describe("safe app events", () => {
     });
   });
 
+  it("allows Sprint 4 operational events with safe metadata only", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "stripe_webhook_received",
+      page: "/api/stripe/webhook",
+      source: "stripe",
+      metadata: {
+        event_type: "checkout.session.completed",
+        status: "received",
+        payload: "{conteudo completo}",
+        stripe_customer_id: "cus_123",
+        email: "cliente@example.com"
+      }
+    });
+
+    expect(event?.metadata).toEqual({
+      event_type: "checkout.session.completed",
+      page: "/api/stripe/webhook",
+      source: "stripe",
+      status: "received"
+    });
+    expect(sanitizeAppEvent({ event_name: "checkout_completed" })?.event_name).toBe("checkout_completed");
+    expect(sanitizeAppEvent({ event_name: "checkout_cancelled" })?.event_name).toBe("checkout_cancelled");
+    expect(sanitizeAppEvent({ event_name: "billing_portal_opened" })?.event_name).toBe("billing_portal_opened");
+    expect(sanitizeAppEvent({ event_name: "admin_dashboard_viewed" })?.event_name).toBe("admin_dashboard_viewed");
+    expect(sanitizeAppEvent({ event_name: "openai_usage_warning" })?.event_name).toBe("openai_usage_warning");
+  });
+
   it("does not throw when event delivery fails", async () => {
     vi.stubGlobal("window", { location: { pathname: "/dashboard" } });
     vi.stubGlobal("navigator", {});

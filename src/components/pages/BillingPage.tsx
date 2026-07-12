@@ -177,6 +177,23 @@ function BillingContent() {
   }, [currentPlanId, loading, subscription?.status]);
 
   useEffect(() => {
+    if (checkoutStatus === "success") {
+      trackEvent("checkout_completed", {
+        source: "billing_page",
+        page: "/assinatura",
+        status: "success"
+      });
+    }
+    if (checkoutStatus === "cancelled") {
+      trackEvent("checkout_cancelled", {
+        source: "billing_page",
+        page: "/assinatura",
+        status: "cancelled"
+      });
+    }
+  }, [checkoutStatus]);
+
+  useEffect(() => {
     if (hasPaymentProblem) {
       trackEvent("failed_payment_notice_viewed", {
         status: subscription?.status || "unknown"
@@ -241,6 +258,11 @@ function BillingContent() {
 
       trackEvent("stripe_portal_opened", {
         source: "billing_page",
+        status: subscription?.status || "unknown"
+      });
+      trackEvent("billing_portal_opened", {
+        source: "billing_page",
+        page: "/assinatura",
         status: subscription?.status || "unknown"
       });
       window.location.href = result.url;

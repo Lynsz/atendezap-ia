@@ -103,6 +103,12 @@ function maskEmail(email?: string | null) {
   return `${local.slice(0, 2)}***@${domain}`;
 }
 
+function safeTextPlaceholder(kind: "feedback" | "support") {
+  return kind === "feedback"
+    ? "Conteudo livre oculto no resumo admin. Use apenas agregados seguros para operacao."
+    : "Mensagem de suporte ocultada no resumo admin. Use categoria, status e notas operacionais.";
+}
+
 function getPeriodStart(period: PeriodFilter) {
   const now = new Date();
   if (period === "today") {
@@ -313,9 +319,32 @@ export async function GET(request: Request) {
       },
       leads: hydratedLeads,
       subscriptions: subscriptionsWithProfiles,
-      feedback,
+      feedback: feedback.map((item) => ({
+        id: item.id,
+        user_id: item.user_id,
+        name: null,
+        email: maskEmail(item.email),
+        type: item.type,
+        message: safeTextPlaceholder("feedback"),
+        page: item.page,
+        source: item.source,
+        context: item.context,
+        campaign: item.campaign,
+        status: item.status,
+        created_at: item.created_at
+      })),
       supportRequests: supportRequests.map((item) => ({
-        ...item,
+        id: item.id,
+        user_id: item.user_id,
+        email: null,
+        category: item.category,
+        subject: "Assunto oculto no resumo seguro",
+        message: safeTextPlaceholder("support"),
+        status: item.status,
+        priority: item.priority,
+        admin_notes: item.admin_notes,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
         user_email_masked: maskEmail(item.email || (item.user_id ? profileById.get(item.user_id)?.email : null)),
         user_id_short: item.user_id ? (item.user_id.length > 12 ? `${item.user_id.slice(0, 8)}...${item.user_id.slice(-4)}` : item.user_id) : null
       })),

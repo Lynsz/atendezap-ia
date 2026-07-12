@@ -200,6 +200,19 @@ export async function POST(request: Request) {
         used: nextUsage.used,
         limit: nextUsage.limit
       });
+      await trackServerAppEvent({
+        user_id: user.id,
+        event_name: "openai_usage_warning",
+        source: "dashboard",
+        page: "/dashboard",
+        plan: planName || "sem_plano",
+        metadata: {
+          source: "dashboard",
+          plan: planName || "sem_plano",
+          usage_count: nextUsage.used,
+          usage_limit: nextUsage.limit
+        }
+      });
     }
 
     await logEvent("ai_generation_succeeded", {

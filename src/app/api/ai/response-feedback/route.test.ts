@@ -146,4 +146,30 @@ describe("POST /api/ai/response-feedback", () => {
     );
     expect(JSON.stringify(mocks.trackServerAppEvent.mock.calls[0][0])).not.toContain("Ficou generica");
   });
+
+  it("rejects long comments and unknown content fields", async () => {
+    const { POST } = await import("./route");
+    const longComment = await POST(
+      createRequest({
+        responseId: "22222222-2222-4222-8222-222222222222",
+        rating: "negative",
+        feedbackReason: "too_long",
+        comment: "x".repeat(501)
+      })
+    );
+
+    expect(longComment.status).toBe(400);
+
+    const sensitiveFields = await POST(
+      createRequest({
+        responseId: "22222222-2222-4222-8222-222222222222",
+        rating: "positive",
+        customerQuestion: "Pergunta completa",
+        generatedAnswer: "Resposta completa"
+      })
+    );
+
+    expect(sensitiveFields.status).toBe(400);
+    expect(mocks.upsertPayload).toBeNull();
+  });
 });
