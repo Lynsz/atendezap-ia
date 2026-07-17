@@ -7,7 +7,21 @@ export const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_conten
 export type UtmKey = (typeof UTM_KEYS)[number];
 export type UtmPayload = Partial<Record<UtmKey, string>>;
 
+export type Post11CampaignEventName =
+  | "campaign_landing_viewed"
+  | "campaign_signup_clicked"
+  | "campaign_signup_completed"
+  | "campaign_onboarding_completed"
+  | "campaign_first_response_generated"
+  | "campaign_response_copied"
+  | "campaign_response_saved"
+  | "campaign_pricing_viewed"
+  | "campaign_checkout_started"
+  | "campaign_feedback_submitted"
+  | "campaign_support_request_created";
+
 export type TrackingEventName =
+  | Post11CampaignEventName
   | "page_view"
   | "landing_view"
   | "campaign_view"
@@ -203,7 +217,7 @@ declare global {
 
 const UTM_STORAGE_KEY = "atendezap_ia_utm_attribution_v1";
 const ATTRIBUTION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
-const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|answer|resposta|mensagem|message|comment|comentario|email|mail|phone|telefone|whatsapp|payment|pagamento|stripe|customer|checkout_session|subscription_id)/i;
+const FORBIDDEN_PROPERTY_PATTERN = /(password|senha|card|cartao|token|secret|key|private|question|pergunta|answer|resposta|generated|prompt|content|conteudo|mensagem|message|comment|comentario|email|mail|phone|telefone|whatsapp|payment|pagamento|stripe|customer|checkout_session|subscription_id)/i;
 const EMAIL_VALUE_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type StoredAttribution = UtmPayload & {
@@ -241,7 +255,8 @@ function cleanValue(value: string) {
 
 function sanitizeProperties(properties: TrackingProperties = {}) {
   return Object.entries(properties).reduce<Record<string, string | number | boolean>>((accumulator, [key, value]) => {
-    if (value === undefined || value === null || FORBIDDEN_PROPERTY_PATTERN.test(key)) return accumulator;
+    const isAllowedUtmKey = (UTM_KEYS as readonly string[]).includes(key);
+    if (value === undefined || value === null || (!isAllowedUtmKey && FORBIDDEN_PROPERTY_PATTERN.test(key))) return accumulator;
     if (typeof value === "string") {
       const trimmed = cleanValue(value);
       if (EMAIL_VALUE_PATTERN.test(trimmed)) return accumulator;
@@ -288,6 +303,15 @@ export function isOptimizedSmallCampaign() {
 
 export function isPost12Campaign() {
   return getCurrentUtms().utm_campaign === "post_12_campaign_01";
+}
+
+export function isPost11SmallCampaign() {
+  return getAttribution().utm_campaign === "post_1_1_small_campaign";
+}
+
+export function trackPost11CampaignEvent(eventName: Post11CampaignEventName, properties: TrackingProperties = {}) {
+  if (!isPost11SmallCampaign()) return;
+  trackEvent(eventName, properties);
 }
 
 export function getStoredUtms(): UtmPayload {

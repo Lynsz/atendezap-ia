@@ -6,6 +6,34 @@
 
 - Allowlist segura de eventos alinhada aos eventos de ativacao e biblioteca ja disparados pelo dashboard.
 
+## [Post-1.1 Small Campaign Preparation]
+
+### Adicionado
+
+- Plano condicional da campanha pequena, matriz de canais, copies, UTMs, relatorio diario, criterios de decisao, plano de pausa e relatorio de prontidao.
+- Eventos seguros `campaign_*` para o funil de landing ate suporte, restritos a `utm_campaign=post_1_1_small_campaign`.
+- Migration de allowlist para persistir os eventos da campanha sem conteudo sensivel.
+
+### Ajustado
+
+- Admin passou a reconhecer eventos da campanha nos agregados existentes e mostrar visitas agregadas por UTM source/campaign.
+- Sanitizacao de tracking reforcada para bloquear prompt, conteudo, pergunta e resposta, preservando apenas UTMs categoricas permitidas.
+
+### Operacao
+
+- Campanha preparada, mas nao executada.
+- Decisao atual permanece manter operacao controlada e repetir a validacao de Production antes de divulgar.
+
+### Seguranca
+
+- Tracking da campanha nao aceita e-mail, telefone, pergunta, resposta, dados de pagamento, tokens, secrets ou payload Stripe completo.
+- Preco e identidade do usuario continuam resolvidos no backend; RLS, limites mensais e `check:secrets` permanecem ativos.
+
+### Pendencias
+
+- Confirmar CI remoto, smoke autenticado de Preview/Production, RLS real, Stripe/OpenAI finais, custo e 72 horas de dados agregados.
+- Aplicar `0032_post_1_1_campaign_events.sql` antes de validar a persistencia no ambiente real.
+
 ## [1.1.0 Post-Deploy]
 
 ### Analisado

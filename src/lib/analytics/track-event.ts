@@ -74,7 +74,18 @@ export const safeAppEventNames = [
   "post_mvp_feedback_submitted",
   "post_mvp_support_request_created",
   "post_mvp_usage_limit_reached",
-  "post_mvp_error_occurred"
+  "post_mvp_error_occurred",
+  "campaign_landing_viewed",
+  "campaign_signup_clicked",
+  "campaign_signup_completed",
+  "campaign_onboarding_completed",
+  "campaign_first_response_generated",
+  "campaign_response_copied",
+  "campaign_response_saved",
+  "campaign_pricing_viewed",
+  "campaign_checkout_started",
+  "campaign_feedback_submitted",
+  "campaign_support_request_created"
 ] as const;
 
 export type SafeAppEventName = (typeof safeAppEventNames)[number];
@@ -123,7 +134,11 @@ const allowedMetadataKeys = new Set([
   "usage_limit",
   "status",
   "event_type",
-  "error_type"
+  "error_type",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content"
 ]);
 
 const forbiddenKeyPattern = /(email|mail|phone|telefone|whatsapp|nome|name|message|mensagem|question|pergunta|answer|resposta|generated|content|conteudo|token|secret|key|password|senha|card|cartao|payment|pagamento|stripe|checkout_session|customer|subscription)/i;
@@ -161,7 +176,8 @@ function isSafePrimitive(value: unknown): value is string | number | boolean {
 function sanitizeMetadata(metadata: Record<string, unknown> = {}) {
   return Object.entries(metadata).reduce<Record<string, string | number | boolean>>((accumulator, [rawKey, value]) => {
     const key = normalizeKey(rawKey);
-    if (!allowedMetadataKeys.has(key) || forbiddenKeyPattern.test(rawKey) || !isSafePrimitive(value)) return accumulator;
+    const isAllowedUtmKey = key === "utm_source" || key === "utm_medium" || key === "utm_campaign" || key === "utm_content";
+    if (!allowedMetadataKeys.has(key) || (!isAllowedUtmKey && forbiddenKeyPattern.test(rawKey)) || !isSafePrimitive(value)) return accumulator;
     accumulator[key] = typeof value === "string" ? cleanString(value) : value;
     return accumulator;
   }, {});

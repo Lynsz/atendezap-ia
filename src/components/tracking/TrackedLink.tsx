@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { TrackingEventName, TrackingProperties } from "@/lib/tracking";
-import { isOptimizedSmallCampaign, isPost12Campaign, trackEvent } from "@/lib/tracking";
+import { isOptimizedSmallCampaign, isPost12Campaign, trackEvent, trackPost11CampaignEvent } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 
 type TrackedLinkProps = {
@@ -20,6 +20,13 @@ export function TrackedLink({ href, children, className, eventName, secondaryEve
     trackEvent(eventName, properties);
     if (secondaryEventName) {
       trackEvent(secondaryEventName, properties);
+    }
+    if (href === "/cadastro" || href.startsWith("/cadastro?")) {
+      trackPost11CampaignEvent("campaign_signup_clicked", {
+        ...properties,
+        page: typeof window !== "undefined" ? window.location.pathname : "/",
+        source: "campaign_cta"
+      });
     }
     if (isOptimizedSmallCampaign()) {
       trackEvent("optimized_campaign_cta_click", {

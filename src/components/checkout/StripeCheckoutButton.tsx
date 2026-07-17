@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { type PlanId, SAAS_PLANS } from "@/config/plans";
-import { getAttribution, trackEvent } from "@/lib/tracking";
+import { getAttribution, trackEvent, trackPost11CampaignEvent } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/browser";
 
@@ -108,6 +108,11 @@ export function StripeCheckoutButton({ planId, className, recommended, disabled,
         funnel
       });
       trackEvent("small_launch_checkout_started", {
+        plan: planId,
+        source: "pricing",
+        page: typeof window !== "undefined" ? window.location.pathname : "/precos"
+      });
+      trackPost11CampaignEvent("campaign_checkout_started", {
         plan: planId,
         source: "pricing",
         page: typeof window !== "undefined" ? window.location.pathname : "/precos"

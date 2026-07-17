@@ -5,7 +5,7 @@ import { Alert } from "@/components/alert";
 import { Button } from "@/components/button";
 import { Input, Textarea } from "@/components/form-fields";
 import { supportCategories } from "@/lib/support";
-import { trackEvent } from "@/lib/tracking";
+import { trackEvent, trackPost11CampaignEvent } from "@/lib/tracking";
 
 export function SupportForm() {
   const [message, setMessage] = useState("");
@@ -34,6 +34,7 @@ export function SupportForm() {
       trackEvent("support_request_created", { source: "public_support", category, status: "pending" });
       trackEvent("beta_support_request_created", { source: "public_support", page: "/suporte", category });
       trackEvent("small_launch_support_request_created", { source: "public_support", page: "/suporte", category });
+      trackPost11CampaignEvent("campaign_support_request_created", { source: "public_support", page: "/suporte", category });
       trackEvent("post_mvp_support_request_created", { source: "public_support", page: "/suporte", category });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro inesperado.");

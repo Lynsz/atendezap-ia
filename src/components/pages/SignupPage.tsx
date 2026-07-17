@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { UserPlus, MessageCircle } from "lucide-react";
 import { SUPABASE_CONNECTION_ERROR, useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase/browser";
-import { getAttribution, trackEvent } from "@/lib/tracking";
+import { getAttribution, trackEvent, trackPost11CampaignEvent } from "@/lib/tracking";
 import { getPostAuthRedirect } from "@/services/auth-flow";
 
 export default function SignupPage() {
@@ -93,6 +93,11 @@ export default function SignupPage() {
       trackEvent("small_launch_signup_completed", {
         plan,
         source: attribution.funnel || "pricing",
+        page: "/cadastro"
+      });
+      trackPost11CampaignEvent("campaign_signup_completed", {
+        plan,
+        source: attribution.funnel || "campaign",
         page: "/cadastro"
       });
       trackEvent("post_mvp_signup_completed", {

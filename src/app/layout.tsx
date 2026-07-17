@@ -129,6 +129,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
             </div>
             <div className="flex gap-4 md:justify-end">
+              <Link href="/suporte" className="hover:text-brand-700">
+                Suporte
+              </Link>
               <Link href="/termos" className="hover:text-brand-700">
                 Termos
               </Link>

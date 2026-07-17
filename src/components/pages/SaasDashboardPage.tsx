@@ -48,7 +48,7 @@ import {
   whatsappTemplateCategories,
   type WhatsAppTemplate
 } from "@/lib/templates/whatsapp-templates";
-import { trackEvent } from "@/lib/tracking";
+import { trackEvent, trackPost11CampaignEvent } from "@/lib/tracking";
 import { getUsageLimit } from "@/lib/usage-limits";
 import { generateCustomerResponse } from "@/services/ai";
 import {
@@ -565,6 +565,11 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         page: "/dashboard",
         business_type: payload.business_type
       });
+      trackPost11CampaignEvent("campaign_onboarding_completed", {
+        source: "dashboard",
+        page: "/dashboard",
+        business_type: payload.business_type
+      });
       trackEvent("post_mvp_onboarding_completed", {
         source: "dashboard",
         page: "/dashboard",
@@ -693,6 +698,15 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
             source: "dashboard",
             page: "/dashboard",
             category: responseType,
+            business_type: businessDraft.business_type,
+            plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+            response_length_range: getResponseLengthRange(answer),
+            usage_count: usage.used,
+            usage_limit: usage.limit
+          });
+          trackPost11CampaignEvent("campaign_first_response_generated", {
+            source: "dashboard",
+            page: "/dashboard",
             business_type: businessDraft.business_type,
             plan: subscription?.plan || subscription?.plan_name || "sem_plano",
             response_length_range: getResponseLengthRange(answer),
@@ -833,6 +847,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
           business_type: businessDraft.business_type
         });
         trackEvent("small_launch_response_saved", {
+          source: input.responseId ? "ai" : "manual",
+          page: "/dashboard",
+          category: result.savedResponse.category || "sem_categoria",
+          business_type: businessDraft.business_type
+        });
+        trackPost11CampaignEvent("campaign_response_saved", {
           source: input.responseId ? "ai" : "manual",
           page: "/dashboard",
           category: result.savedResponse.category || "sem_categoria",
@@ -1196,6 +1216,14 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
         category: savedResponse?.category || template?.category || responseType,
         business_type: template?.businessType || businessDraft.business_type
       });
+      if (source !== "template") {
+        trackPost11CampaignEvent("campaign_response_copied", {
+          source,
+          page: "/dashboard",
+          category: savedResponse?.category || responseType,
+          business_type: businessDraft.business_type
+        });
+      }
       trackEvent(source === "template" ? "post_mvp_template_used" : "post_mvp_response_copied", {
         source,
         page: "/dashboard",
@@ -1258,6 +1286,12 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
       business_type: businessDraft.business_type
     });
     trackEvent("small_launch_pricing_viewed", {
+      source: "dashboard",
+      page: "/dashboard",
+      plan: subscription?.plan || subscription?.plan_name || "sem_plano",
+      business_type: businessDraft.business_type
+    });
+    trackPost11CampaignEvent("campaign_pricing_viewed", {
       source: "dashboard",
       page: "/dashboard",
       plan: subscription?.plan || subscription?.plan_name || "sem_plano",

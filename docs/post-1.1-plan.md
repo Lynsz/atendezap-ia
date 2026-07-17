@@ -25,6 +25,39 @@ Definir o proximo ciclo apos o fechamento da versao 1.1.
 * Validar Stripe, OpenAI, suporte, feedback e admin no ambiente final.
 * Monitorar e registrar 72 horas completas com dados agregados seguros.
 
+## Campanha pequena preparada
+
+* Plano, canais, copies, UTMs, relatorio diario, criterios de decisao, plano de pausa e relatorio de prontidao foram preparados.
+* Preparacao nao significa execucao: a campanha permanece bloqueada ate os criterios de inicio serem comprovados.
+
+## Criterios de inicio da campanha
+
+* CI remoto verde e smoke autenticado de Production aprovado.
+* Nenhum P0, P1 criticos controlados, admin protegido e RLS real validado.
+* OpenAI, Stripe, suporte, feedback e tracking funcionando no ambiente final.
+* Custo OpenAI medido e sob controle.
+
+## Criterios de pausa da campanha
+
+* Pausar por falha recorrente de rota critica, IA, cadastro/login, checkout/webhook, admin exposto, vazamento ou custo anormal.
+
+## Canais iniciais
+
+* Convite manual primeiro.
+* LinkedIn e Instagram organicos depois da aprovacao operacional.
+* Trafego pago baixo somente apos primeira revisao sem alerta critico.
+
+## Decisao atual da campanha
+
+* Preparacao concluida localmente.
+* Campanha nao iniciada e bloqueada; manter operacao controlada.
+
+## Proximos passos da campanha
+
+* Aplicar a migration de eventos no ambiente de validacao.
+* Repetir smoke de Preview/Production e confirmar CI remoto.
+* Validar custo, billing, suporte e tracking antes de usar qualquer copy ou UTM externamente.
+
 ## Opcoes
 
 * manter operacao controlada

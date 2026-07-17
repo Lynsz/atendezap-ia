@@ -101,14 +101,14 @@ const metricsQuerySchema = z.object({
 });
 
 const feedbackTypes = ["bug", "duvida", "sugestao", "elogio", "dificuldade_uso"] as const;
-const pricingViewedEvents = ["pricing_page_view", "pricing_view", "pricing_viewed", "beta_pricing_viewed", "small_launch_pricing_viewed", "post_mvp_pricing_viewed"];
-const checkoutStartedEvents = ["checkout_started", "small_launch_checkout_started", "post_mvp_checkout_started"];
-const signupCompletedEvents = ["signup_completed", "activation_signup_completed", "beta_signup_completed", "small_launch_signup_completed", "post_mvp_signup_completed"];
+const pricingViewedEvents = ["pricing_page_view", "pricing_view", "pricing_viewed", "beta_pricing_viewed", "small_launch_pricing_viewed", "post_mvp_pricing_viewed", "campaign_pricing_viewed"];
+const checkoutStartedEvents = ["checkout_started", "small_launch_checkout_started", "post_mvp_checkout_started", "campaign_checkout_started"];
+const signupCompletedEvents = ["signup_completed", "activation_signup_completed", "beta_signup_completed", "small_launch_signup_completed", "post_mvp_signup_completed", "campaign_signup_completed"];
 const onboardingStartedEvents = ["onboarding_started", "activation_onboarding_started"];
 const dashboardViewedEvents = ["dashboard_viewed", "activation_dashboard_viewed"];
-const firstResponseEvents = ["first_response_generated", "activation_first_response_generated", "beta_first_response_generated", "small_launch_first_response_generated", "post_mvp_first_response_generated"];
-const responseCopiedEvents = ["response_copied", "activation_first_response_copied", "beta_response_copied", "small_launch_response_copied", "post_mvp_response_copied"];
-const responseSavedEvents = ["response_saved", "activation_first_response_saved", "beta_response_saved", "small_launch_response_saved", "post_mvp_response_saved"];
+const firstResponseEvents = ["first_response_generated", "activation_first_response_generated", "beta_first_response_generated", "small_launch_first_response_generated", "post_mvp_first_response_generated", "campaign_first_response_generated"];
+const responseCopiedEvents = ["response_copied", "activation_first_response_copied", "beta_response_copied", "small_launch_response_copied", "post_mvp_response_copied", "campaign_response_copied"];
+const responseSavedEvents = ["response_saved", "activation_first_response_saved", "beta_response_saved", "small_launch_response_saved", "post_mvp_response_saved", "campaign_response_saved"];
 
 function getPeriodStart(period: PeriodFilter) {
   const now = new Date();
@@ -178,6 +178,11 @@ function getSubscriptionCampaign(subscription: SubscriptionMetricRow) {
   const metadata = subscription.metadata || {};
   const campaign = typeof metadata.utm_campaign === "string" ? metadata.utm_campaign : null;
   return cleanCampaignValue(campaign || subscription.funnel_source || subscription.acquisition_source);
+}
+
+function getEventMetadataValue(event: EventMetricRow, key: string) {
+  const value = event.metadata?.[key];
+  return typeof value === "string" ? cleanCampaignValue(value) : "sem_utm";
 }
 
 function planLabel(subscription: SubscriptionMetricRow) {
@@ -426,6 +431,7 @@ export async function GET(request: Request) {
       .sort((a, b) => b.leads - a.leads || a.campaign.localeCompare(b.campaign))
       .slice(0, 8);
     const pricingPageViews = events.filter((event) => pricingViewedEvents.includes(event.event_name)).length;
+    const campaignLandingViews = events.filter((event) => event.event_name === "campaign_landing_viewed");
     const planClicks = events.filter((event) => ["plan_cta_click", "plan_click", "pricing_cta_click"].includes(event.event_name)).length;
     const checkoutsStartedByEvent = events.filter((event) => checkoutStartedEvents.includes(event.event_name)).length;
     const checkoutFailures = events.filter((event) => ["checkout_failed", "checkout_error"].includes(event.event_name)).length;
@@ -577,6 +583,8 @@ export async function GET(request: Request) {
         recentComments: recentAiComments
       },
       campaign: {
+        landingViewsByUtmSource: topBreakdown(campaignLandingViews.map((event) => ({ label: getEventMetadataValue(event, "utm_source") }))),
+        landingViewsByUtmCampaign: topBreakdown(campaignLandingViews.map((event) => ({ label: getEventMetadataValue(event, "utm_campaign") }))),
         leadsByUtmSource: topBreakdown(leads.map((lead) => ({ label: cleanCampaignValue(lead.utm_source) }))),
         leadsByUtmCampaign: topBreakdown(leads.map((lead) => ({ label: cleanCampaignValue(lead.utm_campaign) }))),
         signupsByUtmCampaign: leadSignupByCampaign,

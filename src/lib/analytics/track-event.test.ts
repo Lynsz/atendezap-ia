@@ -54,6 +54,40 @@ describe("safe app events", () => {
     expect(event?.metadata.stripe_customer_id).toBeUndefined();
   });
 
+  it("allows post-1.1 campaign UTMs and removes sensitive metadata", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "campaign_first_response_generated",
+      page: "/dashboard",
+      source: "campaign",
+      metadata: {
+        utm_source: "instagram",
+        utm_medium: "organic",
+        utm_campaign: "post_1_1_small_campaign",
+        utm_content: "story_01",
+        business_type: "estetica",
+        usage_count: 1,
+        usage_limit: 20,
+        question: "mensagem completa",
+        generatedAnswer: "resposta completa",
+        email: "cliente@example.com",
+        card: "4242424242424242"
+      }
+    });
+
+    expect(event?.metadata).toEqual({
+      business_type: "estetica",
+      page: "/dashboard",
+      source: "campaign",
+      usage_count: 1,
+      usage_limit: 20,
+      utm_campaign: "post_1_1_small_campaign",
+      utm_content: "story_01",
+      utm_medium: "organic",
+      utm_source: "instagram"
+    });
+  });
+
   it("normalizes existing UI aliases into MVP event names", async () => {
     const { sanitizeAppEvent } = await import("./track-event");
 

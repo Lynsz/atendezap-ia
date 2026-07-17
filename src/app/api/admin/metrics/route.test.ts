@@ -63,6 +63,13 @@ function createMetricsSupabase() {
       { event_name: "checkout_started", created_at: new Date().toISOString() },
       { event_name: "checkout_failed", created_at: new Date().toISOString() }
     ],
+    app_events: [
+      {
+        event_name: "campaign_landing_viewed",
+        metadata: { utm_source: "instagram", utm_campaign: "post_1_1_small_campaign" },
+        created_at: new Date().toISOString()
+      }
+    ],
     stripe_webhook_events: [
       { event_type: "checkout.session.completed", processed_at: new Date().toISOString(), created_at: new Date().toISOString() }
     ],
@@ -132,6 +139,8 @@ describe("GET /api/admin/metrics", () => {
     expect(body.revenue.activeSubscriptions).toBe(1);
     expect(body.revenue.estimatedMrr).toBe(97);
     expect(body.revenue.activeSubscriptionsByPlan).toEqual([{ label: "pro", count: 1 }]);
+    expect(body.campaign.landingViewsByUtmSource).toEqual([{ label: "instagram", count: 1 }]);
+    expect(body.campaign.landingViewsByUtmCampaign).toEqual([{ label: "post_1_1_small_campaign", count: 1 }]);
     expect(body.supportQuality.openSupportRequests).toBe(1);
     expect(body.conversion).toBeDefined();
     expect(body.leads).toBeUndefined();

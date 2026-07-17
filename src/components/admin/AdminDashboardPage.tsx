@@ -268,6 +268,8 @@ type ProductMetricsPayload = {
     recentComments: Array<{ rating: string; comment: string; created_at: string }>;
   };
   campaign: {
+    landingViewsByUtmSource: Array<{ label: string; count: number }>;
+    landingViewsByUtmCampaign: Array<{ label: string; count: number }>;
     leadsByUtmSource: Array<{ label: string; count: number }>;
     leadsByUtmCampaign: Array<{ label: string; count: number }>;
     signupsByUtmCampaign: Array<{ campaign: string; leads: number; signups: number }>;
@@ -1476,6 +1478,12 @@ export default function AdminDashboardPage() {
               <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
                 <h3 className="text-lg font-black text-white">Campanhas</h3>
                 <div className="mt-4 grid gap-3">
+                  {(productMetrics.campaign.landingViewsByUtmSource.length ? productMetrics.campaign.landingViewsByUtmSource : [{ label: "sem_utm", count: 0 }]).slice(0, 4).map((item) => (
+                    <ConversionLine key={`landing-source-${item.label}`} label={`Visitas source: ${item.label}`} value={item.count} />
+                  ))}
+                  {(productMetrics.campaign.landingViewsByUtmCampaign.length ? productMetrics.campaign.landingViewsByUtmCampaign : [{ label: "sem_utm", count: 0 }]).slice(0, 4).map((item) => (
+                    <ConversionLine key={`landing-campaign-${item.label}`} label={`Visitas campanha: ${item.label}`} value={item.count} />
+                  ))}
                   {(productMetrics.campaign.leadsByUtmSource.length ? productMetrics.campaign.leadsByUtmSource : [{ label: "sem_utm", count: 0 }]).slice(0, 4).map((item) => (
                     <ConversionLine key={`source-${item.label}`} label={`Source: ${item.label}`} value={item.count} />
                   ))}

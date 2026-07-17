@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { AlertCircle, CheckCircle2, MessageSquare, Send } from "lucide-react";
 import { isSupabaseBrowserConfigured, supabase as supabaseBrowserClient } from "@/lib/supabase/browser";
-import { trackEvent } from "@/lib/tracking";
+import { trackEvent, trackPost11CampaignEvent } from "@/lib/tracking";
 
 type FeedbackType = "bug" | "duvida" | "sugestao" | "elogio" | "dificuldade_uso";
 type FeedbackContext = "cadastro_login" | "onboarding" | "gerar_resposta" | "assinatura_pagamento" | "demo" | "ebook" | "dashboard" | "outro";
@@ -129,6 +129,11 @@ export function FeedbackForm() {
         category: type
       });
       trackEvent("small_launch_feedback_submitted", {
+        source: "feedback_page",
+        page: page || "/feedback",
+        category: type
+      });
+      trackPost11CampaignEvent("campaign_feedback_submitted", {
         source: "feedback_page",
         page: page || "/feedback",
         category: type
