@@ -89,3 +89,28 @@
 * iniciar campanha pequena: não
 * corrigir antes de iniciar: concluir validações operacionais; nenhum bug P0/P1 de código confirmado
 * **manter operação controlada**
+
+## Status de ativação
+
+* Checklist de ativação criado e revisado.
+* Campanha bloqueada e não iniciada.
+* Nenhuma mensagem foi enviada, nenhum link foi publicado e nenhum canal foi ativado.
+
+## Canais escolhidos
+
+* Convite manual como primeiro canal, somente após aprovação operacional.
+* LinkedIn e Instagram orgânicos em seguida, também condicionados à aprovação.
+* Tráfego pago baixo somente após uma primeira revisão sem alerta crítico; não autorizado agora.
+
+## Revisão de execução
+
+* Smoke local reduzido: aprovado pela suíte Playwright; não substitui Preview/Production autenticados.
+* Tracking, UTMs, landing, suporte, feedback, admin e limites mensais: revisados localmente.
+* OpenAI real, Stripe real, persistência Supabase/RLS e custo: não disponíveis no ambiente final.
+* Bloqueadores encontrados: os mesmos bloqueadores operacionais já registrados; nenhum P0/P1 novo confirmado.
+* Correções aplicadas nesta etapa: nenhuma, pois nenhum bug P0/P1 foi reproduzido.
+
+## Decisão atual de execução
+
+* **Pausar antes da ativação e manter a campanha bloqueada.**
+* Próxima decisão somente depois de resolver os bloqueadores e repetir o smoke autenticado.

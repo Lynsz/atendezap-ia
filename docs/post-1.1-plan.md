@@ -52,6 +52,15 @@ Definir o proximo ciclo apos o fechamento da versao 1.1.
 * Preparacao concluida localmente.
 * Campanha nao iniciada e bloqueada; manter operacao controlada.
 
+## Execucao da campanha pequena
+
+* Status: bloqueada; nenhuma divulgacao iniciada.
+* Canais usados: nenhum.
+* Canais planejados: convite manual primeiro; LinkedIn e Instagram organicos depois da aprovacao; trafego pago baixo somente apos revisao operacional.
+* Criterios de pausa ativos: P0, P1 critico sem controle, falha recorrente de rota critica, cadastro/login/IA/checkout/webhook quebrados, admin exposto, vazamento, tracking que quebre fluxo ou consumo OpenAI anormal.
+* Decisao atual: pausar antes da ativacao e manter operacao controlada.
+* Proxima analise recomendada: apos CI remoto verde, smoke autenticado de Preview/Production, RLS com dois usuarios, OpenAI/Stripe reais e custo medido.
+
 ## Proximos passos da campanha
 
 * Aplicar a migration de eventos no ambiente de validacao.

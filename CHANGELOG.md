@@ -6,6 +6,32 @@
 
 - Allowlist segura de eventos alinhada aos eventos de ativacao e biblioteca ja disparados pelo dashboard.
 
+## [Post-1.1 Small Campaign Execution]
+
+### Operacao
+
+- Checklist de ativacao, acompanhamento ao vivo, relatorio do Dia 1 e registro de incidentes criados.
+- Campanha mantida bloqueada e nao iniciada; nenhum canal, mensagem ou link foi ativado.
+
+### Corrigido
+
+- Nenhuma correcao de codigo aplicada nesta etapa, pois nenhum bug P0/P1 foi reproduzido.
+
+### Seguranca
+
+- Tracking, UTMs, admin, suporte, feedback e limites mensais revisados localmente sem ampliar o escopo ou expor dados sensiveis.
+- Repositorio permanece privado; secrets, `.env.local`, perguntas, respostas, dados de pagamento e payload Stripe completo nao foram adicionados.
+
+### Metricas
+
+- Resultados de campanha, erros de producao e custo OpenAI permanecem como `nao disponivel`, pois nao houve ativacao nem evidencia do ambiente real.
+
+### Pendencias
+
+- Confirmar CI remoto e smoke autenticado de Preview/Production.
+- Aplicar migrations e validar RLS com dois usuarios reais.
+- Validar OpenAI, checkout, portal, webhook e custo no ambiente final antes de divulgar.
+
 ## [Post-1.1 Small Campaign Preparation]
 
 ### Adicionado
