@@ -6,6 +6,34 @@
 
 - Allowlist segura de eventos alinhada aos eventos de ativacao e biblioteca ja disparados pelo dashboard.
 
+## [Version 1.2 Planning]
+
+### Planejado
+
+- Plano detalhado, criterios de entrada e saida, priorizacao, roadmap, checklist, backlog, metricas, kickoff e rascunho de campanha pos-1.2.
+- Sprint 1 definida como gate de estabilidade, seguranca, ambiente final e baseline antes de melhorias de produto.
+- Sprints de ativacao, IA, templates, biblioteca, pricing e operacao condicionadas a gargalos medidos.
+
+### Analisado
+
+- Relatorios da 1.1 e da campanha confirmam ausencia de metricas reais, feedbacks e bugs P0/P1/P2 de campanha.
+- Pendencias de CI remoto, Production, RLS, OpenAI, Stripe, admin e custo foram separadas de bugs de produto.
+
+### Decidido
+
+- Planejamento da 1.2 aprovado; implementacao ampla ainda nao iniciada.
+- Kickoff de execucao bloqueado ate os criterios de intake serem atendidos.
+- Ausencia de dados nao sera tratada como sucesso nem justificara alteracao de produto.
+
+### Fora do escopo
+
+- Integracao ou envio automatico pelo WhatsApp, CRM completo, app mobile, automacoes complexas, campanha grande e escala sem dados.
+
+### Pendencias
+
+- Confirmar GitHub Actions remoto, smoke autenticado, migrations/RLS, OpenAI, Stripe e custo no ambiente final.
+- Coletar baseline segura antes de repriorizar as sprints de produto.
+
 ## [Post-1.1 Small Campaign Analysis]
 
 ### Analisado
@@ -27,7 +55,7 @@
 ### Operacao
 
 - Decisao final: manter operacao controlada e pausar divulgacao.
-- Nova campanha e plano inicial da versao 1.2 nao foram aprovados nesta analise.
+- Naquela analise, nova campanha e plano inicial da versao 1.2 nao foram aprovados; o planejamento foi autorizado posteriormente sem liberar implementacao.
 
 ### Proxima etapa
 

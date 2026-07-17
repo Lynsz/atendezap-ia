@@ -1,48 +1,57 @@
-# Roadmap da Versao 1.2 - AtendeZap IA
+# Roadmap da Versão 1.2 — AtendeZap IA
 
-## Sprint 1 - Estabilidade e correcoes
+## Regra do roadmap
 
-- corrigir bugs P0/P1
-- revisar billing
-- revisar IA
-- revisar suporte
-- revisar tracking
-- validar RLS, health check e admin em staging/producao
+* A Sprint 1 é gate de entrada para as demais.
+* Sprints 2 a 4 refinam o produto somente com gargalos e feedbacks medidos.
 
-## Sprint 2 - Ativacao e retencao
+## Sprint 1 — Correções, métricas e estabilidade
 
-Status: concluida com pendencias externas.
+Foco:
 
-- melhorar checklist inicial
-- melhorar exemplos por nicho
-- melhorar templates recomendados
-- melhorar e-mails de ativacao
-- melhorar dashboard inicial
-- medir retorno em 7 dias com dados agregados
-- entregue: dashboard inicial, checklist, exemplos por nicho, templates recomendados, favoritas, admin de ativacao e documentacao
-- pendente: validacao mobile e dados reais de retorno em 7 dias
+* corrigir P0/P1 reais, se encontrados
+* validar CI remoto, Preview/Production e `/api/health`
+* validar migrations, RLS, OpenAI, Stripe e admin no ambiente final
+* melhorar definições e disponibilidade das métricas essenciais
+* revisar eventos seguros e tracking de campanha
+* medir custo OpenAI na mesma janela do volume de respostas
+* manter CI verde
 
-## Sprint 3 - Conversao e campanhas
+Saída: ambiente real aprovado e baseline mínima, ou versão mantida bloqueada.
 
-Status: concluida com pendencias externas.
+## Sprint 2 — Ativação, onboarding e dashboard
 
-- melhorar paginas por nicho
-- melhorar pricing
-- melhorar CTA pos-demo
-- melhorar relatorios de campanha
-- planejar nova campanha pequena
-- revisar UTMs e criterios de pausa
-- entregue: pricing, CTAs, paginas por nicho, eventos seguros de conversao, admin Conversao e campanha pequena planejada
-- pendente: validar conversao real, Stripe, tracking e campanha em ambiente final
+Foco condicional:
 
-## Sprint 4 - Operacao e documentacao
+* diagnosticar cadastro, onboarding, dashboard e primeira resposta
+* melhorar onboarding somente se houver abandono ou confusão medidos
+* melhorar exemplos por nicho e dashboard de usuário novo somente com evidência
+* validar os eventos após cada ajuste
 
-Status: concluida com pendencias externas.
+## Sprint 3 — IA, templates e biblioteca
 
-- revisar auditoria
-- atualizar release notes
-- validar QA
-- preparar release 1.2
-- atualizar changelog e prontidao
-- entregue: QA final, checklist de deploy, smoke test, release notes finais, changelog, auditoria, prontidao e relatorio final
-- pendente: executar deploy controlado, smoke pos-deploy e monitoramento das primeiras 72h
+Foco condicional:
+
+* analisar feedback agregado e custo da IA
+* melhorar respostas por nicho sem aumentar o prompt desnecessariamente
+* melhorar templates utilizados ou problemáticos
+* melhorar biblioteca e feedback de qualidade com base em uso real
+
+## Sprint 4 — Pricing, conversão e operação
+
+Foco condicional:
+
+* analisar assinatura, checkout e conversão com dados comparáveis
+* melhorar clareza de pricing se houver dúvida medida
+* melhorar admin, suporte e relatórios essenciais
+* preparar próxima campanha pequena, sem ativá-la
+
+## Fechamento da 1.2
+
+Foco:
+
+* smoke test final autenticado
+* validação de segurança, RLS, OpenAI e Stripe
+* release notes e changelog
+* decisão final e deploy controlado
+* nenhuma campanha antes da estabilidade pós-deploy

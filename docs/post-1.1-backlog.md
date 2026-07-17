@@ -7,15 +7,8 @@
 
 ## P1
 
-* Rodar smoke autenticado em Preview/Producao.
-* Validar Supabase RLS com dois usuarios reais.
-* Aplicar migrations pendentes no Supabase real.
-* Validar Stripe Checkout, Customer Portal e webhook assinado no ambiente final.
-* Confirmar GitHub Actions verde no GitHub.
-* Validar OpenAI e Resend no ambiente final sem expor secrets.
-* Preencher metricas reais de ativacao, suporte, billing, feedback e custo OpenAI.
-* Registrar o periodo real de 72 horas e preencher os tres relatorios diarios.
-* Repetir a decisao pos-deploy depois de concluir as validacoes acima.
+* Itens operacionais aprovados foram movidos para `docs/version-1.2-backlog.md` como gate da Sprint 1.
+* Nenhum bug P1 de produto permanece confirmado no backlog pos-1.1.
 
 ## P2
 
@@ -34,9 +27,15 @@
 
 ## Candidatos para versao 1.2
 
-* Nenhum candidato aprovado por dados pos-deploy nesta etapa.
-* Manter como hipoteses, sem iniciar implementacao: metricas, onboarding, templates, qualidade da IA, admin, suporte, billing e reducao de custo OpenAI.
-* Priorizar somente depois de feedback e metricas agregadas reais.
+* Aprovados para planejamento: estabilidade, validacao do ambiente final, metricas essenciais, seguranca e diagnostico do funil.
+* Movidos para `docs/version-1.2-backlog.md`: CI remoto, smoke autenticado, RLS real, OpenAI, Stripe, admin, custo e baseline.
+* Onboarding, dashboard, IA, templates, biblioteca, pricing, suporte e UX permanecem hipoteses condicionadas a dados reais.
+
+## Adiados ou sem evidencia suficiente
+
+* Melhorias de produto que dependem de abandono, feedback, uso ou conversao medidos.
+* Mudancas de copy, prompt, pricing, filtros ou relatorios sem problema confirmado.
+* Nova campanha antes do fechamento da 1.2 e de uma janela estavel em Production.
 
 ## Nao fazer ainda
 

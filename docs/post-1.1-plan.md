@@ -170,7 +170,7 @@ Definir o proximo ciclo apos o fechamento da versao 1.1.
 ## Decisao final
 
 * Manter operacao controlada e pausar divulgacao.
-* Nao repetir campanha, preparar rodada mais estruturada ou iniciar plano detalhado da versao 1.2 agora.
+* Na analise da campanha, nao havia evidencia para repetir campanha ou aprovar implementacao da versao 1.2.
 
 ## Proximos passos apos a analise
 
@@ -188,7 +188,38 @@ Definir o proximo ciclo apos o fechamento da versao 1.1.
 ## O que nao sera feito agora
 
 * nova campanha
-* planejamento detalhado da versao 1.2
+* implementacao ampla da versao 1.2 antes dos criterios de entrada
 * integracao com WhatsApp ou envio automatico
 * CRM, app mobile, automacoes complexas ou redesign
 * campanha grande ou escala de orcamento
+
+## Decisao de planejar a versao 1.2
+
+* O planejamento detalhado da 1.2 foi autorizado como etapa documental.
+* Planejar nao significa iniciar implementacao: o kickoff permanece bloqueado pelos criterios de entrada.
+
+## Motivos
+
+* Consolidar estabilidade, seguranca e medicao antes de novas decisoes de produto.
+* Transformar gargalos nao medidos em perguntas verificaveis, sem inventar feedback ou conversao.
+* Preparar um backlog condicional para ativacao, IA, templates, biblioteca, pricing, metricas e operacao.
+
+## Escopo inicial da 1.2
+
+* Sprint 1: ambiente final, RLS, OpenAI, Stripe, admin, metricas e custo.
+* Sprints 2 a 4: melhorias pequenas somente se a baseline revelar gargalos reais.
+* Nenhum P0/P1/P2 de produto foi confirmado na campanha.
+
+## Criterios de entrada e proximos passos
+
+* Atender `docs/version-1.2-intake-criteria.md` antes de iniciar execucao.
+* Confirmar CI remoto, smoke autenticado, migrations/RLS, OpenAI, Stripe e custo.
+* Coletar baseline segura e repriorizar o backlog antes das sprints de produto.
+
+## Fora do escopo da 1.2
+
+* integracao ou envio automatico pelo WhatsApp
+* CRM completo
+* app mobile
+* automacoes complexas
+* campanha grande ou escala sem dados

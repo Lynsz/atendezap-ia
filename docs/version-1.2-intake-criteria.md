@@ -1,33 +1,47 @@
-# Criterios de Entrada - Versao 1.2
+# Critérios de Entrada — Versão 1.2 AtendeZap IA
 
-## Entra na versao 1.2 se:
+## Pode iniciar a versão 1.2 se
 
-- reduz gargalo de ativacao
-- melhora primeira resposta
-- melhora retencao
-- melhora conversao para plano pago
-- reduz suporte repetitivo
-- reduz cancelamento
-- melhora controle de custo da IA
-- corrige bug P0/P1
-- melhora campanha com sinal positivo
+* versão 1.1 estável em ambiente real
+* nenhum P0 aberto
+* P1 críticos controlados
+* campanha pequena analisada
+* backlog pós-1.1 priorizado
+* CI remoto verde
+* produção estável e smoke autenticado aprovado
+* custo OpenAI medido e sob controle
+* suporte controlado
+* segurança e RLS real validados
 
-## Nao entra na versao 1.2 se:
+## Não iniciar se
 
-- e funcionalidade grande
-- exige integracao com WhatsApp
-- vira CRM
-- exige automacao complexa
-- nao tem relacao com metrica atual
-- aumenta risco operacional
-- nao possui prioridade clara
+* login/cadastro quebrado
+* onboarding quebrado
+* dashboard quebrado
+* IA instável
+* Stripe instável
+* RLS inseguro
+* admin exposto
+* custo OpenAI anormal
+* bugs P0 abertos
+* dados insuficientes para priorizar implementação de produto
 
-## Evidencia esperada
+## Pendências permitidas
 
-- dado agregado do admin
-- resultado agregado de campanha
-- feedback recorrente sem conteudo sensivel
-- solicitacoes de suporte agrupadas
-- falha tecnica reproduzivel
-- validacao de billing, IA, tracking ou RLS
+* Hipóteses P2 sem impacto crítico, desde que não sejam tratadas como fatos.
+* Metas numéricas ainda sem baseline, desde que a Sprint 1 crie a medição necessária.
+* Melhorias cosméticas adiadas e documentadas.
+* Candidatos de produto condicionados à evidência coletada na Sprint 1.
 
+## Bloqueadores
+
+* GitHub Actions remoto não confirmado.
+* Smoke autenticado de Preview/Production não preenchido.
+* Migrations e RLS com dois usuários reais pendentes.
+* OpenAI, Stripe Checkout, portal e webhook no ambiente final pendentes.
+* Custo OpenAI e métricas reais do funil não medidos.
+
+## Decisão atual
+
+* Planejamento pode ser concluído.
+* Execução da versão 1.2 permanece bloqueada até resolver os bloqueadores acima.

@@ -8,9 +8,9 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 
 - Versao 1.1 fechada com observacoes; analise pos-deploy documental concluida.
 - Aprovacao pos-deploy permanece bloqueada porque smoke de Preview/Producao e metricas reais das primeiras 72 horas nao foram preenchidos.
-- Proximo passo decidido: repetir validacao controlada antes de campanha pequena ou planejamento detalhado da 1.2.
+- Planejamento detalhado da 1.2 concluido de forma condicional; implementacao ainda nao iniciada.
 - Analise da campanha pequena pos-1.1 concluida como rodada bloqueada e sem dados de desempenho; divulgacao permanece pausada.
-- Proximo ciclo: manter operacao controlada e concluir validacoes do ambiente real antes de nova campanha ou plano detalhado da 1.2.
+- Proximo ciclo: manter operacao controlada e concluir validacoes do ambiente real antes de implementar a 1.2 ou iniciar nova campanha.
 - SaaS gera respostas para copiar, ajustar e enviar manualmente.
 - Nao envia mensagens automaticamente no WhatsApp.
 - Nao e CRM.
@@ -66,6 +66,13 @@ npm run build
 npm test
 npm run validate
 ```
+
+## Planejamento da versão 1.2
+
+- A versão 1.2 está planejada a partir dos aprendizados da 1.1 e da campanha pós-1.1, cuja execução permaneceu bloqueada e sem métricas reais.
+- O primeiro foco é estabilidade, segurança, métricas e validação do ambiente final; melhorias de ativação, IA, templates, biblioteca, pricing e operação dependem de evidência.
+- O planejamento está concluído, mas a implementação permanece bloqueada até os critérios de entrada serem atendidos.
+- Sem integração ou envio automático pelo WhatsApp, sem CRM completo e sem campanha grande por enquanto.
 
 ## Principais features
 
