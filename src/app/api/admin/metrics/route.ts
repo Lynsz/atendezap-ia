@@ -253,7 +253,11 @@ export async function GET(request: Request) {
       appEventsResult,
       stripeWebhookEventsResult,
       supportRequestsResult,
-      cancellationFeedbackResult
+      cancellationFeedbackResult,
+      whatsappConnectionsResult,
+      whatsappConversationsResult,
+      whatsappMessagesResult,
+      whatsappSuggestedRepliesResult
     ] = await Promise.all([
       supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign").limit(10000),
       supabase.from("profiles").select("id, email, created_at").limit(10000),
@@ -267,7 +271,11 @@ export async function GET(request: Request) {
       supabase.from("app_events").select("event_name, metadata, created_at").limit(20000),
       supabase.from("stripe_webhook_events").select("event_type, processed_at, created_at").limit(10000),
       supabase.from("support_requests").select("status, created_at").limit(10000),
-      supabase.from("cancellation_feedback").select("reason, created_at").limit(10000)
+      supabase.from("cancellation_feedback").select("reason, created_at").limit(10000),
+      supabase.from("whatsapp_connections").select("status, created_at").limit(10000),
+      supabase.from("whatsapp_conversations").select("status, created_at").limit(20000),
+      supabase.from("whatsapp_messages").select("direction, status, created_at").limit(20000),
+      supabase.from("whatsapp_suggested_replies").select("status, created_at").limit(20000)
     ]);
 
     const availability = {
@@ -282,7 +290,12 @@ export async function GET(request: Request) {
       events: resultAvailable(eventsResult) || resultAvailable(appEventsResult),
       stripeWebhookEvents: resultAvailable(stripeWebhookEventsResult),
       supportRequests: resultAvailable(supportRequestsResult),
-      cancellationFeedback: resultAvailable(cancellationFeedbackResult)
+      cancellationFeedback: resultAvailable(cancellationFeedbackResult),
+      whatsapp:
+        resultAvailable(whatsappConnectionsResult) &&
+        resultAvailable(whatsappConversationsResult) &&
+        resultAvailable(whatsappMessagesResult) &&
+        resultAvailable(whatsappSuggestedRepliesResult)
     };
 
     const leads = (leadsResult.data || []) as LeadMetricRow[];
@@ -299,6 +312,10 @@ export async function GET(request: Request) {
     const stripeWebhookEvents = (stripeWebhookEventsResult.data || []) as StripeWebhookEventMetricRow[];
     const supportRequests = (supportRequestsResult.data || []) as SupportRequestMetricRow[];
     const cancellationFeedback = (cancellationFeedbackResult.data || []) as CancellationFeedbackMetricRow[];
+    const whatsappConnections = (whatsappConnectionsResult.data || []) as Array<{ status: string; created_at: string }>;
+    const whatsappConversations = (whatsappConversationsResult.data || []) as Array<{ status: string; created_at: string }>;
+    const whatsappMessages = (whatsappMessagesResult.data || []) as Array<{ direction: string; status: string; created_at: string }>;
+    const whatsappSuggestedReplies = (whatsappSuggestedRepliesResult.data || []) as Array<{ status: string; created_at: string }>;
     const savedTemplates = savedResponses.filter((item) => item.source_template_id);
 
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -544,6 +561,17 @@ export async function GET(request: Request) {
           aiResponseFeedback.filter((item) => item.rating === "negative" && isAtOrAfter(item.created_at, thirtyDaysStart)).length +
           feedback.filter((item) => ["bug", "dificuldade_uso"].includes(item.type || "") && isAtOrAfter(item.created_at, thirtyDaysStart)).length,
         activeSubscriptions: activeSubscriptions.length
+      },
+      whatsapp: {
+        available: availability.whatsapp,
+        totalConnections: whatsappConnections.length,
+        activeConnections: whatsappConnections.filter((item) => item.status === "active").length,
+        pendingConversations: whatsappConversations.filter((item) => item.status === "pending").length,
+        inboundMessages: whatsappMessages.filter((item) => item.direction === "inbound").length,
+        outboundMessages: whatsappMessages.filter((item) => item.direction === "outbound" && item.status === "sent").length,
+        suggestedReplies: whatsappSuggestedReplies.length,
+        blockedReplies: events.filter((event) => event.event_name === "whatsapp_reply_blocked_window_closed").length,
+        integrationErrors: events.filter((event) => event.event_name === "whatsapp_integration_error").length
       },
       revenue: {
         checkoutStartedUsers: checkoutStartedUsers.size,

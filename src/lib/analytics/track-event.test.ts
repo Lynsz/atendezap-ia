@@ -88,6 +88,22 @@ describe("safe app events", () => {
     });
   });
 
+  it("allows only aggregate WhatsApp metadata", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "whatsapp_reply_sent",
+      metadata: {
+        message_type: "text",
+        window_open: true,
+        status: "sent",
+        phone: "5511999999999",
+        message: "conteúdo privado",
+        contact_name: "Pessoa Privada"
+      }
+    });
+    expect(event?.metadata).toEqual({ message_type: "text", window_open: true, status: "sent" });
+  });
+
   it("normalizes existing UI aliases into MVP event names", async () => {
     const { sanitizeAppEvent } = await import("./track-event");
 

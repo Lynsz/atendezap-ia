@@ -26,6 +26,7 @@ const PUBLIC_API_ROUTES = new Set([
   "/api/ebook-lead",
   "/api/feedback",
   "/api/kiwify/webhook",
+  "/api/whatsapp/webhook",
   "/api/stripe/webhook",
   "/api/support"
 ]);
@@ -49,7 +50,7 @@ const PRIVATE_PAGE_PREFIXES = [
   "/sistema/backend"
 ];
 
-const PRIVATE_API_PREFIXES = ["/api/ai", "/api/generate-response", "/api/saved-responses", "/api/stripe/create-checkout-session", "/api/stripe/create-portal-session"];
+const PRIVATE_API_PREFIXES = ["/api/ai", "/api/generate-response", "/api/saved-responses", "/api/stripe/create-checkout-session", "/api/stripe/create-portal-session", "/api/whatsapp"];
 
 const ADMIN_PREFIXES = ["/admin", "/api/admin"];
 

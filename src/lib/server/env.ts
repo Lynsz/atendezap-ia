@@ -23,7 +23,19 @@ export const STRIPE_ENV_NAMES = [
   "STRIPE_PRICE_PREMIUM"
 ] as const;
 
-type EnvName = (typeof BASIC_ENV_NAMES | typeof OPENAI_ENV_NAMES | typeof STRIPE_ENV_NAMES)[number] | "SUPABASE_SERVICE_ROLE_KEY";
+export const WHATSAPP_ENV_NAMES = [
+  "WHATSAPP_ACCESS_TOKEN",
+  "WHATSAPP_PHONE_NUMBER_ID",
+  "WHATSAPP_BUSINESS_ACCOUNT_ID",
+  "WHATSAPP_VERIFY_TOKEN",
+  "WHATSAPP_API_VERSION"
+] as const;
+
+export const WHATSAPP_OPTIONAL_ENV_NAMES = ["WHATSAPP_APP_SECRET", "WHATSAPP_ENABLED"] as const;
+
+type EnvName =
+  | (typeof BASIC_ENV_NAMES | typeof OPENAI_ENV_NAMES | typeof STRIPE_ENV_NAMES | typeof WHATSAPP_ENV_NAMES | typeof WHATSAPP_OPTIONAL_ENV_NAMES)[number]
+  | "SUPABASE_SERVICE_ROLE_KEY";
 
 export function readServerEnv(name: EnvName) {
   return process.env[name]?.trim() || "";
@@ -38,8 +50,13 @@ export function getServerEnvStatus() {
     basic: missingEnv(BASIC_ENV_NAMES),
     openai: missingEnv(OPENAI_ENV_NAMES),
     stripe: missingEnv(STRIPE_ENV_NAMES),
+    whatsapp: missingEnv(WHATSAPP_ENV_NAMES),
     supabaseAdmin: missingEnv(["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"])
   };
+}
+
+export function isWhatsAppEnabled() {
+  return /^(1|true)$/i.test(readServerEnv("WHATSAPP_ENABLED"));
 }
 
 export function requireSupabasePublicEnv() {

@@ -32,12 +32,16 @@ const secretPatterns = [
   { name: "GitHub token", pattern: /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}\b/g },
   { name: "GitHub fine-grained token", pattern: /\bgithub_pat_[A-Za-z0-9_]{20,}\b/g },
   { name: "Vercel token", pattern: /\bvercel_[A-Za-z0-9]{20,}\b/g },
+  { name: "Meta/WhatsApp access token", pattern: /\bEAA[A-Za-z0-9]{20,}\b/g },
   { name: "Private key block", pattern: new RegExp("BEGIN " + "PRIVATE KEY", "g") }
 ];
 
 const sensitiveEnvNames = [
   "KIWIFY_WEBHOOK_SECRET",
   "OPENAI_API_KEY",
+  "WHATSAPP_ACCESS_TOKEN",
+  "WHATSAPP_VERIFY_TOKEN",
+  "WHATSAPP_APP_SECRET",
   "SENTRY_AUTH_TOKEN",
   "SUPABASE_SERVICE_ROLE_KEY",
   "RESEND_API_KEY",
@@ -127,22 +131,28 @@ function scanFile(file, findings) {
   });
 }
 
-const findings = [];
+function main() {
+  const findings = [];
 
-for (const file of trackedEnvFiles()) {
-  findings.push({ file, lineNumber: 1, label: "arquivo de ambiente rastreado" });
-}
-
-for (const file of candidateFiles()) {
-  scanFile(file, findings);
-}
-
-if (findings.length > 0) {
-  console.error("Possiveis secrets encontrados em arquivos versionados:");
-  for (const finding of findings) {
-    console.error(`- ${finding.file}:${finding.lineNumber} (${finding.label})`);
+  for (const file of trackedEnvFiles()) {
+    findings.push({ file, lineNumber: 1, label: "arquivo de ambiente rastreado" });
   }
-  process.exit(1);
+
+  for (const file of candidateFiles()) {
+    scanFile(file, findings);
+  }
+
+  if (findings.length > 0) {
+    console.error("Possiveis secrets encontrados em arquivos versionados:");
+    for (const finding of findings) {
+      console.error(`- ${finding.file}:${finding.lineNumber} (${finding.label})`);
+    }
+    process.exit(1);
+  }
+
+  console.log("Nenhum secret obvio encontrado em arquivos versionados.");
 }
 
-console.log("Nenhum secret obvio encontrado em arquivos versionados.");
+if (require.main === module) main();
+
+module.exports = { isSafePlaceholder, scanEnvAssignment, sensitiveEnvNames, secretPatterns };

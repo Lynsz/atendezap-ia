@@ -1,5 +1,33 @@
 # Changelog
 
+## [WhatsApp Integration Phase 1]
+
+### Adicionado
+
+- Base server-only para a API oficial WhatsApp Cloud API, persistência inbound, caixa de entrada, sugestões com IA e envio manual aprovado.
+- Migration com cinco tabelas privadas, índices e RLS por usuário.
+- Métricas agregadas no admin, documentação operacional e testes de segurança.
+
+### Segurança
+
+- Confirmação explícita, opt-out, janela de 24 horas, idempotência e scanner de tokens Meta.
+- Nenhum token, payload bruto ou conteúdo completo em logs/analytics.
+
+### Webhook
+
+- Challenge GET, inbound POST, deduplicação e assinatura HMAC opcional por ambiente.
+- Nenhuma resposta automática é disparada pelo webhook.
+
+### Dashboard
+
+- Lista de conversas, histórico, edição da sugestão e envio explícito pelo usuário.
+- Configuração mostra somente status e identificadores mascarados.
+
+### Pendências
+
+- Aplicar migration e concluir smoke test com conta Meta real antes de habilitar em produção.
+- Templates aprovados fora da janela permanecem para fase futura.
+
 ## [Unreleased]
 
 ### Corrigido

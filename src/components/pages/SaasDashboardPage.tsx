@@ -24,6 +24,7 @@ import {
   Trash2,
   Users
 } from "lucide-react";
+import WhatsAppNavLink from "@/components/whatsapp/WhatsAppNavLink";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { StripeCheckoutButton } from "@/components/checkout/StripeCheckoutButton";
 import { FirstStepsChecklist, type FirstStepItem, type FirstStepTarget } from "@/components/dashboard/first-steps-checklist";
@@ -2012,6 +2013,7 @@ function SaasDashboardContent({ initialTab = "assistant" }: { initialTab?: Dashb
               {label as string}
             </button>
           ))}
+          <WhatsAppNavLink />
         </nav>
 
         {tab === "billing" ? (

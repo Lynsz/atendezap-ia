@@ -86,3 +86,44 @@ export async function generateCustomerResponseWithAi(input: GenerateAiResponseIn
     mode: "openai" as const
   };
 }
+
+export async function generateWhatsAppConversationReplyWithAi(input: {
+  businessData: BusinessDataForResponse;
+  history: Array<{ direction: "inbound" | "outbound"; body: string }>;
+}) {
+  const openai = getOpenAIClient();
+  const business = normalizeBusinessContextForPrompt(input.businessData);
+  const history = input.history
+    .slice(-12)
+    .map((item) => `${item.direction === "inbound" ? "Cliente" : "Atendente"}: ${item.body.slice(0, 1200)}`)
+    .join("\n");
+  const completion = await openai.chat.completions.create({
+    model: getOpenAIModel(),
+    messages: [
+      {
+        role: "system",
+        content:
+          "Crie somente uma sugestão curta de resposta para um atendente humano revisar e enviar manualmente pelo WhatsApp. Use apenas o contexto fornecido. Não invente preço, prazo, estoque, pagamento, agenda, link ou política. Se faltar dado, peça a informação necessária. Não diga que a mensagem já foi enviada. Use português brasileiro natural, sem markdown e em no máximo 4 frases curtas."
+      },
+      {
+        role: "user",
+        content: [
+          `Negócio: ${business.business_name}.`,
+          `Tipo: ${business.business_type || business.business_area || "atendimento"}.`,
+          `Tom: ${business.brand_tone || "educado e profissional"}.`,
+          business.description ? `Descrição: ${business.description}.` : "",
+          "Conversa recente:",
+          history
+        ]
+          .filter(Boolean)
+          .join("\n")
+      }
+    ],
+    temperature: 0.4,
+    max_tokens: 240
+  });
+
+  const body = completion.choices[0]?.message?.content?.trim();
+  if (!body) throw new AppError("Não foi possível sugerir uma resposta agora. Tente novamente em instantes.", 502);
+  return body.slice(0, 4096);
+}

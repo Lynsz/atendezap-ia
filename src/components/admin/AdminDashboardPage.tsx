@@ -143,6 +143,18 @@ type ProductMetricsPayload = {
     stripeWebhookEvents: boolean;
     supportRequests: boolean;
     cancellationFeedback: boolean;
+    whatsapp: boolean;
+  };
+  whatsapp: {
+    available: boolean;
+    totalConnections: number;
+    activeConnections: number;
+    pendingConversations: number;
+    inboundMessages: number;
+    outboundMessages: number;
+    suggestedReplies: number;
+    blockedReplies: number;
+    integrationErrors: number;
   };
   funnel: {
     totalLeads: number;
@@ -1037,6 +1049,26 @@ export default function AdminDashboardPage() {
                   </p>
                 ))}
               </div>
+            </div>
+          </section>
+        ) : null}
+
+        {productMetrics ? (
+          <section className="mb-6 rounded-lg border border-emerald-300/20 bg-[#101821] p-5 shadow-xl shadow-black/20">
+            <div className="mb-5">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">WhatsApp Cloud API</p>
+              <h2 className="mt-2 text-2xl font-black text-white">Operação de atendimento</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">Somente métricas agregadas; nenhum telefone ou conteúdo de mensagem é exibido.</p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <MetricCard label="Conexões" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.totalConnections)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Conexões ativas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.activeConnections)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Conversas pendentes" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.pendingConversations)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Mensagens recebidas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.inboundMessages)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Respostas enviadas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.outboundMessages)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Sugestões geradas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.suggestedReplies)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Bloqueios por janela" value={availableValue(productMetrics.availability.events, productMetrics.whatsapp.blockedReplies)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Erros de integração" value={availableValue(productMetrics.availability.events, productMetrics.whatsapp.integrationErrors)} icon={<ShieldCheck className="h-5 w-5" />} />
             </div>
           </section>
         ) : null}

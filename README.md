@@ -458,3 +458,8 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Testes A/B automaticos.
 - Nutricao avancada por e-mail.
 - App mobile.
+## Integração WhatsApp
+
+A Fase 1 usa exclusivamente a API oficial WhatsApp Cloud API. Mensagens recebidas podem gerar uma sugestão de IA, mas o envio exige revisão e confirmação explícita do usuário: não há disparo automático, envio em massa nem integração não oficial com WhatsApp Web.
+
+O backend respeita opt-out e a janela de atendimento de 24 horas. Tokens ficam somente no servidor, e as variáveis necessárias estão documentadas em `.env.example`. Consulte [o guia de setup](docs/whatsapp-cloud-api-setup.md) e [as políticas de segurança](docs/whatsapp-policy-and-safety.md).
