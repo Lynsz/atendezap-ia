@@ -6,6 +6,33 @@
 
 - Allowlist segura de eventos alinhada aos eventos de ativacao e biblioteca ja disparados pelo dashboard.
 
+## [Post-1.1 Small Campaign Analysis]
+
+### Analisado
+
+- Relatorio final, diagnostico do funil e analises de canal, copy, ativacao, billing, suporte e feedback consolidados.
+- Campanha classificada como bloqueada antes da divulgacao, sem periodo, canais, UTMs ou metricas reais de desempenho.
+- Bugs e incidentes revisados sem inventar ocorrencias ou conversoes ausentes.
+
+### Corrigido
+
+- Nenhuma correcao de codigo aplicada, pois nenhum P0/P1 foi reproduzido.
+- Registro de incidentes normalizado para indicar que nenhum incidente foi registrado.
+
+### Produto
+
+- Nenhuma mudanca em onboarding, dashboard, IA, pricing ou copy por falta de gargalo ou feedback medido.
+- Backlog atualizado para manter melhorias como hipoteses condicionadas a dados reais.
+
+### Operacao
+
+- Decisao final: manter operacao controlada e pausar divulgacao.
+- Nova campanha e plano inicial da versao 1.2 nao foram aprovados nesta analise.
+
+### Proxima etapa
+
+- Confirmar CI remoto, smoke autenticado, migrations/RLS, OpenAI, Stripe e custo antes de nova decisao.
+
 ## [Post-1.1 Small Campaign Execution]
 
 ### Operacao

@@ -9,6 +9,8 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 - Versao 1.1 fechada com observacoes; analise pos-deploy documental concluida.
 - Aprovacao pos-deploy permanece bloqueada porque smoke de Preview/Producao e metricas reais das primeiras 72 horas nao foram preenchidos.
 - Proximo passo decidido: repetir validacao controlada antes de campanha pequena ou planejamento detalhado da 1.2.
+- Analise da campanha pequena pos-1.1 concluida como rodada bloqueada e sem dados de desempenho; divulgacao permanece pausada.
+- Proximo ciclo: manter operacao controlada e concluir validacoes do ambiente real antes de nova campanha ou plano detalhado da 1.2.
 - SaaS gera respostas para copiar, ajustar e enviar manualmente.
 - Nao envia mensagens automaticamente no WhatsApp.
 - Nao e CRM.

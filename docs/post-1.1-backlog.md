@@ -46,3 +46,36 @@
 * app mobile
 * automacoes complexas
 * campanha grande sem dados suficientes
+
+## Analise da campanha pequena pos-1.1
+
+### Bugs identificados
+
+* Nenhum P0, P1 ou P2 confirmado por dados da campanha.
+* Pendencias de ambiente real permanecem operacionais e nao foram classificadas como bugs.
+
+### Melhorias recomendadas
+
+* Concluir CI remoto, smoke autenticado, migrations/RLS, OpenAI, Stripe e medicao de custo.
+* Garantir agregados seguros por etapa e canal antes de qualquer nova analise de conversao.
+* Nao alterar onboarding, IA, pricing, suporte ou copy sem feedback ou gargalo medido.
+
+### Candidatos a versao 1.2
+
+* Nenhum aprovado nesta analise.
+* Ativacao, onboarding, IA por nicho, templates, biblioteca, pricing, metricas, admin, suporte e custo permanecem hipoteses condicionadas a dados reais.
+
+### Itens para proxima campanha
+
+* Comecar por convite manual somente apos aprovacao operacional.
+* Usar `post_1_1_small_campaign` apenas se a rodada original ainda for formalmente ativada; uma rodada diferente deve usar identificador novo.
+* Medir funil, suporte, feedback, erros e custo desde o primeiro dia.
+
+### Itens fora de escopo
+
+* integracao com WhatsApp
+* envio automatico
+* CRM completo
+* app mobile
+* automacoes complexas
+* campanha grande sem dados
