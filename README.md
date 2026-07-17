@@ -6,12 +6,14 @@ O produto ajuda o usuario a cadastrar o contexto do negocio, colar uma pergunta 
 
 ## Status
 
-- Versao 1.1 fechada com observacoes para operacao controlada.
+- Versao 1.1 fechada com observacoes; analise pos-deploy documental concluida.
+- Aprovacao pos-deploy permanece bloqueada porque smoke de Preview/Producao e metricas reais das primeiras 72 horas nao foram preenchidos.
+- Proximo passo decidido: repetir validacao controlada antes de campanha pequena ou planejamento detalhado da 1.2.
 - SaaS gera respostas para copiar, ajustar e enviar manualmente.
 - Nao envia mensagens automaticamente no WhatsApp.
 - Nao e CRM.
 - Projeto privado; nao tornar o repositorio publico.
-- Ainda depende de smoke autenticado em Preview/Producao, RLS real com dois usuarios, Stripe em ambiente final e GitHub Actions visualmente verde antes de campanha externa.
+- Ainda depende de smoke autenticado em Preview/Producao, RLS real com dois usuarios, Stripe/OpenAI no ambiente final, 72 horas de dados agregados e GitHub Actions visualmente verde antes de campanha externa.
 
 ## Status do MVP
 
@@ -243,6 +245,16 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 - Configure Supabase, Stripe e OpenAI seguindo `docs/vercel-supabase-setup.md`, `docs/vercel-stripe-setup.md` e `docs/vercel-openai-setup.md`.
 - Use `docs/vercel-deploy-checklist.md` antes de promover e `docs/production-smoke-test.md` depois do deploy.
 - Use tambem `docs/staging-checklist.md`, `docs/production-deploy-checklist.md` e `docs/post-deploy-smoke-test.md` quando fizerem parte do ciclo operacional.
+
+## Deploy da versao 1.1
+
+- Rode validacao local completa antes do deploy: `npm run check:secrets`, `npm run lint`, `npm run typecheck`, `npm run build`, `npm test` e `npm run validate`.
+- Confirme CI verde no GitHub antes de promover qualquer ambiente.
+- Use Preview antes de Producao e preencha `docs/version-1.1-preview-smoke-test.md`.
+- Promova para Producao somente se o smoke de Preview estiver aprovado e sem P0.
+- Depois de Producao, preencha `docs/version-1.1-production-smoke-test.md` e monitore 72h com `docs/version-1.1-first-72h-monitoring.md`.
+- Faca rollback conforme `docs/version-1.1-rollback-criteria.md` se houver P0, vazamento de dados/secret, admin exposto, rota critica 500 recorrente, IA quebrada para multiplos usuarios ou checkout/webhook quebrado.
+- Nao colocar secrets reais no Git; variaveis reais ficam apenas na Vercel e em `.env.local`.
 
 ## Monitoramento e operacao
 

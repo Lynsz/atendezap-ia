@@ -6,6 +6,57 @@
 
 - Allowlist segura de eventos alinhada aos eventos de ativacao e biblioteca ja disparados pelo dashboard.
 
+## [1.1.0 Post-Deploy]
+
+### Analisado
+
+- Documentacao de deploy, smoke tests, monitoramento, rollback, seguranca, billing, RLS e relatorios pos-release revisada.
+- Metricas das primeiras 72 horas classificadas como `nao disponivel` ou `nao medido`; nenhuma quantidade foi inferida.
+- Nenhum P0/P1 confirmado e nenhum rollback registrado nas fontes disponiveis.
+
+### Corrigido
+
+- Nenhuma correcao de codigo aplicada, pois nao foi encontrado bug P0/P1 reproduzido.
+
+### Operacao
+
+- Decisao pos-deploy: repetir validacao.
+- Aprovacao de producao, campanha pequena e planejamento detalhado da 1.2 permanecem bloqueados ate smoke real, CI remoto e 72 horas completas de dados agregados.
+
+### Seguranca
+
+- Auditoria local confirmou checkout sem preco vindo do client, Price IDs em variaveis server-side, webhook Stripe assinado, limites mensais ativos e eventos sanitizados.
+- Ambiente real, RLS com dois usuarios e eventos de producao ainda precisam de validacao.
+
+### Proxima etapa
+
+- Repetir Preview e Production controlados, validar integracoes e preencher o relatorio de 72 horas antes de nova decisao.
+
+## [1.1.0 Deploy]
+
+### Operacao
+
+- Preparacao do deploy controlado da versao 1.1 documentada, sem registrar deploy como executado.
+- Plano de deploy, checklist pre-deploy, smoke tests de Preview/Producao, monitoramento 72h, rollback e relatorio de deploy adicionados.
+
+### Validacao
+
+- Fluxo exige validacao local, CI verde, Preview aprovado, smoke de Producao e monitoramento inicial antes de campanha pequena.
+- GitHub Actions usa Node.js 24 e executa `check:secrets`, lint, typecheck, build e testes; confirmacao visual do run remoto segue pendente.
+
+### Seguranca
+
+- Checklist de variaveis Vercel reforca que secrets reais nao devem ser documentados no Git.
+- Regras de rollback cobrem secret exposto, vazamento de dados, admin exposto, RLS com risco e erro 500 recorrente em rota critica.
+
+### Pendencias
+
+- Executar smoke autenticado em Preview/Producao.
+- Validar RLS com dois usuarios reais.
+- Aplicar migrations no Supabase real.
+- Validar Stripe Checkout, Customer Portal e webhook assinado no ambiente final.
+- Confirmar OpenAI, Resend e metricas reais no ambiente final.
+
 ## [1.1.0]
 
 ### Adicionado

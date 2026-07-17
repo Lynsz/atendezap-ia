@@ -2,7 +2,7 @@
 
 ## P0
 
-* Nenhum P0 confirmado no fechamento local da versao 1.1.
+* Nenhum P0 confirmado no fechamento local ou na analise documental pos-deploy da versao 1.1.
 * Se surgir vazamento de dados, secret exposto, falha de RLS, checkout/webhook indisponivel, login/cadastro indisponivel ou IA indisponivel para multiplos usuarios, pausar operacao e corrigir antes de qualquer melhoria.
 
 ## P1
@@ -14,6 +14,8 @@
 * Confirmar GitHub Actions verde no GitHub.
 * Validar OpenAI e Resend no ambiente final sem expor secrets.
 * Preencher metricas reais de ativacao, suporte, billing, feedback e custo OpenAI.
+* Registrar o periodo real de 72 horas e preencher os tres relatorios diarios.
+* Repetir a decisao pos-deploy depois de concluir as validacoes acima.
 
 ## P2
 
@@ -22,24 +24,25 @@
 * Melhorar qualidade da IA com base em feedback agregado.
 * Melhorar suporte/FAQ com base em perguntas recorrentes.
 * Melhorar pricing apenas se houver duvida ou queda medida.
-* Melhorar relatorios internos sem virar BI avancado.
+* Alinhar `supabase/schema.sql` com as migrations somente depois de confirmar o banco real.
+* Melhorar relatorios internos sem virar BI avancado e apenas se a operacao exigir.
 
-## Ideias futuras
+## Proxima campanha pequena
 
-* melhorar relatorios
-* melhorar segmentacao por nicho
-* melhorar campanhas pequenas
-* melhorar onboarding
-* melhorar qualidade da IA
-* melhorar templates
-* melhorar admin
-* melhorar suporte
+* Nao aprovada nesta analise.
+* Reavaliar somente apos smoke de Production aprovado, 72 horas completas, nenhum P0, P1 criticos controlados, checkout estavel, suporte controlado e custo OpenAI medido.
+
+## Candidatos para versao 1.2
+
+* Nenhum candidato aprovado por dados pos-deploy nesta etapa.
+* Manter como hipoteses, sem iniciar implementacao: metricas, onboarding, templates, qualidade da IA, admin, suporte, billing e reducao de custo OpenAI.
+* Priorizar somente depois de feedback e metricas agregadas reais.
 
 ## Nao fazer ainda
 
 * integracao com WhatsApp
-* envio automatico de mensagens
+* envio automatico
 * CRM completo
 * app mobile
 * automacoes complexas
-* campanha grande sem dados
+* campanha grande sem dados suficientes
