@@ -26,7 +26,7 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
       route: "src/lib/server/whatsapp-inbound",
       metadata: { error_type: connection ? "connection_inactive" : "connection_not_found", message_type: message.messageType }
     });
-    return { persisted: false, duplicate: false };
+    return { persisted: false, duplicate: false, userId: null, messageId: null, conversationId: null };
   }
 
   if (message.displayPhoneNumber) {
@@ -103,5 +103,11 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
     });
   }
 
-  return { persisted: Boolean(inserted), duplicate: !inserted };
+  return {
+    persisted: Boolean(inserted),
+    duplicate: !inserted,
+    userId: connection.user_id,
+    messageId: inserted?.id || null,
+    conversationId: conversation.id
+  };
 }

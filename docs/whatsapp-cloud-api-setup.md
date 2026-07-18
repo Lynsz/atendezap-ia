@@ -12,7 +12,7 @@ Configurar a integração oficial com WhatsApp Cloud API sem expor credenciais n
 - Webhook Verify Token forte e exclusivo;
 - App Secret para validação HMAC em produção;
 - URL HTTPS pública do app;
-- migration `supabase/migrations/create_whatsapp_integration_tables.sql` aplicada.
+- migrations `supabase/migrations/create_whatsapp_integration_tables.sql` e `supabase/migrations/add_whatsapp_phase_3_idempotency.sql` aplicadas.
 
 ## Variáveis
 
@@ -34,7 +34,7 @@ Não use prefixo `NEXT_PUBLIC_`. Defina explicitamente a versão Graph suportada
 
 1. Revise a migration.
 2. Aplique-a no projeto Supabase do ambiente.
-3. Confirme que as cinco tabelas têm RLS ativo.
+3. Confirme que todas as tabelas `whatsapp_*` têm RLS ativo.
 4. Confirme que `authenticated` tem somente `SELECT`; escritas críticas usam service role em rotas server-side.
 
 ## Webhook
@@ -61,7 +61,8 @@ Sem App Secret, a validação HMAC fica explicitamente desativada para desenvolv
 - não fazer disparos em massa;
 - não iniciar conversa sem opt-in;
 - respeitar a janela de atendimento de 24 horas;
-- fora da janela, usar futuramente apenas template aprovado e aplicável;
+- fora da janela, usar somente template aprovado, da mesma conexão, com opt-in e confirmação manual;
+- não configurar cron, fila ou endpoint interno: a Fase 3 usa processamento síncrono idempotente;
 - não usar WhatsApp Web não oficial;
 - não expor tokens, payloads brutos ou conteúdo em logs/analytics.
 

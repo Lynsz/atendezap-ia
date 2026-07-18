@@ -16,7 +16,7 @@ describe("WhatsApp secrets scanner", () => {
   });
 
   it("trata access token, app secret e verify token como envs sensíveis", () => {
-    expect(scanner.sensitiveEnvNames).toEqual(expect.arrayContaining(["WHATSAPP_ACCESS_TOKEN", "WHATSAPP_APP_SECRET", "WHATSAPP_VERIFY_TOKEN"]));
+    expect(scanner.sensitiveEnvNames).toEqual(expect.arrayContaining(["WHATSAPP_ACCESS_TOKEN", "WHATSAPP_APP_SECRET", "WHATSAPP_VERIFY_TOKEN", "INTERNAL_JOB_SECRET"]));
     const findings: unknown[] = [];
     scanner.scanEnvAssignment("fixture.env", "WHATSAPP_APP_SECRET=valor-real-nao-versionar", 1, findings);
     expect(findings).toHaveLength(1);

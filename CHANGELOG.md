@@ -1,5 +1,23 @@
 # Changelog
 
+## [WhatsApp Integration Phase 3]
+
+### Adicionado
+
+- Idempotência persistente para inbound e status, tentativas de envio, auditoria segura e templates oficiais.
+- Rate limit por usuário/conversa/template, retry transitório limitado e erros da Meta normalizados.
+- Status `sent`, `delivered`, `read` e `failed`, métricas agregadas e UX de retry seguro.
+
+### Segurança
+
+- Sem payload bruto, erro bruto da Meta, telefone, conteúdo ou variáveis de template em logs operacionais e analytics.
+- Sem envio automático, massa, cron, fila de disparo ou endpoint interno.
+
+### Operação
+
+- Migration remota pendente porque a CLI Supabase não está instalada no ambiente de implementação.
+- Smoke test real deve ocorrer somente depois da migration e com contato autorizado.
+
 ## [WhatsApp Integration Phase 1]
 
 ### Adicionado

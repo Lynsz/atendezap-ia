@@ -3,20 +3,24 @@
 ## Regras do produto
 
 - envio somente após confirmação explícita do usuário;
-- nenhuma resposta automática na Fase 1;
+- nenhuma resposta automática em qualquer fase implementada;
 - sem spam, envio em massa, scraping ou WhatsApp Web não oficial;
 - sem promessa de entrega garantida ou automação ilimitada;
 - opt-in obrigatório para iniciar conversas;
 - opt-out bloqueia envios;
 - janela de atendimento de 24 horas respeitada;
-- templates aprovados serão necessários fora da janela, quando aplicável, em fase futura.
+- fora da janela, somente template aprovado, opt-in confirmado e ação manual.
 
 ## Controles técnicos
 
 - `confirmSend: true` é validado na rota de envio;
 - proprietário é derivado da sessão, nunca de `user_id` do client;
 - conexão, contato, conversa e janela são revalidados no backend;
-- chave de idempotência cria um registro pendente antes da chamada ao provedor;
+- request ID e tentativa persistida são adquiridos antes da chamada ao provedor;
+- fingerprints SHA-256 bloqueiam conteúdo idêntico enviado recentemente sem armazenar o texto;
+- rate limits por usuário, conversa e template reduzem abuso;
+- retries são limitados a uma repetição e somente para falhas transitórias;
+- eventos de webhook são adquiridos antes de alterar contato, conversa ou mensagem;
 - RLS permite ao client somente leitura dos próprios dados;
 - access token, App Secret, verify token, OpenAI key e service role são server-only;
 - `WHATSAPP_ENABLED=false` desativa a integração.
@@ -29,6 +33,8 @@
 - tokens, assinatura completa e conteúdo não entram em logs;
 - mensagem/resposta não entram em analytics;
 - conteúdo necessário ao atendimento fica nas tabelas privadas com RLS.
+- erros brutos da Meta não entram em banco, logs, analytics ou interface;
+- auditoria contém somente ação, estado, categoria segura e referências internas.
 
 ## Pausar a integração se
 

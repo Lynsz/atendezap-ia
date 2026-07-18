@@ -6,7 +6,11 @@ const mocks = vi.hoisted(() => ({
   sendWhatsAppTextMessage: vi.fn(),
   trackServerAppEvent: vi.fn(),
   enforceRateLimit: vi.fn(),
-  getSupabaseAdmin: vi.fn()
+  getSupabaseAdmin: vi.fn(),
+  createWhatsAppSendAttempt: vi.fn(),
+  updateWhatsAppSendAttempt: vi.fn(),
+  enforceWhatsAppSendLimits: vi.fn(),
+  writeWhatsAppAudit: vi.fn()
 }));
 
 vi.mock("server-only", () => ({}));
@@ -15,6 +19,14 @@ vi.mock("@/lib/server/whatsapp", () => ({ sendWhatsAppTextMessage: mocks.sendWha
 vi.mock("@/lib/analytics/server", () => ({ trackServerAppEvent: mocks.trackServerAppEvent }));
 vi.mock("@/lib/rate-limit", () => ({ assertRequestSize: vi.fn(), enforceRateLimit: mocks.enforceRateLimit }));
 vi.mock("@/lib/supabase/server", () => ({ getSupabaseAdmin: mocks.getSupabaseAdmin }));
+vi.mock("@/lib/server/whatsapp-audit", () => ({ writeWhatsAppAudit: mocks.writeWhatsAppAudit }));
+vi.mock("@/lib/server/whatsapp-send-safety", () => ({
+  createWhatsAppContentFingerprint: vi.fn(() => "fingerprint"),
+  createWhatsAppSendAttempt: mocks.createWhatsAppSendAttempt,
+  updateWhatsAppSendAttempt: mocks.updateWhatsAppSendAttempt,
+  enforceWhatsAppSendLimits: mocks.enforceWhatsAppSendLimits,
+  sendWithControlledRetry: vi.fn(async (operation: () => Promise<unknown>) => ({ value: await operation(), attempts: 1 }))
+}));
 
 const conversationId = "11111111-1111-4111-8111-111111111111";
 const contactId = "22222222-2222-4222-8222-222222222222";
@@ -53,6 +65,7 @@ describe("POST WhatsApp send", () => {
     vi.clearAllMocks();
     mocks.requireUser.mockResolvedValue({ id: "user-a" });
     mocks.sendWhatsAppTextMessage.mockResolvedValue({ messageId: "wamid.sent" });
+    mocks.createWhatsAppSendAttempt.mockResolvedValue({ acquired: true, attempt: { id: "attempt-1", status: "pending", attempts: 1 } });
   });
 
   it("exige login", async () => {
@@ -105,7 +118,6 @@ describe("POST WhatsApp send", () => {
         { data: { id: conversationId, contact_id: contactId, connection_id: connectionId, customer_service_window_until: "2099-01-01T00:00:00.000Z" }, error: null },
         { data: { id: contactId, phone_number: "5511999999999", opt_in_status: "opted_in" }, error: null },
         { data: { id: connectionId, status: "active" }, error: null },
-        { data: null, error: null },
         { data: { id: "message-pending" }, error: null },
         { data: { id: "message-pending", direction: "outbound", message_type: "text", text: "Resposta revisada", status: "sent", created_at: new Date().toISOString() }, error: null },
         { data: null, error: null }
@@ -118,5 +130,36 @@ describe("POST WhatsApp send", () => {
     expect(mocks.sendWhatsAppTextMessage).toHaveBeenCalledWith({ to: "5511999999999", text: "Resposta revisada" });
     expect(JSON.stringify(body)).not.toContain("token");
     expect(JSON.stringify(body)).not.toContain("EAA");
+  });
+
+  it("ignora clique duplicado com o mesmo clientRequestId", async () => {
+    mocks.getSupabaseAdmin.mockReturnValue(
+      createQueuedSupabase([
+        { data: { id: conversationId, contact_id: contactId, connection_id: connectionId, customer_service_window_until: "2099-01-01T00:00:00.000Z" }, error: null },
+        { data: { id: contactId, phone_number: "5511999999999", opt_in_status: "opted_in" }, error: null },
+        { data: { id: connectionId, status: "active" }, error: null }
+      ])
+    );
+    mocks.createWhatsAppSendAttempt.mockResolvedValueOnce({ acquired: false, attempt: { id: "attempt-1", status: "pending", attempts: 1 } });
+    const { POST } = await import("./route");
+    const response = await POST(request(validBody()), { params: Promise.resolve({ id: conversationId }) });
+    expect(response.status).toBe(200);
+    expect(mocks.sendWhatsAppTextMessage).not.toHaveBeenCalled();
+    expect((await response.json()).duplicate).toBe(true);
+  });
+
+  it("bloqueia sugestão que já foi enviada", async () => {
+    mocks.getSupabaseAdmin.mockReturnValue(
+      createQueuedSupabase([
+        { data: { id: conversationId, contact_id: contactId, connection_id: connectionId, customer_service_window_until: "2099-01-01T00:00:00.000Z" }, error: null },
+        { data: { id: contactId, phone_number: "5511999999999", opt_in_status: "opted_in" }, error: null },
+        { data: { id: connectionId, status: "active" }, error: null },
+        { data: { id: "55555555-5555-4555-8555-555555555555", status: "sent" }, error: null }
+      ])
+    );
+    const { POST } = await import("./route");
+    const response = await POST(request({ ...validBody(), suggestedReplyId: "55555555-5555-4555-8555-555555555555" }), { params: Promise.resolve({ id: conversationId }) });
+    expect(response.status).toBe(409);
+    expect(mocks.sendWhatsAppTextMessage).not.toHaveBeenCalled();
   });
 });

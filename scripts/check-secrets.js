@@ -38,6 +38,7 @@ const secretPatterns = [
 
 const sensitiveEnvNames = [
   "KIWIFY_WEBHOOK_SECRET",
+  "INTERNAL_JOB_SECRET",
   "OPENAI_API_KEY",
   "WHATSAPP_ACCESS_TOKEN",
   "WHATSAPP_VERIFY_TOKEN",

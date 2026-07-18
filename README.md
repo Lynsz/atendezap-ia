@@ -462,4 +462,6 @@ A GitHub Action de validacao roda em pull requests e pushes para `main`, sem sec
 
 A Fase 1 usa exclusivamente a API oficial WhatsApp Cloud API. Mensagens recebidas podem gerar uma sugestão de IA, mas o envio exige revisão e confirmação explícita do usuário: não há disparo automático, envio em massa nem integração não oficial com WhatsApp Web.
 
-O backend respeita opt-out e a janela de atendimento de 24 horas. Tokens ficam somente no servidor, e as variáveis necessárias estão documentadas em `.env.example`. Consulte [o guia de setup](docs/whatsapp-cloud-api-setup.md) e [as políticas de segurança](docs/whatsapp-policy-and-safety.md).
+O backend respeita opt-out, opt-in para templates e a janela de atendimento de 24 horas. A Fase 3 adiciona idempotência de webhook e envio, status de entrega, limites em camadas, retry transitório limitado, auditoria segura e templates oficiais aprovados. Não há fila de disparo, cron ou endpoint de processamento interno.
+
+Tokens ficam somente no servidor, e as variáveis necessárias estão documentadas em `.env.example`. Aplique também `supabase/migrations/add_whatsapp_phase_3_idempotency.sql` antes de habilitar a integração. Consulte [o guia de setup](docs/whatsapp-cloud-api-setup.md), [as políticas de segurança](docs/whatsapp-policy-and-safety.md), [o plano da Fase 3](docs/whatsapp-integration-phase-3-plan.md) e [o smoke test](docs/whatsapp-integration-phase-3-smoke-test.md).

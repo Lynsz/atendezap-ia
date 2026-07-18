@@ -13,7 +13,15 @@ export class AppError extends Error {
 
 export function errorResponse(error: unknown) {
   if (error instanceof AppError) {
-    return Response.json({ error: error.message }, { status: error.status });
+    const operational = error as AppError & { errorType?: string; retryable?: boolean };
+    return Response.json(
+      {
+        error: error.message,
+        ...(operational.errorType ? { error_type: operational.errorType } : {}),
+        ...(typeof operational.retryable === "boolean" ? { retryable: operational.retryable } : {})
+      },
+      { status: error.status }
+    );
   }
 
   if (error instanceof Error && "status" in error && typeof error.status === "number") {

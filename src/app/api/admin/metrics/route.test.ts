@@ -76,6 +76,19 @@ function createMetricsSupabase() {
     support_requests: [
       { status: "pending", created_at: new Date().toISOString() },
       { status: "resolved", created_at: new Date().toISOString() }
+    ],
+    whatsapp_connections: [{ status: "active", created_at: new Date().toISOString() }],
+    whatsapp_conversations: [{ status: "pending", created_at: new Date().toISOString() }],
+    whatsapp_messages: [
+      { direction: "inbound", status: "received", created_at: new Date().toISOString() },
+      { direction: "outbound", status: "delivered", created_at: new Date().toISOString() }
+    ],
+    whatsapp_suggested_replies: [{ status: "draft", created_at: new Date().toISOString() }],
+    whatsapp_webhook_events: [{ event_type: "inbound_message", processing_status: "processed", duplicate_count: 2, created_at: new Date().toISOString() }],
+    whatsapp_send_attempts: [{ status: "failed", error_type: "provider_transient", retryable: true, attempts: 2, created_at: new Date().toISOString() }],
+    whatsapp_templates: [
+      { status: "approved", created_at: new Date().toISOString() },
+      { status: "pending", created_at: new Date().toISOString() }
     ]
   };
 
@@ -142,6 +155,17 @@ describe("GET /api/admin/metrics", () => {
     expect(body.campaign.landingViewsByUtmSource).toEqual([{ label: "instagram", count: 1 }]);
     expect(body.campaign.landingViewsByUtmCampaign).toEqual([{ label: "post_1_1_small_campaign", count: 1 }]);
     expect(body.supportQuality.openSupportRequests).toBe(1);
+    expect(body.whatsapp).toMatchObject({
+      activeConnections: 1,
+      inboundMessages: 1,
+      outboundMessages: 1,
+      duplicateWebhooks: 2,
+      failedSends: 1,
+      retriedSends: 1,
+      exhaustedRetries: 1,
+      approvedTemplates: 1,
+      pendingTemplates: 1
+    });
     expect(body.conversion).toBeDefined();
     expect(body.leads).toBeUndefined();
     expect(body.profiles).toBeUndefined();

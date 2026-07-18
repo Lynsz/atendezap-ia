@@ -4,6 +4,7 @@ import { z } from "zod";
 import { AppError } from "@/lib/errors";
 import { serverLog } from "@/lib/logger";
 import { isWhatsAppEnabled as readWhatsAppEnabled, readServerEnv } from "@/lib/server/env";
+import { normalizeWhatsAppProviderError, toWhatsAppProviderError } from "@/lib/server/whatsapp-errors";
 
 const apiVersionSchema = z.string().regex(/^v\d+\.\d+$/);
 const phoneNumberIdSchema = z.string().regex(/^\d{5,30}$/);
@@ -29,42 +30,24 @@ function requireValue(name: Parameters<typeof readServerEnv>[0], message: string
 }
 
 export function getWhatsAppServerConfig(): WhatsAppServerConfig {
-  if (!isWhatsAppEnabled()) {
-    throw new AppError("A integração com WhatsApp está desativada neste ambiente.", 503);
-  }
-
+  if (!isWhatsAppEnabled()) throw new AppError("A integração com WhatsApp está desativada neste ambiente.", 503);
   const accessToken = requireValue("WHATSAPP_ACCESS_TOKEN", "O token da WhatsApp Cloud API não está configurado.");
   const phoneNumberId = requireValue("WHATSAPP_PHONE_NUMBER_ID", "O número da WhatsApp Cloud API não está configurado.");
   const businessAccountId = requireValue("WHATSAPP_BUSINESS_ACCOUNT_ID", "A conta empresarial do WhatsApp não está configurada.");
   const verifyToken = requireValue("WHATSAPP_VERIFY_TOKEN", "O token de verificação do webhook não está configurado.");
   const apiVersion = requireValue("WHATSAPP_API_VERSION", "A versão da WhatsApp Cloud API não está configurada.");
-
   if (!apiVersionSchema.safeParse(apiVersion).success || !phoneNumberIdSchema.safeParse(phoneNumberId).success) {
     throw new AppError("A configuração da WhatsApp Cloud API é inválida.", 503);
   }
-
-  return {
-    accessToken,
-    phoneNumberId,
-    businessAccountId,
-    verifyToken,
-    appSecret: readServerEnv("WHATSAPP_APP_SECRET") || null,
-    apiVersion
-  };
+  return { accessToken, phoneNumberId, businessAccountId, verifyToken, appSecret: readServerEnv("WHATSAPP_APP_SECRET") || null, apiVersion };
 }
 
 export const getWhatsAppConfig = getWhatsAppServerConfig;
 
 export function getWhatsAppWebhookConfig() {
-  if (!isWhatsAppEnabled()) {
-    throw new AppError("A integração com WhatsApp está desativada neste ambiente.", 503);
-  }
-
+  if (!isWhatsAppEnabled()) throw new AppError("A integração com WhatsApp está desativada neste ambiente.", 503);
   const appSecret = readServerEnv("WHATSAPP_APP_SECRET") || null;
-  if (process.env.NODE_ENV === "production" && !appSecret) {
-    throw new AppError("O App Secret do WhatsApp é obrigatório em produção.", 503);
-  }
-
+  if (process.env.NODE_ENV === "production" && !appSecret) throw new AppError("O App Secret do WhatsApp é obrigatório em produção.", 503);
   return {
     verifyToken: requireValue("WHATSAPP_VERIFY_TOKEN", "O token de verificação do webhook não está configurado."),
     appSecret
@@ -73,15 +56,8 @@ export function getWhatsAppWebhookConfig() {
 
 export function getWhatsAppSafeStatus() {
   const enabled = isWhatsAppEnabled();
-  const requiredNames = [
-    "WHATSAPP_ACCESS_TOKEN",
-    "WHATSAPP_PHONE_NUMBER_ID",
-    "WHATSAPP_BUSINESS_ACCOUNT_ID",
-    "WHATSAPP_VERIFY_TOKEN",
-    "WHATSAPP_API_VERSION"
-  ] as const;
+  const requiredNames = ["WHATSAPP_ACCESS_TOKEN", "WHATSAPP_PHONE_NUMBER_ID", "WHATSAPP_BUSINESS_ACCOUNT_ID", "WHATSAPP_VERIFY_TOKEN", "WHATSAPP_API_VERSION"] as const;
   const missing = requiredNames.filter((name) => !readServerEnv(name));
-
   const maskIdentifier = (value: string) => (value.length <= 6 ? "••••" : `${value.slice(0, 3)}••••${value.slice(-3)}`);
   return {
     enabled,
@@ -93,43 +69,54 @@ export function getWhatsAppSafeStatus() {
   };
 }
 
-export async function sendWhatsAppTextMessage(input: { to: string; text: string }) {
+async function callWhatsAppMessagesApi(payload: Record<string, unknown>) {
   const config = getWhatsAppServerConfig();
-  const to = recipientSchema.parse(input.to.replace(/^\+/, ""));
-  const message = input.text.trim();
-  if (!message || message.length > 4096) {
-    throw new AppError("A resposta deve ter entre 1 e 4.096 caracteres.", 400);
+  let response: Response;
+  try {
+    response = await fetch(`https://graph.facebook.com/${config.apiVersion}/${config.phoneNumberId}/messages`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${config.accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000)
+    });
+  } catch (error) {
+    throw toWhatsAppProviderError(error);
   }
-
-  const graphBaseUrl = `https://graph.facebook.com/${config.apiVersion}`;
-  const response = await fetch(`${graphBaseUrl}/${config.phoneNumberId}/messages`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.accessToken}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      recipient_type: "individual",
-      to,
-      type: "text",
-      text: { preview_url: false, body: message }
-    }),
-    cache: "no-store"
-  });
-
-  const body = (await response.json().catch(() => null)) as { messages?: Array<{ id?: string }> } | null;
+  const body = (await response.json().catch(() => null)) as {
+    messages?: Array<{ id?: string }>;
+    error?: { code?: number; error_subcode?: number; type?: string };
+  } | null;
   const messageId = body?.messages?.[0]?.id?.trim();
   if (!response.ok || !messageId) {
+    const normalized = normalizeWhatsAppProviderError(response.status, body);
     serverLog({
       level: "warn",
       event: "whatsapp_cloud_api_send_failed",
       route: "src/lib/server/whatsapp",
       status: response.status,
-      metadata: { error_type: "provider_rejected" }
+      metadata: { error_type: normalized.errorType, retryable: normalized.retryable }
     });
-    throw new AppError("O WhatsApp não aceitou o envio. Revise a conexão e tente novamente.", 502);
+    throw normalized;
   }
-
   return { messageId };
+}
+
+export async function sendWhatsAppTextMessage(input: { to: string; text: string }) {
+  const to = recipientSchema.parse(input.to.replace(/^\+/, ""));
+  const message = input.text.trim();
+  if (!message || message.length > 4096) throw new AppError("A resposta deve ter entre 1 e 4.096 caracteres.", 400);
+  return callWhatsAppMessagesApi({ messaging_product: "whatsapp", recipient_type: "individual", to, type: "text", text: { preview_url: false, body: message } });
+}
+
+export async function sendWhatsAppTemplateMessage(input: { to: string; name: string; language: string; variables: string[] }) {
+  const to = recipientSchema.parse(input.to.replace(/^\+/, ""));
+  const parameters = input.variables.map((value) => ({ type: "text", text: value }));
+  return callWhatsAppMessagesApi({
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "template",
+    template: { name: input.name, language: { code: input.language }, ...(parameters.length ? { components: [{ type: "body", parameters }] } : {}) }
+  });
 }

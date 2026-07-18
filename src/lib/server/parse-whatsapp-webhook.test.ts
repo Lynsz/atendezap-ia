@@ -4,9 +4,10 @@ vi.mock("server-only", () => ({}));
 
 describe("parseWhatsAppWebhook", () => {
   let parseWhatsAppWebhook: typeof import("./parse-whatsapp-webhook").parseWhatsAppWebhook;
+  let parseWhatsAppWebhookEvents: typeof import("./parse-whatsapp-webhook").parseWhatsAppWebhookEvents;
 
   beforeAll(async () => {
-    ({ parseWhatsAppWebhook } = await import("./parse-whatsapp-webhook"));
+    ({ parseWhatsAppWebhook, parseWhatsAppWebhookEvents } = await import("./parse-whatsapp-webhook"));
   });
 
   it("normaliza mensagens de texto sem incluir eventos de status", () => {
@@ -62,5 +63,22 @@ describe("parseWhatsAppWebhook", () => {
         entry: [{ id: "waba", changes: [{ field: "messages", value: { metadata: { phone_number_id: "12345" }, messages: [{ from: "5511999999999", id: "invalid-time", timestamp: "999999999999", type: "text", text: { body: "Oi" } }] } }] }]
       })
     ).toEqual([]);
+  });
+
+  it("normaliza status de entrega com chave estável e sem erro bruto", () => {
+    const result = parseWhatsAppWebhookEvents({
+      object: "whatsapp_business_account",
+      entry: [{ id: "waba", changes: [{ field: "messages", value: { metadata: { phone_number_id: "12345" }, statuses: [{ id: "wamid.out", timestamp: "1710000000", status: "failed", errors: [{ code: 131026, title: "conteúdo privado" }] }] } }] }]
+    });
+    expect(result).toEqual([
+      expect.objectContaining({
+        kind: "message_status",
+        messageId: "wamid.out",
+        statusId: "wamid.out:failed:1710000000",
+        status: "failed",
+        providerErrorCode: "131026"
+      })
+    ]);
+    expect(JSON.stringify(result)).not.toContain("conteúdo privado");
   });
 });

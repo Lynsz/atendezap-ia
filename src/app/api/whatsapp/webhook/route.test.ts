@@ -2,10 +2,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const trackServerAppEvent = vi.fn();
 const persistWhatsAppInbound = vi.fn();
+const persistWhatsAppStatus = vi.fn();
+const markWhatsAppEventReceived = vi.fn();
+const markWhatsAppEventProcessed = vi.fn();
+const markWhatsAppEventFailed = vi.fn();
+const writeWhatsAppAudit = vi.fn();
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/analytics/server", () => ({ trackServerAppEvent }));
 vi.mock("@/lib/server/whatsapp-inbound", () => ({ persistWhatsAppInbound }));
+vi.mock("@/lib/server/whatsapp-status", () => ({ persistWhatsAppStatus }));
+vi.mock("@/lib/server/whatsapp-audit", () => ({ writeWhatsAppAudit }));
+vi.mock("@/lib/server/whatsapp-event-idempotency", () => ({ markWhatsAppEventReceived, markWhatsAppEventProcessed, markWhatsAppEventFailed }));
 
 describe("WhatsApp webhook route", () => {
   beforeEach(() => {
@@ -14,6 +22,8 @@ describe("WhatsApp webhook route", () => {
     process.env.WHATSAPP_ENABLED = "true";
     process.env.WHATSAPP_VERIFY_TOKEN = "test-only-verify-token";
     process.env.WHATSAPP_APP_SECRET = "";
+    markWhatsAppEventReceived.mockResolvedValue({ acquired: true, eventId: "event-1", retry: false });
+    persistWhatsAppInbound.mockResolvedValue({ persisted: true, duplicate: false, userId: "user-1", messageId: "message-1", conversationId: "conversation-1" });
   });
 
   afterEach(() => {
@@ -57,5 +67,22 @@ describe("WhatsApp webhook route", () => {
     );
     expect(response.status).toBe(401);
     expect(persistWhatsAppInbound).not.toHaveBeenCalled();
+  });
+
+  it("ignora evento duplicado antes de persistir dados de negócio", async () => {
+    markWhatsAppEventReceived
+      .mockResolvedValueOnce({ acquired: true, eventId: "event-1", retry: false })
+      .mockResolvedValueOnce({ acquired: false, eventId: "event-1", retry: false });
+    const { POST } = await import("./route");
+    const payload = {
+      object: "whatsapp_business_account",
+      entry: [{ id: "waba", changes: [{ field: "messages", value: { metadata: { phone_number_id: "12345" }, messages: [{ from: "5511999999999", id: "wamid.duplicate", timestamp: "1710000000", type: "text", text: { body: "Oi" } }] } }] }]
+    };
+    const first = await POST(new Request("https://app.test/api/whatsapp/webhook", { method: "POST", body: JSON.stringify(payload) }));
+    const duplicate = await POST(new Request("https://app.test/api/whatsapp/webhook", { method: "POST", body: JSON.stringify(payload) }));
+    expect(first.status).toBe(200);
+    expect(duplicate.status).toBe(200);
+    expect(persistWhatsAppInbound).toHaveBeenCalledTimes(1);
+    expect(trackServerAppEvent).toHaveBeenCalledWith(expect.objectContaining({ event_name: "whatsapp_webhook_duplicate_ignored" }));
   });
 });
