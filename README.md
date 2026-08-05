@@ -465,3 +465,26 @@ A Fase 1 usa exclusivamente a API oficial WhatsApp Cloud API. Mensagens recebida
 O backend respeita opt-out, opt-in para templates e a janela de atendimento de 24 horas. A Fase 3 adiciona idempotência de webhook e envio, status de entrega, limites em camadas, retry transitório limitado, auditoria segura e templates oficiais aprovados. Não há fila de disparo, cron ou endpoint de processamento interno.
 
 Tokens ficam somente no servidor, e as variáveis necessárias estão documentadas em `.env.example`. Aplique também `supabase/migrations/add_whatsapp_phase_3_idempotency.sql` antes de habilitar a integração. Consulte [o guia de setup](docs/whatsapp-cloud-api-setup.md), [as políticas de segurança](docs/whatsapp-policy-and-safety.md), [o plano da Fase 3](docs/whatsapp-integration-phase-3-plan.md) e [o smoke test](docs/whatsapp-integration-phase-3-smoke-test.md).
+
+## WhatsApp — Fase 4 Mídias
+
+- Suporte controlado a imagens e documentos, sem envio automático.
+- Inbound salva metadados; download ocorre somente server-side por job autenticado.
+- Arquivos permitidos ficam em bucket privado do Supabase Storage.
+- Preview/download exige sessão e autorização e nunca expõe o caminho interno.
+- Upload apenas prepara o arquivo; envio manual exige novo clique, confirmação, janela de 24h, ausência de opt-out, rate limit e idempotência.
+- Áudio, vídeo e sticker ficam somente como metadados nesta fase.
+- Não há disparo em massa, análise automática de arquivos, OCR ou transcrição automática.
+
+Aplique `supabase/migrations/add_whatsapp_phase_4_media.sql`, mantenha as flags de mídia desativadas até concluir o smoke controlado e consulte [a documentação da Fase 4](docs/whatsapp-integration-phase-4-media.md) e [a política de retenção](docs/whatsapp-media-retention-policy.md).
+
+## WhatsApp — Fase 5 Templates Meta
+
+- Templates oficiais podem ser sincronizados server-side a partir da Meta, com limite por execução e sem persistir payload bruto.
+- Status remoto e local, categoria, idioma, componentes compatíveis, schema de variáveis e histórico de transições são governados no Supabase com RLS.
+- Somente templates remotos aprovados e localmente ativos aparecem por padrão na conversa e podem ser enviados.
+- Variáveis são validadas antes da prévia e do envio; valores reais não entram em analytics ou auditoria.
+- Todo envio exige opt-in, confirmação explícita, rate limit e idempotência.
+- Não há disparo em massa, campanha automática, spam ou envio automático de templates.
+
+Aplique `supabase/migrations/add_whatsapp_phase_5_template_sync.sql` e mantenha `WHATSAPP_TEMPLATE_SYNC_ENABLED=false` até concluir o smoke com uma WABA de teste. `WHATSAPP_TEMPLATE_CREATE_ENABLED` permanece desativada: a submissão pela API não foi liberada nesta fase. Consulte [a documentação da Fase 5](docs/whatsapp-integration-phase-5-templates-meta.md) e [o guia de revisão](docs/whatsapp-template-review-guide.md).

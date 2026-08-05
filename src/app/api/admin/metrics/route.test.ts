@@ -80,15 +80,20 @@ function createMetricsSupabase() {
     whatsapp_connections: [{ status: "active", created_at: new Date().toISOString() }],
     whatsapp_conversations: [{ status: "pending", created_at: new Date().toISOString() }],
     whatsapp_messages: [
-      { direction: "inbound", status: "received", created_at: new Date().toISOString() },
-      { direction: "outbound", status: "delivered", created_at: new Date().toISOString() }
+      { direction: "inbound", message_type: "image", status: "received", created_at: new Date().toISOString() },
+      { direction: "outbound", message_type: "image", status: "delivered", created_at: new Date().toISOString() }
     ],
     whatsapp_suggested_replies: [{ status: "draft", created_at: new Date().toISOString() }],
     whatsapp_webhook_events: [{ event_type: "inbound_message", processing_status: "processed", duplicate_count: 2, created_at: new Date().toISOString() }],
-    whatsapp_send_attempts: [{ status: "failed", error_type: "provider_transient", retryable: true, attempts: 2, created_at: new Date().toISOString() }],
+    whatsapp_send_attempts: [{ message_type: "media", status: "failed", error_type: "provider_transient", retryable: true, attempts: 2, created_at: new Date().toISOString() }],
     whatsapp_templates: [
-      { status: "approved", created_at: new Date().toISOString() },
-      { status: "pending", created_at: new Date().toISOString() }
+      { meta_template_id: "meta-1", status: "approved", remote_status: "approved", local_status: "active", created_at: new Date().toISOString() },
+      { meta_template_id: "meta-2", status: "pending", remote_status: "pending", local_status: "active", created_at: new Date().toISOString() }
+    ],
+    whatsapp_media: [
+      { direction: "inbound", media_type: "image", download_status: "downloaded", created_at: new Date().toISOString() },
+      { direction: "outbound", media_type: "document", download_status: "downloaded", created_at: new Date().toISOString() },
+      { direction: "inbound", media_type: "video", download_status: "skipped_unsupported", created_at: new Date().toISOString() }
     ]
   };
 
@@ -163,8 +168,15 @@ describe("GET /api/admin/metrics", () => {
       failedSends: 1,
       retriedSends: 1,
       exhaustedRetries: 1,
+      syncedTemplates: 2,
       approvedTemplates: 1,
-      pendingTemplates: 1
+      pendingTemplates: 1,
+      mediaReceived: 2,
+      mediaDownloaded: 2,
+      mediaBlockedType: 1,
+      mediaUploads: 1,
+      mediaSent: 1,
+      mediaSendFailures: 1
     });
     expect(body.conversion).toBeDefined();
     expect(body.leads).toBeUndefined();

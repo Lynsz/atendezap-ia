@@ -11,6 +11,7 @@ type AuditInput = {
   conversationId?: string | null;
   messageId?: string | null;
   templateId?: string | null;
+  mediaId?: string | null;
 };
 
 export async function writeWhatsAppAudit(input: AuditInput) {
@@ -21,7 +22,8 @@ export async function writeWhatsAppAudit(input: AuditInput) {
     error_type: input.errorType?.slice(0, 80) || null,
     conversation_id: input.conversationId || null,
     message_id: input.messageId || null,
-    template_id: input.templateId || null
+    template_id: input.templateId || null,
+    media_id: input.mediaId || null
   });
   if (error) {
     serverLog({

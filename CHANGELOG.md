@@ -1,5 +1,72 @@
 # Changelog
 
+## [WhatsApp Integration Phase 5]
+
+### Adicionado
+
+- Sincronização server-side paginada de templates oficiais da Meta, com rota manual autenticada e job interno protegido.
+- Histórico local de transições de status, rascunhos locais controlados, prévia segura e página dedicada de governança.
+
+### Templates
+
+- Status remoto/local, idioma, categoria, componentes, schema de variáveis, qualidade e motivo resumido de rejeição.
+- Envio restrito a template remoto aprovado, localmente ativo, pertencente à conexão e com variáveis válidas.
+- Templates sincronizados podem ser ocultados, mas não editados nem apagados com perda do histórico.
+
+### Segurança
+
+- Sync e criação remota desativados por padrão; token, payload bruto, texto completo e valores de variáveis não entram em logs ou analytics.
+- Confirmação explícita, opt-in, rate limit, idempotência e isolamento por usuário permanecem obrigatórios.
+- Sem disparo em massa, campanha automática, spam ou submissão automática de templates.
+
+### Admin
+
+- Agregados seguros de status, sincronizações, falhas, bloqueios e envios de templates, sem telefone ou conteúdo completo.
+
+### Testes
+
+- Cobertura de autenticação, flag de sync, paginação, normalização, criação/atualização, histórico, RLS, validação, preview, status de envio, opt-out e confirmação.
+
+### Pendências
+
+- Aplicar a migration e concluir smoke controlado com WABA de teste antes de habilitar a sincronização.
+- Submissão pela API permanece desativada; criar e aprovar templates no WhatsApp Manager.
+
+## [WhatsApp Integration Phase 4]
+
+### Adicionado
+
+- Parser e persistência de metadados para image, document, audio, video e sticker.
+- APIs autenticadas de listagem, preview/stream, upload seguro e envio manual de imagem/documento.
+- Jobs internos autenticados para download pendente e limpeza por retenção.
+- Métricas administrativas agregadas e eventos seguros de mídia.
+
+### Mídias
+
+- JPEG, PNG, WebP, PDF e texto UTF-8 podem ser armazenados após validação de tipo, extensão, tamanho e assinatura.
+- Áudio, vídeo, sticker e formatos Office permanecem somente como metadados.
+- Upload nunca envia automaticamente; o envio exige confirmação explícita separada.
+
+### Segurança
+
+- Sem payload bruto, arquivo, URL temporária, legenda, telefone, token ou caminho de storage em logs/analytics.
+- Sem URL externa arbitrária, número escolhido pelo client, disparo em massa, campanha, OCR ou transcrição.
+- Scanner ampliado para HAR, bearer literal, tokens Supabase, URLs temporárias e dumps nomeados.
+
+### Storage
+
+- Migration com `whatsapp_media`, RLS, índices, bucket privado e retenção com remoção em lotes.
+- Preview passa por rota autenticada e streaming server-side com headers restritivos.
+
+### Testes
+
+- Parser de mídia, validação de download, isolamento de preview/listagem, RLS, tracking seguro e controles de envio manual.
+
+### Pendências
+
+- Aplicar migration, configurar envs e concluir smoke real com conta Meta/Storage de teste antes de habilitar em produção.
+- Avaliar inspeção antimalware antes de ampliar formatos.
+
 ## [WhatsApp Integration Phase 3]
 
 ### Adicionado

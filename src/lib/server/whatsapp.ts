@@ -5,10 +5,12 @@ import { AppError } from "@/lib/errors";
 import { serverLog } from "@/lib/logger";
 import { isWhatsAppEnabled as readWhatsAppEnabled, readServerEnv } from "@/lib/server/env";
 import { normalizeWhatsAppProviderError, toWhatsAppProviderError } from "@/lib/server/whatsapp-errors";
+import { buildTemplateSendComponents, type WhatsAppTemplateVariable } from "@/lib/whatsapp/template-validation";
 
 const apiVersionSchema = z.string().regex(/^v\d+\.\d+$/);
 const phoneNumberIdSchema = z.string().regex(/^\d{5,30}$/);
 const recipientSchema = z.string().regex(/^\d{7,15}$/);
+const mediaIdSchema = z.string().trim().min(1).max(255);
 
 export type WhatsAppServerConfig = {
   accessToken: string;
@@ -109,14 +111,51 @@ export async function sendWhatsAppTextMessage(input: { to: string; text: string 
   return callWhatsAppMessagesApi({ messaging_product: "whatsapp", recipient_type: "individual", to, type: "text", text: { preview_url: false, body: message } });
 }
 
-export async function sendWhatsAppTemplateMessage(input: { to: string; name: string; language: string; variables: string[] }) {
+export async function sendWhatsAppTemplateMessage(input: { to: string; name: string; language: string; variables: string[]; variablesSchema?: WhatsAppTemplateVariable[] }) {
   const to = recipientSchema.parse(input.to.replace(/^\+/, ""));
-  const parameters = input.variables.map((value) => ({ type: "text", text: value }));
+  const components = input.variablesSchema?.length
+    ? buildTemplateSendComponents(input.variablesSchema, input.variables)
+    : input.variables.length
+      ? [{ type: "body", parameters: input.variables.map((value) => ({ type: "text" as const, text: value })) }]
+      : [];
   return callWhatsAppMessagesApi({
     messaging_product: "whatsapp",
     recipient_type: "individual",
     to,
     type: "template",
-    template: { name: input.name, language: { code: input.language }, ...(parameters.length ? { components: [{ type: "body", parameters }] } : {}) }
+    template: { name: input.name, language: { code: input.language }, ...(components.length ? { components } : {}) }
+  });
+}
+
+function optionalCaption(value: string | null | undefined) {
+  const caption = value?.trim() || "";
+  if (caption.length > 1024) throw new AppError("A legenda deve ter no máximo 1.024 caracteres.", 400);
+  return caption || null;
+}
+
+export async function sendWhatsAppImageMessage(input: { to: string; mediaId: string; caption?: string | null }) {
+  const to = recipientSchema.parse(input.to.replace(/^\+/, ""));
+  const mediaId = mediaIdSchema.parse(input.mediaId);
+  const caption = optionalCaption(input.caption);
+  return callWhatsAppMessagesApi({
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "image",
+    image: { id: mediaId, ...(caption ? { caption } : {}) }
+  });
+}
+
+export async function sendWhatsAppDocumentMessage(input: { to: string; mediaId: string; caption?: string | null; filename?: string | null }) {
+  const to = recipientSchema.parse(input.to.replace(/^\+/, ""));
+  const mediaId = mediaIdSchema.parse(input.mediaId);
+  const caption = optionalCaption(input.caption);
+  const filename = input.filename?.trim().replace(/[\r\n"\\/]/g, "_").slice(0, 120) || "documento";
+  return callWhatsAppMessagesApi({
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "document",
+    document: { id: mediaId, filename, ...(caption ? { caption } : {}) }
   });
 }

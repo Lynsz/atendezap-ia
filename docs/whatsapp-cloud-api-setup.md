@@ -13,6 +13,8 @@ Configurar a integração oficial com WhatsApp Cloud API sem expor credenciais n
 - App Secret para validação HMAC em produção;
 - URL HTTPS pública do app;
 - migrations `supabase/migrations/create_whatsapp_integration_tables.sql` e `supabase/migrations/add_whatsapp_phase_3_idempotency.sql` aplicadas.
+- migration `supabase/migrations/add_whatsapp_phase_4_media.sql` aplicada antes de habilitar mídias.
+- migration `supabase/migrations/add_whatsapp_phase_5_template_sync.sql` aplicada antes de habilitar sincronização de templates.
 
 ## Variáveis
 
@@ -26,6 +28,15 @@ WHATSAPP_VERIFY_TOKEN=
 WHATSAPP_APP_SECRET=
 WHATSAPP_API_VERSION=
 WHATSAPP_ENABLED=false
+WHATSAPP_TEMPLATE_SYNC_ENABLED=false
+WHATSAPP_TEMPLATE_CREATE_ENABLED=false
+WHATSAPP_TEMPLATE_SYNC_LIMIT=
+WHATSAPP_MEDIA_DOWNLOAD_ENABLED=false
+WHATSAPP_MEDIA_UPLOAD_ENABLED=false
+WHATSAPP_MAX_MEDIA_SIZE_MB=
+WHATSAPP_MEDIA_RETENTION_DAYS=
+SUPABASE_STORAGE_WHATSAPP_BUCKET=
+INTERNAL_JOB_SECRET=
 ```
 
 Não use prefixo `NEXT_PUBLIC_`. Defina explicitamente a versão Graph suportada pela sua conta, por exemplo no formato `vXX.X`, depois de confirmar a versão vigente na documentação oficial.
@@ -36,6 +47,24 @@ Não use prefixo `NEXT_PUBLIC_`. Defina explicitamente a versão Graph suportada
 2. Aplique-a no projeto Supabase do ambiente.
 3. Confirme que todas as tabelas `whatsapp_*` têm RLS ativo.
 4. Confirme que `authenticated` tem somente `SELECT`; escritas críticas usam service role em rotas server-side.
+5. Confirme que o bucket configurado em `SUPABASE_STORAGE_WHATSAPP_BUCKET` existe e está privado.
+
+## Mídias da Fase 4
+
+- As flags de upload/download devem permanecer `false` até a migration, bucket privado e smoke estarem confirmados.
+- O webhook nunca baixa arquivos. Um job controlado chama `POST /api/internal/whatsapp/download-media` com `Authorization: Bearer <INTERNAL_JOB_SECRET>`.
+- A limpeza usa `POST /api/internal/whatsapp/cleanup-media` com o mesmo segredo e prazo de retenção configurado.
+- Não registre o header Authorization, a URL temporária da Meta, o arquivo ou o payload do job.
+- O bucket padrão criado pela migration chama-se `whatsapp-media`; configure o mesmo valor em runtime ou revise migration/env de forma coordenada.
+
+## Templates Meta da Fase 5
+
+- `WHATSAPP_TEMPLATE_SYNC_ENABLED` deve permanecer `false` até a migration, as permissões da WABA e o smoke controlado estarem confirmados.
+- `WHATSAPP_TEMPLATE_SYNC_LIMIT` limita cada execução entre 1 e 200 templates; o fallback é 100.
+- O dashboard usa `POST /api/whatsapp/templates/sync`; jobs controlados usam `POST /api/internal/whatsapp/sync-templates` com `INTERNAL_JOB_SECRET`.
+- A sincronização usa `WHATSAPP_BUSINESS_ACCOUNT_ID` e `WHATSAPP_ACCESS_TOKEN` somente no servidor e não registra resposta bruta da Meta.
+- `WHATSAPP_TEMPLATE_CREATE_ENABLED` deve permanecer `false`. A submissão via API não foi implementada; crie e aprove templates no WhatsApp Manager e depois sincronize.
+- Templates pendentes, rejeitados, pausados, desativados, desconhecidos ou localmente ocultos/incompatíveis não podem ser enviados.
 
 ## Webhook
 

@@ -9,7 +9,7 @@ export function createWhatsAppContentFingerprint(input: string) {
   return createHash("sha256").update(input.trim().replace(/\s+/g, " ").toLocaleLowerCase("pt-BR")).digest("hex");
 }
 
-export async function enforceWhatsAppSendLimits(input: { request: Request; userId: string; conversationId: string; messageType: "text" | "template" }) {
+export async function enforceWhatsAppSendLimits(input: { request: Request; userId: string; conversationId: string; messageType: "text" | "template" | "media" }) {
   try {
     await enforceRateLimit({ request: input.request, route: "api:whatsapp-send:user", identifier: input.userId, limit: 20, windowMs: 60_000 });
     await enforceRateLimit({ request: input.request, route: "api:whatsapp-send:conversation", identifier: `${input.userId}:${input.conversationId}`, limit: 6, windowMs: 60_000 });
@@ -26,9 +26,10 @@ type AttemptInput = {
   conversationId: string;
   requestKey: string;
   fingerprint: string;
-  messageType: "text" | "template";
+  messageType: "text" | "template" | "media";
   suggestedReplyId?: string;
   templateId?: string;
+  mediaId?: string;
 };
 
 export async function createWhatsAppSendAttempt(input: AttemptInput) {
@@ -67,6 +68,7 @@ export async function createWhatsAppSendAttempt(input: AttemptInput) {
       message_type: input.messageType,
       suggested_reply_id: input.suggestedReplyId || null,
       template_id: input.templateId || null,
+      media_id: input.mediaId || null,
       status: "pending"
     })
     .select("id,status,attempts")

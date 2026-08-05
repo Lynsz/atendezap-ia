@@ -10,6 +10,10 @@
 - opt-out bloqueia envios;
 - janela de atendimento de 24 horas respeitada;
 - fora da janela, somente template aprovado, opt-in confirmado e ação manual.
+- sincronização não envia mensagens e não transforma templates em campanha ou lista de disparo;
+- aprovação remota vem da Meta e nunca de um status arbitrário enviado pelo client;
+- templates pendentes, rejeitados, pausados, desativados, desconhecidos ou localmente bloqueados não podem ser enviados;
+- submissão via API permanece desativada até existir governança operacional validada.
 
 ## Controles técnicos
 
@@ -28,13 +32,21 @@
 ## Dados
 
 - não salvar payload bruto;
-- mídia não é baixada; registra-se somente o tipo como não suportado;
+- mídia inbound é registrada por metadados e só pode ser baixada server-side por job autenticado quando a flag estiver ativa;
+- URLs temporárias da Meta nunca são persistidas, logadas ou enviadas a analytics;
+- arquivos permitidos ficam em bucket privado e preview/download revalida sessão e propriedade;
+- upload outbound não envia automaticamente; um segundo pedido confirmado revalida opt-out, janela, limite, idempotência, tipo e tamanho;
+- áudio, vídeo e sticker permanecem somente como metadados nesta fase;
 - telefone completo não aparece no admin;
 - tokens, assinatura completa e conteúdo não entram em logs;
 - mensagem/resposta não entram em analytics;
 - conteúdo necessário ao atendimento fica nas tabelas privadas com RLS.
 - erros brutos da Meta não entram em banco, logs, analytics ou interface;
 - auditoria contém somente ação, estado, categoria segura e referências internas.
+- componentes sincronizados guardam somente a estrutura necessária; exemplos da Meta e valores reais de clientes são descartados;
+- histórico de template guarda apenas transição, fonte e motivo resumido, com RLS por proprietário;
+- analytics de templates aceita somente status, categoria, idioma, contagem/faixa, origem e tipo de erro;
+- texto completo do template, valores de variáveis, payload remoto e motivo bruto não entram em analytics ou logs.
 
 ## Pausar a integração se
 

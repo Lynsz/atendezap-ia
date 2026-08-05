@@ -260,7 +260,8 @@ export async function GET(request: Request) {
       whatsappSuggestedRepliesResult,
       whatsappWebhookEventsResult,
       whatsappSendAttemptsResult,
-      whatsappTemplatesResult
+      whatsappTemplatesResult,
+      whatsappMediaResult
     ] = await Promise.all([
       supabase.from("ebook_leads").select("email, created_at, utm_source, utm_campaign").limit(10000),
       supabase.from("profiles").select("id, email, created_at").limit(10000),
@@ -277,11 +278,12 @@ export async function GET(request: Request) {
       supabase.from("cancellation_feedback").select("reason, created_at").limit(10000),
       supabase.from("whatsapp_connections").select("status, created_at").limit(10000),
       supabase.from("whatsapp_conversations").select("status, created_at").limit(20000),
-      supabase.from("whatsapp_messages").select("direction, status, created_at").limit(20000),
+      supabase.from("whatsapp_messages").select("direction, message_type, status, created_at").limit(20000),
       supabase.from("whatsapp_suggested_replies").select("status, created_at").limit(20000),
       supabase.from("whatsapp_webhook_events").select("event_type, processing_status, duplicate_count, created_at").limit(20000),
-      supabase.from("whatsapp_send_attempts").select("status, error_type, retryable, attempts, created_at").limit(20000),
-      supabase.from("whatsapp_templates").select("status, created_at").limit(10000)
+      supabase.from("whatsapp_send_attempts").select("message_type, status, error_type, retryable, attempts, created_at").limit(20000),
+      supabase.from("whatsapp_templates").select("meta_template_id, status, remote_status, local_status, created_at").limit(10000),
+      supabase.from("whatsapp_media").select("direction, media_type, download_status, download_error_type, created_at").limit(20000)
     ]);
 
     const availability = {
@@ -304,7 +306,8 @@ export async function GET(request: Request) {
         resultAvailable(whatsappSuggestedRepliesResult) &&
         resultAvailable(whatsappWebhookEventsResult) &&
         resultAvailable(whatsappSendAttemptsResult) &&
-        resultAvailable(whatsappTemplatesResult)
+        resultAvailable(whatsappTemplatesResult) &&
+        resultAvailable(whatsappMediaResult)
     };
 
     const leads = (leadsResult.data || []) as LeadMetricRow[];
@@ -323,11 +326,12 @@ export async function GET(request: Request) {
     const cancellationFeedback = (cancellationFeedbackResult.data || []) as CancellationFeedbackMetricRow[];
     const whatsappConnections = (whatsappConnectionsResult.data || []) as Array<{ status: string; created_at: string }>;
     const whatsappConversations = (whatsappConversationsResult.data || []) as Array<{ status: string; created_at: string }>;
-    const whatsappMessages = (whatsappMessagesResult.data || []) as Array<{ direction: string; status: string; created_at: string }>;
+    const whatsappMessages = (whatsappMessagesResult.data || []) as Array<{ direction: string; message_type: string; status: string; created_at: string }>;
     const whatsappSuggestedReplies = (whatsappSuggestedRepliesResult.data || []) as Array<{ status: string; created_at: string }>;
     const whatsappWebhookEvents = (whatsappWebhookEventsResult.data || []) as Array<{ event_type: string; processing_status: string; duplicate_count: number; created_at: string }>;
-    const whatsappSendAttempts = (whatsappSendAttemptsResult.data || []) as Array<{ status: string; error_type: string | null; retryable: boolean; attempts: number; created_at: string }>;
-    const whatsappTemplates = (whatsappTemplatesResult.data || []) as Array<{ status: string; created_at: string }>;
+    const whatsappSendAttempts = (whatsappSendAttemptsResult.data || []) as Array<{ message_type: string; status: string; error_type: string | null; retryable: boolean; attempts: number; created_at: string }>;
+    const whatsappTemplates = (whatsappTemplatesResult.data || []) as Array<{ meta_template_id: string | null; status: string; remote_status: string | null; local_status: string | null; created_at: string }>;
+    const whatsappMedia = (whatsappMediaResult.data || []) as Array<{ direction: string; media_type: string; download_status: string; download_error_type: string | null; created_at: string }>;
     const savedTemplates = savedResponses.filter((item) => item.source_template_id);
 
     const profileEmails = new Set(profiles.map((profile) => profile.email?.toLowerCase()).filter(Boolean) as string[]);
@@ -592,8 +596,24 @@ export async function GET(request: Request) {
         rateLimitBlocks:
           whatsappSendAttempts.filter((attempt) => attempt.status === "blocked_rate_limit").length +
           events.filter((event) => event.event_name === "whatsapp_rate_limit_blocked").length,
-        approvedTemplates: whatsappTemplates.filter((template) => template.status === "approved").length,
-        pendingTemplates: whatsappTemplates.filter((template) => template.status === "pending").length
+        syncedTemplates: whatsappTemplates.filter((template) => Boolean(template.meta_template_id)).length,
+        approvedTemplates: whatsappTemplates.filter((template) => (template.remote_status || template.status) === "approved" && template.local_status !== "hidden").length,
+        pendingTemplates: whatsappTemplates.filter((template) => ["pending", "in_appeal"].includes(template.remote_status || template.status)).length,
+        rejectedTemplates: whatsappTemplates.filter((template) => (template.remote_status || template.status) === "rejected").length,
+        disabledTemplates: whatsappTemplates.filter((template) => ["paused", "disabled", "deleted", "pending_deletion", "flagged"].includes(template.remote_status || template.status) || ["hidden", "disabled", "unsupported"].includes(template.local_status || "")).length,
+        templateSendBlockedStatus: events.filter((event) => event.event_name === "whatsapp_template_send_blocked_status").length,
+        templateSyncsCompleted: events.filter((event) => event.event_name === "whatsapp_template_sync_completed").length,
+        templateSyncFailures: events.filter((event) => event.event_name === "whatsapp_template_sync_failed").length,
+        templatesSent: whatsappMessages.filter((message) => message.direction === "outbound" && message.message_type === "template" && ["sent", "delivered", "read"].includes(message.status)).length,
+        mediaReceived: whatsappMedia.filter((media) => media.direction === "inbound").length,
+        mediaDownloaded: whatsappMedia.filter((media) => media.download_status === "downloaded").length,
+        mediaBlockedType: whatsappMedia.filter((media) => ["blocked_type", "skipped_unsupported"].includes(media.download_status)).length,
+        mediaBlockedSize: whatsappMedia.filter((media) => media.download_status === "blocked_size").length,
+        mediaDownloadFailures: whatsappMedia.filter((media) => media.download_status === "failed").length,
+        mediaUploads: whatsappMedia.filter((media) => media.direction === "outbound").length,
+        mediaSent: whatsappMessages.filter((message) => message.direction === "outbound" && ["image", "document"].includes(message.message_type) && ["sent", "delivered", "read"].includes(message.status)).length,
+        mediaSendFailures: whatsappSendAttempts.filter((attempt) => attempt.message_type === "media" && attempt.status === "failed").length,
+        mediaTypes: topBreakdown(whatsappMedia.map((media) => ({ label: media.media_type })), 5)
       },
       revenue: {
         checkoutStartedUsers: checkoutStartedUsers.size,

@@ -161,8 +161,24 @@ type ProductMetricsPayload = {
     retriedSends: number;
     exhaustedRetries: number;
     rateLimitBlocks: number;
+    syncedTemplates: number;
     approvedTemplates: number;
     pendingTemplates: number;
+    rejectedTemplates: number;
+    disabledTemplates: number;
+    templateSendBlockedStatus: number;
+    templateSyncsCompleted: number;
+    templateSyncFailures: number;
+    templatesSent: number;
+    mediaReceived: number;
+    mediaDownloaded: number;
+    mediaBlockedType: number;
+    mediaBlockedSize: number;
+    mediaDownloadFailures: number;
+    mediaUploads: number;
+    mediaSent: number;
+    mediaSendFailures: number;
+    mediaTypes: Array<{ label: string; count: number }>;
   };
   funnel: {
     totalLeads: number;
@@ -1083,9 +1099,25 @@ export default function AdminDashboardPage() {
               <MetricCard label="Envios com retry" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.retriedSends)} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Retries esgotados" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.exhaustedRetries)} icon={<ShieldCheck className="h-5 w-5" />} />
               <MetricCard label="Bloqueios por limite" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.rateLimitBlocks)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Templates sincronizados" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.syncedTemplates)} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Templates aprovados" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.approvedTemplates)} icon={<CheckCircle2 className="h-5 w-5" />} />
               <MetricCard label="Templates pendentes" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.pendingTemplates)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Templates rejeitados" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.rejectedTemplates)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Templates desativados" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.disabledTemplates)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Envios bloqueados por status" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.templateSendBlockedStatus)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Sincronizações concluídas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.templateSyncsCompleted)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Falhas de sincronização" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.templateSyncFailures)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Templates enviados" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.templatesSent)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Mídias recebidas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.mediaReceived)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Mídias armazenadas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.mediaDownloaded)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Mídias bloqueadas por tipo" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.mediaBlockedType)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Mídias bloqueadas por tamanho" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.mediaBlockedSize)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Falhas de download" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.mediaDownloadFailures)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Uploads manuais" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.mediaUploads)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Mídias enviadas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.mediaSent)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Falhas de envio de mídia" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.mediaSendFailures)} icon={<ShieldCheck className="h-5 w-5" />} />
             </div>
+            {productMetrics.whatsapp.mediaTypes.length ? <p className="mt-4 text-sm text-slate-400">Tipos agregados: {productMetrics.whatsapp.mediaTypes.map((item) => `${item.label}: ${item.count}`).join(" · ")}</p> : null}
           </section>
         ) : null}
 

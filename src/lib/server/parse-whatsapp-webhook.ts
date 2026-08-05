@@ -1,6 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
+import { isWhatsAppMediaType, type WhatsAppMediaType } from "@/lib/whatsapp/allowed-media-types";
 
 const idSchema = z.string().trim().min(1).max(255);
 const unixTimestampSchema = z.string().regex(/^\d{1,10}$/);
@@ -13,8 +14,16 @@ export type ParsedWhatsAppInbound = {
   whatsappUserId: string;
   contactName: string | null;
   messageId: string;
-  messageType: string;
+  messageType: "text" | WhatsAppMediaType | "unsupported";
   text: string | null;
+  media: {
+    whatsappMediaId: string;
+    mediaType: WhatsAppMediaType;
+    mimeType: string | null;
+    sha256: string | null;
+    filename: string | null;
+    caption: string | null;
+  } | null;
   receivedAt: string;
 };
 
@@ -74,11 +83,25 @@ export function parseWhatsAppWebhookEvents(payload: unknown): ParsedWhatsAppEven
         const whatsappUserId = validId(message.from);
         const messageId = validId(message.id);
         const timestamp = unixTimestampSchema.safeParse(message.timestamp);
-        const messageType = typeof message.type === "string" ? message.type.trim().slice(0, 40) : "unknown";
+        const rawMessageType = typeof message.type === "string" ? message.type.trim().slice(0, 40) : "unknown";
+        const messageType = rawMessageType === "text" ? "text" : isWhatsAppMediaType(rawMessageType) ? rawMessageType : "unsupported";
         if (!whatsappUserId || !messageId || !timestamp.success) continue;
 
         const textObject = record(message.text);
         const text = messageType === "text" && typeof textObject?.body === "string" ? textObject.body.trim().slice(0, 4096) : null;
+        const mediaObject = isWhatsAppMediaType(messageType) ? record(message[messageType]) : null;
+        const whatsappMediaId = validId(mediaObject?.id);
+        const caption = typeof mediaObject?.caption === "string" ? mediaObject.caption.trim().slice(0, 4096) || null : null;
+        const media = isWhatsAppMediaType(messageType) && whatsappMediaId
+          ? {
+              whatsappMediaId,
+              mediaType: messageType,
+              mimeType: typeof mediaObject?.mime_type === "string" ? mediaObject.mime_type.trim().toLowerCase().slice(0, 160) || null : null,
+              sha256: typeof mediaObject?.sha256 === "string" ? mediaObject.sha256.trim().slice(0, 128) || null : null,
+              filename: typeof mediaObject?.filename === "string" ? mediaObject.filename.trim().slice(0, 255) || null : null,
+              caption
+            }
+          : null;
         events.push({
           kind: "inbound_message",
           businessAccountId,
@@ -88,7 +111,8 @@ export function parseWhatsAppWebhookEvents(payload: unknown): ParsedWhatsAppEven
           contactName: contacts.get(whatsappUserId) || null,
           messageId,
           messageType,
-          text,
+          text: caption || text,
+          media,
           receivedAt: new Date(Number(timestamp.data) * 1000).toISOString()
         });
       }

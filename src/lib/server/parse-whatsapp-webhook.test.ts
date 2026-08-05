@@ -44,12 +44,39 @@ describe("parseWhatsAppWebhook", () => {
     ]);
   });
 
-  it("preserva o tipo e remove corpo de mídia não suportada", () => {
+  it("extrai metadados e caption de imagem sem preservar payload bruto", () => {
     const result = parseWhatsAppWebhook({
       object: "whatsapp_business_account",
-      entry: [{ id: "waba", changes: [{ field: "messages", value: { metadata: { phone_number_id: "12345" }, messages: [{ from: "5511999999999", id: "media-1", timestamp: "1710000000", type: "image", image: { caption: "privado" } }] } }] }]
+      entry: [{ id: "waba", changes: [{ field: "messages", value: { metadata: { phone_number_id: "12345" }, messages: [{ from: "5511999999999", id: "media-1", timestamp: "1710000000", type: "image", image: { id: "provider-media-1", mime_type: "image/jpeg", sha256: "hash-test-only", caption: "privado" } }] } }] }]
     });
-    expect(result[0]).toMatchObject({ messageType: "image", text: null });
+    expect(result[0]).toMatchObject({
+      messageType: "image",
+      text: "privado",
+      media: { whatsappMediaId: "provider-media-1", mediaType: "image", mimeType: "image/jpeg", sha256: "hash-test-only", caption: "privado" }
+    });
+  });
+
+  it.each([
+    ["document", { id: "doc-1", mime_type: "application/pdf", filename: "arquivo.pdf" }],
+    ["audio", { id: "audio-1", mime_type: "audio/ogg" }],
+    ["video", { id: "video-1", mime_type: "video/mp4" }],
+    ["sticker", { id: "sticker-1", mime_type: "image/webp" }]
+  ])("reconhece mídia inbound do tipo %s", (type, mediaObject) => {
+    const result = parseWhatsAppWebhook({
+      object: "whatsapp_business_account",
+      entry: [{ id: "waba", changes: [{ field: "messages", value: { metadata: { phone_number_id: "12345" }, messages: [{ from: "5511999999999", id: `${type}-message`, timestamp: "1710000000", type, [type]: mediaObject }] } }] }]
+    });
+    expect(result[0]).toMatchObject({ messageType: type, media: { mediaType: type } });
+    if (type === "document") expect(result[0].media?.filename).toBe("arquivo.pdf");
+  });
+
+  it("normaliza tipo desconhecido como unsupported sem tratá-lo como texto", () => {
+    const result = parseWhatsAppWebhook({
+      object: "whatsapp_business_account",
+      entry: [{ id: "waba", changes: [{ field: "messages", value: { metadata: { phone_number_id: "12345" }, messages: [{ from: "5511999999999", id: "unknown-1", timestamp: "1710000000", type: "location", location: { name: "não persistir" } }] } }] }]
+    });
+    expect(result[0]).toMatchObject({ messageType: "unsupported", text: null, media: null });
+    expect(JSON.stringify(result)).not.toContain("não persistir");
   });
 
   it("ignora payloads de outro objeto", () => {

@@ -316,6 +316,47 @@ describe("safe app events", () => {
     expect(sanitizeAppEvent({ event_name: "openai_usage_warning" })?.event_name).toBe("openai_usage_warning");
   });
 
+  it("keeps only aggregate WhatsApp media metadata", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "whatsapp_media_downloaded",
+      metadata: {
+        media_type: "image",
+        mime_group: "image",
+        file_size_range: "1mb_5mb",
+        status: "downloaded",
+        caption: "conteúdo privado",
+        storage_path: "user/private/file.png",
+        url: "https://lookaside.fbsbx.com/file?token=test-only-placeholder",
+        phone: "5511999999999"
+      }
+    });
+    expect(event?.metadata).toEqual({ media_type: "image", mime_group: "image", file_size_range: "1mb_5mb", status: "downloaded" });
+    expect(JSON.stringify(event)).not.toContain("lookaside");
+    expect(JSON.stringify(event)).not.toContain("conteúdo privado");
+  });
+
+  it("mantém somente metadados agregados de templates da Fase 5", async () => {
+    const { sanitizeAppEvent } = await import("./track-event");
+    const event = sanitizeAppEvent({
+      event_name: "whatsapp_template_sync_completed",
+      metadata: {
+        template_status: "approved",
+        template_category: "utility",
+        language: "pt_BR",
+        sync_count_range: "10_49",
+        variable_count: 2,
+        source: "manual",
+        template_text: "texto completo privado",
+        variable_values: "Ana, pedido 123",
+        phone: "5511999999999",
+        payload: "{raw}"
+      }
+    });
+    expect(event?.metadata).toEqual({ template_status: "approved", template_category: "utility", language: "pt_BR", sync_count_range: "10_49", variable_count: 2, source: "manual" });
+    expect(JSON.stringify(event)).not.toContain("texto completo privado");
+  });
+
   it("does not throw when event delivery fails", async () => {
     vi.stubGlobal("window", { location: { pathname: "/dashboard" } });
     vi.stubGlobal("navigator", {});

@@ -33,7 +33,19 @@ const secretPatterns = [
   { name: "GitHub fine-grained token", pattern: /\bgithub_pat_[A-Za-z0-9_]{20,}\b/g },
   { name: "Vercel token", pattern: /\bvercel_[A-Za-z0-9]{20,}\b/g },
   { name: "Meta/WhatsApp access token", pattern: /\bEAA[A-Za-z0-9]{20,}\b/g },
+  { name: "Supabase secret key", pattern: /\bsb_secret_[A-Za-z0-9_-]{20,}\b/g },
+  { name: "Supabase management token", pattern: /\bsbp_[A-Za-z0-9]{20,}\b/g },
+  { name: "Authorization Bearer literal", pattern: /\bAuthorization\s*[:=]\s*["']?Bearer\s+[A-Za-z0-9._-]{20,}/gi },
+  { name: "WhatsApp temporary media URL", pattern: /https:\/\/[^\s"']*(?:lookaside\.fbsbx\.com|fbcdn\.net)[^\s"']*[?&](?:token|sig|signature)=[A-Za-z0-9._%-]{20,}/gi },
   { name: "Private key block", pattern: new RegExp("BEGIN " + "PRIVATE KEY", "g") }
+];
+
+const forbiddenFilePatterns = [
+  { name: "arquivo HAR", pattern: /\.har$/i },
+  { name: "payload real de webhook WhatsApp", pattern: /(?:^|\/)whatsapp[-_].*(?:payload|webhook).*(?:\.json|\.txt|\.log)$/i },
+  { name: "dump de mídia WhatsApp", pattern: /(?:^|\/)(?:whatsapp[-_])?media[-_](?:dump|export|backup)(?:\/|\.|$)/i },
+  { name: "dump ou export real de templates Meta", pattern: /(?:^|\/)(?:meta|whatsapp)[-_].*template.*(?:payload|dump|export|backup).*(?:\.json|\.txt|\.log)$/i },
+  { name: "dump real de templates WhatsApp", pattern: /(?:^|\/)template[-_](?:dump|export|backup)(?:\/|\.|$)/i }
 ];
 
 const sensitiveEnvNames = [
@@ -41,6 +53,7 @@ const sensitiveEnvNames = [
   "INTERNAL_JOB_SECRET",
   "OPENAI_API_KEY",
   "WHATSAPP_ACCESS_TOKEN",
+  "WHATSAPP_BUSINESS_ACCOUNT_ID",
   "WHATSAPP_VERIFY_TOKEN",
   "WHATSAPP_APP_SECRET",
   "SENTRY_AUTH_TOKEN",
@@ -140,6 +153,10 @@ function main() {
   }
 
   for (const file of candidateFiles()) {
+    const normalizedFile = normalizePath(file);
+    for (const blocked of forbiddenFilePatterns) {
+      if (blocked.pattern.test(normalizedFile)) findings.push({ file, lineNumber: 1, label: blocked.name });
+    }
     scanFile(file, findings);
   }
 
@@ -156,4 +173,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { isSafePlaceholder, scanEnvAssignment, sensitiveEnvNames, secretPatterns };
+module.exports = { forbiddenFilePatterns, isSafePlaceholder, scanEnvAssignment, sensitiveEnvNames, secretPatterns };

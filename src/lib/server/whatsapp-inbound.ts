@@ -26,7 +26,7 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
       route: "src/lib/server/whatsapp-inbound",
       metadata: { error_type: connection ? "connection_inactive" : "connection_not_found", message_type: message.messageType }
     });
-    return { persisted: false, duplicate: false, userId: null, messageId: null, conversationId: null };
+    return { persisted: false, duplicate: false, userId: null, messageId: null, conversationId: null, mediaId: null };
   }
 
   if (message.displayPhoneNumber) {
@@ -84,7 +84,7 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
         direction: "inbound",
         message_type: message.messageType,
         text: message.text,
-        status: message.messageType === "text" ? "received" : "unsupported",
+        status: message.messageType === "unsupported" ? "unsupported" : "received",
         provider_created_at: message.receivedAt
       },
       { onConflict: "whatsapp_message_id", ignoreDuplicates: true }
@@ -93,14 +93,45 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
     .maybeSingle();
   if (messageError) throw messageError;
 
-  if (inserted) {
-    await trackServerAppEvent({
+  let insertedMediaId: string | null = null;
+  if (inserted && message.media) {
+    const { data: insertedMedia, error: mediaError } = await supabase.from("whatsapp_media").insert({
       user_id: connection.user_id,
-      event_name: "whatsapp_inbound_received",
-      page: "/api/whatsapp/webhook",
-      source: "whatsapp_cloud_api",
-      metadata: { message_type: message.messageType, status: "received" }
-    });
+      conversation_id: conversation.id,
+      message_id: inserted.id,
+      contact_id: contact.id,
+      direction: "inbound",
+      whatsapp_media_id: message.media.whatsappMediaId,
+      media_type: message.media.mediaType,
+      mime_type: message.media.mimeType,
+      sha256: message.media.sha256,
+      original_filename: message.media.filename,
+      download_status: "pending",
+      scanned_status: "not_scanned"
+    }).select("id").single();
+    if (mediaError && (mediaError as { code?: string }).code !== "23505") throw mediaError;
+    insertedMediaId = insertedMedia?.id || null;
+  }
+
+  if (inserted) {
+    await Promise.all([
+      trackServerAppEvent({
+        user_id: connection.user_id,
+        event_name: "whatsapp_inbound_received",
+        page: "/api/whatsapp/webhook",
+        source: "whatsapp_cloud_api",
+        metadata: { message_type: message.messageType, status: "received" }
+      }),
+      message.media
+        ? trackServerAppEvent({
+            user_id: connection.user_id,
+            event_name: "whatsapp_media_inbound_received",
+            page: "/api/whatsapp/webhook",
+            source: "whatsapp_cloud_api",
+            metadata: { media_type: message.media.mediaType, mime_group: message.media.mimeType?.split("/")[0] || "unknown", status: "pending" }
+          })
+        : Promise.resolve()
+    ]);
   }
 
   return {
@@ -108,6 +139,7 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
     duplicate: !inserted,
     userId: connection.user_id,
     messageId: inserted?.id || null,
-    conversationId: conversation.id
+    conversationId: conversation.id,
+    mediaId: insertedMediaId
   };
 }

@@ -102,6 +102,23 @@ export const safeAppEventNames = [
   ,"whatsapp_template_sent"
   ,"whatsapp_template_not_approved"
   ,"whatsapp_message_status_failed"
+  ,"whatsapp_media_inbound_received"
+  ,"whatsapp_media_downloaded"
+  ,"whatsapp_media_blocked_type"
+  ,"whatsapp_media_blocked_size"
+  ,"whatsapp_media_preview_opened"
+  ,"whatsapp_media_upload_created"
+  ,"whatsapp_media_send_attempted"
+  ,"whatsapp_media_sent"
+  ,"whatsapp_media_send_failed"
+  ,"whatsapp_template_sync_started"
+  ,"whatsapp_template_sync_completed"
+  ,"whatsapp_template_sync_failed"
+  ,"whatsapp_template_status_changed"
+  ,"whatsapp_template_preview_generated"
+  ,"whatsapp_template_send_blocked_status"
+  ,"whatsapp_template_variable_validation_failed"
+  ,"whatsapp_template_draft_created"
 ] as const;
 
 export type SafeAppEventName = (typeof safeAppEventNames)[number];
@@ -156,6 +173,13 @@ const allowedMetadataKeys = new Set([
   "retryable",
   "attempts",
   "template_status",
+  "template_category",
+  "language",
+  "sync_count_range",
+  "variable_count",
+  "media_type",
+  "mime_group",
+  "file_size_range",
   "utm_source",
   "utm_medium",
   "utm_campaign",
@@ -198,7 +222,7 @@ function sanitizeMetadata(metadata: Record<string, unknown> = {}) {
   return Object.entries(metadata).reduce<Record<string, string | number | boolean>>((accumulator, [rawKey, value]) => {
     const key = normalizeKey(rawKey);
     const isAllowedUtmKey = key === "utm_source" || key === "utm_medium" || key === "utm_campaign" || key === "utm_content";
-    const isExplicitlySafeWhatsAppKey = ["message_type", "window_open", "retryable", "attempts", "template_status"].includes(key);
+    const isExplicitlySafeWhatsAppKey = ["message_type", "window_open", "retryable", "attempts", "template_status", "template_category", "language", "sync_count_range", "variable_count", "media_type", "mime_group", "file_size_range"].includes(key);
     if (!allowedMetadataKeys.has(key) || (!isAllowedUtmKey && !isExplicitlySafeWhatsAppKey && forbiddenKeyPattern.test(rawKey)) || !isSafePrimitive(value)) return accumulator;
     accumulator[key] = typeof value === "string" ? cleanString(value) : value;
     return accumulator;
