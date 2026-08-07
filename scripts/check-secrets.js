@@ -33,6 +33,9 @@ const secretPatterns = [
   { name: "GitHub fine-grained token", pattern: /\bgithub_pat_[A-Za-z0-9_]{20,}\b/g },
   { name: "Vercel token", pattern: /\bvercel_[A-Za-z0-9]{20,}\b/g },
   { name: "Meta/WhatsApp access token", pattern: /\bEAA[A-Za-z0-9]{20,}\b/g },
+  { name: "Meta OAuth code dump", pattern: /["'](?:code|access_token|user_access_token)["']\s*:\s*["'](?:EAA)?[A-Za-z0-9._-]{24,}["']/gi },
+  { name: "Embedded Signup raw response", pattern: /(?:embedded[-_ ]signup|oauth)[-_ ]?(?:response|payload|dump)\s*[:=]\s*["'`]?\{/gi },
+  { name: "Meta webhook raw payload", pattern: /["']object["']\s*:\s*["']whatsapp_business_account["'][\s\S]{0,160}["']entry["']\s*:/gi },
   { name: "Supabase secret key", pattern: /\bsb_secret_[A-Za-z0-9_-]{20,}\b/g },
   { name: "Supabase management token", pattern: /\bsbp_[A-Za-z0-9]{20,}\b/g },
   { name: "Authorization Bearer literal", pattern: /\bAuthorization\s*[:=]\s*["']?Bearer\s+[A-Za-z0-9._-]{20,}/gi },
@@ -45,14 +48,17 @@ const forbiddenFilePatterns = [
   { name: "payload real de webhook WhatsApp", pattern: /(?:^|\/)whatsapp[-_].*(?:payload|webhook).*(?:\.json|\.txt|\.log)$/i },
   { name: "dump de mídia WhatsApp", pattern: /(?:^|\/)(?:whatsapp[-_])?media[-_](?:dump|export|backup)(?:\/|\.|$)/i },
   { name: "dump ou export real de templates Meta", pattern: /(?:^|\/)(?:meta|whatsapp)[-_].*template.*(?:payload|dump|export|backup).*(?:\.json|\.txt|\.log)$/i },
-  { name: "dump real de templates WhatsApp", pattern: /(?:^|\/)template[-_](?:dump|export|backup)(?:\/|\.|$)/i }
+  { name: "dump real de templates WhatsApp", pattern: /(?:^|\/)template[-_](?:dump|export|backup)(?:\/|\.|$)/i },
+  { name: "dump OAuth ou Embedded Signup", pattern: /(?:^|\/)(?:meta|whatsapp|embedded[-_]?signup|oauth)[-_].*(?:response|payload|dump|export|backup).*(?:\.json|\.txt|\.log)$/i }
 ];
 
 const sensitiveEnvNames = [
   "KIWIFY_WEBHOOK_SECRET",
   "INTERNAL_JOB_SECRET",
+  "META_APP_SECRET",
   "OPENAI_API_KEY",
   "WHATSAPP_ACCESS_TOKEN",
+  "WHATSAPP_TOKEN_ENCRYPTION_KEY",
   "WHATSAPP_BUSINESS_ACCOUNT_ID",
   "WHATSAPP_VERIFY_TOKEN",
   "WHATSAPP_APP_SECRET",

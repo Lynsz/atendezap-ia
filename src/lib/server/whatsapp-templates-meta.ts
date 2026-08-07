@@ -3,7 +3,7 @@ import "server-only";
 import { trackServerAppEvent } from "@/lib/analytics/server";
 import { AppError } from "@/lib/errors";
 import { readServerEnv } from "@/lib/server/env";
-import { getWhatsAppServerConfig } from "@/lib/server/whatsapp";
+import { getWhatsAppProviderConfigForConnection, getWhatsAppServerConfig } from "@/lib/server/whatsapp";
 import { normalizeWhatsAppProviderError, toWhatsAppProviderError } from "@/lib/server/whatsapp-errors";
 import { writeWhatsAppAudit } from "@/lib/server/whatsapp-audit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -169,8 +169,8 @@ export function normalizeMetaTemplate(template: unknown): NormalizedMetaTemplate
   };
 }
 
-async function fetchMetaTemplatesPage(after?: string) {
-  const config = getWhatsAppServerConfig();
+async function fetchMetaTemplatesPage(after?: string, connectionId?: string) {
+  const config = connectionId ? await getWhatsAppProviderConfigForConnection(connectionId) : getWhatsAppServerConfig();
   const url = new URL(`https://graph.facebook.com/${config.apiVersion}/${config.businessAccountId}/message_templates`);
   url.searchParams.set("limit", String(Math.min(getWhatsAppTemplateSyncLimit(), 100)));
   if (after) url.searchParams.set("after", after);
@@ -195,14 +195,14 @@ async function fetchMetaTemplatesPage(after?: string) {
   };
 }
 
-export async function listMetaWhatsAppTemplates() {
+export async function listMetaWhatsAppTemplates(connectionId?: string) {
   requireWhatsAppTemplateSyncEnabled();
   const limit = getWhatsAppTemplateSyncLimit();
   const templates: NormalizedMetaTemplate[] = [];
   const seenCursors = new Set<string>();
   let after: string | undefined;
   while (templates.length < limit) {
-    const page = await fetchMetaTemplatesPage(after);
+    const page = await fetchMetaTemplatesPage(after, connectionId);
     for (const raw of page.data) {
       if (templates.length >= limit) break;
       templates.push(normalizeMetaTemplate(raw));
@@ -214,16 +214,16 @@ export async function listMetaWhatsAppTemplates() {
   return templates;
 }
 
-export async function getMetaWhatsAppTemplateByName(name: string, language: string) {
+export async function getMetaWhatsAppTemplateByName(name: string, language: string, connectionId?: string) {
   const normalizedName = name.trim().toLowerCase();
-  return (await listMetaWhatsAppTemplates()).find((template) => template.metaTemplateName === normalizedName && template.language === language) || null;
+  return (await listMetaWhatsAppTemplates(connectionId)).find((template) => template.metaTemplateName === normalizedName && template.language === language) || null;
 }
 
 export async function syncMetaTemplateToLocal(userId: string, template: NormalizedMetaTemplate, connectionId?: string) {
   const supabase = getSupabaseAdmin();
   let resolvedConnectionId = connectionId;
   if (!resolvedConnectionId) {
-    const { data: connection, error } = await supabase.from("whatsapp_connections").select("id").eq("user_id", userId).eq("status", "active").limit(1).maybeSingle();
+    const { data: connection, error } = await supabase.from("whatsapp_connections").select("id").eq("user_id", userId).eq("connection_status", "connected").limit(1).maybeSingle();
     if (error) throw error;
     if (!connection) throw new AppError("A conexão do WhatsApp não está ativa.", 409);
     resolvedConnectionId = connection.id;
@@ -314,7 +314,7 @@ export async function syncMetaTemplateToLocal(userId: string, template: Normaliz
 }
 
 export async function syncMetaTemplatesForConnection(userId: string, connectionId: string): Promise<TemplateSyncSummary> {
-  const templates = await listMetaWhatsAppTemplates();
+  const templates = await listMetaWhatsAppTemplates(connectionId);
   const summary: TemplateSyncSummary = { found: templates.length, created: 0, updated: 0, statusChanged: 0, errors: [] };
   let syncErrors = 0;
   for (const template of templates) {

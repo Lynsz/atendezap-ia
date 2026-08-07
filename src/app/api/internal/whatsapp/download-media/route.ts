@@ -24,6 +24,7 @@ type PendingMedia = {
   conversation_id: string;
   message_id: string | null;
   contact_id: string;
+  connection_id: string;
   whatsapp_media_id: string;
   media_type: WhatsAppMediaType;
   original_filename: string | null;
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     const limit = Number.isInteger(requestedLimit) && requestedLimit > 0 ? Math.min(requestedLimit, 20) : 10;
     const { data, error } = await supabase
       .from("whatsapp_media")
-      .select("id,user_id,conversation_id,message_id,contact_id,whatsapp_media_id,media_type,original_filename")
+      .select("id,user_id,connection_id,conversation_id,message_id,contact_id,whatsapp_media_id,media_type,original_filename")
       .eq("direction", "inbound")
       .eq("download_status", "pending")
       .order("created_at", { ascending: true })
@@ -86,11 +87,11 @@ export async function POST(request: Request) {
           results.push({ id: media.id, status: "skipped_unsupported" });
           continue;
         }
-        const metadata = await getWhatsAppMediaMetadata(media.whatsapp_media_id);
+        const metadata = await getWhatsAppMediaMetadata(media.whatsapp_media_id, media.connection_id);
         await supabase.from("whatsapp_media").update({ mime_type: metadata.mimeType, sha256: metadata.sha256, file_size: metadata.fileSize, updated_at: new Date().toISOString() }).eq("id", media.id);
         validateWhatsAppMediaType({ mediaType: media.media_type, mimeType: metadata.mimeType, filename: media.original_filename });
         validateWhatsAppMediaSize(metadata.fileSize);
-        const downloaded = await downloadWhatsAppMedia({ mediaId: media.whatsapp_media_id, mediaType: media.media_type, filename: media.original_filename, metadata });
+        const downloaded = await downloadWhatsAppMedia({ connectionId: media.connection_id, mediaId: media.whatsapp_media_id, mediaType: media.media_type, filename: media.original_filename, metadata });
         const stored = await storeWhatsAppMediaFile({ userId: media.user_id, mediaId: media.id, buffer: downloaded.buffer, mimeType: metadata.mimeType });
         await supabase.from("whatsapp_media").update({
           storage_bucket: stored.bucket,

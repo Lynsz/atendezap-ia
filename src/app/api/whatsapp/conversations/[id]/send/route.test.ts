@@ -127,7 +127,7 @@ describe("POST WhatsApp send", () => {
     const response = await POST(request(validBody()), { params: Promise.resolve({ id: conversationId }) });
     const body = await response.json();
     expect(response.status).toBe(201);
-    expect(mocks.sendWhatsAppTextMessage).toHaveBeenCalledWith({ to: "5511999999999", text: "Resposta revisada" });
+    expect(mocks.sendWhatsAppTextMessage).toHaveBeenCalledWith({ connectionId, to: "5511999999999", text: "Resposta revisada" });
     expect(JSON.stringify(body)).not.toContain("token");
     expect(JSON.stringify(body)).not.toContain("EAA");
   });

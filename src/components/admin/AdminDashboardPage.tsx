@@ -149,6 +149,15 @@ type ProductMetricsPayload = {
     available: boolean;
     totalConnections: number;
     activeConnections: number;
+    pendingConnections: number;
+    failedConnections: number;
+    needsReauthConnections: number;
+    disconnectedConnections: number;
+    embeddedSignupFailures: number;
+    healthchecksOk: number;
+    healthchecksFailed: number;
+    connectionsWithTemplates: number;
+    connectionsWithMessages: number;
     pendingConversations: number;
     inboundMessages: number;
     outboundMessages: number;
@@ -1087,6 +1096,15 @@ export default function AdminDashboardPage() {
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <MetricCard label="Conexões" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.totalConnections)} icon={<CheckCircle2 className="h-5 w-5" />} />
               <MetricCard label="Conexões ativas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.activeConnections)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Conexões pendentes" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.pendingConnections)} icon={<MessageSquare className="h-5 w-5" />} />
+              <MetricCard label="Conexões com erro" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.failedConnections)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Precisam reautorizar" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.needsReauthConnections)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Conexões desconectadas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.disconnectedConnections)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Falhas de Embedded Signup" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.embeddedSignupFailures)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Healthchecks OK" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.healthchecksOk)} icon={<CheckCircle2 className="h-5 w-5" />} />
+              <MetricCard label="Healthchecks com falha" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.healthchecksFailed)} icon={<ShieldCheck className="h-5 w-5" />} />
+              <MetricCard label="Conexões com templates" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.connectionsWithTemplates)} icon={<BarChart3 className="h-5 w-5" />} />
+              <MetricCard label="Conexões com mensagens" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.connectionsWithMessages)} icon={<BarChart3 className="h-5 w-5" />} />
               <MetricCard label="Conversas pendentes" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.pendingConversations)} icon={<MessageSquare className="h-5 w-5" />} />
               <MetricCard label="Mensagens recebidas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.inboundMessages)} icon={<MessageSquare className="h-5 w-5" />} />
               <MetricCard label="Respostas enviadas" value={availableValue(productMetrics.whatsapp.available, productMetrics.whatsapp.outboundMessages)} icon={<BarChart3 className="h-5 w-5" />} />

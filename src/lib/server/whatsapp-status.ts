@@ -9,11 +9,19 @@ const statusRank: Record<ParsedWhatsAppStatus["status"], number> = { sent: 1, de
 
 export async function persistWhatsAppStatus(event: ParsedWhatsAppStatus) {
   const supabase = getSupabaseAdmin();
+  const { data: connection, error: connectionError } = await supabase
+    .from("whatsapp_connections")
+    .select("id,user_id")
+    .eq("phone_number_id", event.phoneNumberId)
+    .maybeSingle();
+  if (connectionError) throw connectionError;
+  if (!connection) return { persisted: false, reason: "connection_not_found" } as const;
   const { data: message, error } = await supabase
     .from("whatsapp_messages")
-    .select("id,user_id,conversation_id,status")
+    .select("id,user_id,conversation_id,connection_id,status")
     .eq("whatsapp_message_id", event.messageId)
     .eq("direction", "outbound")
+    .eq("connection_id", connection.id)
     .maybeSingle();
   if (error) throw error;
   if (!message) return { persisted: false, reason: "message_not_found" } as const;
@@ -32,6 +40,7 @@ export async function persistWhatsAppStatus(event: ParsedWhatsAppStatus) {
   await Promise.all([
     writeWhatsAppAudit({
       userId: message.user_id,
+      connectionId: message.connection_id,
       action: "message_status_updated",
       status: event.status,
       errorType,

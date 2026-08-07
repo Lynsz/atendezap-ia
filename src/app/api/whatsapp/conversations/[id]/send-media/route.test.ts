@@ -158,7 +158,7 @@ describe("POST WhatsApp send media", () => {
     const response = await POST(request(body()), { params: Promise.resolve({ id: conversationId }) });
     expect(response.status).toBe(201);
     expect(mocks.uploadMediaToWhatsApp).toHaveBeenCalledWith(expect.objectContaining({ mimeType: "image/png" }));
-    expect(mocks.sendWhatsAppImageMessage).toHaveBeenCalledWith({ to: "5511999999999", mediaId: "provider-media-1", caption: "Legenda revisada" });
+    expect(mocks.sendWhatsAppImageMessage).toHaveBeenCalledWith({ connectionId, to: "5511999999999", mediaId: "provider-media-1", caption: "Legenda revisada" });
     expect(JSON.stringify(await response.json())).not.toContain("storage_path");
   });
 });

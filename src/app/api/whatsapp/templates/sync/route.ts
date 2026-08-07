@@ -2,7 +2,6 @@ import { trackServerAppEvent } from "@/lib/analytics/server";
 import { requireUser } from "@/lib/auth/server";
 import { AppError, errorResponse } from "@/lib/errors";
 import { enforceRateLimit } from "@/lib/rate-limit";
-import { getWhatsAppServerConfig } from "@/lib/server/whatsapp";
 import { writeWhatsAppAudit } from "@/lib/server/whatsapp-audit";
 import {
   getTemplateSyncCountRange,
@@ -22,13 +21,13 @@ export async function POST(request: Request) {
     userId = user.id;
     await enforceRateLimit({ request, route: "api:whatsapp-template-sync", identifier: user.id, limit: 3, windowMs: 10 * 60_000 });
     requireWhatsAppTemplateSyncEnabled();
-    const config = getWhatsAppServerConfig();
     const { data: connection, error } = await getSupabaseAdmin()
       .from("whatsapp_connections")
       .select("id")
       .eq("user_id", user.id)
-      .eq("business_account_id", config.businessAccountId)
-      .eq("status", "active")
+      .eq("connection_status", "connected")
+      .order("updated_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
     if (error) throw error;
     if (!connection) throw new AppError("A conexão do WhatsApp precisa ser revisada antes da sincronização.", 409);

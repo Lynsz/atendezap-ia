@@ -98,12 +98,12 @@ export default function WhatsAppDashboardPage() {
     try {
       const [body, statusBody, templatesBody] = await Promise.all([
         api("/api/whatsapp/conversations"),
-        api("/api/whatsapp/status"),
+        api("/api/whatsapp/connection"),
         api("/api/whatsapp/templates").catch(() => ({ templates: [] }))
       ]);
       const items = (body.conversations || []) as Conversation[];
-      const status = statusBody as { environment?: { enabled?: boolean; configured?: boolean }; connection?: { status?: string } | null };
-      setIntegrationStatus(status.environment?.enabled && status.environment?.configured && status.connection?.status === "active" ? "ativa" : "não configurada");
+      const status = statusBody as { connection?: { status?: string } | null };
+      setIntegrationStatus(status.connection?.status === "connected" ? "ativa" : "não configurada");
       setConversations(items);
       setTemplates((templatesBody.templates || []) as WhatsAppTemplate[]);
       setSelectedId((current) => current || items[0]?.id || null);
@@ -259,7 +259,7 @@ export default function WhatsAppDashboardPage() {
             <div className="flex flex-wrap gap-2"><Link href="/dashboard" className="rounded-lg border border-white/10 px-4 py-2 text-sm font-bold hover:bg-white/10">Dashboard</Link><Link href="/dashboard/whatsapp/templates" className="rounded-lg border border-white/10 px-4 py-2 text-sm font-bold hover:bg-white/10">Templates</Link><Link href="/dashboard/whatsapp/configuracao" className="rounded-lg bg-emerald-400 px-4 py-2 text-sm font-black text-slate-950">Configurar</Link></div>
           </header>
           {error ? <div role="alert" className="mb-4 rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200"><p>{error}</p>{canRetry && retryKind ? <button disabled={busy} onClick={() => void (retryKind === "template" ? sendTemplate() : sendReply())} className="mt-2 rounded border border-red-300/30 px-3 py-1 text-xs font-bold disabled:opacity-50">Tentar novamente</button> : null}</div> : null}
-          <div className="grid min-h-[650px] gap-4 lg:grid-cols-[340px_1fr]">
+          {integrationStatus !== "ativa" && !loading ? <section className="rounded-xl border border-amber-400/25 bg-amber-400/10 p-6"><h2 className="text-xl font-black text-amber-100">Conecte seu WhatsApp para abrir as conversas</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-amber-100/80">As conversas e os templates reais ficam bloqueados até existir uma conexão ativa do seu negócio.</p><Link href="/dashboard/whatsapp/onboarding" className="mt-4 inline-block rounded-lg bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950">Conectar WhatsApp</Link></section> : <div className="grid min-h-[650px] gap-4 lg:grid-cols-[340px_1fr]">
             <aside className="rounded-xl border border-white/10 bg-[#101821] p-3">
               <div className="mb-3 flex items-center justify-between px-2"><h2 className="font-black">Conversas</h2><button onClick={() => void loadConversations()} className="text-xs font-bold text-emerald-300">Atualizar</button></div>
               {loading ? <p className="p-3 text-sm text-slate-400">Carregando...</p> : conversations.length ? conversations.map((item) => <button key={item.id} onClick={() => setSelectedId(item.id)} className={`mb-2 w-full rounded-lg border p-3 text-left ${selectedId === item.id ? "border-emerald-400/50 bg-emerald-400/10" : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]"}`}><div className="flex items-center justify-between gap-2"><strong className="truncate text-sm">{item.contact?.display_name || "Contato"}</strong><span className="text-[10px] uppercase text-slate-500">{item.status}</span></div><p className="mt-1 text-xs text-slate-400">Última atividade: {formatDate(item.updated_at)}</p></button>) : <p className="rounded-lg border border-dashed border-white/15 p-4 text-sm text-slate-400">Nenhuma mensagem recebida ainda.</p>}
@@ -299,7 +299,7 @@ export default function WhatsAppDashboardPage() {
                 </div>
               </> : <div className="m-auto text-center text-sm text-slate-400">Selecione uma conversa.</div>}
             </section>
-          </div>
+          </div>}
         </section>
       </main>
     </ProtectedRoute>

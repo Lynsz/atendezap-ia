@@ -488,3 +488,13 @@ Aplique `supabase/migrations/add_whatsapp_phase_4_media.sql`, mantenha as flags 
 - Não há disparo em massa, campanha automática, spam ou envio automático de templates.
 
 Aplique `supabase/migrations/add_whatsapp_phase_5_template_sync.sql` e mantenha `WHATSAPP_TEMPLATE_SYNC_ENABLED=false` até concluir o smoke com uma WABA de teste. `WHATSAPP_TEMPLATE_CREATE_ENABLED` permanece desativada: a submissão pela API não foi liberada nesta fase. Consulte [a documentação da Fase 5](docs/whatsapp-integration-phase-5-templates-meta.md) e [o guia de revisão](docs/whatsapp-template-review-guide.md).
+
+## WhatsApp — Fase 6 Embedded Signup
+
+- Cada negócio pode conectar sua própria conta WhatsApp Business pelo fluxo oficial da Meta.
+- Tokens ficam somente no servidor, criptografados e isolados por conexão/usuário.
+- Envio, templates e mídia usam a conexão do usuário; o webhook roteia por Phone Number ID.
+- A conexão global por `.env` permanece apenas como fallback legado controlado.
+- Não há disparo automático, WhatsApp Web não oficial, campanha em massa ou bot autônomo.
+
+Aplique `supabase/migrations/add_whatsapp_phase_6_embedded_signup.sql`, configure as variáveis descritas em [docs/whatsapp-embedded-signup-setup.md](docs/whatsapp-embedded-signup-setup.md) e mantenha `WHATSAPP_EMBEDDED_SIGNUP_ENABLED=false` até concluir o smoke multiempresa.

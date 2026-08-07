@@ -21,7 +21,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const supabase = getSupabaseAdmin();
     const { data: conversation, error: conversationError } = await supabase
       .from("whatsapp_conversations")
-      .select("id,contact_id")
+      .select("id,contact_id,connection_id")
       .eq("id", id)
       .eq("user_id", user.id)
       .maybeSingle();
@@ -81,7 +81,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const sourceMessageId = [...history].reverse().find((item) => item.direction === "inbound")?.id || null;
     const { data: suggestion, error: saveError } = await supabase
       .from("whatsapp_suggested_replies")
-      .insert({ user_id: user.id, conversation_id: id, source_message_id: sourceMessageId, suggested_text: body, status: "draft" })
+      .insert({ user_id: user.id, connection_id: conversation.connection_id, conversation_id: id, source_message_id: sourceMessageId, suggested_text: body, status: "draft" })
       .select("id,source_message_id,suggested_text,status,created_at,updated_at")
       .single();
     if (saveError || !suggestion) throw saveError || new Error("suggestion_not_saved");

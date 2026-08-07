@@ -143,7 +143,7 @@ export default function WhatsAppTemplatesPage() {
             <p>Templates pendentes, rejeitados ou desativados não podem ser enviados.</p>
             <p className="mt-1">O AtendeZap IA não faz disparo em massa nem envio automático de templates.</p>
           </div>
-          {error ? <p role="alert" className="rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200">{error}</p> : null}
+          {error ? <div role="alert" className="rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200"><p>{error}</p>{/conectada|reautorizada/i.test(error) ? <Link href="/dashboard/whatsapp/onboarding" className="mt-2 inline-block font-black underline">Conectar WhatsApp</Link> : null}</div> : null}
           {notice ? <p role="status" className="rounded-lg border border-emerald-400/30 bg-emerald-400/10 p-3 text-sm text-emerald-200">{notice}</p> : null}
 
           <section className="rounded-xl border border-white/10 bg-[#101821] p-5">

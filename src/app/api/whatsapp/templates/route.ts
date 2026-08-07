@@ -12,10 +12,15 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
     const user = await requireUser(request);
-    const { data, error } = await getSupabaseAdmin()
+    const supabase = getSupabaseAdmin();
+    const { data: connection, error: connectionError } = await supabase.from("whatsapp_connections").select("id").eq("user_id", user.id).eq("connection_status", "connected").order("updated_at", { ascending: false }).limit(1).maybeSingle();
+    if (connectionError) throw connectionError;
+    if (!connection) throw new AppError("Conecte ou reautorize o WhatsApp antes de acessar templates reais.", 409);
+    const { data, error } = await supabase
       .from("whatsapp_templates")
       .select("id,name,meta_template_name,language,category,status,remote_status,local_status,components,variables_schema,variables_count,quality_score,rejection_reason,last_synced_at,created_at,updated_at")
       .eq("user_id", user.id)
+      .eq("connection_id", connection.id)
       .neq("local_status", "hidden")
       .order("updated_at", { ascending: false })
       .limit(100);
@@ -45,7 +50,7 @@ export async function POST(request: Request) {
       .from("whatsapp_connections")
       .select("id")
       .eq("user_id", user.id)
-      .eq("status", "active")
+      .eq("connection_status", "connected")
       .order("updated_at", { ascending: false })
       .limit(1)
       .maybeSingle();

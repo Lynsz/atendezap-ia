@@ -3,7 +3,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { AppError } from "@/lib/errors";
 import { readServerEnv } from "@/lib/server/env";
-import { getWhatsAppServerConfig } from "@/lib/server/whatsapp";
+import { getWhatsAppProviderConfigForConnection, getWhatsAppServerConfig } from "@/lib/server/whatsapp";
 import { normalizeWhatsAppProviderError, toWhatsAppProviderError } from "@/lib/server/whatsapp-errors";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import {
@@ -100,8 +100,8 @@ export function validateWhatsAppMediaBytes(buffer: Buffer, mimeType: string) {
   if (!matches) throw new WhatsAppMediaError("O conteúdo do arquivo não corresponde ao tipo informado.", 415, "blocked_type");
 }
 
-export async function getWhatsAppMediaMetadata(mediaId: string): Promise<WhatsAppMediaMetadata> {
-  const config = getWhatsAppServerConfig();
+export async function getWhatsAppMediaMetadata(mediaId: string, connectionId?: string): Promise<WhatsAppMediaMetadata> {
+  const config = connectionId ? await getWhatsAppProviderConfigForConnection(connectionId) : getWhatsAppServerConfig();
   let response: Response;
   try {
     const url = new URL(`https://graph.facebook.com/${config.apiVersion}/${encodeURIComponent(mediaId)}`);
@@ -131,11 +131,11 @@ export async function getWhatsAppMediaMetadata(mediaId: string): Promise<WhatsAp
   };
 }
 
-export async function downloadWhatsAppMedia(input: { mediaId: string; mediaType: WhatsAppMediaType; filename?: string | null; metadata?: WhatsAppMediaMetadata }) {
-  const metadata = input.metadata || await getWhatsAppMediaMetadata(input.mediaId);
+export async function downloadWhatsAppMedia(input: { connectionId?: string; mediaId: string; mediaType: WhatsAppMediaType; filename?: string | null; metadata?: WhatsAppMediaMetadata }) {
+  const metadata = input.metadata || await getWhatsAppMediaMetadata(input.mediaId, input.connectionId);
   validateWhatsAppMediaType({ mediaType: input.mediaType, mimeType: metadata.mimeType, filename: input.filename });
   validateWhatsAppMediaSize(metadata.fileSize);
-  const config = getWhatsAppServerConfig();
+  const config = input.connectionId ? await getWhatsAppProviderConfigForConnection(input.connectionId) : getWhatsAppServerConfig();
   let response: Response;
   try {
     response = await fetch(metadata.temporaryUrl, {
@@ -189,10 +189,10 @@ export async function removeStoredWhatsAppMediaFile(input: { bucket: string; pat
   if (error) throw new WhatsAppMediaError("Não foi possível remover a mídia armazenada.", 503, "storage_delete_failed");
 }
 
-export async function uploadMediaToWhatsApp(input: { fileBuffer: Buffer; mimeType: string; filename: string }) {
+export async function uploadMediaToWhatsApp(input: { connectionId: string; fileBuffer: Buffer; mimeType: string; filename: string }) {
   validateWhatsAppMediaSize(input.fileBuffer.length);
   validateWhatsAppMediaBytes(input.fileBuffer, input.mimeType);
-  const config = getWhatsAppServerConfig();
+  const config = await getWhatsAppProviderConfigForConnection(input.connectionId);
   const form = new FormData();
   form.set("messaging_product", "whatsapp");
   form.set("file", new Blob([new Uint8Array(input.fileBuffer)], { type: input.mimeType }), input.filename);

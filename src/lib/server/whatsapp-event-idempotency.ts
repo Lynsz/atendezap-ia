@@ -54,12 +54,15 @@ export async function markWhatsAppEventReceived(event: ParsedWhatsAppEvent) {
     return { acquired: false, eventId: existing.id, retry: false };
   }
 
+  const { data: connection } = await supabase.from("whatsapp_connections").select("id,user_id").eq("phone_number_id", event.phoneNumberId).maybeSingle();
   const row = {
     event_key: key,
     event_type: event.kind,
     phone_number_id: event.phoneNumberId,
     message_id: event.messageId,
     status_id: event.kind === "message_status" ? event.statusId : null,
+    connection_id: connection?.id || null,
+    user_id: connection?.user_id || null,
     processing_status: "received"
   };
   const { data, error } = await supabase.from("whatsapp_webhook_events").insert(row).select("id").single();

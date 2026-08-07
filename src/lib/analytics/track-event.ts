@@ -119,6 +119,13 @@ export const safeAppEventNames = [
   ,"whatsapp_template_send_blocked_status"
   ,"whatsapp_template_variable_validation_failed"
   ,"whatsapp_template_draft_created"
+  ,"whatsapp_embedded_signup_started"
+  ,"whatsapp_embedded_signup_completed"
+  ,"whatsapp_embedded_signup_failed"
+  ,"whatsapp_connection_created"
+  ,"whatsapp_connection_disconnected"
+  ,"whatsapp_connection_reauth_required"
+  ,"whatsapp_connection_healthcheck_failed"
 ] as const;
 
 export type SafeAppEventName = (typeof safeAppEventNames)[number];
@@ -180,6 +187,9 @@ const allowedMetadataKeys = new Set([
   "media_type",
   "mime_group",
   "file_size_range",
+  "connection_source",
+  "has_phone_number",
+  "has_waba",
   "utm_source",
   "utm_medium",
   "utm_campaign",
@@ -222,7 +232,7 @@ function sanitizeMetadata(metadata: Record<string, unknown> = {}) {
   return Object.entries(metadata).reduce<Record<string, string | number | boolean>>((accumulator, [rawKey, value]) => {
     const key = normalizeKey(rawKey);
     const isAllowedUtmKey = key === "utm_source" || key === "utm_medium" || key === "utm_campaign" || key === "utm_content";
-    const isExplicitlySafeWhatsAppKey = ["message_type", "window_open", "retryable", "attempts", "template_status", "template_category", "language", "sync_count_range", "variable_count", "media_type", "mime_group", "file_size_range"].includes(key);
+    const isExplicitlySafeWhatsAppKey = ["message_type", "window_open", "retryable", "attempts", "template_status", "template_category", "language", "sync_count_range", "variable_count", "media_type", "mime_group", "file_size_range", "connection_source", "has_phone_number", "has_waba"].includes(key);
     if (!allowedMetadataKeys.has(key) || (!isAllowedUtmKey && !isExplicitlySafeWhatsAppKey && forbiddenKeyPattern.test(rawKey)) || !isSafePrimitive(value)) return accumulator;
     accumulator[key] = typeof value === "string" ? cleanString(value) : value;
     return accumulator;

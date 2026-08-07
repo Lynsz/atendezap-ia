@@ -18,11 +18,14 @@ describe("WhatsApp secrets scanner", () => {
   });
 
   it("trata access token, app secret e verify token como envs sensíveis", () => {
-    expect(scanner.sensitiveEnvNames).toEqual(expect.arrayContaining(["WHATSAPP_ACCESS_TOKEN", "WHATSAPP_APP_SECRET", "WHATSAPP_VERIFY_TOKEN", "WHATSAPP_BUSINESS_ACCOUNT_ID", "INTERNAL_JOB_SECRET"]));
+    expect(scanner.sensitiveEnvNames).toEqual(expect.arrayContaining(["WHATSAPP_ACCESS_TOKEN", "WHATSAPP_APP_SECRET", "WHATSAPP_VERIFY_TOKEN", "WHATSAPP_BUSINESS_ACCOUNT_ID", "INTERNAL_JOB_SECRET", "META_APP_SECRET", "WHATSAPP_TOKEN_ENCRYPTION_KEY"]));
     expect(scanner.secretPatterns.map((item: { name: string }) => item.name)).toEqual(expect.arrayContaining(["Supabase secret key", "Authorization Bearer literal", "WhatsApp temporary media URL"]));
     expect(scanner.forbiddenFilePatterns.map((item: { name: string }) => item.name)).toEqual(expect.arrayContaining(["arquivo HAR", "dump de mídia WhatsApp", "dump ou export real de templates Meta"]));
     const findings: unknown[] = [];
     scanner.scanEnvAssignment("fixture.env", "WHATSAPP_APP_SECRET=valor-real-nao-versionar", 1, findings);
     expect(findings).toHaveLength(1);
+    const encryptionFindings: unknown[] = [];
+    scanner.scanEnvAssignment("fixture.env", "WHATSAPP_TOKEN_ENCRYPTION_KEY=valor-real-nao-versionar", 1, encryptionFindings);
+    expect(encryptionFindings).toHaveLength(1);
   });
 });

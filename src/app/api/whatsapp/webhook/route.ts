@@ -34,6 +34,7 @@ async function processEvent(event: ParsedWhatsAppEvent) {
       const result = await persistWhatsAppInbound(event);
       await writeWhatsAppAudit({
         userId: result.userId,
+        connectionId: result.connectionId,
         action: result.mediaId ? "media_inbound_received" : "inbound_message_processed",
         status: result.persisted ? "processed" : "ignored",
         conversationId: result.conversationId,

@@ -30,7 +30,7 @@ function supabaseWithConnection(connection: { id: string } | null) {
   return {
     from: vi.fn(() => {
       const chain: Record<string, unknown> = {};
-      for (const method of ["select", "eq"]) chain[method] = vi.fn(() => chain);
+      for (const method of ["select", "eq", "order", "limit"]) chain[method] = vi.fn(() => chain);
       chain.maybeSingle = vi.fn(() => Promise.resolve({ data: connection, error: null }));
       return chain;
     })

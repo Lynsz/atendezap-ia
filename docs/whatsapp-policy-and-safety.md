@@ -29,6 +29,18 @@
 - access token, App Secret, verify token, OpenAI key e service role são server-only;
 - `WHATSAPP_ENABLED=false` desativa a integração.
 
+## Conexão multiempresa
+
+- cada conexão pertence ao usuário autenticado e é resolvida por `connection_id`;
+- WABA e Phone Number ID recebidos do client nunca são autoridade e são validados server-side com a Meta;
+- tokens de Embedded Signup ficam criptografados e sem grant para o navegador;
+- desconexão invalida a credencial local, preserva histórico e bloqueia novos envios;
+- reautorização mantém o estado `needs_reauth` até o novo token ser validado;
+- healthcheck interno é limitado, autenticado e não registra resposta bruta;
+- fallback por env é legado e só pode ser usado por conexão `env_global`;
+- webhook roteia por Phone Number ID e não cria dados sem tenant conhecido;
+- isolamento continua baseado em `user_id`, `connection_id`, RLS e validação server-side.
+
 ## Dados
 
 - não salvar payload bruto;

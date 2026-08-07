@@ -1,5 +1,33 @@
 # Changelog
 
+## [WhatsApp Integration Phase 6]
+
+### Adicionado
+
+- Embedded Signup com exchange e validação server-side, onboarding, status, desconexão, reautorização e healthcheck interno.
+- Migration multitenant, eventos de conexão e `connection_id` nos fluxos críticos.
+
+### Embedded Signup
+
+- State anti-CSRF assinado; WABA e Phone Number ID revalidados na Meta; respostas ao client sempre sem token.
+
+### Multiempresa
+
+- Envio, webhook, templates e mídia resolvem a conexão correta; fallback global restrito ao modo legado.
+
+### Segurança
+
+- Tokens criptografados com AES-256-GCM, coluna sem grant ao client e scanner ampliado para OAuth/Embedded Signup.
+- Sem disparo em massa, automação de campanha ou envio automático após conectar.
+
+### Testes
+
+- Cobertura de criptografia, configuração pública, conclusão, desconexão, isolamento e healthcheck.
+
+### Pendências
+
+- Aplicar migration, concluir configuração/revisão da Meta e executar smoke real com dois tenants antes de habilitar em produção.
+
 ## [WhatsApp Integration Phase 5]
 
 ### Adicionado

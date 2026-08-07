@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const supabase = getSupabaseAdmin();
     const { data: connection } = await supabase
       .from("whatsapp_connections")
-      .select("id,business_name,display_phone_number,status,created_at,updated_at")
+      .select("id,business_name,display_phone_number,status,connection_status,connection_source,last_healthcheck_at,last_error_type,created_at,updated_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -46,6 +46,9 @@ export async function POST(request: Request) {
       business_name: input.businessName,
       phone_number_id: config.phoneNumberId,
       business_account_id: config.businessAccountId,
+      whatsapp_business_account_id: config.businessAccountId,
+      connection_source: "env_global",
+      connection_status: "connected",
       status: "active",
       updated_at: new Date().toISOString()
     };
@@ -53,7 +56,7 @@ export async function POST(request: Request) {
       ? supabase.from("whatsapp_connections").update(values).eq("phone_number_id", config.phoneNumberId).eq("user_id", user.id)
       : supabase.from("whatsapp_connections").insert(values);
     const { data, error } = await query
-      .select("id,business_name,display_phone_number,status,created_at,updated_at,user_id")
+      .select("id,business_name,display_phone_number,status,connection_status,connection_source,last_healthcheck_at,last_error_type,created_at,updated_at,user_id")
       .single();
     if (error || !data) throw error || new Error("connection_not_saved");
     return Response.json(

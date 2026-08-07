@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     const supabase = getSupabaseAdmin();
     const { data: conversation, error: conversationError } = await supabase
       .from("whatsapp_conversations")
-      .select("id,contact_id")
+      .select("id,contact_id,connection_id")
       .eq("id", conversationId)
       .eq("user_id", user.id)
       .maybeSingle();
@@ -52,6 +52,7 @@ export async function POST(request: Request) {
     const { data: media, error } = await supabase.from("whatsapp_media").insert({
       id: mediaId,
       user_id: user.id,
+      connection_id: conversation.connection_id,
       conversation_id: conversationId,
       contact_id: conversation.contact_id,
       direction: "outbound",
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
     }).select("id,media_type,mime_type,file_size,original_filename,download_status,created_at").single();
     if (error || !media) throw error || new Error("media_record_not_saved");
     await Promise.all([
-      writeWhatsAppAudit({ userId: user.id, action: "media_upload_created", status: "created", conversationId, mediaId }),
+      writeWhatsAppAudit({ userId: user.id, connectionId: conversation.connection_id, action: "media_upload_created", status: "created", conversationId, mediaId }),
       trackServerAppEvent({ user_id: user.id, event_name: "whatsapp_media_upload_created", page: "/dashboard/whatsapp", source: "dashboard", metadata: { media_type: mediaType, mime_group: mimeType.split("/")[0], status: "created" } })
     ]);
     return Response.json({ media: { id: media.id, media_type: media.media_type, mime_type: media.mime_type, file_size: media.file_size, filename: media.original_filename, download_status: media.download_status, created_at: media.created_at } }, { status: 201 });

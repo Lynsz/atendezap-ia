@@ -61,7 +61,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     if (!conversation) throw new AppError("Conversa não encontrada.", 404);
     const [{ data: contact, error: contactError }, { data: connection, error: connectionError }, { data: media, error: mediaError }] = await Promise.all([
       supabase.from("whatsapp_contacts").select("id,phone_number,opt_in_status").eq("id", conversation.contact_id).eq("user_id", user.id).single(),
-      supabase.from("whatsapp_connections").select("id,status").eq("id", conversation.connection_id).eq("user_id", user.id).single(),
+      supabase.from("whatsapp_connections").select("id,status,connection_status").eq("id", conversation.connection_id).eq("user_id", user.id).single(),
       supabase.from("whatsapp_media").select("id,direction,media_type,mime_type,file_size,original_filename,storage_bucket,storage_path,download_status,scanned_status").eq("id", mediaRecordId).eq("conversation_id", id).eq("user_id", user.id).maybeSingle()
     ]);
     if (contactError || connectionError || mediaError) throw contactError || connectionError || mediaError;
@@ -69,7 +69,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     if (media.direction !== "outbound" || media.media_type !== input.mediaType) throw new WhatsAppSendError("A mídia selecionada não pode ser enviada.", 409, "media_owner_or_type_mismatch");
     if (media.download_status !== "downloaded" || !media.storage_bucket || !media.storage_path || !media.mime_type) throw new WhatsAppSendError("O arquivo ainda não está pronto para envio.", 409, "media_not_ready");
     if (["suspicious", "blocked"].includes(media.scanned_status)) throw new WhatsAppSendError("Este arquivo foi bloqueado por segurança.", 403, "media_blocked");
-    if (connection.status !== "active") throw new WhatsAppSendError("A conexão com WhatsApp não está ativa.", 409, "connection_inactive");
+    if (connection.connection_status !== "connected" && connection.status !== "active") throw new WhatsAppSendError("Sua integração WhatsApp precisa ser conectada ou reautorizada antes de enviar mensagens.", 409, "connection_inactive");
     if (contact.opt_in_status === "opted_out") throw new WhatsAppSendError("Este contato não autorizou novas mensagens.", 403, "contact_opted_out");
     const windowOpen = Boolean(conversation.customer_service_window_until && new Date(conversation.customer_service_window_until).getTime() > Date.now());
     if (!windowOpen) throw new WhatsAppSendError("A janela de atendimento de 24 horas terminou. Mídia livre não pode ser enviada.", 403, "service_window_closed");
@@ -79,6 +79,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const attempt = await createWhatsAppSendAttempt({
       userId: user.id,
       conversationId: id,
+      connectionId: connection.id,
       requestKey: input.clientRequestId,
       fingerprint: createWhatsAppContentFingerprint(`${media.id}:${input.caption}`),
       messageType: "media",
@@ -91,6 +92,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
     const { data: pending, error: pendingError } = await supabase.from("whatsapp_messages").insert({
       user_id: user.id,
+      connection_id: connection.id,
       conversation_id: id,
       contact_id: contact.id,
       whatsapp_message_id: `client:${input.clientRequestId}`,
@@ -105,11 +107,11 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     pendingId = pending.id;
     const buffer = await readStoredWhatsAppMediaFile({ bucket: media.storage_bucket, path: media.storage_path });
     validateWhatsAppMediaBytes(buffer, media.mime_type);
-    const uploaded = await uploadMediaToWhatsApp({ fileBuffer: buffer, mimeType: media.mime_type, filename: media.original_filename || (media.media_type === "image" ? "imagem" : "documento") });
+    const uploaded = await uploadMediaToWhatsApp({ connectionId: connection.id, fileBuffer: buffer, mimeType: media.mime_type, filename: media.original_filename || (media.media_type === "image" ? "imagem" : "documento") });
     const sentResult = await sendWithControlledRetry(() =>
       media.media_type === "image"
-        ? sendWhatsAppImageMessage({ to: contact.phone_number, mediaId: uploaded.mediaId, caption: input.caption })
-        : sendWhatsAppDocumentMessage({ to: contact.phone_number, mediaId: uploaded.mediaId, caption: input.caption, filename: media.original_filename })
+        ? sendWhatsAppImageMessage({ connectionId: connection.id, to: contact.phone_number, mediaId: uploaded.mediaId, caption: input.caption })
+        : sendWhatsAppDocumentMessage({ connectionId: connection.id, to: contact.phone_number, mediaId: uploaded.mediaId, caption: input.caption, filename: media.original_filename })
     );
     const now = new Date().toISOString();
     const { data: message, error: updateError } = await supabase.from("whatsapp_messages").update({ whatsapp_message_id: sentResult.value.messageId, status: "sent", provider_created_at: now, provider_status_updated_at: now }).eq("id", pending.id).eq("user_id", user.id).select("id,direction,message_type,text,status,provider_created_at,created_at").single();
@@ -118,7 +120,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       updateWhatsAppSendAttempt({ attemptId: attemptId!, status: "sent", whatsappMessageId: sentResult.value.messageId, attempts: sentResult.attempts }),
       supabase.from("whatsapp_media").update({ message_id: message.id, whatsapp_media_id: uploaded.mediaId, updated_at: now }).eq("id", media.id).eq("user_id", user.id),
       supabase.from("whatsapp_conversations").update({ status: "open", last_outbound_at: now, updated_at: now }).eq("id", id).eq("user_id", user.id),
-      writeWhatsAppAudit({ userId: user.id, action: "media_sent", status: "sent", conversationId: id, messageId: message.id, mediaId: media.id }),
+      writeWhatsAppAudit({ userId: user.id, connectionId: connection.id, action: "media_sent", status: "sent", conversationId: id, messageId: message.id, mediaId: media.id }),
       trackServerAppEvent({ user_id: user.id, event_name: "whatsapp_media_sent", page: "/dashboard/whatsapp", source: "dashboard", metadata: { media_type: media.media_type, mime_group: media.mime_type.split("/")[0], status: "sent", window_open: true, attempts: sentResult.attempts } })
     ]);
     return Response.json({ message }, { status: 201 });

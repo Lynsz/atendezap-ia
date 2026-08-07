@@ -32,6 +32,14 @@ export const WHATSAPP_ENV_NAMES = [
 ] as const;
 
 export const WHATSAPP_OPTIONAL_ENV_NAMES = [
+  "NEXT_PUBLIC_META_APP_ID",
+  "NEXT_PUBLIC_META_CONFIG_ID",
+  "META_APP_SECRET",
+  "META_GRAPH_API_VERSION",
+  "WHATSAPP_EMBEDDED_SIGNUP_ENABLED",
+  "WHATSAPP_TOKEN_ENCRYPTION_KEY",
+  "WHATSAPP_EMBEDDED_SIGNUP_REDIRECT_URI",
+  "WHATSAPP_CONNECTION_HEALTHCHECK_ENABLED",
   "WHATSAPP_APP_SECRET",
   "WHATSAPP_ENABLED",
   "WHATSAPP_TEMPLATE_SYNC_ENABLED",
@@ -69,6 +77,10 @@ export function getServerEnvStatus() {
 
 export function isWhatsAppEnabled() {
   return /^(1|true)$/i.test(readServerEnv("WHATSAPP_ENABLED"));
+}
+
+export function isWhatsAppEmbeddedSignupEnabled() {
+  return /^(1|true)$/i.test(readServerEnv("WHATSAPP_EMBEDDED_SIGNUP_ENABLED"));
 }
 
 export function requireSupabasePublicEnv() {

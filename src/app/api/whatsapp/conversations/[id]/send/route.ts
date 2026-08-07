@@ -53,10 +53,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
     const [{ data: contact, error: contactError }, { data: connection, error: connectionError }] = await Promise.all([
       supabase.from("whatsapp_contacts").select("id,phone_number,opt_in_status").eq("id", conversation.contact_id).eq("user_id", user.id).single(),
-      supabase.from("whatsapp_connections").select("id,status").eq("id", conversation.connection_id).eq("user_id", user.id).single()
+      supabase.from("whatsapp_connections").select("id,status,connection_status").eq("id", conversation.connection_id).eq("user_id", user.id).single()
     ]);
     if (contactError || connectionError) throw contactError || connectionError;
-    if (connection.status !== "active") throw new WhatsAppSendError("A conexão com WhatsApp não está ativa.", 409, "connection_inactive");
+    if (connection.connection_status !== "connected" && connection.status !== "active") throw new WhatsAppSendError("Sua integração WhatsApp precisa ser conectada ou reautorizada antes de enviar mensagens.", 409, "connection_inactive");
     if (contact.opt_in_status === "opted_out") throw new WhatsAppSendError("Este contato não autorizou novas mensagens.", 403, "contact_opted_out");
 
     const windowOpen = Boolean(conversation.customer_service_window_until && new Date(conversation.customer_service_window_until).getTime() > Date.now());
@@ -87,6 +87,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const attempt = await createWhatsAppSendAttempt({
       userId: user.id,
       conversationId: id,
+      connectionId: connection.id,
       requestKey,
       fingerprint: createWhatsAppContentFingerprint(input.text),
       messageType: "text",
@@ -99,6 +100,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       .from("whatsapp_messages")
       .insert({
         user_id: user.id,
+        connection_id: connection.id,
         conversation_id: id,
         contact_id: contact.id,
         whatsapp_message_id: `client:${requestKey}`,
@@ -114,7 +116,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     if (pendingError || !pending) throw pendingError || new Error("pending_message_not_saved");
     pendingId = pending.id;
 
-    const sentResult = await sendWithControlledRetry(() => sendWhatsAppTextMessage({ to: contact.phone_number, text: input.text }));
+    const sentResult = await sendWithControlledRetry(() => sendWhatsAppTextMessage({ connectionId: connection.id, to: contact.phone_number, text: input.text }));
     const now = new Date().toISOString();
     const { data: message, error: updateError } = await supabase
       .from("whatsapp_messages")
@@ -130,7 +132,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       await supabase.from("whatsapp_suggested_replies").update({ suggested_text: input.text, status: "sent", updated_at: now }).eq("id", input.suggestedReplyId).eq("conversation_id", id).eq("user_id", user.id);
     }
     await Promise.all([
-      writeWhatsAppAudit({ userId: user.id, action: "reply_sent", status: "sent", conversationId: id, messageId: message.id }),
+      writeWhatsAppAudit({ userId: user.id, connectionId: connection.id, action: "reply_sent", status: "sent", conversationId: id, messageId: message.id }),
       trackServerAppEvent({
         user_id: user.id,
         event_name: "whatsapp_reply_sent",

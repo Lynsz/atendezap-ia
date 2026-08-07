@@ -13,20 +13,20 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
   const supabase = getSupabaseAdmin();
   const { data: connection, error: connectionError } = await supabase
     .from("whatsapp_connections")
-    .select("id,user_id,status")
+    .select("id,user_id,status,connection_status,business_account_id,whatsapp_business_account_id")
     .eq("phone_number_id", message.phoneNumberId)
-    .eq("business_account_id", message.businessAccountId)
     .maybeSingle();
 
   if (connectionError) throw connectionError;
-  if (!connection || connection.status !== "active") {
+  const wabaMatches = connection && (connection.whatsapp_business_account_id || connection.business_account_id) === message.businessAccountId;
+  if (!connection || !wabaMatches || (connection.connection_status !== "connected" && connection.status !== "active")) {
     serverLog({
       level: "warn",
       event: "whatsapp_inbound_connection_not_active",
       route: "src/lib/server/whatsapp-inbound",
       metadata: { error_type: connection ? "connection_inactive" : "connection_not_found", message_type: message.messageType }
     });
-    return { persisted: false, duplicate: false, userId: null, messageId: null, conversationId: null, mediaId: null };
+    return { persisted: false, duplicate: false, userId: null, connectionId: null, messageId: null, conversationId: null, mediaId: null };
   }
 
   if (message.displayPhoneNumber) {
@@ -78,6 +78,7 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
     .upsert(
       {
         user_id: connection.user_id,
+        connection_id: connection.id,
         conversation_id: conversation.id,
         contact_id: contact.id,
         whatsapp_message_id: message.messageId,
@@ -97,6 +98,7 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
   if (inserted && message.media) {
     const { data: insertedMedia, error: mediaError } = await supabase.from("whatsapp_media").insert({
       user_id: connection.user_id,
+      connection_id: connection.id,
       conversation_id: conversation.id,
       message_id: inserted.id,
       contact_id: contact.id,
@@ -138,6 +140,7 @@ export async function persistWhatsAppInbound(message: ParsedWhatsAppInbound) {
     persisted: Boolean(inserted),
     duplicate: !inserted,
     userId: connection.user_id,
+    connectionId: connection.id,
     messageId: inserted?.id || null,
     conversationId: conversation.id,
     mediaId: insertedMediaId

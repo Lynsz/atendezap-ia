@@ -24,6 +24,7 @@ export async function enforceWhatsAppSendLimits(input: { request: Request; userI
 type AttemptInput = {
   userId: string;
   conversationId: string;
+  connectionId: string;
   requestKey: string;
   fingerprint: string;
   messageType: "text" | "template" | "media";
@@ -62,6 +63,7 @@ export async function createWhatsAppSendAttempt(input: AttemptInput) {
     .from("whatsapp_send_attempts")
     .insert({
       user_id: input.userId,
+      connection_id: input.connectionId,
       conversation_id: input.conversationId,
       request_key: input.requestKey,
       content_fingerprint: input.fingerprint,

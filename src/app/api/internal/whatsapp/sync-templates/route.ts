@@ -1,7 +1,6 @@
 import { trackServerAppEvent } from "@/lib/analytics/server";
 import { AppError, errorResponse } from "@/lib/errors";
 import { requireInternalJob } from "@/lib/server/internal-job-auth";
-import { getWhatsAppServerConfig } from "@/lib/server/whatsapp";
 import { writeWhatsAppAudit } from "@/lib/server/whatsapp-audit";
 import {
   getTemplateSyncCountRange,
@@ -31,12 +30,10 @@ export async function POST(request: Request) {
   try {
     requireInternalJob(request);
     requireWhatsAppTemplateSyncEnabled();
-    const config = getWhatsAppServerConfig();
     const { data: connections, error } = await getSupabaseAdmin()
       .from("whatsapp_connections")
       .select("id,user_id")
-      .eq("business_account_id", config.businessAccountId)
-      .eq("status", "active")
+      .eq("connection_status", "connected")
       .limit(10);
     if (error) throw error;
     if (!connections?.length) throw new AppError("Nenhuma conexão ativa está disponível para sincronização.", 409);

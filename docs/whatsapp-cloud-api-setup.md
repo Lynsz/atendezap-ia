@@ -15,6 +15,7 @@ Configurar a integração oficial com WhatsApp Cloud API sem expor credenciais n
 - migrations `supabase/migrations/create_whatsapp_integration_tables.sql` e `supabase/migrations/add_whatsapp_phase_3_idempotency.sql` aplicadas.
 - migration `supabase/migrations/add_whatsapp_phase_4_media.sql` aplicada antes de habilitar mídias.
 - migration `supabase/migrations/add_whatsapp_phase_5_template_sync.sql` aplicada antes de habilitar sincronização de templates.
+- migration `supabase/migrations/add_whatsapp_phase_6_embedded_signup.sql` aplicada antes de habilitar conexões por usuário.
 
 ## Variáveis
 
@@ -37,6 +38,14 @@ WHATSAPP_MAX_MEDIA_SIZE_MB=
 WHATSAPP_MEDIA_RETENTION_DAYS=
 SUPABASE_STORAGE_WHATSAPP_BUCKET=
 INTERNAL_JOB_SECRET=
+NEXT_PUBLIC_META_APP_ID=
+NEXT_PUBLIC_META_CONFIG_ID=
+META_APP_SECRET=
+META_GRAPH_API_VERSION=
+WHATSAPP_EMBEDDED_SIGNUP_ENABLED=false
+WHATSAPP_TOKEN_ENCRYPTION_KEY=
+WHATSAPP_EMBEDDED_SIGNUP_REDIRECT_URI=
+WHATSAPP_CONNECTION_HEALTHCHECK_ENABLED=false
 ```
 
 Não use prefixo `NEXT_PUBLIC_`. Defina explicitamente a versão Graph suportada pela sua conta, por exemplo no formato `vXX.X`, depois de confirmar a versão vigente na documentação oficial.

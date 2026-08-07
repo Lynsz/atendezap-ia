@@ -52,13 +52,13 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
     const [{ data: contact, error: contactError }, { data: connection, error: connectionError }, { data: template, error: templateError }] = await Promise.all([
       supabase.from("whatsapp_contacts").select("id,phone_number,opt_in_status").eq("id", conversation.contact_id).eq("user_id", user.id).single(),
-      supabase.from("whatsapp_connections").select("id,status").eq("id", conversation.connection_id).eq("user_id", user.id).single(),
+      supabase.from("whatsapp_connections").select("id,status,connection_status").eq("id", conversation.connection_id).eq("user_id", user.id).single(),
       supabase.from("whatsapp_templates").select("id,connection_id,provider_template_id,meta_template_id,meta_template_name,name,language,category,status,remote_status,local_status,variables_schema,variables_count").eq("id", input.templateId).eq("user_id", user.id).maybeSingle()
     ]);
     if (contactError || connectionError || templateError) throw contactError || connectionError || templateError;
     if (!template) throw new WhatsAppSendError("Template não encontrado.", 404, "template_not_found");
     if (template.connection_id !== connection.id) throw new WhatsAppSendError("O template pertence a outra conexão.", 409, "template_connection_mismatch");
-    if (connection.status !== "active") throw new WhatsAppSendError("A conexão com WhatsApp não está ativa.", 409, "connection_inactive");
+    if (connection.connection_status !== "connected" && connection.status !== "active") throw new WhatsAppSendError("Sua integração WhatsApp precisa ser conectada ou reautorizada antes de enviar mensagens.", 409, "connection_inactive");
     if (contact.opt_in_status !== "opted_in") throw new WhatsAppSendError("Este contato ainda não possui opt-in para mensagens iniciadas pela empresa.", 403, "contact_opt_in_required");
     const syncEnabled = isWhatsAppTemplateSyncEnabled();
     const hasRemoteIdentity = Boolean(template.meta_template_id || template.provider_template_id);
@@ -101,6 +101,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const attempt = await createWhatsAppSendAttempt({
       userId: user.id,
       conversationId: id,
+      connectionId: connection.id,
       requestKey: input.clientRequestId,
       fingerprint: createWhatsAppContentFingerprint(`${template.id}:${JSON.stringify(variables)}`),
       messageType: "template",
@@ -113,6 +114,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       .from("whatsapp_messages")
       .insert({
         user_id: user.id,
+        connection_id: connection.id,
         conversation_id: id,
         contact_id: contact.id,
         whatsapp_message_id: `client:${input.clientRequestId}`,
@@ -129,7 +131,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     pendingId = pending.id;
 
     const sentResult = await sendWithControlledRetry(() =>
-      sendWhatsAppTemplateMessage({ to: contact.phone_number, name: template.meta_template_name || template.name, language: template.language, variables, variablesSchema })
+      sendWhatsAppTemplateMessage({ connectionId: connection.id, to: contact.phone_number, name: template.meta_template_name || template.name, language: template.language, variables, variablesSchema })
     );
     const now = new Date().toISOString();
     const { data: message, error: updateError } = await supabase
@@ -143,7 +145,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     await updateWhatsAppSendAttempt({ attemptId: attemptId!, status: "sent", whatsappMessageId: sentResult.value.messageId, attempts: sentResult.attempts });
     await supabase.from("whatsapp_conversations").update({ status: "open", last_outbound_at: now, updated_at: now }).eq("id", id).eq("user_id", user.id);
     await Promise.all([
-      writeWhatsAppAudit({ userId: user.id, action: "template_sent", status: "sent", conversationId: id, messageId: message.id, templateId: template.id }),
+      writeWhatsAppAudit({ userId: user.id, connectionId: connection.id, action: "template_sent", status: "sent", conversationId: id, messageId: message.id, templateId: template.id }),
       trackServerAppEvent({
         user_id: user.id,
         event_name: "whatsapp_template_sent",
