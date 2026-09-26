@@ -9,17 +9,11 @@ const fallbackSupabaseAnonKey = "missing-supabase-anon-key-placeholder-000000000
 export function getSupabasePublicDiagnostic() {
   return {
     hasUrl: Boolean(supabaseUrl),
-    url: supabaseUrl ?? "",
-    hasAnonKey: Boolean(supabaseAnonKey),
-    anonKeyLength: supabaseAnonKey?.length ?? 0
+    hasAnonKey: Boolean(supabaseAnonKey)
   };
 }
 
 export const supabaseEnv = getSupabasePublicDiagnostic();
-
-if (typeof window !== "undefined") {
-  console.info("[Supabase diagnostic]", supabaseEnv);
-}
 
 export const supabase = createClient(supabaseUrl || fallbackSupabaseUrl, supabaseAnonKey || fallbackSupabaseAnonKey, {
   auth: {

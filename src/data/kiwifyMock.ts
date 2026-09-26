@@ -3,9 +3,9 @@ import type { CheckoutPlanId } from "@/config/checkout";
 import type { KiwifyEventType, KiwifyPaymentMethod, KiwifyWebhookEvent } from "@/types/kiwify";
 
 const customer = {
-  name: "Cliente AtendeZap",
-  email: "cliente@atendezapia.com",
-  phone: "11999999999",
+  name: "Cliente de demonstração",
+  email: "cliente@example.com",
+  phone: "00900000000",
   document: "000.000.000-00"
 };
 

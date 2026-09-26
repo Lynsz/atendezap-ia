@@ -4,7 +4,7 @@ export const leadsMock: Lead[] = [
   {
     id: "lead-001",
     name: "Amanda Ferreira",
-    phone: "11 98821-4400",
+    phone: "00 90000-0001",
     email: "amanda.ferreira@example.com",
     company: "Studio Bella Mão",
     source: "whatsapp",
@@ -20,7 +20,7 @@ export const leadsMock: Lead[] = [
   {
     id: "lead-002",
     name: "Leonardo Prado",
-    phone: "21 97772-1200",
+    phone: "00 90000-0002",
     email: "leo.prado@example.com",
     company: "Marmitaria Prado Fit",
     source: "instagram",
@@ -36,7 +36,7 @@ export const leadsMock: Lead[] = [
   {
     id: "lead-003",
     name: "Renata Lopes",
-    phone: "31 96654-8890",
+    phone: "00 90000-0003",
     company: "Lopes Estética Avançada",
     source: "website",
     status: "in_service",
@@ -51,8 +51,8 @@ export const leadsMock: Lead[] = [
   {
     id: "lead-004",
     name: "Carlos Menezes",
-    phone: "41 95510-7222",
-    email: "carlos@barbeariamenezes.com",
+    phone: "00 90000-0004",
+    email: "carlos.menezes@example.com",
     company: "Barbearia Menezes",
     source: "referral",
     status: "new",
@@ -67,7 +67,7 @@ export const leadsMock: Lead[] = [
   {
     id: "lead-005",
     name: "Bianca Teixeira",
-    phone: "51 94432-1010",
+    phone: "00 90000-0005",
     email: "bianca.teixeira@example.com",
     company: "Pet Shop Amigo Fiel",
     source: "ad",
@@ -83,7 +83,7 @@ export const leadsMock: Lead[] = [
   {
     id: "lead-006",
     name: "Paulo Henrique",
-    phone: "85 93321-8831",
+    phone: "00 90000-0006",
     company: "PH Assistência Técnica",
     source: "whatsapp",
     status: "closed",
@@ -98,7 +98,7 @@ export const leadsMock: Lead[] = [
   {
     id: "lead-007",
     name: "Sofia Andrade",
-    phone: "62 92210-6544",
+    phone: "00 90000-0007",
     email: "sofia.andrade@example.com",
     source: "instagram",
     status: "lost",
@@ -113,7 +113,7 @@ export const leadsMock: Lead[] = [
   {
     id: "lead-008",
     name: "Marcos Vinícius",
-    phone: "71 91118-4309",
+    phone: "00 90000-0008",
     email: "marcos.vinicius@example.com",
     company: "Mercadinho Dois Irmãos",
     source: "website",

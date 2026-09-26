@@ -80,6 +80,28 @@ web_modules/
 *.pem
 *.key
 *.cert
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.mobileprovision
+.envrc
+.dev.vars
+.mcp.json
+.npmrc
+credentials*.json
+service-account*.json
+oauth-client*.json
+client-secret*.json
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.gz
+supabase/.temp/
 .DS_Store
 
 # parcel-bundler cache (https://parceljs.org/)

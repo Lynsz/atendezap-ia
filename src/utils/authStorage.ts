@@ -55,7 +55,7 @@ export function createDemoAccess(plan: UserPlan = "starter") {
   const user: AccessUser = {
     id: `demo-${Date.now()}`,
     name: "Cliente AtendeZap",
-    email: "cliente@atendezapia.com",
+    email: "cliente@example.com",
     plan,
     createdAt: now,
     lastLoginAt: now

@@ -10,7 +10,7 @@ export const atendezapMockConversations: Conversation[] = [
     customer: {
       id: "cust-001",
       name: "Maria Silva",
-      phone: "11 99999-1111",
+      phone: "00 90000-0011",
       avatarInitials: "MS",
       city: "São Paulo, SP",
       tags: ["manicure", "recorrente"]
@@ -45,7 +45,7 @@ export const atendezapMockConversations: Conversation[] = [
     customer: {
       id: "cust-002",
       name: "Rafael Costa",
-      phone: "21 98888-2222",
+      phone: "00 90000-0022",
       avatarInitials: "RC",
       city: "Rio de Janeiro, RJ",
       tags: ["marmitaria", "orçamento"]
@@ -80,7 +80,7 @@ export const atendezapMockConversations: Conversation[] = [
     customer: {
       id: "cust-003",
       name: "Juliana Rocha",
-      phone: "31 97777-3333",
+      phone: "00 90000-0033",
       avatarInitials: "JR",
       city: "Belo Horizonte, MG",
       tags: ["estética", "suporte"]
@@ -115,7 +115,7 @@ export const atendezapMockConversations: Conversation[] = [
     customer: {
       id: "cust-004",
       name: "Bruno Martins",
-      phone: "41 96666-4444",
+      phone: "00 90000-0044",
       avatarInitials: "BM",
       city: "Curitiba, PR",
       tags: ["loja", "retirada"]
@@ -150,7 +150,7 @@ export const atendezapMockConversations: Conversation[] = [
     customer: {
       id: "cust-005",
       name: "Camila Nunes",
-      phone: "51 95555-5555",
+      phone: "00 90000-0055",
       avatarInitials: "CN",
       city: "Porto Alegre, RS",
       tags: ["assistência", "notebook"]

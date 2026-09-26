@@ -17,7 +17,7 @@ export const whatsappDemoConnected: WhatsAppConnection = {
   id: "wa-demo-connected",
   provider: "manual_demo",
   status: "connected",
-  phoneNumber: "+55 11 99999-0000",
+  phoneNumber: "+55 00 90000-0000",
   displayName: "AtendeZap Atendimento",
   businessName: "AtendeZap IA",
   connectedAt: now,

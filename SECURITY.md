@@ -2,6 +2,17 @@
 
 Este arquivo resume as protecoes basicas do AtendeZap IA antes de receber trafego real.
 
+## Visibilidade do repositorio
+
+O repositorio de producao deve permanecer **privado**. Tornar o repositorio privado reduz a exposicao do codigo, mas nao transforma secrets versionados em seguros: qualquer chave que ja tenha sido publicada deve ser revogada e rotacionada no provedor.
+
+Ative tambem no GitHub, quando disponivel:
+
+- secret scanning;
+- push protection;
+- alertas do Dependabot;
+- revisao obrigatoria antes de merge na branch principal.
+
 ## Rate limit
 
 As APIs sensiveis usam `src/lib/rate-limit.ts`.
@@ -183,7 +194,12 @@ Antes de commitar:
 ```bash
 git status
 npm run check:secrets
+npm run check:secrets:history
 ```
+
+`npm run check:secrets` verifica arquivos rastreados e novos arquivos ainda nao ignorados. `npm run check:secrets:history` verifica adicoes em todo o historico Git sem imprimir o valor encontrado. O workflow de CI executa as duas verificacoes e tambem bloqueia vulnerabilidades altas ou criticas em dependencias de producao.
+
+O scanner tambem bloqueia arquivos que normalmente carregam credenciais ou dados reais, incluindo certificados, keystores, bancos SQLite, dumps SQL compactados, arquivos HAR e exports de OAuth/webhooks. Coloque esses artefatos fora do repositorio.
 
 Se um arquivo `.env` estiver rastreado, remova apenas do controle do Git e mantenha o arquivo local:
 

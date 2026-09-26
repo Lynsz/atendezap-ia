@@ -127,9 +127,7 @@ export default function SupabaseDebugPage() {
 
           <div className="mt-4 grid gap-3 text-sm">
             <InfoRow label="Env URL existe" value={String(supabaseEnv.hasUrl)} />
-            <InfoRow label="URL" value={supabaseEnv.url ? "Configurada" : "Não configurada"} />
             <InfoRow label="Env anon key existe" value={String(supabaseEnv.hasAnonKey)} />
-            <InfoRow label="Anon key length" value={String(supabaseEnv.anonKeyLength)} />
           </div>
         </section>
 

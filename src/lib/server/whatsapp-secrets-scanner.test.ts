@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const require = createRequire(import.meta.url);
 const scanner = require("../../../scripts/check-secrets.js") as {
   isSafePlaceholder(value: string): boolean;
+  scanDangerousPublicEnvReference(file: string, line: string, lineNumber: number, findings: unknown[]): void;
   scanEnvAssignment(file: string, line: string, lineNumber: number, findings: unknown[]): void;
   sensitiveEnvNames: string[];
   secretPatterns: Array<{ name: string }>;
@@ -27,5 +28,25 @@ describe("WhatsApp secrets scanner", () => {
     const encryptionFindings: unknown[] = [];
     scanner.scanEnvAssignment("fixture.env", "WHATSAPP_TOKEN_ENCRYPTION_KEY=valor-real-nao-versionar", 1, encryptionFindings);
     expect(encryptionFindings).toHaveLength(1);
+  });
+
+  it("detecta secrets genericos e bloqueia secrets publicados no bundle client", () => {
+    const databaseFindings: unknown[] = [];
+    const databaseFixture = "DATABASE_URL=postgresql://usuario:" + "senha@host/banco";
+    scanner.scanEnvAssignment("fixture.env", databaseFixture, 1, databaseFindings);
+    expect(databaseFindings).toHaveLength(1);
+
+    const publicAssignmentFindings: unknown[] = [];
+    scanner.scanEnvAssignment("fixture.env", "NEXT_PUBLIC_OPENAI_API_KEY=", 1, publicAssignmentFindings);
+    expect(publicAssignmentFindings).toHaveLength(1);
+
+    const publicReferenceFindings: unknown[] = [];
+    scanner.scanDangerousPublicEnvReference(
+      "fixture.ts",
+      "const key = process.env.NEXT_PUBLIC_" + "OPENAI_API_KEY;",
+      1,
+      publicReferenceFindings,
+    );
+    expect(publicReferenceFindings).toHaveLength(1);
   });
 });

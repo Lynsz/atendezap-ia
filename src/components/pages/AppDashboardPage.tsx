@@ -181,14 +181,8 @@ function DashboardContent() {
           responsesCount: responsesResult.count ?? 0,
           monthlyResponsesCount: Number((monthlyUsageResult.data as { count?: number } | null)?.count || 0),
         });
-      } catch (error) {
-        console.error('[Dashboard load failed]', error);
-
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'Não foi possível carregar o dashboard.',
-        );
+      } catch {
+        setErrorMessage('Não foi possível carregar o dashboard. Tente novamente.');
       } finally {
         setLoading(false);
       }

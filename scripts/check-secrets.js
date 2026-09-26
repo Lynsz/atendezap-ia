@@ -1,4 +1,5 @@
 const { execFileSync } = require("node:child_process");
+const { createHash } = require("node:crypto");
 const { readFileSync } = require("node:fs");
 
 const ignoredPathPatterns = [
@@ -18,6 +19,9 @@ const ignoredPathPatterns = [
   /^\.env\.development\.local$/,
   /^\.env\.test\.local$/,
   /^\.env.*\.local$/,
+  /^\.mcp\.json$/,
+  /^\.npmrc$/,
+  /^supabase\/\.temp\//,
   /^package-lock\.json$/,
   /^pnpm-lock\.yaml$/,
   /^yarn\.lock$/
@@ -32,6 +36,12 @@ const secretPatterns = [
   { name: "GitHub token", pattern: /\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}\b/g },
   { name: "GitHub fine-grained token", pattern: /\bgithub_pat_[A-Za-z0-9_]{20,}\b/g },
   { name: "Vercel token", pattern: /\bvercel_[A-Za-z0-9]{20,}\b/g },
+  { name: "AWS access key", pattern: /\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/g },
+  { name: "Google API key", pattern: /\bAIza[0-9A-Za-z_-]{30,}\b/g },
+  { name: "SendGrid API key", pattern: /\bSG\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{20,}\b/g },
+  { name: "Slack token", pattern: /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/g },
+  { name: "Slack webhook", pattern: /https:\/\/hooks\.slack\.com\/services\/[A-Za-z0-9/_-]{20,}/gi },
+  { name: "npm access token", pattern: /\bnpm_[A-Za-z0-9]{20,}\b/g },
   { name: "Meta/WhatsApp access token", pattern: /\bEAA[A-Za-z0-9]{20,}\b/g },
   { name: "Meta OAuth code dump", pattern: /["'](?:code|access_token|user_access_token)["']\s*:\s*["'](?:EAA)?[A-Za-z0-9._-]{24,}["']/gi },
   { name: "Embedded Signup raw response", pattern: /(?:embedded[-_ ]signup|oauth)[-_ ]?(?:response|payload|dump)\s*[:=]\s*["'`]?\{/gi },
@@ -39,8 +49,10 @@ const secretPatterns = [
   { name: "Supabase secret key", pattern: /\bsb_secret_[A-Za-z0-9_-]{20,}\b/g },
   { name: "Supabase management token", pattern: /\bsbp_[A-Za-z0-9]{20,}\b/g },
   { name: "Authorization Bearer literal", pattern: /\bAuthorization\s*[:=]\s*["']?Bearer\s+[A-Za-z0-9._-]{20,}/gi },
+  { name: "Authorization Basic literal", pattern: /\bAuthorization\s*[:=]\s*["']?Basic\s+[A-Za-z0-9+/=]{16,}/gi },
+  { name: "database URL with credentials", pattern: /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis):\/\/[^\s/@:]+:[^\s/@]+@/gi },
   { name: "WhatsApp temporary media URL", pattern: /https:\/\/[^\s"']*(?:lookaside\.fbsbx\.com|fbcdn\.net)[^\s"']*[?&](?:token|sig|signature)=[A-Za-z0-9._%-]{20,}/gi },
-  { name: "Private key block", pattern: new RegExp("BEGIN " + "PRIVATE KEY", "g") }
+  { name: "Private key block", pattern: /BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/g }
 ];
 
 const forbiddenFilePatterns = [
@@ -49,14 +61,24 @@ const forbiddenFilePatterns = [
   { name: "dump de mídia WhatsApp", pattern: /(?:^|\/)(?:whatsapp[-_])?media[-_](?:dump|export|backup)(?:\/|\.|$)/i },
   { name: "dump ou export real de templates Meta", pattern: /(?:^|\/)(?:meta|whatsapp)[-_].*template.*(?:payload|dump|export|backup).*(?:\.json|\.txt|\.log)$/i },
   { name: "dump real de templates WhatsApp", pattern: /(?:^|\/)template[-_](?:dump|export|backup)(?:\/|\.|$)/i },
-  { name: "dump OAuth ou Embedded Signup", pattern: /(?:^|\/)(?:meta|whatsapp|embedded[-_]?signup|oauth)[-_].*(?:response|payload|dump|export|backup).*(?:\.json|\.txt|\.log)$/i }
+  { name: "dump OAuth ou Embedded Signup", pattern: /(?:^|\/)(?:meta|whatsapp|embedded[-_]?signup|oauth)[-_].*(?:response|payload|dump|export|backup).*(?:\.json|\.txt|\.log)$/i },
+  { name: "arquivo de credenciais", pattern: /(?:^|\/)(?:credentials|service-account|client-secret|oauth-client).*\.json$/i },
+  { name: "certificado ou keystore", pattern: /\.(?:p12|pfx|jks|keystore|pem|key|der)$/i },
+  { name: "dump de banco", pattern: /\.(?:sqlite3?|db|dump|sql\.gz)$/i }
 ];
 
 const sensitiveEnvNames = [
   "KIWIFY_WEBHOOK_SECRET",
+  "AWS_ACCESS_KEY_ID",
+  "AWS_SECRET_ACCESS_KEY",
+  "DATABASE_URL",
+  "DIRECT_URL",
+  "GOOGLE_CLIENT_SECRET",
   "INTERNAL_JOB_SECRET",
+  "JWT_SECRET",
   "META_APP_SECRET",
   "OPENAI_API_KEY",
+  "POSTGRES_PASSWORD",
   "WHATSAPP_ACCESS_TOKEN",
   "WHATSAPP_TOKEN_ENCRYPTION_KEY",
   "WHATSAPP_BUSINESS_ACCOUNT_ID",
@@ -70,6 +92,13 @@ const sensitiveEnvNames = [
   "STRIPE_WEBHOOK_SECRET",
   "UPSTASH_REDIS_REST_TOKEN"
 ];
+
+const genericSensitiveEnvNamePattern = /(?:SECRET|TOKEN|PASSWORD|PRIVATE_KEY|SERVICE_ROLE|ACCESS_KEY|API_KEY|ENCRYPTION_KEY|DATABASE_URL|DIRECT_URL)$/i;
+const dangerousPublicEnvNamePattern = /^NEXT_PUBLIC_[A-Z0-9_]*(?:SECRET|TOKEN|PASSWORD|PRIVATE_KEY|SERVICE_ROLE|ACCESS_KEY|API_KEY|ENCRYPTION_KEY)[A-Z0-9_]*$/;
+const knownSafeHistoryValueHashes = new Set([
+  // Placeholder didatico que existiu em docs/kiwify-setup.md; o valor real nunca e armazenado aqui.
+  "04bd564829c4f8e40bff97ade0393bd7cf03c0a7491b3f4c5d091ff6199408a8"
+]);
 
 function normalizePath(file) {
   return file.replaceAll("\\", "/");
@@ -90,7 +119,7 @@ function trackedEnvFiles() {
 }
 
 function isSafePlaceholder(value) {
-  const normalized = value.trim().replace(/^["']|["']$/g, "");
+  const normalized = value.trim().replace(/^["']|["']$/g, "").toLowerCase();
   return (
     normalized === "" ||
     normalized === "..." ||
@@ -99,18 +128,46 @@ function isSafePlaceholder(value) {
     normalized.includes("placeholder") ||
     normalized.startsWith("test-") ||
     normalized.includes("test-only") ||
-    normalized.includes("dummy")
+    normalized.includes("dummy") ||
+    normalized.includes("mock") ||
+    normalized.includes("fake") ||
+    normalized.includes("troque") ||
+    normalized.includes("substitua") ||
+    normalized.includes("replace") ||
+    /^<[^>]+>$/.test(normalized)
   );
 }
 
-function scanEnvAssignment(file, line, lineNumber, findings) {
-  for (const envName of sensitiveEnvNames) {
-    const match = line.match(new RegExp(`^\\s*${envName}\\s*=\\s*(.*)\\s*$`));
-    if (!match) continue;
+function isKnownSafeHistoryPlaceholder(value) {
+  const normalized = value.trim().replace(/^["']|["']$/g, "").toLowerCase();
+  const hash = createHash("sha256").update(normalized).digest("hex");
+  return knownSafeHistoryValueHashes.has(hash);
+}
 
-    const value = match[1] || "";
-    if (!isSafePlaceholder(value)) {
-      findings.push({ file, lineNumber, label: `${envName} com valor possivelmente real` });
+function scanEnvAssignment(file, line, lineNumber, findings, options = {}) {
+  const assignment = line.match(/^\s*([A-Z][A-Z0-9_]*)\s*=\s*(.*)\s*$/);
+  if (!assignment) return;
+
+  const envName = assignment[1];
+  const value = assignment[2] || "";
+  const isSafeValue = isSafePlaceholder(value) || (options.history && isKnownSafeHistoryPlaceholder(value));
+  if (dangerousPublicEnvNamePattern.test(envName)) {
+    if (!options.history || !isSafeValue) {
+      findings.push({ file, lineNumber, label: `${envName} expoe um segredo ao navegador` });
+    }
+    return;
+  }
+
+  if ((sensitiveEnvNames.includes(envName) || genericSensitiveEnvNamePattern.test(envName)) && !isSafeValue) {
+    findings.push({ file, lineNumber, label: `${envName} com valor possivelmente real` });
+  }
+}
+
+function scanDangerousPublicEnvReference(file, line, lineNumber, findings) {
+  const references = line.matchAll(/process\.env\.(NEXT_PUBLIC_[A-Z0-9_]+)/g);
+  for (const match of references) {
+    if (dangerousPublicEnvNamePattern.test(match[1])) {
+      findings.push({ file, lineNumber, label: `${match[1]} expoe um segredo ao navegador` });
     }
   }
 }
@@ -138,6 +195,7 @@ function scanFile(file, findings) {
   lines.forEach((line, index) => {
     const lineNumber = index + 1;
     scanEnvAssignment(file, line, lineNumber, findings);
+    scanDangerousPublicEnvReference(file, line, lineNumber, findings);
     scanPrivateKeyAssignment(file, line, lineNumber, findings);
 
     for (const { name, pattern } of secretPatterns) {
@@ -149,6 +207,46 @@ function scanFile(file, findings) {
       }
     }
   });
+}
+
+function scanGitHistory(findings) {
+  let output;
+  try {
+    output = execFileSync("git", ["log", "--all", "-p", "--no-ext-diff", "--format=commit:%H", "--", "."], {
+      encoding: "utf8",
+      maxBuffer: 256 * 1024 * 1024
+    });
+  } catch {
+    findings.push({ file: ".git", lineNumber: 0, label: "não foi possível auditar o histórico Git" });
+    return;
+  }
+
+  let commit = "unknown";
+  let file = "unknown";
+  for (const line of output.split(/\r?\n/)) {
+    if (line.startsWith("commit:")) {
+      commit = line.slice(7, 19);
+      continue;
+    }
+    const diff = line.match(/^diff --git a\/(.+) b\/(.+)$/);
+    if (diff) {
+      file = normalizePath(diff[2]);
+      continue;
+    }
+    if (!/^\+[^+]/.test(line)) continue;
+
+    const content = line.slice(1);
+    const historyFile = `${file}@${commit}`;
+    scanEnvAssignment(historyFile, content, 0, findings, { history: true });
+    scanDangerousPublicEnvReference(historyFile, content, 0, findings);
+    scanPrivateKeyAssignment(historyFile, content, 0, findings);
+    for (const { name, pattern } of secretPatterns) {
+      pattern.lastIndex = 0;
+      for (const match of content.matchAll(pattern)) {
+        if (!isSafePlaceholder(match[0])) findings.push({ file: historyFile, lineNumber: 0, label: name });
+      }
+    }
+  }
 }
 
 function main() {
@@ -166,9 +264,16 @@ function main() {
     scanFile(file, findings);
   }
 
-  if (findings.length > 0) {
+  if (process.argv.includes("--history")) scanGitHistory(findings);
+
+  const uniqueFindings = [...new Map(findings.map((finding) => [
+    `${finding.file}:${finding.lineNumber}:${finding.label}`,
+    finding
+  ])).values()];
+
+  if (uniqueFindings.length > 0) {
     console.error("Possiveis secrets encontrados em arquivos versionados:");
-    for (const finding of findings) {
+    for (const finding of uniqueFindings) {
       console.error(`- ${finding.file}:${finding.lineNumber} (${finding.label})`);
     }
     process.exit(1);
@@ -179,4 +284,12 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { forbiddenFilePatterns, isSafePlaceholder, scanEnvAssignment, sensitiveEnvNames, secretPatterns };
+module.exports = {
+  forbiddenFilePatterns,
+  isSafePlaceholder,
+  main,
+  scanDangerousPublicEnvReference,
+  scanEnvAssignment,
+  sensitiveEnvNames,
+  secretPatterns
+};

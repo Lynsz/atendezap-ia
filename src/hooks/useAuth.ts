@@ -36,10 +36,7 @@ export function useAuth() {
 
   const normalizeAuthError = useCallback((error: unknown) => {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      return [
-        SUPABASE_CONNECTION_ERROR,
-        `Diagnóstico: hasUrl=${supabaseEnv.hasUrl}, hasAnonKey=${supabaseEnv.hasAnonKey}, anonKeyLength=${supabaseEnv.anonKeyLength}.`,
-      ].join(' ');
+      return SUPABASE_CONNECTION_ERROR;
     }
 
     if (error instanceof Error) {

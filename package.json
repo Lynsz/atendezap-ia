@@ -14,7 +14,8 @@
     "test:all": "npm run test && npm run test:e2e",
     "check": "npm run lint && npm run typecheck && npm run build && npm run test",
     "check:secrets": "node scripts/check-secrets.js",
-    "validate": "npm run check:secrets && npm run lint && npm run typecheck && npm run build && npm test",
+    "check:secrets:history": "node scripts/check-secrets.js --history",
+    "validate": "npm run check:secrets && npm run check:secrets:history && npm run lint && npm run typecheck && npm run build && npm test",
     "stripe:setup-products": "node scripts/setup-stripe-products.mjs"
   },
   "dependencies": {

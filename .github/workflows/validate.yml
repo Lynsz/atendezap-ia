@@ -40,6 +40,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -52,6 +54,12 @@ jobs:
 
       - name: Run secret scan
         run: npm run check:secrets
+
+      - name: Run Git history secret scan
+        run: npm run check:secrets:history
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Run lint
         run: npm run lint
